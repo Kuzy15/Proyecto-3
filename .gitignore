@@ -24,6 +24,9 @@
 *.lai
 *.la
 *.a
+
+#zips
+*.7z
 *.lib
 
 # Executables
