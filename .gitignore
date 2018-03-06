@@ -33,3 +33,6 @@
 *.exe
 *.out
 *.app
+
+#exclude the intermediate directory
+/ProyectoBasico/Inter/*

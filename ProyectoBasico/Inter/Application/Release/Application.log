@@ -1,5 +1,20 @@
-﻿Build started 06/03/2018 12:51:34.
+﻿Build started 06/03/2018 16:31:21.
+     1>Project "C:\hlocal\Proyecto-3\ProyectoBasico\Projects\Application\Application.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\software\programacion\MSVStudio2013\VC\bin\CL.exe /c /I"C:\hlocal\Proyecto-3\ProyectoBasico\Dependencies\Ogre\Build\include" /I"C:\hlocal\Proyecto-3\ProyectoBasico\Dependencies\Ogre\OgreMain\include" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\hlocal\Proyecto-3\ProyectoBasico\Inter\Application\Release\\" /Fd"C:\hlocal\Proyecto-3\ProyectoBasico\Inter\Application\Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\Application\Game.cpp ..\..\src\Application\ProyectoBasico.cpp ..\..\src\Application\Scenes.cpp
+         Game.cpp
+         ProyectoBasico.cpp
+     1>..\..\src\Application\ProyectoBasico.cpp(4): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+         Scenes.cpp
+       Link:
+         C:\software\programacion\MSVStudio2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\hlocal\Proyecto-3\ProyectoBasico\Exes\ProyectoBasico.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\hlocal\Proyecto-3\ProyectoBasico\Dependencies\Ogre\Build\lib\Release" OgreMain.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\hlocal\Proyecto-3\ProyectoBasico\Exes\ProyectoBasico.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\hlocal\Proyecto-3\ProyectoBasico\Exes\ProyectoBasico.lib" /MACHINE:X86 /SAFESEH "C:\hlocal\Proyecto-3\ProyectoBasico\Inter\Application\Release\Game.obj"
+         "C:\hlocal\Proyecto-3\ProyectoBasico\Inter\Application\Release\ProyectoBasico.obj"
+         "C:\hlocal\Proyecto-3\ProyectoBasico\Inter\Application\Release\Scenes.obj"
+         Generating code
+         Finished generating code
+         Application.vcxproj -> C:\hlocal\Proyecto-3\ProyectoBasico\Exes\ProyectoBasico.exe
+     1>Done Building Project "C:\hlocal\Proyecto-3\ProyectoBasico\Projects\Application\Application.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00
+Time Elapsed 00:00:10.14
