@@ -11,10 +11,6 @@
 *.gch
 *.pch
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -25,7 +21,7 @@
 *.la
 *.a
 
-#zips
+#zips and libs
 *.7z
 *.lib
 
