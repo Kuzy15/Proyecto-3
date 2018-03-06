@@ -23,7 +23,6 @@
 
 #zips and libs
 *.7z
-*.lib
 
 # Executables
 *.exe
@@ -31,4 +30,6 @@
 *.app
 
 #exclude the intermediate directory
-/ProyectoBasico/Inter/*
+\Proyecto3\Inter\*
+#exclude self compiled libraries
+\Proyecto3\Dependencies\libs
