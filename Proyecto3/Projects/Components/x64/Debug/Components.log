@@ -1,0 +1,11 @@
+﻿  Entity.cpp
+e:\carrera\proyecto-3\proyecto3\src\components\entity.cpp(23): warning C4150: eliminación de puntero a tipo 'Message' incompleto; no se ha llamado a un destructor
+  e:\carrera\proyecto-3\proyecto3\src\components\components.h(9): note: vea la declaración de 'Message'
+e:\carrera\proyecto-3\proyecto3\src\components\entity.cpp(19): warning C4297: 'Entity::~Entity': se suponía que la función no producía una excepción, pero lo hace
+  e:\carrera\proyecto-3\proyecto3\src\components\entity.cpp(19): note: un destructor o desasignador tiene una especificación de no inicio de excepciones (posiblemente implícita)
+e:\carrera\proyecto-3\proyecto3\src\components\entity.cpp(60): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+e:\carrera\proyecto-3\proyecto3\src\components\entity.cpp(70): warning C4150: eliminación de puntero a tipo 'Message' incompleto; no se ha llamado a un destructor
+  e:\carrera\proyecto-3\proyecto3\src\components\components.h(9): note: vea la declaración de 'Message'
+  Components.cpp
+  Generando código...
+  Components.vcxproj -> E:\Carrera\Proyecto-3\Proyecto3\x64\Debug\Components_d.lib

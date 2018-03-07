@@ -1,17 +1,19 @@
 #include "Game.h"
-#include "Scenes.h"
+
 #include <iostream>
+#include <exception>
 
 
 
 #pragma region Constructor and destructor
  Game::Game(){
 
+	 
 	 b2Vec2 gravity(1.0f, 1.0f);
 	 b2World World(gravity);
 	 b2BodyDef b;
-
-
+	 
+	 initOgre();
 }
  Game::~Game(){
 
@@ -31,8 +33,13 @@ void Game::initOgre(){
 	resCfgLoc = "Ogre/resources.cfg";
 	plugCfgLoc = "Ogre/plugins.cfg";
 #endif
-	root = new Ogre::Root(plugCfgLoc);
-
+	try{
+		root = new Ogre::Root(plugCfgLoc);
+	}
+	catch (std::exception e){
+		std::cout << e.what();
+		std::cout << "aa";
+	}
 	//------------------------------------------------------------------------------------------------------
 	//Setting UP Resources 
 
@@ -65,6 +72,8 @@ void Game::initOgre(){
 			std::cout << name << locType << std::endl;
 		}
 	}
+
+	
 
 
  }

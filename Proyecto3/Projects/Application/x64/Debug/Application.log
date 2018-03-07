@@ -1,12 +1,1 @@
-﻿Build started 07/03/2018 17:41:56.
-     1>Project "C:\hlocal\Proyecto-3\Proyecto3\Projects\Application\Application.vcxproj" on node 2 (Build target(s)).
-     1>Link:
-         C:\software\programacion\MSVStudio2013\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\hlocal\Proyecto-3\Proyecto3\x64\Debug\ProyectoBasico_d.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\hlocal\Proyecto-3\Proyecto3\Dependencies\Ogre\Build\lib\Debug" /LIBPATH:"C:\hlocal\Proyecto-3\Proyecto3\Dependencies\Box2D\Build\lib\Debug" OgreMain_d.lib Box2D.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\hlocal\Proyecto-3\Proyecto3\x64\Debug\ProyectoBasico_d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\hlocal\Proyecto-3\Proyecto3\x64\Debug\ProyectoBasico_d.lib" /MACHINE:X64 x64\Debug\Game.obj
-         x64\Debug\ProyectoBasico.obj
-         x64\Debug\Scenes.obj
-     1>OgreMain_d.lib(OgreMain_d.dll) : fatal error LNK1112: module machine type 'X86' conflicts with target machine type 'x64'
-     1>Done Building Project "C:\hlocal\Proyecto-3\Proyecto3\Projects\Application\Application.vcxproj" (Build target(s)) -- FAILED.
-
-Build FAILED.
-
-Time Elapsed 00:00:00.14
+﻿OgreMain_d.lib(OgreMain_d.dll) : fatal error LNK1112: tipo de equipo del módulo 'X86' en conflicto con tipo de equipo de destino 'x64'
