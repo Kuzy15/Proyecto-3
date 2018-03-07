@@ -28,8 +28,17 @@
 *.exe
 *.out
 *.app
+*.pdb
+*.ilk
+
+
+#VisualStudio files
+*.sdf
+*.opensdf
+*.suo
 
 #exclude the intermediate directory
 \Proyecto3\Inter\*
+
 #exclude self compiled libraries
 \Proyecto3\Dependencies\libs
