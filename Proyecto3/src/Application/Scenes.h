@@ -1,4 +1,3 @@
-#include <OgreRoot.h>
 #include "Game.h"
 
 #ifndef SCENES_H
