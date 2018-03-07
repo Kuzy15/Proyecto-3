@@ -28,7 +28,6 @@
 *.exe
 *.out
 *.app
-*.pdb
 *.ilk
 
 
@@ -42,3 +41,4 @@ Proyecto3/Inter/
 
 #exclude self compiled libraries
 Proyecto3/Dependencies/libs
+Inter
