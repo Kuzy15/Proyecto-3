@@ -23,10 +23,11 @@ public:
 	void getMessage(Message *);
 	void dispatch();
 
-private:
+private:	
 	Ogre::SceneManager *scnMgr;
 	std::list<Entity *> entities;
 	std::queue<Message *> messages;
+
 
 };
 

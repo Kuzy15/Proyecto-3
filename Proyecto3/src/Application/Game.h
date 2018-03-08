@@ -24,8 +24,12 @@ private:
 	//configFile we are going to use to parse our configuration to the game
 	Ogre::ConfigFile cf;
 
+	//window
+	Ogre::RenderWindow * pWindow;
+
 	
-	void initOgre();
+	bool initOgre();
+	void render();
 
 };
 
