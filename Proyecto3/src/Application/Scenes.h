@@ -1,18 +1,16 @@
-#include "Game.h"
+
 
 #ifndef SCENES_H
 #define SCENES_H
+#include "Game.h"
 class Entity;
 class Message;
 
 class gameScene
 {
 public:
-	gameScene();
+	gameScene(std::string id);
 	~gameScene();
-
-	//Getters and setters
-	const Ogre::SceneManager * getSceneManager();
 
 
 	//Entity Management
@@ -21,12 +19,24 @@ public:
 
 	//Comunication methods
 	void getMessage(Message *);
-	void dispatch();
+	virtual void dispatch() = 0;
 
-private:	
+	//Main loop of the scene.
+	//Each scene implements it differently
+	virtual bool run() = 0;
+
+private:
+	std::string _id;
+
+
+	//Ogre basic atributes
 	Ogre::SceneManager *scnMgr;
-	std::list<Entity *> entities;
-	std::queue<Message *> messages;
+
+	//Messaging attributes and methods
+	std::list<Entity *> _entities;
+	std::queue<Message *> _messages;
+
+
 
 
 };
