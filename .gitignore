@@ -37,8 +37,11 @@
 *.suo
 
 #exclude the intermediate directory
-Proyecto3/Inter/
+Proyecto3/Inter/*
+
+#exclude .vs folder
+Proyecto3/.vs/*
 
 #exclude self compiled libraries
-Proyecto3/Dependencies/libs
+Proyecto3/Dependencies/libs/*
 Inter
