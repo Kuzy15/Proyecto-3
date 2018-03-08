@@ -18,8 +18,7 @@ int CALLBACK WinMain(
 
 	Game * game ;
 	game = new Game();
-	game->loop();
-
+	
 
 	delete game;
 	
