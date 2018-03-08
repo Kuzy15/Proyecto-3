@@ -17,16 +17,22 @@
 #pragma region Constructor and destructor
  Game::Game(){
 
-	 
-	 b2Vec2 gravity(1.0f, 1.0f);
-	 b2World World(gravity);
-	 b2BodyDef b;
+	 //Init Box2D physics environment
+	 world = new b2World(GRAVITY);
+	 timer = new b2Timer();
+	 lastupdate = timer->GetMilliseconds();
+
+	 totalTime = 0;
 	 
 	 initOgre();
+
+	 loop();
 }
  Game::~Game(){
 
-
+	 //Delete the physics world
+	 delete world;
+	 world = nullptr;
  }
 #pragma endregion
 
@@ -168,17 +174,50 @@ Fourth we render (or not) the scene
 */
 void Game::loop() {
 	
-	render();
+	/*
+		delta = timer->GetMilliseconds();
+
+		cont += delta / 1000;
+		lastupdate = timer->GetMilliseconds();
+
+		handleInput();
+		while (cont > 0.016){
+			world->Step(FPS_CAP, 10, 2);
+			nFrames++;
+
+			//scenes.top()->update();
+			cont -= 0.016;
+		}
+
+		//scenes.top()->update();
+
+		*/
+		
+		render();
 
 }
+
+//Método que renderiza
 void Game::render() {
 
-	while (true)
-	{
-		Ogre::WindowEventUtilities::messagePump();
-		if (pWindow->isClosed())return;
-		if (!root->renderOneFrame())return;
-	}
+	
+	
+	Ogre::WindowEventUtilities::messagePump();
+	if (pWindow->isClosed())return;
+	if (!root->renderOneFrame())return;
+	
+
+}
+
+//Read the input
+void Game::handleInput(){
+
+	
+
+
+
+
+
 
 }
 
