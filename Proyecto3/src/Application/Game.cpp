@@ -2,9 +2,16 @@
 #include <OgreWindowEventUtilities.h>
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
-#include <iostream>
 #include <exception>
 #include <OgreTextureManager.h>
+#include "Scenes.h"
+
+
+//Debug 
+#ifdef _DEBUG
+#include <iostream>
+#endif
+
 
 
 //Later removable
@@ -26,13 +33,27 @@
 	 
 	 initOgre();
 
-	 loop();
+
+	 actScene = new basicScene("testScene", this);
 }
  Game::~Game(){
 
+	 //Remove the game from the window listeners
+	 Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
+	 
 	 //Delete the physics world
 	 delete world;
 	 world = nullptr;
+ }
+#pragma endregion
+
+#pragma region Game Getters and setters
+ Ogre::RenderWindow * Game::getRenderWindow(){
+	 if (pWindow != NULL)return pWindow;
+	 //else throw exception so we know no window is there
+ }
+ Ogre::Root * Game::getRoot(){
+	 return root;
  }
 #pragma endregion
 
@@ -110,55 +131,8 @@ bool Game::initOgre(){
 
 
 
-	//------------------------------------------------------------------------------------------------------
-	//------------------------------------------------------------------------------------------------------
-	/*
-	THIS WILL BE CHANGED.
-	JUST A BASIC CONSTRUCT OF A VIEWPORT
-	
-	*/
-	Ogre::SceneManager * scnMgr = root->createSceneManager(Ogre::ST_GENERIC);
-	Ogre::Camera * cam;
-	Ogre::Viewport * vp;
-
-
-
-	//Self-explanatory methods
-	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 80);
-	cam->lookAt(0, 0, -300);
-	cam->setNearClipDistance(5);
-
-
-	//------------------------------------------------------------------------------------------------------
-	//ViewPort Addition
-	vp = pWindow->addViewport(cam);
-	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
-
-	cam->setAspectRatio(
-		Ogre::Real(vp->getActualWidth()) /
-		Ogre::Real(vp->getActualHeight()));
-
-
-
-	//------------------------------------------------------------------------------------------------------
-	//Scene SetUp
-	try {
-
-		Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
-		Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-		robotNode->attachObject(robot);
-	}
-	catch (Ogre::FileNotFoundException e) {
-		std::string a = e.getFullDescription();
-		std::cout << a;
-	}
-	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
-
-	Ogre::Light * light;
-	light = scnMgr->createLight("MainLight");
-	light->setPosition(20, 80, 50);
-
+	//We register game as a listener of the window events, to know if it's been closed
+	Ogre::WindowEventUtilities::addWindowEventListener(pWindow, this);
 
 
  }
@@ -173,27 +147,28 @@ Third we physically simulate the scene
 Fourth we render (or not) the scene
 */
 void Game::loop() {
-	
-	/*
-		delta = timer->GetMilliseconds();
+	while (!pWindow->isClosed()){
+		/*
+			delta = timer->GetMilliseconds();
 
-		cont += delta / 1000;
-		lastupdate = timer->GetMilliseconds();
+			cont += delta / 1000;
+			lastupdate = timer->GetMilliseconds();
 
-		handleInput();
-		while (cont > 0.016){
+			handleInput();
+			while (cont > 0.016){
 			world->Step(FPS_CAP, 10, 2);
 			nFrames++;
 
 			//scenes.top()->update();
 			cont -= 0.016;
-		}
+			}
 
-		//scenes.top()->update();
+			//scenes.top()->update();
 
-		*/
-		
+			*/
+		actScene->run();
 		render();
+	}
 
 }
 

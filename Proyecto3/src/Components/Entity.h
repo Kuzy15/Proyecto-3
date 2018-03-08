@@ -7,12 +7,12 @@
 
 class Message;
 class gameComponent;
-class Scene;
+class gameScene;
 
 class Entity
 {
 public:
-	Entity(std::string id, Scene * sc);
+	Entity(std::string id, gameScene * sc);
 	~Entity();
 	void tick(float delta);
 
@@ -25,6 +25,10 @@ public:
 	void getMessage(Message *);
 	void sendMessage(Message *);
 
+	//Component methods
+	void addComponent(gameComponent * c);
+	void deleteComponent(std::string id);
+
 
 
 private:
@@ -33,7 +37,7 @@ private:
 	std::list<gameComponent *> components;
 	std::queue <Message*>msgs;
 
-	Scene * scene;
+	gameScene * scene;
 	//queue managing during tick function
 	void dispatch();
 };

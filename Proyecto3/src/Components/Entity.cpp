@@ -2,8 +2,14 @@
 #include "Components.h"
 #include <exception>
 
+//Debug 
+#ifdef _DEBUG
+#include <iostream>
+#endif
+
+
 #pragma region Constructors and Destructors
-Entity::Entity(std::string id, Scene * sc) :_id(id), scene(sc)
+Entity::Entity(std::string id, gameScene * sc) :_id(id), scene(sc)
 {
 
 }
@@ -24,6 +30,26 @@ Entity::~Entity()
 	}
 
 }
+#pragma endregion
+
+#pragma region Component Interaction
+void Entity::addComponent(gameComponent * gc){
+	components.push_back(gc);
+}
+void Entity::deleteComponent(std::string id){
+	gameComponent * aux;
+	bool found = false;
+	for (std::list<gameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
+		if ((*it)->getID() == id){
+			aux = *it;
+			it = components.erase(it);
+			delete aux;
+			found = false;
+		}
+		else it++;
+	}
+}
+
 #pragma endregion
 
 //Pretty self-explainatory
@@ -47,6 +73,7 @@ std::string Entity::getID(){
 #pragma region Message methods
 
 void Entity::getMessage(Message * m){
+	std::cout
 	//If the message is SOMETHING we push it in the queue
 	if (m != NULL)msgs.push(m);
 }

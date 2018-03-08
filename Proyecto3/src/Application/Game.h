@@ -4,14 +4,22 @@
 #include <OgreRoot.h>
 #include <Box2D.h>
 #include <OgreConfigFile.h>
+#include <OgreWindowEventUtilities.h>
 
-class Game
+class gameScene;
+
+//Game is a window event listener,
+//Therefore we can react to the window events
+class Game :
+	public Ogre::WindowEventListener
 {
-public:
+
+public: 
 	Game();
 	~Game();
 	void loop();
-
+	Ogre::RenderWindow * getRenderWindow();
+	Ogre::Root * getRoot();
 
 
 private:
@@ -23,6 +31,9 @@ private:
 	Ogre::String plugCfgLoc;
 	//configFile we are going to use to parse our configuration to the game
 	Ogre::ConfigFile cf;
+	//window
+	Ogre::RenderWindow * pWindow;
+
 
 	//Box2D parameters
 	b2World* world;		//Pointer to the world
@@ -37,10 +48,13 @@ private:
 	float totalTime;
 	int nFrames;
 
-	//window
-	Ogre::RenderWindow * pWindow;
 
-	
+	//This will be removed. Just to test
+	gameScene * actScene;
+
+
+
+	//internal private methods
 	bool initOgre();
 	void render();
 	void handleInput();

@@ -13,19 +13,18 @@ class gameComponent
 {
 public:
 	
-	virtual ~gameComponent() = 0;
-
+	virtual ~gameComponent();
 	//Update method
 	virtual void tick(float delta) = 0;
-
+	//Gets a message from the entity and acts according to it
+	virtual void getMessage(Message *) = 0;
 
 	//Getters and setters
 	bool getActive();
 	void setActive(bool nw);
 	std::string getID();
 
-	//Gets a message from the entity and acts according to it
-	virtual void getMessage(Message *) = 0;
+
     
 
 
@@ -37,8 +36,6 @@ protected:
 	//other game components inheriting from this class can use it
 	gameComponent(std::string id, Entity * ent);
 
-
-private:
 	//pointer to the components' entity
 	Entity * pEnt;
 	//basic atributes of the component
@@ -49,10 +46,13 @@ private:
 class stringComponent : public gameComponent
 {
 public:
-	stringComponent();
+	stringComponent(std::string id, Entity *);
 	~stringComponent();
+	virtual void getMessage(Message * m);
+	virtual void tick(float delta);
 
 private:
+	std::string whatSay;
 
 };
 
