@@ -1,1 +1,0 @@
-﻿OgreMain_d.lib(OgreMain_d.dll) : fatal error LNK1112: tipo de equipo del módulo 'X86' en conflicto con tipo de equipo de destino 'x64'

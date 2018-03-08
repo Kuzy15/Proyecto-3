@@ -45,3 +45,4 @@ Proyecto3/.vs/*
 #exclude self compiled libraries
 Proyecto3/Dependencies/libs/*
 Inter
+x64
