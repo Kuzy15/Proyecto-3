@@ -73,7 +73,6 @@ std::string Entity::getID(){
 #pragma region Message methods
 
 void Entity::getMessage(Message * m){
-	std::cout
 	//If the message is SOMETHING we push it in the queue
 	if (m != NULL)msgs.push(m);
 }

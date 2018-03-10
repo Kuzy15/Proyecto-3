@@ -106,7 +106,12 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	Entity * test1 = new Entity("test1", this);
 	stringComponent  * st = new stringComponent("st1", test1);
 	test1->addComponent(st);
+
+	Entity * test2 = new Entity("test2", this);
+	stringComponent  * st2 = new stringComponent("st2", test1);
+	test2->addComponent(st2);
 	addEntity(test1);
+	addEntity(test2);
 
 
 }
