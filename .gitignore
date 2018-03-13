@@ -50,3 +50,5 @@ Proyecto3/.vs/*
 Proyecto3/Dependencies/libs/*
 Inter
 x64
+*.pdb
+/Proyecto3/Exes/*.pdb
