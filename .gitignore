@@ -35,6 +35,10 @@
 *.sdf
 *.opensdf
 *.suo
+*.pdb
+
+#Text files
+*.log
 
 #exclude the intermediate directory
 Proyecto3/Inter/*
