@@ -3,7 +3,7 @@
 
 #ifdef _DEBUG || !_WIN32
 
-int main(){
+int main(int argc, char *argv[]){
 #else 
 #include <Windows.h>
 

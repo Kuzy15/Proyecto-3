@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Application\Game.cpp" />
+    <ClCompile Include="..\..\src\Application\InputManager.cpp" />
     <ClCompile Include="..\..\src\Application\main.cpp" />
     <ClCompile Include="..\..\src\Application\Scenes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Application\Game.h" />
+    <ClInclude Include="..\..\src\Application\InputManager.h" />
     <ClInclude Include="..\..\src\Application\Scenes.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -108,7 +110,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>OgreMain_d.lib;Box2D.lib;Components_d.lib;SDL2.lib;SDL2main.lib;SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OgreMain_d.lib;Box2D.lib;Components_d.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Ogre\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Box2D\Build\lib\$(Configuration);$(SolutionDir)Dependencies\libs\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -144,7 +146,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>OgreMain.lib;Box2D.lib;Components.lib%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>OgreMain.lib;Box2D.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Ogre\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Box2D\Build\lib\$(Configuration);$(SolutionDir)Dependencies\libs\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

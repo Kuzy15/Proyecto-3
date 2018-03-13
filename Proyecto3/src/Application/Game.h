@@ -5,6 +5,7 @@
 #include <Box2D.h>
 #include <OgreConfigFile.h>
 #include <OgreWindowEventUtilities.h>
+#include "InputManager.h"
 
 
 
@@ -41,6 +42,9 @@ private:
 	b2World* world;		//Pointer to the world
 	const b2Vec2 GRAVITY = b2Vec2(0,9.8f);
 	const float FPS_CAP = 1.0f / 60.0f;		//World step time simulation (60 frames per second).
+
+	//Input manager parameter
+	//InputManager iM;
 
 	//Probando mierdas
 	b2Timer* timer;

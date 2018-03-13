@@ -46,10 +46,16 @@ stringComponent::~stringComponent(){
 
 }
 void stringComponent::getMessage(Message * m){
+#ifdef _DEBUG
+
 	std::cout << "Component " << _id << "Received message!" << std::endl;
+#endif
 }
 void stringComponent::tick(float delta){
+#ifdef _DEBUG
+
 	std::cout << _id << " got a TICK!\n";
+#endif
 }
 
 #pragma endregion
