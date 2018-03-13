@@ -5,6 +5,7 @@
 #include <exception>
 #include <OgreTextureManager.h>
 #include "Scenes.h"
+#include <SDL.h>
 
 
 //Debug 
@@ -31,6 +32,22 @@
 
 	 totalTime = 0;
 	 
+	 if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
+	 {
+		 fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+		 exit(1);
+	 }
+	 printf("%i joysticks were found.\n\n", SDL_NumJoysticks());
+	 printf("The names of the joysticks are:\n");
+
+	 for (int i = 0; i < SDL_NumJoysticks(); i++)
+	 {
+		 SDL_Joystick * j = SDL_JoystickOpen(i);
+		 printf("    %s\n", SDL_JoystickName(j));
+	 }
+
+	 SDL_JoystickEventState(SDL_ENABLE);
+
 	 initOgre();
 
 
@@ -166,6 +183,12 @@ void Game::loop() {
 			//scenes.top()->update();
 
 			*/
+
+		
+		
+
+		/* End loop here */
+		handleInput();
 		actScene->run();
 		render();
 	}
@@ -186,7 +209,51 @@ void Game::render() {
 
 //Read the input
 void Game::handleInput(){
+	SDL_Event event;
+	/* Other initializtion code goes here */
 
+	/* Start main game loop here */
+	uint8 uP;
+	while (SDL_PollEvent(&event))
+	{
+		switch (event.type)
+		{
+		case SDL_KEYDOWN:
+			uP = event.jbutton.button;
+			printf(std::to_string(uP).c_str());
+			/* handle keyboard stuff here */
+			break;
+
+		case SDL_QUIT:
+			/* Set whatever flags are necessary to */
+			/* end the main game loop here */
+			break;
+		case SDL_JOYBUTTONDOWN:  /* Handle Joystick Button Presses */
+			uP = event.jbutton.button;
+			printf(std::to_string(uP).c_str());
+			
+			//printf(event.jbutton.button);
+			if (event.jbutton.button == 0)
+			{
+				/* code goes here */
+			}
+			break;
+		case SDL_JOYHATMOTION:
+			uP = event.jhat.value;
+			printf(std::to_string(uP).c_str());
+			break;
+		case SDL_JOYAXISMOTION:  /* Handle Joystick Motion */
+			uP = event.jbutton.button;
+			printf(std::to_string(uP).c_str());
+			if ((event.jaxis.value < -3200) || (event.jaxis.value > 3200))
+			{
+				/* code goes here */
+			}
+			break;
+		default:
+			break;
+		}
+	}
 	
 
 

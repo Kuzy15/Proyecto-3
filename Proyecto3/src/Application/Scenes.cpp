@@ -110,8 +110,8 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	Entity * test2 = new Entity("test2", this);
 	stringComponent  * st2 = new stringComponent("st2", test1);
 	test2->addComponent(st2);
-	addEntity(test1);
-	addEntity(test2);
+	//addEntity(test1);
+	//addEntity(test2);
 
 
 }

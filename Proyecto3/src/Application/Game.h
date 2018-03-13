@@ -6,6 +6,8 @@
 #include <OgreConfigFile.h>
 #include <OgreWindowEventUtilities.h>
 
+
+
 class gameScene;
 
 //Game is a window event listener,
