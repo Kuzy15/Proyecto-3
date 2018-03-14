@@ -10,8 +10,9 @@ InputManager* InputManager::_instance = nullptr;	//Definition of the instance
 InputManager::InputManager()
 {
 
-	
-	//Inicialization of SDL. Only starts JOYSTICK functionality.
+//Inicialization of SDL. 
+#pragma region SDL
+	//Only starts JOYSTICK functionality.
 	if (SDL_Init(SDL_INIT_JOYSTICK) < 0){
 #ifdef _DEBUG
 
@@ -26,7 +27,8 @@ InputManager::InputManager()
 #endif
 	
 	//Open all the joystick files conected.
-	for (int i = 0; i < (SDL_NumJoysticks() && i < MAX_PLAYERS); i++)
+	int i = 0;
+	while( i < SDL_NumJoysticks() && i < MAX_PLAYERS)
 	{
 		_playersJoystick.push_back( SDL_JoystickOpen(i));
 #ifdef _DEBUG
@@ -35,17 +37,26 @@ InputManager::InputManager()
 		if (_playersJoystick[i] == NULL){
 			//ERROR MESSAGE
 		}
+		i++;
 	}
 
 	//Enable event flow
 	SDL_JoystickEventState(SDL_ENABLE);
+
+
+#pragma endregion
+
+	
+
 }
 
 
 InputManager::~InputManager()
 {
+	
+
 	//Close opened Joysticks
-	for (int i = 0; i < _playersJoystick.size(); i++){
+	for (size_t i = 0; i < _playersJoystick.size(); i++){
 		if (_playersJoystick[i] != NULL) SDL_JoystickClose(_playersJoystick[i]);
 	}
 
@@ -59,6 +70,18 @@ InputManager& InputManager::getInstance(){
 	return *InputManager::_instance;
 }
 
+//Push new input message to the queue
+void InputManager::pushMessage(Message* newMessage){
+	_inputMsgQ.push(newMessage);	
+}
+
+//Send messages to the scene queue if there's any message
+void InputManager::getMessages(std::queue<Message*> &sceneQueue){
+	while (!(_inputMsgQ.empty())){
+		sceneQueue.push(_inputMsgQ.front());
+		_inputMsgQ.pop();
+	}
+}
 
 void InputManager::handleInput(){
 
@@ -125,7 +148,8 @@ void InputManager::handleInput(){
 #endif
 
 	}
+}
 
-
-
+int InputManager::numMessages(){
+	return _inputMsgQ.size();
 }

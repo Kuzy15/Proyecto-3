@@ -125,6 +125,8 @@ basicScene::~basicScene(){
 bool basicScene::run(){
 	//Here we would get the time between frames
 
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
 	//Then we deliver the messages
 	dispatch();
 
