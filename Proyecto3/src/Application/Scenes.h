@@ -26,6 +26,8 @@ public:
 	//Main loop of the scene.
 	//Each scene implements it differently
 	virtual bool run() = 0;
+	bool updateEnts(float delta);
+
 
 protected:
 	std::string _id;
@@ -56,7 +58,7 @@ private:
 	Ogre::Camera * cam;
 	Ogre::Light * light;
 	
-	bool updateEnts(float delta);
+	
 };
 
 

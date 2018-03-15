@@ -16,7 +16,6 @@ Entity::Entity(std::string id, gameScene * sc) :_id(id), scene(sc)
 Entity::~Entity()
 {
 	dispatch();
-	msgs.empty();
 	
 	for (gameComponent * c : components){
 		components.pop_front();
@@ -36,7 +35,7 @@ Entity::~Entity()
 void Entity::addComponent(gameComponent * gc){
 	components.push_back(gc);
 }
-void Entity::deleteComponent(std::string id){
+void Entity::deleteComponent(componentType id){
 	gameComponent * aux;
 	bool found = false;
 	for (std::list<gameComponent *>::iterator it = components.begin(); it != components.end() && !found;){

@@ -8,6 +8,7 @@
 class Message;
 class gameComponent;
 class gameScene;
+enum componentType;
 
 class Entity
 {
@@ -27,7 +28,7 @@ public:
 
 	//Component methods
 	void addComponent(gameComponent * c);
-	void deleteComponent(std::string id);
+	void deleteComponent(componentType id);
 
 
 

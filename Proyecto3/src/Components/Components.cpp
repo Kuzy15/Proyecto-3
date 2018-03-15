@@ -14,14 +14,14 @@
 //It implements basic behaviours like gets, sets 
 //and message sending
 #pragma region gameComponent
-gameComponent::gameComponent(std::string id, Entity * father): _id(id), pEnt(father)
+gameComponent::gameComponent(componentType id, Entity * father): _id(id), pEnt(father)
 {
 
 }
 gameComponent::~gameComponent(){
 
 }
-std::string gameComponent::getID(){
+componentType gameComponent::getID(){
 	return _id;
 }
 bool gameComponent::getActive(){
@@ -39,7 +39,7 @@ void gameComponent::sendMessage(Message * m){
 //DEBUG COMPONENT.
 //PRINTS A STRING WHEN TICKED
 #pragma region stringComponent
-stringComponent::stringComponent(std::string id, Entity * fath) : gameComponent(id, fath), whatSay("HOLA, soy la entidad con id" + id){
+stringComponent::stringComponent(Entity * fath) : gameComponent(Component_Basic, fath), whatSay("HOLA, soy el componente basico"){
 
 }
 stringComponent::~stringComponent(){
@@ -48,14 +48,43 @@ stringComponent::~stringComponent(){
 void stringComponent::getMessage(Message * m){
 #ifdef _DEBUG
 
-	std::cout << "Component " << _id << "Received message!" << std::endl;
+	std::cout << "Basic Component from entity " << pEnt->getID() << " received message!" << std::endl;
 #endif
 }
 void stringComponent::tick(float delta){
 #ifdef _DEBUG
 
-	std::cout << _id << " got a TICK!\n";
+	std::cout << pEnt->getID() << " got a TICK!\n";
+	std::cout << whatSay << std::endl;
 #endif
 }
+
+#pragma endregion
+
+//Render Component class. Father to every
+//other render component.
+#pragma region renderComponent
+
+renderComponent::renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM)
+	: gameComponent(t, father), pSceneMgr(scnM)
+{
+	pOgreSceneNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+}
+renderComponent::~renderComponent(){
+	pSceneMgr->destroySceneNode(pOgreSceneNode);
+}
+
+#pragma endregion
+
+
+//Mesh Render component.
+//Takes a string with the name of the mesh to render
+//and renders it.
+#pragma meshRenderComponent
+
+
+
+
+
 
 #pragma endregion

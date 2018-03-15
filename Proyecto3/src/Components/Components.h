@@ -1,12 +1,25 @@
-#include <string>
-#include <list>
 
 
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
+#include <Ogre.h>
+#include <string>
+#include <list>
+#include <OgreNode.h>
+#include <OgreEntity.h>
+#include <OgreSceneNode.h>
+
 class Entity;
 class Message;
+
+
+typedef enum componentType {
+	//to be deleted
+	Component_Basic,
+	MESH_RENDER_COMPONENT
+
+};
 
 
 class gameComponent
@@ -22,10 +35,10 @@ public:
 	//Getters and setters
 	bool getActive();
 	void setActive(bool nw);
-	std::string getID();
+	componentType getID();
 
 
-    
+  
 
 
 protected:
@@ -34,19 +47,20 @@ protected:
 
 	//Constructor protected so that only
 	//other game components inheriting from this class can use it
-	gameComponent(std::string id, Entity * ent);
+	gameComponent(componentType id, Entity * ent);
 
 	//pointer to the components' entity
 	Entity * pEnt;
 	//basic atributes of the component
-	std::string _id;
+	componentType _id;
 	bool _active;
 
 };
+
 class stringComponent : public gameComponent
 {
 public:
-	stringComponent(std::string id, Entity *);
+	stringComponent(Entity *);
 	~stringComponent();
 	virtual void getMessage(Message * m);
 	virtual void tick(float delta);
@@ -56,5 +70,30 @@ private:
 
 };
 
+
+class renderComponent : public gameComponent
+{
+public:
+	~renderComponent();
+	Ogre::SceneNode * getSceneNode();
+
+protected:
+	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);
+
+private:
+	Ogre::SceneNode * pOgreSceneNode;
+	Ogre::SceneManager * pSceneMgr;
+};
+
+class meshRenderComponent
+{
+public:
+	meshRenderComponent(std::string meshName);
+	~meshRenderComponent();
+
+private:
+	Ogre::Entity * pOgreEnt;
+
+};
 
 #endif

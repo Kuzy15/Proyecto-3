@@ -35,7 +35,12 @@ gameScene::~gameScene()
 	}
 
 }
-
+bool gameScene::updateEnts(float delta){
+	for (auto ent : _entities){
+		ent->tick(delta);
+	}
+	return true;
+} 
 void gameScene::getMessage(Message * m){
 	_messages.push(m);
 }
@@ -87,7 +92,6 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	//Scene SetUp
 
 	try {
-
 		Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
 		Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
 		robotNode->attachObject(robot);
@@ -103,17 +107,18 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	light->setPosition(20, 80, 50);
 
 
+	//SCENE DEBUG
+	/*
 	Entity * test1 = new Entity("test1", this);
-	stringComponent  * st = new stringComponent("st1", test1);
+	stringComponent  * st = new stringComponent(test1);
 	test1->addComponent(st);
 
 	Entity * test2 = new Entity("test2", this);
-	stringComponent  * st2 = new stringComponent("st2", test1);
+	stringComponent  * st2 = new stringComponent(test2);
 	test2->addComponent(st2);
-	//addEntity(test1);
-	//addEntity(test2);
-
-
+	addEntity(test1);
+	addEntity(test2);
+	*/
 }
 basicScene::~basicScene(){
 	delete light;
@@ -135,12 +140,6 @@ bool basicScene::run(){
 
 }
 
-bool basicScene::updateEnts(float delta){
-	for (auto ent : _entities){
-		ent->tick(delta);
-	}
-	return true;
-}
 void basicScene::dispatch(){
 	/*We only process as many messages as we had at the start of the update.
 	*Any messsage introduced as a result of reading a message is processed
