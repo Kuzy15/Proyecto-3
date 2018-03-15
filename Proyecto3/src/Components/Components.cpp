@@ -81,7 +81,9 @@ renderComponent::~renderComponent(){
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma meshRenderComponent
+meshRenderComponent::meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM) :renderComponent(MESH_RENDER_COMPONENT, father, scnM){
 
+}
 
 
 

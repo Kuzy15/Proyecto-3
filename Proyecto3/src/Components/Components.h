@@ -85,10 +85,10 @@ private:
 	Ogre::SceneManager * pSceneMgr;
 };
 
-class meshRenderComponent
+class meshRenderComponent: public renderComponent
 {
 public:
-	meshRenderComponent(std::string meshName);
+	meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
 	~meshRenderComponent();
 
 private:
