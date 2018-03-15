@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <algorithm>
 #include <OgreWindowEventUtilities.h>
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
@@ -24,17 +25,21 @@
 
 
 #pragma region Constructor and destructor
- Game::Game(){
+Game::Game(){
 
-	 //Init Box2D physics environment
-	 world = new b2World(GRAVITY);
-	 timer = new b2Timer();
-	 lastupdate = timer->GetMilliseconds();
+	//Init Box2D physics environment
+	world = new b2World(GRAVITY);
 
-	 totalTime = 0;
-	 
-	 
+	//Inicialization of SDL. Only starts JOYSTICK functionality.
+	if (SDL_Init(SDL_INIT_JOYSTICK) < 0){
+#ifdef _DEBUG
+		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+		exit(1);
+#endif
+	}
 
+	 currentTime = newTime = frameTime = deltaTime = 0;
+	
 	 initOgre();
 
 
@@ -151,32 +156,26 @@ Third we physically simulate the scene
 Fourth we render (or not) the scene
 */
 void Game::loop() {
+
+	currentTime = (SDL_GetTicks() / 1000);
+
+
 	while (!pWindow->isClosed()){
-		/*
-			delta = timer->GetMilliseconds();
-
-			cont += delta / 1000;
-			lastupdate = timer->GetMilliseconds();
-
-			handleInput();
-			while (cont > 0.016){
-			world->Step(FPS_CAP, 10, 2);
-			nFrames++;
-
-			//scenes.top()->update();
-			cont -= 0.016;
-			}
-
-			//scenes.top()->update();
-
-			*/
-
+		//Refresh loop parameters
+		newTime = (SDL_GetTicks() / 1000);
+		frameTime = newTime - currentTime;
+		currentTime = newTime;
 		
-		
-
-		/* End loop here */
 		handleInput();
-		actScene->run();
+
+		//Loop for game logic and physic step (60 times per second)
+		while (frameTime > 0.0f){
+			deltaTime = std::min(frameTime, FPS_CAP);
+			world->Step(deltaTime, 10, 2);
+			actScene->run();
+			frameTime -= deltaTime;
+		}
+
 		render();
 	}
 

@@ -10,22 +10,6 @@ InputManager* InputManager::_instance = nullptr;	//Definition of the instance
 InputManager::InputManager()
 {
 
-//Inicialization of SDL. 
-#pragma region SDL
-	//Only starts JOYSTICK functionality.
-	if (SDL_Init(SDL_INIT_JOYSTICK) < 0){
-#ifdef _DEBUG
-
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
-	printf("%i joysticks were found.\n\n", SDL_NumJoysticks());
-	printf("The names of the joysticks are:\n");
-#else
-		//ERROR MESSAGE
-	}
-#endif
-	
 	//Open all the joystick files conected.
 	int i = 0;
 	while( i < SDL_NumJoysticks() && i < MAX_PLAYERS)
