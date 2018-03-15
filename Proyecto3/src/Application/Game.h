@@ -46,13 +46,12 @@ private:
 	//Input manager parameter
 	//InputManager iM;
 
-	//Probando mierdas
-	b2Timer* timer;
-	float lastupdate;
-	float delta;
-	float cont;
-	float totalTime;
-	int nFrames;
+	//Game loop variables
+	float currentTime;
+	float newTime;
+	float frameTime;
+	float deltaTime;
+	
 
 
 	//This will be removed. Just to test
