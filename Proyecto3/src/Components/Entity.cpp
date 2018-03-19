@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "Components.h"
 #include <exception>
+#include "Messages.h"
 
 //Debug 
 #ifdef _DEBUG

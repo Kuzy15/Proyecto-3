@@ -13,12 +13,13 @@ class Message;
 
 typedef enum componentType {
 	//to be deleted
-	Component_Basic,
+	STRING_COMPONENT,
+	MESSAGESEND_COMPONENT,
 	MESH_RENDER_COMPONENT
 
 };
 
-
+//Basic gameComponent class from which every other component will inherit.
 class gameComponent
 {
 public:
@@ -53,7 +54,7 @@ protected:
 	bool _active;
 
 };
-
+/*-------------------------DEBUG COMPONENTS------------------------------------*/
 class stringComponent : public gameComponent
 {
 public:
@@ -66,8 +67,22 @@ private:
 	std::string whatSay;
 
 };
+class messageSendComponent:public gameComponent
+{
+public:
+	messageSendComponent(Entity * ent);
+	~messageSendComponent();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+	int i;
+
+};
 
 
+
+/*-------------------------RENDER COMPONENTS------------------------------------*/
 class renderComponent : public gameComponent
 {
 public:
@@ -76,8 +91,9 @@ public:
 
 protected:
 	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);
-
+	//En el nodo de Ogre estarán todos los valores de renderizado (x,y,z en la escena de ogre, inclinaciones, etc.)
 	Ogre::SceneNode * pOgreSceneNode;
+	//Puntero al sceneManager que lo ha creado
 	Ogre::SceneManager * pSceneMgr;
 };
 
@@ -92,8 +108,6 @@ public:
 
 private:
 	Ogre::Entity * pOgreEnt;
-
-
 };
 
 #endif

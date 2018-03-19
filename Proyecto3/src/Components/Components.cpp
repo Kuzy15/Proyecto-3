@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include <OgreEntity.h>
 #include <OgreSceneNode.h>
+#include "Messages.h"
 
 
 
@@ -38,10 +39,10 @@ void gameComponent::sendMessage(Message * m){
 
 #pragma endregion
 
-//DEBUG COMPONENT.
-//PRINTS A STRING WHEN TICKED
+/*-------------------------DEBUG COMPONENTS------------------------------------*/
+//PRINTS A STRING WHEN RECEIVEING A STRING_MESSAGE
 #pragma region stringComponent
-stringComponent::stringComponent(Entity * fath) : gameComponent(Component_Basic, fath), whatSay("HOLA, soy el componente basico"){
+stringComponent::stringComponent(Entity * fath) : gameComponent(STRING_COMPONENT, fath), whatSay("HOLA, soy el componente basico"){
 
 }
 stringComponent::~stringComponent(){
@@ -49,20 +50,35 @@ stringComponent::~stringComponent(){
 }
 void stringComponent::getMessage(Message * m){
 #ifdef _DEBUG
-
 	std::cout << "Basic Component from entity " << pEnt->getID() << " received message!" << std::endl;
+	if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
 #endif
 }
 void stringComponent::tick(float delta){
 #ifdef _DEBUG
-
-	std::cout << pEnt->getID() << " got a TICK!\n";
-	std::cout << whatSay << std::endl;
 #endif
 }
 
 #pragma endregion
 
+#pragma region messageSendComponent
+messageSendComponent::messageSendComponent(Entity * father):gameComponent(MESSAGESEND_COMPONENT, father) {
+
+}
+messageSendComponent::~messageSendComponent() {
+}
+void messageSendComponent::tick(float delta) {
+	i = (i++) % 2000;
+	if (i == 0|| i== 1500) pEnt->getMessage(new stringMessage(std::to_string(i), BROADCAST));
+}
+void messageSendComponent::getMessage(Message * m) {
+
+}
+
+#pragma endregion
+
+
+/*-------------------------RENDER COMPONENTS------------------------------------*/
 //Render Component class. Father to every
 //other render component.
 #pragma region renderComponent
@@ -82,7 +98,7 @@ renderComponent::~renderComponent(){
 //Mesh Render component.
 //Takes a string with the name of the mesh to render
 //and renders it.
-#pragma meshRenderComponent
+#pragma region meshRenderComponent
 meshRenderComponent::meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM) :renderComponent(MESH_RENDER_COMPONENT, father, scnM){
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->attachObject(pOgreEnt);

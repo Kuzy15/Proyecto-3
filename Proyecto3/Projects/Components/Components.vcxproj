@@ -142,10 +142,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\Components\Components.h" />
     <ClInclude Include="..\..\src\Components\Entity.h" />
+    <ClInclude Include="..\..\src\Components\Messages.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Components\Components.cpp" />
     <ClCompile Include="..\..\src\Components\Entity.cpp" />
+    <ClCompile Include="..\..\src\Components\Messages.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
