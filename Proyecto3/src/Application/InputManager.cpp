@@ -15,12 +15,13 @@ InputManager::InputManager()
 	while( i < SDL_NumJoysticks() && i < MAX_PLAYERS)
 	{
 		_playersJoystick.push_back( SDL_JoystickOpen(i));
+		if (_playersJoystick[i] == NULL && SDL_IsGameController(i)){
+			//ERROR MESSAGE
+		}
+		_playerController.push_back(SDL_GameControllerOpen(i));
 #ifdef _DEBUG
 		printf("    %s\n", SDL_JoystickName(_playersJoystick[i]));
 #endif
-		if (_playersJoystick[i] == NULL){
-			//ERROR MESSAGE
-		}
 		i++;
 	}
 
@@ -68,7 +69,7 @@ void InputManager::getMessages(std::queue<Message*> &sceneQueue){
 }
 
 void InputManager::handleInput(){
-
+	
 	SDL_Event event;
 	/* Other initializtion code goes here */
 
@@ -80,54 +81,45 @@ void InputManager::handleInput(){
 		{
 		case SDL_KEYDOWN:
 			
-			/* handle keyboard stuff here */
 			break;
 
 		case SDL_QUIT:
-			/* Set whatever flags are necessary to */
-			/* end the main game loop here */
-			break;
-		case SDL_JOYBUTTONDOWN:  /* Handle Joystick Button Presses */
 			
-
-			//printf(event.jbutton.button);
-			if (event.jbutton.button == 0)
-			{
-				/* code goes here */
-			}
 			break;
-		case SDL_JOYHATMOTION:
-			if (event.jhat.value & SDL_HAT_UP)
-			{
-				/* Do up stuff here */
-			}
 
-			if (event.jhat.value & SDL_HAT_LEFT)
-			{
-				/* Do left stuff here */
-			}
+		case SDL_CONTROLLERBUTTONDOWN:
+			/*SEND MESSAGE LIKE: new InputMessage(SDL_GameControllerButton type, SDL_JoystickID id...)*/
+			break;
 
-			if (event.jhat.value & SDL_HAT_RIGHTDOWN)
+		case SDL_CONTROLLERBUTTONUP:
+			break;
+
+		case SDL_CONTROLLERAXISMOTION:
+			if ((event.caxis.value < -20000) || (event.caxis.value > 20000))
 			{
-				/* Do right and down together stuff here */
-			}
+				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX){
+					
+				}
+				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY){}
+
+				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX){}
+
+				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY){}
 			
-
-			break;
-		case SDL_JOYAXISMOTION:  /* Handle Joystick Motion */
-			
-			if ((event.jaxis.value < -3200) || (event.jaxis.value > 3200))
-			{
-				/* code goes here */
 			}
 			break;
+		case SDL_CONTROLLERDEVICEADDED:
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+			//event.cdevice.which
+			break;
+		
 		default:
 			break;
 		}
 #ifdef _DEBUG
 		//PRINT DEBUG FOR CONSOLE:
-			Uint8 uP = event.jbutton.button;
-			printf(std::to_string(uP).c_str());
+		//printf(std::to_string(event.cbutton.button).c_str());
 		
 #endif
 

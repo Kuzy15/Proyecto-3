@@ -31,7 +31,7 @@ Game::Game(){
 	world = new b2World(GRAVITY);
 
 	//Inicialization of SDL. Only starts JOYSTICK functionality.
-	if (SDL_Init(SDL_INIT_JOYSTICK) < 0){
+	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
 #ifdef _DEBUG
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
