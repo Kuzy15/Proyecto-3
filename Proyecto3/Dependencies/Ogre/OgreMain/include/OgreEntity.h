@@ -835,7 +835,10 @@ namespace Ogre {
         /** Resource::Listener hook to notify Entity that a delay-loaded Mesh is
             complete.
         */
-        void backgroundLoadingComplete(Resource* res);
+
+		//I COMMENTED THIS AS WE ARE NOT USING IT, PLUS IT IS DEPRECATED
+		//AND WAS GIVING SOME COMPILATION ERRORS - MANUEL
+        //void backgroundLoadingComplete(Resource* res);
 
         /// @copydoc MovableObject::visitRenderables
         void visitRenderables(Renderable::Visitor* visitor, 

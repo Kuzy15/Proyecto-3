@@ -6,9 +6,6 @@
 #include <Ogre.h>
 #include <string>
 #include <list>
-#include <OgreNode.h>
-#include <OgreEntity.h>
-#include <OgreSceneNode.h>
 
 class Entity;
 class Message;
@@ -80,7 +77,6 @@ public:
 protected:
 	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);
 
-private:
 	Ogre::SceneNode * pOgreSceneNode;
 	Ogre::SceneManager * pSceneMgr;
 };
@@ -91,8 +87,12 @@ public:
 	meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
 	~meshRenderComponent();
 
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
 private:
 	Ogre::Entity * pOgreEnt;
+
 
 };
 

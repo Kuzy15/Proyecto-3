@@ -1,5 +1,7 @@
 #include "Components.h"
 #include "Entity.h"
+#include <OgreEntity.h>
+#include <OgreSceneNode.h>
 
 
 
@@ -82,8 +84,20 @@ renderComponent::~renderComponent(){
 //and renders it.
 #pragma meshRenderComponent
 meshRenderComponent::meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM) :renderComponent(MESH_RENDER_COMPONENT, father, scnM){
+	pOgreEnt = pSceneMgr->createEntity(meshName);
+	pOgreSceneNode->attachObject(pOgreEnt);
+}
+meshRenderComponent::~meshRenderComponent() {
+	pOgreSceneNode->detachObject(pOgreEnt);
+	pSceneMgr->destroyEntity(pOgreEnt);
+}
+void meshRenderComponent::tick(float delta) {
 
 }
+void meshRenderComponent::getMessage(Message * m) {
+
+}
+
 
 
 

@@ -91,7 +91,7 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	//------------------------------------------------------------------------------------------------------
 	//Scene SetUp
 
-	try {
+/*	try {
 		Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
 		Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
 		robotNode->attachObject(robot);
@@ -100,25 +100,19 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 		std::string a = e.getFullDescription();
 		std::cout << a;
 	}
+	*/
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
-
 
 	light = scnMgr->createLight("MainLight");
 	light->setPosition(20, 80, 50);
-
+	
 
 	//SCENE DEBUG
-	/*
+	
 	Entity * test1 = new Entity("test1", this);
-	stringComponent  * st = new stringComponent(test1);
-	test1->addComponent(st);
-
-	Entity * test2 = new Entity("test2", this);
-	stringComponent  * st2 = new stringComponent(test2);
-	test2->addComponent(st2);
-	addEntity(test1);
-	addEntity(test2);
-	*/
+	
+	test1->addComponent(new meshRenderComponent("ogrehead.mesh", test1, scnMgr));
+	
 }
 basicScene::~basicScene(){
 	delete light;
