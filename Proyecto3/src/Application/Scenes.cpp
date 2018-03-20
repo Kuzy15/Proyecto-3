@@ -111,7 +111,7 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 	Entity * test1 = new Entity("test1", this);
 	
-	test1->addComponent(new meshRenderComponent("ogrehead.mesh", test1, scnMgr));
+	test1->addComponent(new meshRenderComponent("Ra.mesh", test1, scnMgr));
 	
 }
 basicScene::~basicScene(){
