@@ -1,11 +1,10 @@
-
-
 #ifndef SCENES_H
 #define SCENES_H
-#include "Game.h"
 class Entity;
 class Message;
+class Game;
 
+/*----------------------------- GAME SCENE -----------------------------*/
 //Father class to every scene in the game.
 //Implements the basic attributes shared by every scene.
 class gameScene
@@ -21,7 +20,7 @@ public:
 
 	//Comunication methods
 	void getMessage(Message *);
-	virtual void dispatch() = 0;
+	virtual void dispatch();
 
 	//Main loop of the scene.
 	//Each scene implements it differently
@@ -32,14 +31,18 @@ public:
 protected:
 	std::string _id;
 	Game * pGame;
+	int nMessages;
 
-
+	void clearMessageQueue();
 	//Messaging attributes and methods
 	std::list<Entity *> _entities;
-	std::queue<Message *> _messages;
+	std::list<Message *> _messages;
 
 
 };
+
+/*----------------------------- BASIC SCENE -----------------------------*/
+
 //Basic class to debug and test the ogre implementation
 //and the behaviour of the components
 class basicScene: public gameScene

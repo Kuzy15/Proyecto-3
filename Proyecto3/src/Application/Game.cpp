@@ -1,11 +1,14 @@
-#include "Game.h"
 #include <algorithm>
 #include <OgreWindowEventUtilities.h>
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
 #include <exception>
 #include <OgreTextureManager.h>
+
+
 #include "Scenes.h"
+#include "InputManager.h"
+#include "Game.h"
 
 
 
@@ -14,14 +17,6 @@
 #ifdef _DEBUG
 #include <iostream>
 #endif
-
-
-
-//Later removable
-#include <OgreCamera.h>
-#include <OgreNode.h>
-#include <OgreEntity.h>
-#include <OgreSceneNode.h>
 
 
 #pragma region Constructor and destructor

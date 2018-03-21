@@ -2,6 +2,7 @@
 #include "Components.h"
 #include <exception>
 #include "Messages.h"
+#include "Scenes.h"
 
 //Debug 
 #ifdef _DEBUG
@@ -74,10 +75,12 @@ std::string Entity::getID(){
 
 void Entity::getMessage(Message * m){
 	//If the message is SOMETHING we push it in the queue
-	if (m != NULL)msgs.push(m);
+	if (m != NULL )
+		msgs.push(m);
 }
+//Method to send a message to the scene
 void Entity::sendMessage(Message * m) {
-	//scene->getMessage(m);
+	scene->getMessage(m);
 }
 void Entity::dispatch(){
 	/*We only process as many messages as we had at the start of the update.
@@ -85,15 +88,27 @@ void Entity::dispatch(){
 	in the next frame*/
 	int N = msgs.size();
 		
-		for (int i = 0; i < N; i++){
-		Message * k = msgs.front();
-		for (auto aux : components){
-			aux->getMessage(k);
-		}
+	for (int i = 0; i < N; i++) {
+		//First we distribute the message across all the components.
+		for (auto a : components)
+			//If the message is not of type scene (that means that it is either ENTITY or BROADCAST)
+			//Or the message is of type SCENE but we did not send it. This means we received it from outside.
+			if(msgs.front()->getType() != SCENE|| msgs.front()->getEmmiter() != getID())a->getMessage(msgs.front());
 
-		//After broadcasting the message, we pop and delete it
-		msgs.pop();
-		delete k;
+		//Then, if the message was sent only for the entity, we delete it 
+		if (msgs.front()->getType() == ENTITY) {
+			Message * aux = msgs.front();
+			msgs.pop();
+			delete aux;
+		}
+		//if the message was received/sent from outside (BROADCAST, SCENE)
+		else {
+			//If the message was sent by this entity, we forward it to the Scene
+			if (msgs.front()->getEmmiter() == getID()) 
+				sendMessage(msgs.front());
+			//Then we remove it from the entity's queue
+			msgs.pop();
+		}
 	}
 }
 
@@ -105,7 +120,8 @@ void Entity::tick(float delta){
 	dispatch();
 
 	//Update every component in the entity
-	for (auto comp : components)comp->tick(delta);
+	for (auto comp : components)
+		comp->tick(delta);
 
 }
 

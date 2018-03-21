@@ -12,7 +12,7 @@
 #endif
 
 
-
+/*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
 //It implements basic behaviours like gets, sets 
 //and message sending
@@ -43,7 +43,6 @@ void gameComponent::sendMessage(Message * m){
 //PRINTS A STRING WHEN RECEIVEING A STRING_MESSAGE
 #pragma region stringComponent
 stringComponent::stringComponent(Entity * fath) : gameComponent(STRING_COMPONENT, fath), whatSay("HOLA, soy el componente basico"){
-
 }
 stringComponent::~stringComponent(){
 
@@ -63,13 +62,16 @@ void stringComponent::tick(float delta){
 
 #pragma region messageSendComponent
 messageSendComponent::messageSendComponent(Entity * father):gameComponent(MESSAGESEND_COMPONENT, father) {
-
+	i = 0;
 }
 messageSendComponent::~messageSendComponent() {
 }
 void messageSendComponent::tick(float delta) {
-	i = (i++) % 2000;
-	if (i == 0|| i== 1500) pEnt->getMessage(new stringMessage(std::to_string(i), BROADCAST));
+	i++;
+	if (i % 100 == 0) {
+		stringMessage * m = new stringMessage(std::to_string(i), BROADCAST, pEnt->getID());
+		pEnt->getMessage(m);
+	}
 }
 void messageSendComponent::getMessage(Message * m) {
 
@@ -113,10 +115,5 @@ void meshRenderComponent::tick(float delta) {
 void meshRenderComponent::getMessage(Message * m) {
 
 }
-
-
-
-
-
 
 #pragma endregion

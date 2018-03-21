@@ -57,14 +57,14 @@ InputManager& InputManager::getInstance(){
 
 //Push new input message to the queue
 void InputManager::pushMessage(Message* newMessage){
-	_inputMsgQ.push(newMessage);	
+	_inputMsgQ.push_back(newMessage);	
 }
 
 //Send messages to the scene queue if there's any message
-void InputManager::getMessages(std::queue<Message*> &sceneQueue){
+void InputManager::getMessages(std::list<Message*> &sceneQueue){
 	while (!(_inputMsgQ.empty())){
-		sceneQueue.push(_inputMsgQ.front());
-		_inputMsgQ.pop();
+		sceneQueue.push_back(_inputMsgQ.front());
+		_inputMsgQ.pop_front();
 	}
 }
 

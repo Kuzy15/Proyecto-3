@@ -5,7 +5,6 @@
 #include <Box2D.h>
 #include <OgreConfigFile.h>
 #include <OgreWindowEventUtilities.h>
-#include "InputManager.h"
 
 
 

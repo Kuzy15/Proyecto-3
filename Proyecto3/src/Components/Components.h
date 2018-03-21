@@ -83,6 +83,7 @@ private:
 
 
 /*-------------------------RENDER COMPONENTS------------------------------------*/
+//--------- RENDER COMPONENT ---------
 class renderComponent : public gameComponent
 {
 public:
@@ -97,6 +98,7 @@ protected:
 	Ogre::SceneManager * pSceneMgr;
 };
 
+//--------- MESH RENDER COMPONENT ---------
 class meshRenderComponent: public renderComponent
 {
 public:

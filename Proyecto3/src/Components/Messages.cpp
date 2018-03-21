@@ -4,7 +4,7 @@
 
 //Basic Message Class implementation.
 #pragma region basic Message 
-Message::Message(msgType t, msgDest dst): _messageType(t), _messageDestination(dst) 
+Message::Message(msgType t, msgDest dst, std::string emmiter): _messageType(t), _messageDestination(dst), _emmiter(emmiter)
 {
 }
 Message::~Message()
@@ -16,10 +16,13 @@ msgType Message::getType() {
 msgDest Message::getDestination() {
 	return _messageDestination;
 }
+std::string Message::getEmmiter() {
+	return _emmiter;
+}
 #pragma endregion
 
 #pragma region stringMessage
-stringMessage::stringMessage(std::string t, msgDest dest): Message(STRING_MSG,BROADCAST), _text(t) {
+stringMessage::stringMessage(std::string t, msgDest dest, std::string emmiter): Message(STRING_MSG,BROADCAST,emmiter), _text(t) {
 
 }
 stringMessage::~stringMessage() {

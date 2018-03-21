@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 #include <vector>
-#include <queue>
+#include <list>
 
 class Message;
 
@@ -20,7 +20,7 @@ private:
 	std::vector<SDL_Joystick*> _playersJoystick;				//Player 1 and Player 2 Joysticks structs 
 	std::vector<SDL_GameController*> _playerController;			
 	const int MAX_PLAYERS = 2;									//Max player input
-	std::queue<Message*> _inputMsgQ;							//Local message queue
+	std::list<Message*> _inputMsgQ;							//Local message queue
 
 public:
 	~InputManager();
@@ -28,7 +28,7 @@ public:
 	//Methods
 	static InputManager& getInstance();							//Return the unique instance
 	void handleInput();											//Main functiion. Read the input from SDL
-	void getMessages(std::queue<Message*> &sceneQueue);			//Send input messages to another queue
+	void getMessages(std::list<Message*> &sceneQueue);			//Send input messages to another queue
 	int numMessages();											//Return the number of currently messages in the queue
 
 };
