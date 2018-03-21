@@ -141,9 +141,11 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	test2->addComponent(new stringComponent(test2));
 	
 	test1->addComponent(new messageSendComponent(test1));
+	test1->addComponent(new meshRenderComponent("Ra.mesh", test1, scnMgr));
 
 	addEntity(test1);
 	addEntity(test2);
+	
 }
 basicScene::~basicScene(){
 	delete light;

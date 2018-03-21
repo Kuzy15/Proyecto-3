@@ -93,10 +93,10 @@ void Entity::dispatch(){
 		for (auto a : components)
 			//If the message is not of type scene (that means that it is either ENTITY or BROADCAST)
 			//Or the message is of type SCENE but we did not send it. This means we received it from outside.
-			if(msgs.front()->getType() != SCENE|| msgs.front()->getEmmiter() != getID())a->getMessage(msgs.front());
+			if(msgs.front()->getDestination() != SCENE|| msgs.front()->getEmmiter() != getID())a->getMessage(msgs.front());
 
 		//Then, if the message was sent only for the entity, we delete it 
-		if (msgs.front()->getType() == ENTITY) {
+		if (msgs.front()->getDestination() == ENTITY) {
 			Message * aux = msgs.front();
 			msgs.pop();
 			delete aux;
