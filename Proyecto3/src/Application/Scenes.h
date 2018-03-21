@@ -61,5 +61,25 @@ private:
 	
 };
 
+//Basic class to debug and test the ogre implementation
+//and the behaviour of the components
+class mainMenuScene : public gameScene
+{
+public:
+	mainMenuScene(std::string id, Game * game);
+	~mainMenuScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+
+private:
+	Ogre::SceneManager * scnMgr;
+	Ogre::Viewport * vp;
+	Ogre::Camera * cam;
+	Ogre::Light * light;
+
+
+};
 
 #endif
