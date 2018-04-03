@@ -101,9 +101,12 @@ renderComponent::~renderComponent(){
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma region meshRenderComponent
-meshRenderComponent::meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM) :renderComponent(MESH_RENDER_COMPONENT, father, scnM){
+meshRenderComponent::meshRenderComponent(Ogre::Vector3 p, std::string meshName, Entity * father, Ogre::SceneManager * scnM) :renderComponent(MESH_RENDER_COMPONENT, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->attachObject(pOgreEnt);
+	pOgreSceneNode->setPosition(p);
+	_ogrepos = p;
+	_ogrequat = Ogre::Quaternion();
 }
 meshRenderComponent::~meshRenderComponent() {
 	pOgreSceneNode->detachObject(pOgreEnt);
@@ -111,9 +114,13 @@ meshRenderComponent::~meshRenderComponent() {
 }
 void meshRenderComponent::tick(float delta) {
 
+	//Firstly we update the Ogre position and rotation with the values
+	//stored in the variables.
+	pOgreSceneNode->setPosition(_ogrepos);
+	pOgreSceneNode->setOrientation(_ogrequat);
 }
 void meshRenderComponent::getMessage(Message * m) {
-
+	//TO DO: IMPLEMENT MESSAGE RECEIVEING TO MOVE.
 }
 
 #pragma endregion
