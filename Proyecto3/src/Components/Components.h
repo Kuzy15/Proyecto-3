@@ -110,17 +110,20 @@ public:
 
 protected:
 	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);
-	//En el nodo de Ogre estarán todos los valores de renderizado (x,y,z en la escena de ogre, inclinaciones, etc.)
+	// Inside the Ogre Node we can find al the render values needed by ogre
 	Ogre::SceneNode * pOgreSceneNode;
-	//Puntero al sceneManager que lo ha creado
+	// Pointer to the Ogre Scene Manager that created the component
 	Ogre::SceneManager * pSceneMgr;
+	// Cache value for the rendering positions. They will be updated when needed in the tick function
+	Ogre::Vector3 _ogrepos;
+	Ogre::Quaternion _ogrequat;
 };
 
 //--------- MESH RENDER COMPONENT ---------
 class meshRenderComponent: public renderComponent
 {
 public:
-	meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
+	meshRenderComponent(Ogre::Vector3, std::string meshName, Entity * father, Ogre::SceneManager * scnM);
 	~meshRenderComponent();
 
 	virtual void tick(float delta);
@@ -128,6 +131,17 @@ public:
 
 private:
 	Ogre::Entity * pOgreEnt;
+	
+};
+//--------- PLANE RENDER COMPONENT ---------
+class planeRenderComponent: public renderComponent
+{
+public:
+	planeRenderComponent();
+	~planeRenderComponent();
+
+private:
+
 };
 
 

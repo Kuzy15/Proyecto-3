@@ -141,8 +141,10 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	test2->addComponent(new stringComponent(test2));
 	//test2->addComponent()
 	
-	//test1->addComponent(new messageSendComponent(test1));
-	test1->addComponent(new meshRenderComponent("Ra.mesh", test1, scnMgr));
+
+	test1->addComponent(new messageSendComponent(test1));
+	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,0,100),"Ra.mesh", test1, scnMgr));
+
 
 	addEntity(test1);
 	addEntity(test2);
