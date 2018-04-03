@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Application", "Projects\Application\Application.vcxproj", "{3EAF9323-B00F-448E-9D0A-BCC0A88F7988}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24E28847-4305-4C0F-BF32-320EE8B8F9AE} = {24E28847-4305-4C0F-BF32-320EE8B8F9AE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Components", "Projects\Components\Components.vcxproj", "{24E28847-4305-4C0F-BF32-320EE8B8F9AE}"
 EndProject

@@ -6,6 +6,7 @@
 #include <Ogre.h>
 #include <string>
 #include <list>
+#include <Box2D.h>
 
 class Entity;
 class Message;
