@@ -10,13 +10,28 @@
 
 class Entity;
 class Message;
+//Pixels per meter
+const int PPM = 100;
 
+typedef enum rigidBodyType {
+	
+	DYNAMIC,
+	STATIC,
+	KINEMATIC
+};
+
+typedef enum shapeType {
+
+	CIRCLE,
+	POLYGON
+};
 
 typedef enum componentType {
 	//to be deleted
 	STRING_COMPONENT,
 	MESSAGESEND_COMPONENT,
-	MESH_RENDER_COMPONENT
+	MESH_RENDER_COMPONENT,
+	PHYSICS_COMPONENT
 
 };
 
@@ -112,5 +127,35 @@ public:
 private:
 	Ogre::Entity * pOgreEnt;
 };
+
+
+
+/*-------------------------PHYSICS COMPONENTS------------------------------------*/
+//--------- RIGID BODY COMPONENT ---------
+class rigidBodyComponent : public gameComponent
+{
+public:
+	rigidBodyComponent(Entity * father, b2World * world, Ogre::Vector2 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
+	~rigidBodyComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+
+private:
+
+	float _rbWeight;
+	float _rbHeight;
+	b2World* _myWorld;
+	b2Vec2 _pos;
+	b2Vec2 _vel;
+	b2Body* _body;
+	b2BodyDef _bodyDef;
+	b2Shape* _shape;
+	b2FixtureDef _fixtureDef;
+	b2Fixture* _fixture;
+	
+};
+
 
 #endif
