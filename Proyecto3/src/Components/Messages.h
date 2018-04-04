@@ -1,12 +1,16 @@
 #ifndef MESSAGES_H
 #define MESSAGES_H
 #include <string>
-
+#include <SDL.h>
+#include <list>
 class Entity;
 class gameComponent;
 
+
+
+
 typedef enum msgType{
-	STRING_MSG
+	STRING_MSG, INPUT_MSG, I_BUTTONDOWN_MSG 
 };
 
 typedef enum msgDest {
@@ -25,7 +29,7 @@ class Message
 {
 public:
 	
-	~Message();
+	virtual ~Message();
 	msgType getType();
 	msgDest getDestination();
 	std::string getEmmiter();
@@ -46,6 +50,40 @@ public:
 
 private:
 	std::string _text;
+
+};
+
+//---------------------------------------------------		INPUT MSG		----------------------------------------------------------//
+class InputMessage : public Message
+{
+public:
+	InputMessage(msgDest d, std::string emmiter);
+	virtual ~InputMessage();
+	
+	void addMessage(Message* newMsg);
+	size_t getNumMessages();
+	const std::list<Message*> getMessages();
+private:
+	std::list<Message*> _inputMessages;
+
+};
+
+//---------------------------------------------------		INPUT BUTTONDOWN MSG		----------------------------------------------------------//
+class IButtonDownMessage : public Message
+{
+public:
+	IButtonDownMessage(SDL_GameControllerButton b, SDL_JoystickID i, msgDest d, std::string emmiter);
+	virtual ~IButtonDownMessage();
+
+	//Get the Joystick id (Player id)
+	inline SDL_JoystickID getId(){ return _id; };
+	//Get the Button pressed
+	inline SDL_GameControllerButton getButton(){ return _button; };
+
+
+private:
+	SDL_GameControllerButton _button;
+	SDL_JoystickID _id;
 
 };
 

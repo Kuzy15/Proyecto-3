@@ -4,8 +4,9 @@
 #include <SDL.h>
 #include <vector>
 #include <list>
+#include "Messages.h"
 
-class Message;
+
 
 /*	This class defines an interface to comunicate with SDL Input (event) system.	*/
 
@@ -13,14 +14,15 @@ class InputManager
 {
 private:
 	InputManager();
-	void pushMessage(Message* newMessage);						//Push a new message to the local queue
+	void putMessage(InputMessage* newMessage);						//Push a new message to the local queue
 	
 	static InputManager* _instance;								//pointer to the unique instance of InputManager
 	
 	std::vector<SDL_Joystick*> _playersJoystick;				//Player 1 and Player 2 Joysticks structs 
 	std::vector<SDL_GameController*> _playerController;			
 	const int MAX_PLAYERS = 2;									//Max player input
-	std::list<Message*> _inputMsgQ;							//Local message queue
+	InputMessage* _inputMsg;							//Local message queue
+	const std::string _emitter = "InputManager";
 
 public:
 	~InputManager();

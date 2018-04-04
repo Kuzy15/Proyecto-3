@@ -34,3 +34,46 @@ std::string stringMessage::getText() {
 }
 #pragma endregion
 
+//Input Message implementation 
+#pragma region InputMessage
+InputMessage::InputMessage(msgDest d, std::string emmiter) :Message(INPUT_MSG, BROADCAST, emmiter){
+
+	
+}
+
+InputMessage::~InputMessage(){ 
+
+	while (!(_inputMessages.empty())){
+		Message * aux = _inputMessages.front();
+		_inputMessages.pop_front();
+		delete aux;
+	}
+}
+
+void InputMessage::addMessage(Message* newMsg){
+
+	_inputMessages.push_back(newMsg);
+}
+
+size_t InputMessage::getNumMessages(){
+
+	return _inputMessages.size();
+}
+
+const std::list<Message*> InputMessage::getMessages(){
+	return _inputMessages;
+}
+
+#pragma endregion
+
+//InputButtonDown implementation
+#pragma region IButtonDown Message
+IButtonDownMessage::IButtonDownMessage(SDL_GameControllerButton b, SDL_JoystickID i, msgDest d, std::string emmiter) :Message(I_BUTTONDOWN_MSG, BROADCAST, emmiter), _button(b), _id(i){
+
+}
+
+IButtonDownMessage::~IButtonDownMessage(){}
+
+
+
+#pragma endregion 

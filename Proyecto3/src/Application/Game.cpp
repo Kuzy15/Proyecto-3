@@ -155,7 +155,7 @@ Fourth we render (or not) the scene
 void Game::loop() {
 
 	currentTime = (SDL_GetTicks() / 1000);
-
+	int frames = 0;
 
 	while (!pWindow->isClosed()){
 		//Refresh loop parameters
@@ -163,16 +163,18 @@ void Game::loop() {
 		frameTime = newTime - currentTime;
 		currentTime = newTime;
 		
-		handleInput();
 
+		handleInput();
 		//Loop for game logic and physic step (60 times per second)
 		while (frameTime > 0.0f){
 			deltaTime = std::min(frameTime, FPS_CAP);
 			world->Step(deltaTime, 10, 2);
-			actScene->run();
 			frameTime -= deltaTime;
+			frames++;
 		}
 
+		actScene->run();
+		frames = 0;
 		render();
 	}
 

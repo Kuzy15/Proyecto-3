@@ -55,17 +55,13 @@ InputManager& InputManager::getInstance(){
 	return *InputManager::_instance;
 }
 
-//Push new input message to the queue
-void InputManager::pushMessage(Message* newMessage){
-	_inputMsgQ.push_back(newMessage);	
-}
 
 //Send messages to the scene queue if there's any message
 void InputManager::getMessages(std::list<Message*> &sceneQueue){
-	while (!(_inputMsgQ.empty())){
-		sceneQueue.push_back(_inputMsgQ.front());
-		_inputMsgQ.pop_front();
+	if (_inputMsg != nullptr && _inputMsg->getNumMessages() > 0) {
+		sceneQueue.push_back(_inputMsg);
 	}
+	_inputMsg = nullptr;
 }
 
 void InputManager::handleInput(){
@@ -73,8 +69,10 @@ void InputManager::handleInput(){
 	SDL_Event event;
 	/* Other initializtion code goes here */
 
+	//Create main Input message who contains the events
+	_inputMsg = new InputMessage(BROADCAST, _emitter);
+
 	/* Start main game loop here */
-	
 	while (SDL_PollEvent(&event))
 	{
 		switch (event.type)
@@ -89,6 +87,8 @@ void InputManager::handleInput(){
 
 		case SDL_CONTROLLERBUTTONDOWN:
 			/*SEND MESSAGE LIKE: new InputMessage(SDL_GameControllerButton type, SDL_JoystickID id...)*/
+			_inputMsg->addMessage(new IButtonDownMessage((SDL_GameControllerButton)event.cbutton.button, event.cbutton.which, BROADCAST, _emitter));
+			std::cout << "Button pressed" << std::endl;
 			break;
 
 		case SDL_CONTROLLERBUTTONUP:
@@ -101,9 +101,9 @@ void InputManager::handleInput(){
 					
 				}
 				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY){}
-
+					
 				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX){}
-
+					
 				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY){}
 			
 			}
@@ -124,8 +124,13 @@ void InputManager::handleInput(){
 #endif
 
 	}
+
+	
 }
 
 int InputManager::numMessages(){
-	return _inputMsgQ.size();
+	if (_inputMsg != nullptr)
+		return (int)_inputMsg->getNumMessages();
+	else
+		return 0;
 }

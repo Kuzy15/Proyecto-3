@@ -49,8 +49,18 @@ stringComponent::~stringComponent(){
 }
 void stringComponent::getMessage(Message * m){
 #ifdef _DEBUG
-	std::cout << "Basic Component from entity " << pEnt->getID() << " received message!" << std::endl;
-	if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
+	//if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
+	if (m->getType() == INPUT_MSG){ 
+		
+		std::cout << "Basic Component from entity " << pEnt->getID() << " received message!" << std::endl;
+		std::list<Message*> inputMessages = static_cast<InputMessage*>(m)->getMessages();
+		std::list<Message*>::const_iterator it = inputMessages.cbegin();
+		while (it != inputMessages.cend()){
+			if ((*it)->getType() == I_BUTTONDOWN_MSG) std::cout << "MESSAGE SAID: " << static_cast<IButtonDownMessage*>(m)->getButton() << std::endl; 
+			it++;
+		}
+	
+	}
 #endif
 }
 void stringComponent::tick(float delta){
