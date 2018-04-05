@@ -49,7 +49,7 @@ private:
 	float currentTime;
 	float newTime;
 	float frameTime;
-	float deltaTime;
+	float accumulator;
 	
 
 

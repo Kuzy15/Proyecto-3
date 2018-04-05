@@ -33,7 +33,7 @@ Game::Game(){
 #endif
 	}
 
-	 currentTime = newTime = frameTime = deltaTime = 0;
+	 currentTime = newTime = frameTime = accumulator = 0;
 	
 	 initOgre();
 
@@ -154,27 +154,27 @@ Fourth we render (or not) the scene
 */
 void Game::loop() {
 
-	currentTime = (SDL_GetTicks() / 1000);
+	currentTime = (SDL_GetTicks() / 1000.0);
 	int frames = 0;
+
 
 	while (!pWindow->isClosed()){
 		//Refresh loop parameters
-		newTime = (SDL_GetTicks() / 1000);
+		newTime = (SDL_GetTicks() / 1000.0);
 		frameTime = newTime - currentTime;
-		currentTime = newTime;
-		
+		currentTime = newTime;		
+		accumulator += frameTime;
 
-		handleInput();
 		//Loop for game logic and physic step (60 times per second)
-		while (frameTime > 0.0f){
-			deltaTime = std::min(frameTime, FPS_CAP);
-			world->Step(deltaTime, 10, 2);
-			frameTime -= deltaTime;
+		while (accumulator >= FPS_CAP){
+			handleInput();
+			world->Step(FPS_CAP, 10, 2);
+			actScene->run();
+			accumulator -= FPS_CAP;
 			frames++;
 		}
-
-		actScene->run();
-		frames = 0;
+		//std::cout << frames << std::endl;
+		
 		render();
 	}
 

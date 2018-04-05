@@ -66,6 +66,8 @@ public:
 private:
 	std::list<Message*> _inputMessages;
 
+
+	 
 };
 
 //---------------------------------------------------		INPUT BUTTONDOWN MSG		----------------------------------------------------------//
@@ -86,6 +88,8 @@ private:
 	SDL_JoystickID _id;
 
 };
+
+
 
 
 
