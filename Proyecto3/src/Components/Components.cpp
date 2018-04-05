@@ -78,10 +78,9 @@ messageSendComponent::~messageSendComponent() {
 }
 void messageSendComponent::tick(float delta) {
 	i++;
-	if (i % 100 == 0) {
-		stringMessage * m = new stringMessage(std::to_string(i), BROADCAST, pEnt->getID());
-		pEnt->getMessage(m);
-	}
+	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, 0, i/5.0), Ogre::Quaternion::IDENTITY, pEnt->getID());
+	pEnt->getMessage(m);
+	
 }
 void messageSendComponent::getMessage(Message * m) {
 
@@ -102,6 +101,19 @@ renderComponent::renderComponent(componentType t, Entity * father, Ogre::SceneMa
 }
 renderComponent::~renderComponent(){
 	pSceneMgr->destroySceneNode(pOgreSceneNode);
+}
+
+//Get Message general to every other render component child to this
+void renderComponent::getMessage(Message *m) {
+	switch (m->getType()) {
+	case ENTITY_UPDATETRANSFORM:
+		_ogrepos = static_cast<UpdateTransformMessage *>(m)->GetPos();
+		_ogrequat = static_cast<UpdateTransformMessage *>(m)->GetQuat();
+		std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
+		break;
+	default: 
+		break;
+	}
 }
 
 #pragma endregion
@@ -130,7 +142,9 @@ void meshRenderComponent::tick(float delta) {
 	pOgreSceneNode->setOrientation(_ogrequat);
 }
 void meshRenderComponent::getMessage(Message * m) {
+	renderComponent::getMessage(m);
 	//TO DO: IMPLEMENT MESSAGE RECEIVEING TO MOVE.
+
 }
 
 #pragma endregion

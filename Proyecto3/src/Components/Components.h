@@ -107,6 +107,7 @@ class renderComponent : public gameComponent
 public:
 	~renderComponent();
 	Ogre::SceneNode * getSceneNode();
+	virtual void getMessage(Message *m);
 
 protected:
 	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);

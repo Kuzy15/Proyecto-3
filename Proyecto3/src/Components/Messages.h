@@ -3,6 +3,8 @@
 #include <string>
 #include <SDL.h>
 #include <list>
+#include <Ogre.h>
+
 class Entity;
 class gameComponent;
 
@@ -10,7 +12,7 @@ class gameComponent;
 
 
 typedef enum msgType{
-	STRING_MSG, INPUT_MSG, I_BUTTONDOWN_MSG 
+	STRING_MSG, INPUT_MSG, I_BUTTONDOWN_MSG, ENTITY_UPDATETRANSFORM
 };
 
 typedef enum msgDest {
@@ -88,8 +90,20 @@ private:
 	SDL_JoystickID _id;
 
 };
+//--------------------------------------------------	UPDATETRANSFORM MSG		----------------------------------------------------------//
+class UpdateTransformMessage: public Message
+{
+public:
+	UpdateTransformMessage(Ogre::Vector3 newPos, Ogre::Quaternion newQuaternion, std::string emmiter);
+	~UpdateTransformMessage();
+	Ogre::Vector3 GetPos();
+	Ogre::Quaternion GetQuat();
 
-
+private:
+	//Private fields for the new position and quaternion of the entity
+	Ogre::Vector3 _nPos;
+	Ogre::Quaternion _nQuat;
+};
 
 
 
