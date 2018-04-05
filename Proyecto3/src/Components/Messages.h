@@ -3,6 +3,8 @@
 #include <string>
 #include <SDL.h>
 #include <list>
+#include <Ogre.h>
+
 class Entity;
 class gameComponent;
 
@@ -47,8 +49,10 @@ struct ControllerState{
 #pragma endregion
 
 typedef enum msgType{
+
 	STRING_MSG, INPUT_STATE_MSG,
-	CONTROLLER_STATE_MSG
+	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM
+
 };
 
 typedef enum msgDest {
@@ -124,8 +128,20 @@ private:
 	int _controllerId;
 	int _action;
 };
+//--------------------------------------------------	UPDATETRANSFORM MSG		----------------------------------------------------------//
+class UpdateTransformMessage: public Message
+{
+public:
+	UpdateTransformMessage(Ogre::Vector3 newPos, Ogre::Quaternion newQuaternion, std::string emmiter);
+	~UpdateTransformMessage();
+	Ogre::Vector3 GetPos();
+	Ogre::Quaternion GetQuat();
 
-
+private:
+	//Private fields for the new position and quaternion of the entity
+	Ogre::Vector3 _nPos;
+	Ogre::Quaternion _nQuat;
+};
 
 
 
