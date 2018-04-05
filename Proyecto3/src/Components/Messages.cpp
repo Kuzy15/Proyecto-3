@@ -35,45 +35,31 @@ std::string stringMessage::getText() {
 #pragma endregion
 
 //Input Message implementation 
-#pragma region InputMessage
-InputMessage::InputMessage(msgDest d, std::string emmiter) :Message(INPUT_MSG, BROADCAST, emmiter){
+#pragma region InputStateMessage
+InputStateMessage::InputStateMessage(msgDest d, std::string emmiter) :Message(INPUT_STATE_MSG, BROADCAST, emmiter){
 
 	
 }
 
-InputMessage::~InputMessage(){ 
+InputStateMessage::~InputStateMessage(){ 
 
-	while (!(_inputMessages.empty())){
-		Message * aux = _inputMessages.front();
-		_inputMessages.pop_front();
-		delete aux;
-	}
 }
 
-void InputMessage::addMessage(Message* newMsg){
-
-	_inputMessages.push_back(newMsg);
+ControllerState& InputStateMessage::getControllerState(){
+	_cState.nEvents++;
+	return _cState;
 }
-
-size_t InputMessage::getNumMessages(){
-
-	return _inputMessages.size();
-}
-
-const std::list<Message*> InputMessage::getMessages(){
-	return _inputMessages;
-}
-
 #pragma endregion
 
-//InputButtonDown implementation
-#pragma region IButtonDown Message
-IButtonDownMessage::IButtonDownMessage(SDL_GameControllerButton b, SDL_JoystickID i, msgDest d, std::string emmiter) :Message(I_BUTTONDOWN_MSG, BROADCAST, emmiter), _button(b), _id(i){
+//Input Message implementation 
+#pragma region ControllerStateMessage
+ControllerStateMessage::ControllerStateMessage(msgDest d, std::string emmiter, int id, int action) :Message(CONTROLLER_STATE_MSG, BROADCAST, emmiter){
+	_controllerId = id;
+	_action = action;
+}
+
+ControllerStateMessage::~ControllerStateMessage(){
 
 }
 
-IButtonDownMessage::~IButtonDownMessage(){}
 
-
-
-#pragma endregion 

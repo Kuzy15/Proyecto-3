@@ -6,11 +6,49 @@
 class Entity;
 class gameComponent;
 
+#pragma region ControllerState
 
+typedef enum ButtonState{
+	PRESSED = 0, RELEASED = 1, NONE = 2
+};
 
+struct ControllerState{
+
+	int nEvents = 0;
+
+	ButtonState Button_A = NONE;
+	ButtonState Button_B = NONE;
+	ButtonState Button_X = NONE;
+	ButtonState Button_Y = NONE;
+
+	ButtonState Right_Shoulder = NONE;
+	ButtonState Left_Shoulder = NONE;
+
+	ButtonState Right_Stick = NONE;
+	ButtonState Left_Stick = NONE;
+
+	ButtonState Button_Start = NONE;
+	ButtonState Button_Back = NONE;
+
+	ButtonState DPad_Right = NONE;
+	ButtonState DPad_Left = NONE;
+	ButtonState DPad_Up = NONE;
+	ButtonState DPad_Down = NONE;
+
+	float Trigger_Left = 0.0f;
+	float Trigger_Right = 0.0f;
+
+	float Axis_LeftX = 0.0f;
+	float Axis_LeftY = 0.0f;
+	float Axis_RightX = 0.0f;
+	float Axis_RightY = 0.0f;
+};
+
+#pragma endregion
 
 typedef enum msgType{
-	STRING_MSG, INPUT_MSG, I_BUTTONDOWN_MSG 
+	STRING_MSG, INPUT_STATE_MSG,
+	CONTROLLER_STATE_MSG
 };
 
 typedef enum msgDest {
@@ -53,41 +91,40 @@ private:
 
 };
 
-//---------------------------------------------------		INPUT MSG		----------------------------------------------------------//
-class InputMessage : public Message
+//---------------------------------------------------		INPUT STATE MSG		----------------------------------------------------------//
+//Message who contains all the input taken from the current frame. One for controller/player.
+class InputStateMessage : public Message
 {
 public:
-	InputMessage(msgDest d, std::string emmiter);
-	virtual ~InputMessage();
-	
-	void addMessage(Message* newMsg);
-	size_t getNumMessages();
-	const std::list<Message*> getMessages();
+	InputStateMessage(msgDest d, std::string emmiter);
+	virtual ~InputStateMessage();
+
+	ControllerState& getControllerState();
+
+	inline int getNumMessages() { return _cState.nEvents; };
+
 private:
-	std::list<Message*> _inputMessages;
-
-
-	 
+	ControllerState _cState;
+ 
 };
 
-//---------------------------------------------------		INPUT BUTTONDOWN MSG		----------------------------------------------------------//
-class IButtonDownMessage : public Message
+
+//---------------------------------------------------		INPUT CONTROLLER CONNECTED MSG		----------------------------------------------------------//
+//Notice that a new controller has connected or disconnected. Values: 1 for connected, 0 for disconnected.
+class ControllerStateMessage : public Message
 {
 public:
-	IButtonDownMessage(SDL_GameControllerButton b, SDL_JoystickID i, msgDest d, std::string emmiter);
-	virtual ~IButtonDownMessage();
+	ControllerStateMessage(msgDest d, std::string emmiter, int id, int action);
+	virtual ~ControllerStateMessage();
 
-	//Get the Joystick id (Player id)
-	inline SDL_JoystickID getId(){ return _id; };
-	//Get the Button pressed
-	inline SDL_GameControllerButton getButton(){ return _button; };
+	inline int getId(){ return _controllerId; };
 
-
+	inline int getAction(){ return _action; };
 private:
-	SDL_GameControllerButton _button;
-	SDL_JoystickID _id;
-
+	int _controllerId;
+	int _action;
 };
+
 
 
 

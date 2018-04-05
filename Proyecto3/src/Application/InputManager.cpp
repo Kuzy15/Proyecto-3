@@ -10,41 +10,46 @@ InputManager* InputManager::_instance = nullptr;	//Definition of the instance
 InputManager::InputManager()
 {
 
+	_currentNPlayers = 0;
+
 	//Open all the joystick files conected.
+	/*
 	int i = 0;
 	while( i < SDL_NumJoysticks() && i < MAX_PLAYERS)
 	{
-		_playersJoystick.push_back( SDL_JoystickOpen(i));
+		_playersJoystick[i] = ( SDL_JoystickOpen(i));
 		if (_playersJoystick[i] == NULL && SDL_IsGameController(i)){
 			//ERROR MESSAGE
 		}
-		_playerController.push_back(SDL_GameControllerOpen(i));
+		_playerController[i] = (SDL_GameControllerOpen(i));
 #ifdef _DEBUG
 		printf("    %s\n", SDL_JoystickName(_playersJoystick[i]));
 #endif
+	
 		i++;
 	}
-
+	*/
 	//Enable event flow
 	SDL_JoystickEventState(SDL_ENABLE);
 
 
 #pragma endregion
 
-	
-
 }
 
 
 InputManager::~InputManager()
 {
-	
-
 	//Close opened Joysticks
-	for (size_t i = 0; i < _playersJoystick.size(); i++){
+	for (size_t i = 0; i < _currentNPlayers; i++){
 		if (_playersJoystick[i] != NULL) SDL_JoystickClose(_playersJoystick[i]);
 	}
 
+	//Deleten unsended messages
+	for (size_t i = 0; i < _myQueue.size(); i++){
+		delete _myQueue[i];
+		
+	}
 	//Close SDL
 	SDL_Quit();
 }
@@ -56,12 +61,12 @@ InputManager& InputManager::getInstance(){
 }
 
 
-//Send messages to the scene queue if there's any message
+//Send the local queue messages to the scene queue if there's any message
 void InputManager::getMessages(std::list<Message*> &sceneQueue){
-	if (_inputMsg != nullptr && _inputMsg->getNumMessages() > 0) {
-		sceneQueue.push_back(_inputMsg);
+	for (int i = 0; i < _myQueue.size(); i++){
+		sceneQueue.push_back(_myQueue[i]);
 	}
-	_inputMsg = nullptr;
+	_myQueue.clear();
 }
 
 void InputManager::handleInput(){
@@ -69,8 +74,13 @@ void InputManager::handleInput(){
 	SDL_Event event;
 	/* Other initializtion code goes here */
 
-	//Create main Input message who contains the events
-	_inputMsg = new InputMessage(BROADCAST, _emitter);
+	//Create main Input message who contains the events and variables to store the values
+	for (int i = 0; i < _currentNPlayers; i++){
+
+		_inputMsg[i] = new InputStateMessage(BROADCAST, _emitter);
+
+	}
+	float axisMotion;
 
 	/* Start main game loop here */
 	while (SDL_PollEvent(&event))
@@ -84,34 +94,133 @@ void InputManager::handleInput(){
 		case SDL_QUIT:
 			
 			break;
-
+//Mapping for controller buttons (Press and Release)			
+#pragma region CONTROLLERBUTTONDOWN
 		case SDL_CONTROLLERBUTTONDOWN:
-			/*SEND MESSAGE LIKE: new InputMessage(SDL_GameControllerButton type, SDL_JoystickID id...)*/
-			_inputMsg->addMessage(new IButtonDownMessage((SDL_GameControllerButton)event.cbutton.button, event.cbutton.which, BROADCAST, _emitter));
+			switch (event.cbutton.button)
+			{
+			case SDL_CONTROLLER_BUTTON_A:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_A = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_B:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_B = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_X:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_X = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_Y:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_Y = PRESSED;
+			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+				_inputMsg[event.cbutton.which]->getControllerState().Left_Shoulder = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+				_inputMsg[event.cbutton.which]->getControllerState().Right_Shoulder = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+				_inputMsg[event.cbutton.which]->getControllerState().Right_Stick = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+				_inputMsg[event.cbutton.which]->getControllerState().Left_Stick = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_START:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_Start = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_BACK:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_Back = PRESSED;
+			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Down = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_UP:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Up = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Left = PRESSED;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Right = PRESSED;
+				break;
+			default:
+				break;
+			}
+			
 			std::cout << "Button pressed" << std::endl;
 			break;
-
+#pragma endregion
+#pragma region CONTROLLERBUTTONUP
 		case SDL_CONTROLLERBUTTONUP:
-			break;
-
-		case SDL_CONTROLLERAXISMOTION:
-			if ((event.caxis.value < -20000) || (event.caxis.value > 20000))
+			switch (event.cbutton.button)
 			{
-				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX){
-					
-				}
-				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY){}
-					
-				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX){}
-					
-				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY){}
-			
+			case SDL_CONTROLLER_BUTTON_A:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_A = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_B:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_B = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_X:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_X = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_Y:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_Y = RELEASED;
+			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+				_inputMsg[event.cbutton.which]->getControllerState().Left_Shoulder = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+				_inputMsg[event.cbutton.which]->getControllerState().Right_Shoulder = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+				_inputMsg[event.cbutton.which]->getControllerState().Right_Stick = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+				_inputMsg[event.cbutton.which]->getControllerState().Left_Stick = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_START:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_Start = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_BACK:
+				_inputMsg[event.cbutton.which]->getControllerState().Button_Back = RELEASED;
+			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Down = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_UP:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Up = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Left = RELEASED;
+				break;
+			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+				_inputMsg[event.cbutton.which]->getControllerState().DPad_Right = RELEASED;
+				break;
+			default:
+				break;
 			}
 			break;
+#pragma endregion
+//Mapping for both joysticks
+		case SDL_CONTROLLERAXISMOTION:
+			axisMotion = event.caxis.value / PARSE_VALUE;
+			if ((axisMotion < -DEAD_ZONE) || (axisMotion > DEAD_ZONE))
+			{
+				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX){
+					_inputMsg[event.caxis.which]->getControllerState().Axis_LeftX = axisMotion;
+				}
+				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
+					_inputMsg[event.caxis.which]->getControllerState().Axis_LeftY = axisMotion;
+					
+				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
+					_inputMsg[event.caxis.which]->getControllerState().Axis_RightX = axisMotion;
+					
+				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
+					_inputMsg[event.caxis.which]->getControllerState().Axis_RightY = axisMotion;
+			}
+			break;
+//Events for Controller recognize: connect and disconnect
 		case SDL_CONTROLLERDEVICEADDED:
+			addJoystick();
+			_myQueue.push_back(new ControllerStateMessage(BROADCAST, _emitter, event.cdevice.which, 1));
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
-			//event.cdevice.which
+			deleteJoystick(event.cdevice.which);
+			_myQueue.push_back(new ControllerStateMessage(BROADCAST, _emitter, event.cdevice.which, 0));
 			break;
 		
 		default:
@@ -124,13 +233,47 @@ void InputManager::handleInput(){
 #endif
 
 	}
-
+	//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
+	for (int i = 0; i < _currentNPlayers; i++){
+		if (_inputMsg[i] != nullptr && _inputMsg[i]->getNumMessages() > 0) {
+			_myQueue.push_back(_inputMsg[i]);
+		}
+		else{
+			delete _inputMsg[i];
+		}
+		_inputMsg[i] = nullptr;
+	}
 	
 }
 
 int InputManager::numMessages(){
-	if (_inputMsg != nullptr)
-		return (int)_inputMsg->getNumMessages();
-	else
-		return 0;
+
+	int nMessages = 0;
+
+	for (int i = 0; i < _currentNPlayers; i++){
+		if (_inputMsg[i] != nullptr)
+			nMessages += (int)_inputMsg[i]->getNumMessages();
+	}
+	return nMessages;
+}
+
+//Put new Joystick and GameController into the arrays
+void InputManager::addJoystick(){
+	int joyStickId = _currentNPlayers;
+	_playersJoystick[joyStickId] = (SDL_JoystickOpen(joyStickId));
+	if (_playersJoystick[joyStickId] == NULL && SDL_IsGameController(joyStickId)){
+		//ERROR MESSAGE
+	}
+	_playerController[joyStickId] = (SDL_GameControllerOpen(joyStickId));
+	_currentNPlayers++;
+}
+
+//Delete the disconnected Joystick
+void InputManager::deleteJoystick(int wich){
+	//Close opened Joysticks
+	if (_playersJoystick[wich] != NULL){
+		SDL_JoystickClose(_playersJoystick[wich]);
+		SDL_GameControllerClose(_playerController[wich]);
+		_currentNPlayers--;
+	}
 }
