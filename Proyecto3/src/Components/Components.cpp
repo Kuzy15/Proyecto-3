@@ -50,7 +50,7 @@ stringComponent::~stringComponent(){
 void stringComponent::getMessage(Message * m){
 #ifdef _DEBUG
 	//if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
-	}
+	
 #endif
 }
 void stringComponent::tick(float delta){
@@ -222,4 +222,31 @@ void rigidBodyComponent::getMessage(Message * m) {
 
 }
 
+#pragma endregion
+
+//Player Controller Component
+#pragma region PlayerControllerComponent
+PlayerControllerComponent::PlayerControllerComponent(Entity* f): gameComponent(PLAYER_CONTROLLER_COMPONENT, f){
+	
+}
+
+PlayerControllerComponent::~PlayerControllerComponent(){}
+
+void PlayerControllerComponent::tick(float delta){
+}
+
+void PlayerControllerComponent::getMessage(Message* m){
+	//If the msg type is CInputState, read the input and process it
+	if (m->getType() == CONTROLLER_STATE_MSG){
+		CInputState cState = static_cast<InputStateMessage*>(m)->getCInputState();
+		
+		if (cState.Button_A == BTT_PRESSED){
+			std::cout << "Se ha pulsado el boton A"  << std::endl;
+		}
+		if (cState.Axis_RightX > 0){
+			std::cout << "Valor del eje X del joystick derecho: " << cState.Axis_RightX << std::endl;
+		}
+		
+	}
+}
 #pragma endregion

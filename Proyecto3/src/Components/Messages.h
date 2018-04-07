@@ -8,34 +8,34 @@
 class Entity;
 class gameComponent;
 
-#pragma region ControllerState
+#pragma region CInputState
 
 typedef enum ButtonState{
-	PRESSED = 0, RELEASED = 1, NONE = 2
+	BTT_PRESSED = 0, BTT_RELEASED = 1, BTT_NONE = 2
 };
 
-struct ControllerState{
+struct CInputState{
 
 	int nEvents = 0;
 
-	ButtonState Button_A = NONE;
-	ButtonState Button_B = NONE;
-	ButtonState Button_X = NONE;
-	ButtonState Button_Y = NONE;
+	ButtonState Button_A = BTT_NONE;
+	ButtonState Button_B = BTT_NONE;
+	ButtonState Button_X = BTT_NONE;
+	ButtonState Button_Y = BTT_NONE;
 
-	ButtonState Right_Shoulder = NONE;
-	ButtonState Left_Shoulder = NONE;
+	ButtonState Right_Shoulder = BTT_NONE;
+	ButtonState Left_Shoulder = BTT_NONE;
 
-	ButtonState Right_Stick = NONE;
-	ButtonState Left_Stick = NONE;
+	ButtonState Right_Stick = BTT_NONE;
+	ButtonState Left_Stick = BTT_NONE;
 
-	ButtonState Button_Start = NONE;
-	ButtonState Button_Back = NONE;
+	ButtonState Button_Start = BTT_NONE;
+	ButtonState Button_Back = BTT_NONE;
 
-	ButtonState DPad_Right = NONE;
-	ButtonState DPad_Left = NONE;
-	ButtonState DPad_Up = NONE;
-	ButtonState DPad_Down = NONE;
+	ButtonState DPad_Right = BTT_NONE;
+	ButtonState DPad_Left = BTT_NONE;
+	ButtonState DPad_Up = BTT_NONE;
+	ButtonState DPad_Down = BTT_NONE;
 
 	float Trigger_Left = 0.0f;
 	float Trigger_Right = 0.0f;
@@ -103,12 +103,12 @@ public:
 	InputStateMessage(msgDest d, std::string emmiter);
 	virtual ~InputStateMessage();
 
-	ControllerState& getControllerState();
+	CInputState& getCInputState();
 
 	inline int getNumMessages() { return _cState.nEvents; };
 
 private:
-	ControllerState _cState;
+	CInputState _cState;
  
 };
 

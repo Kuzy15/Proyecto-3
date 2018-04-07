@@ -45,15 +45,14 @@ InputStateMessage::~InputStateMessage(){
 
 }
 
-ControllerState& InputStateMessage::getControllerState(){
+CInputState& InputStateMessage::getCInputState(){
 	_cState.nEvents++;
 	return _cState;
 }
 #pragma endregion
 
-//Input Message implementation 
 #pragma region ControllerStateMessage
-ControllerStateMessage::ControllerStateMessage(msgDest d, std::string emmiter, int id, int action) :Message(CONTROLLER_STATE_MSG, BROADCAST, emmiter){
+ControllerStateMessage::ControllerStateMessage(msgDest d, std::string emmiter, int id, int action) :Message(CONTROLLER_STATE_MSG, SCENE, emmiter){
 	_controllerId = id;
 	_action = action;
 }

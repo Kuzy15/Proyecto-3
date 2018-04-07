@@ -100,44 +100,44 @@ void InputManager::handleInput(){
 			switch (event.cbutton.button)
 			{
 			case SDL_CONTROLLER_BUTTON_A:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_A = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_A = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_B:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_B = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_B = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_X:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_X = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_X = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_Y:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_Y = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_Y = BTT_PRESSED;
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-				_inputMsg[event.cbutton.which]->getControllerState().Left_Shoulder = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Left_Shoulder = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-				_inputMsg[event.cbutton.which]->getControllerState().Right_Shoulder = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Right_Shoulder = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-				_inputMsg[event.cbutton.which]->getControllerState().Right_Stick = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Right_Stick = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-				_inputMsg[event.cbutton.which]->getControllerState().Left_Stick = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Left_Stick = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_START:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_Start = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_Start = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_BACK:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_Back = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_Back = BTT_PRESSED;
 			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Down = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Down = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_UP:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Up = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Up = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Left = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Left = BTT_PRESSED;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Right = PRESSED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Right = BTT_PRESSED;
 				break;
 			default:
 				break;
@@ -151,44 +151,44 @@ void InputManager::handleInput(){
 			switch (event.cbutton.button)
 			{
 			case SDL_CONTROLLER_BUTTON_A:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_A = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_A = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_B:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_B = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_B = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_X:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_X = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_X = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_Y:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_Y = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_Y = BTT_RELEASED;
 			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-				_inputMsg[event.cbutton.which]->getControllerState().Left_Shoulder = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Left_Shoulder = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-				_inputMsg[event.cbutton.which]->getControllerState().Right_Shoulder = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Right_Shoulder = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-				_inputMsg[event.cbutton.which]->getControllerState().Right_Stick = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Right_Stick = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-				_inputMsg[event.cbutton.which]->getControllerState().Left_Stick = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Left_Stick = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_START:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_Start = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_Start = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_BACK:
-				_inputMsg[event.cbutton.which]->getControllerState().Button_Back = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().Button_Back = BTT_RELEASED;
 			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Down = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Down = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_UP:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Up = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Up = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Left = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Left = BTT_RELEASED;
 				break;
 			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-				_inputMsg[event.cbutton.which]->getControllerState().DPad_Right = RELEASED;
+				_inputMsg[event.cbutton.which]->getCInputState().DPad_Right = BTT_RELEASED;
 				break;
 			default:
 				break;
@@ -201,16 +201,16 @@ void InputManager::handleInput(){
 			if ((axisMotion < -DEAD_ZONE) || (axisMotion > DEAD_ZONE))
 			{
 				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX){
-					_inputMsg[event.caxis.which]->getControllerState().Axis_LeftX = axisMotion;
+					_inputMsg[event.caxis.which]->getCInputState().Axis_LeftX = axisMotion;
 				}
 				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
-					_inputMsg[event.caxis.which]->getControllerState().Axis_LeftY = axisMotion;
+					_inputMsg[event.caxis.which]->getCInputState().Axis_LeftY = axisMotion;
 					
 				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
-					_inputMsg[event.caxis.which]->getControllerState().Axis_RightX = axisMotion;
+					_inputMsg[event.caxis.which]->getCInputState().Axis_RightX = axisMotion;
 					
 				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
-					_inputMsg[event.caxis.which]->getControllerState().Axis_RightY = axisMotion;
+					_inputMsg[event.caxis.which]->getCInputState().Axis_RightY = axisMotion;
 			}
 			break;
 //Events for Controller recognize: connect and disconnect

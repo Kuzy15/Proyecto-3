@@ -8,6 +8,7 @@
 #include <list>
 #include <Box2D.h>
 
+
 class Entity;
 class Message;
 //Pixels per meter
@@ -32,7 +33,8 @@ typedef enum componentType {
 	MESSAGESEND_COMPONENT,
 	MESH_RENDER_COMPONENT,
 	INPUT_BASE_COMPONENT,
-	PHYSICS_COMPONENT
+	PHYSICS_COMPONENT,
+	PLAYER_CONTROLLER_COMPONENT
 
 
 };
@@ -172,6 +174,22 @@ private:
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
 	
+};
+
+/*-----------------------------	PLAYER CONTROLLER COMPONENT	--------------------*/
+//This component take the input events to send new messages to control the player (attack, move, etc.)
+class PlayerControllerComponent : public gameComponent
+{
+public:
+	PlayerControllerComponent(Entity * father/*, int playerId*/);
+	~PlayerControllerComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	inline const int getId(){ return _id; };
+private:
+	int _id;
 };
 
 
