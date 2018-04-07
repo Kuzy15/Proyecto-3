@@ -3,6 +3,7 @@
 class Entity;
 class Message;
 class Game;
+ 
 
 /*----------------------------- GAME SCENE -----------------------------*/
 //Father class to every scene in the game.
@@ -11,7 +12,7 @@ class gameScene
 {
 public:
 	gameScene(std::string id, Game * pGame);
-	~gameScene();
+	virtual ~gameScene();
 
 
 	//Entity Management
@@ -49,7 +50,7 @@ class basicScene: public gameScene
 {
 public:
 	basicScene(std::string id, Game * game);
-	~basicScene();
+	virtual ~basicScene();
 
 
 	virtual bool run();
@@ -64,5 +65,60 @@ private:
 	
 };
 
+/*----------------------------- GAMEPLAY SCENE -----------------------------*/
+
+/*
+This scene subdivides in 3 diferente states that manage the proccess to battle:
+	1. The "LoadOut" menu, where the players choose the God and the deck of carts (active and passive) to play.
+	2. The "Battle" state, where the actions happens.
+	3. The "End" menu that pops when one of the playes wins.
+
+The scene itself is a state machine. 
+To manage all this data, the scene stores information of the game (like number of players, state of battle, etc).
+ 
+					EL NOMBRE DE LOS ESTADOS NO ES DEFINITIVO
+*/
+
+//Definition of the 3 possible states.
+typedef enum GameplayState{
+	GS_SETUP, GS_BATTLE, GS_END, GS_LOADING
+};
+//Struct and global variables that stores the battle information
+const int MAX_ROUNDS = 3;
+
+struct BattleState{
+	float timeElapsed = 0;		//Time elapsed sice the start of the battle
+	int roundsCompleted = 0;	//Rounds completed
+};
+
+
+class GamePlayScene : public gameScene
+{
+public:
+	GamePlayScene(std::string id, Game * game, int nPlayers);
+	virtual ~GamePlayScene();
+
+	virtual bool run();
+	virtual void dispatch();
+
+private:
+	//Methods that manages the state of the scene
+	void loadOut();
+	void battle();
+	void end();
+
+	Ogre::SceneManager * scnMgr;
+	Ogre::Viewport * vp;
+	Ogre::Camera * cam;
+	Ogre::Light * light;
+
+	GameplayState _currState;	//The current state of the scene
+	BattleState _batState;		//The state of the battle
+	int _nPlayers;				//Number of players
+	std::vector<Entity*> _players = std::vector<Entity*>(4);	//Array of pointer to the players Entities
+	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
+
+
+};
 
 #endif

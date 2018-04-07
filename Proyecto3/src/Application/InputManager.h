@@ -9,7 +9,7 @@
 //Const values for the deadzones of the controller's joystick
 const float DEAD_ZONE = 50.0f;			//Then, the values are in the range [50,327] or [-50,-327]			
 const float PARSE_VALUE = 100.0f;
-//Max player
+//Max player (no debe estar aquí)
 const int MAX_PLAYERS = 2;									
 
 /*	This class defines an interface to comunicate with SDL Input (event) system.	*/
