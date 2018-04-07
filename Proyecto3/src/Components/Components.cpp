@@ -50,7 +50,7 @@ stringComponent::~stringComponent(){
 void stringComponent::getMessage(Message * m){
 #ifdef _DEBUG
 	//if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
-	}
+	
 #endif
 }
 void stringComponent::tick(float delta){
