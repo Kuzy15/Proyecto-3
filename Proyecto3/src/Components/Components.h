@@ -151,11 +151,11 @@ private:
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 //--------- RIGID BODY COMPONENT ---------
-class rigidBodyComponent : public gameComponent
+class RigidBodyComponent : public gameComponent
 {
 public:
-	rigidBodyComponent(Entity * father, b2World * world, Ogre::Vector2 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
-	~rigidBodyComponent();
+	RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
+	~RigidBodyComponent();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
