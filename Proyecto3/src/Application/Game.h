@@ -22,6 +22,7 @@ public:
 	void loop();
 	Ogre::RenderWindow * getRenderWindow();
 	Ogre::Root * getRoot();
+	static Game * getInstance();
 
 
 private:
@@ -56,7 +57,8 @@ private:
 	//This will be removed. Just to test
 	gameScene * actScene;
 
-
+	//Singleton
+	static Game * _instance;
 
 	//internal private methods
 	bool initOgre();

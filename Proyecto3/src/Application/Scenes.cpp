@@ -97,21 +97,9 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 
-	//Self-explanatory methods
-	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 150);
-	cam->lookAt(0, 0, -300);
-	cam->setNearClipDistance(5);
-
 
 	//------------------------------------------------------------------------------------------------------
 	//ViewPort Addition
-	vp = game->getRenderWindow()->addViewport(cam);
-	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
-
-	cam->setAspectRatio(
-		Ogre::Real(vp->getActualWidth()) /
-		Ogre::Real(vp->getActualHeight()));
 	
 	
 	//------------------------------------------------------------------------------------------------------
@@ -137,7 +125,12 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 	Entity * test1 = new Entity("test1", this);
 	Entity * test2 = new Entity("test2", this);
+	Entity * cam = new Entity ("Camera1", this);
 
+
+	cam->addComponent(
+		new CameraComponent(cam, this, vp, "MainCamera", Ogre::Vector3(0, 150, 0), Ogre::Vector3(0, 0, 0), 1, 5)
+	);
 	test2->addComponent(new stringComponent(test2));
 	//test2->addComponent()
 	

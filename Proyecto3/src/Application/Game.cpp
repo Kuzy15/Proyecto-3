@@ -18,6 +18,7 @@
 #include <iostream>
 #endif
 
+Game * Game::_instance = nullptr;
 
 #pragma region Constructor and destructor
 Game::Game(){
@@ -59,6 +60,14 @@ Game::Game(){
  Ogre::Root * Game::getRoot(){
 	 return root;
  }
+#pragma endregion
+
+#pragma region getters and setters
+ Game * Game::getInstance() {
+	 if (_instance = nullptr)_instance =  new Game();
+	return _instance;
+ }
+
 #pragma endregion
 
 #pragma region Ogre Game functions
@@ -183,8 +192,6 @@ void Game::loop() {
 //Método que renderiza
 void Game::render() {
 
-	
-	
 	Ogre::WindowEventUtilities::messagePump();
 	if (pWindow->isClosed())return;
 	if (!root->renderOneFrame())return;

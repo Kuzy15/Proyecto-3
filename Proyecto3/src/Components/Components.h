@@ -32,7 +32,8 @@ typedef enum componentType {
 	MESSAGESEND_COMPONENT,
 	MESH_RENDER_COMPONENT,
 	INPUT_BASE_COMPONENT,
-	PHYSICS_COMPONENT
+	PHYSICS_COMPONENT,
+	CAMERA_COMPONENT
 
 
 };
@@ -144,7 +145,25 @@ public:
 private:
 
 };
+//---------   CAMERA COMPONENT   ---------
+class CameraComponent: public gameComponent
+{
+public:
+	CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, Ogre::Real ratio, int clipDistance);
+	~CameraComponent();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
 
+private:
+	std::string _camName;
+	Ogre::SceneManager * _scnMgr;
+	Ogre::Viewport * _vp;
+	Ogre::Quaternion _quat;
+	Ogre::Vector3 _pos;
+	Ogre::Vector3 _lookAt;
+	
+	Ogre::Camera * _cam;
+};
 
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/

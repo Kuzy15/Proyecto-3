@@ -3,6 +3,7 @@
 #include <OgreEntity.h>
 #include <OgreSceneNode.h>
 #include "Messages.h"
+#include "Game.h"
 
 
 
@@ -89,7 +90,7 @@ void messageSendComponent::getMessage(Message * m) {
 #pragma endregion
 
 
-/*-------------------------RENDER COMPONENTS------------------------------------*/
+/*-------------------------OGRE COMPONENTS------------------------------------*/
 //Render Component class. Father to every
 //other render component.
 #pragma region renderComponent
@@ -148,6 +149,29 @@ void meshRenderComponent::getMessage(Message * m) {
 }
 
 #pragma endregion
+#pragma region Camera Component
+CameraComponent::CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, Ogre::Real ratio, int clipDistance)
+	: gameComponent(CAMERA_COMPONENT, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt)
+{
+	_cam = _scnMgr->createCamera(_camName);
+	_cam->setPosition(pos);
+	_cam->lookAt(lookAt);
+	_cam->setAspectRatio(ratio);
+
+	vp = Game::getInstance()->getRenderWindow()->addViewport(_cam); 
+	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
+}
+CameraComponent::~CameraComponent() {
+	delete _cam;
+}
+
+
+
+#pragma endregion
+
+
+
+/*-------------------------BOX2D COMPONENTS------------------------------------*/
 
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
