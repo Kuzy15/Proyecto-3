@@ -36,7 +36,7 @@ std::string stringMessage::getText() {
 
 //Input Message implementation 
 #pragma region InputStateMessage
-InputStateMessage::InputStateMessage(msgDest d, std::string emmiter) :Message(INPUT_STATE_MSG, BROADCAST, emmiter){
+InputStateMessage::InputStateMessage(int i, msgDest d, std::string emmiter) :Message(INPUT_STATE_MSG, BROADCAST, emmiter), _controllerId(i){
 
 	
 }
@@ -79,3 +79,14 @@ Ogre::Quaternion UpdateTransformMessage::GetQuat() { return _nQuat; }
 
 #pragma endregion
 
+#pragma region MessageInputPlayer
+
+MessagePlayerInput::MessagePlayerInput(int i, std::string emmiter): Message(MSG_PLAYER_MOVE_X,ENTITY,emmiter), _id(i){}
+MessagePlayerInput::~MessagePlayerInput(){}
+#pragma endregion
+
+#pragma region MessagePlayerMoveX
+MessagePlayerMoveX::MessagePlayerMoveX(float v, int i, std::string emmiter) : MessagePlayerInput(i, emmiter),_value(v){}
+MessagePlayerMoveX::~MessagePlayerMoveX(){};
+
+#pragma endregion 

@@ -181,7 +181,7 @@ private:
 class PlayerControllerComponent : public gameComponent
 {
 public:
-	PlayerControllerComponent(Entity * father/*, int playerId*/);
+	PlayerControllerComponent(Entity * father, int playerId);
 	~PlayerControllerComponent();
 
 	virtual void tick(float delta);

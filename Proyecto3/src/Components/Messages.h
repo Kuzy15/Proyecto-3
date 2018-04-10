@@ -51,7 +51,9 @@ struct CInputState{
 typedef enum msgType{
 
 	STRING_MSG, INPUT_STATE_MSG,
-	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM
+	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM,
+	MSG_PLAYER_MOVE_X
+
 
 };
 
@@ -100,16 +102,16 @@ private:
 class InputStateMessage : public Message
 {
 public:
-	InputStateMessage(msgDest d, std::string emmiter);
+	InputStateMessage(int i,msgDest d, std::string emmiter);
 	virtual ~InputStateMessage();
 
 	CInputState& getCInputState();
-
+	inline int getId(){ return _controllerId; };
 	inline int getNumMessages() { return _cState.nEvents; };
 
 private:
 	CInputState _cState;
- 
+	int _controllerId;
 };
 
 
@@ -142,6 +144,38 @@ private:
 	Ogre::Vector3 _nPos;
 	Ogre::Quaternion _nQuat;
 };
+
+
+//--------------------------------------------------	INPUT PLAYER MSG	 (ABSTRACT)	----------------------------------------------------------//
+class MessagePlayerInput : public Message
+{
+public:
+	MessagePlayerInput(int i, std::string emmiter);
+	~MessagePlayerInput();
+	inline int GetId(){ return _id; };
+
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	int _id;
+};
+
+
+
+//--------------------------------------------------	PLAYER MOVEMENT X MSG		----------------------------------------------------------//
+class MessagePlayerMoveX : public MessagePlayerInput
+{
+public:
+	MessagePlayerMoveX(float v, int i, std::string emmiter);
+	~MessagePlayerMoveX();
+	inline float GetValue(){ return _value; };
+	
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	float _value;
+};
+
 
 
 

@@ -77,7 +77,7 @@ void InputManager::handleInput(){
 	//Create main Input message who contains the events and variables to store the values
 	for (int i = 0; i < _currentNPlayers; i++){
 
-		_inputMsg[i] = new InputStateMessage(BROADCAST, _emitter);
+		_inputMsg[i] = new InputStateMessage(i,BROADCAST, _emitter);
 
 	}
 	float axisMotion;
