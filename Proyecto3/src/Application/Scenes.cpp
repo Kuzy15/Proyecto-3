@@ -57,6 +57,8 @@ void gameScene::dispatch() {
 	nMessages = _messages.size();
 	std::list<Message *>::iterator it =_messages.begin();
 	for (int i = 0; i < nMessages && it != _messages.end(); i++, it++) {
+		if ((*it)->getDestination() == SCENE)
+			_sceneMessages.push_back((*it));
 		for (Entity * aux : _entities) {
 			if((*it)->getEmmiter() != aux->getID())
 				aux->getMessage(*it);
@@ -150,6 +152,8 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	addEntity(test2);
 	
 }
+
+
 basicScene::~basicScene(){
 	delete light;
 	delete cam;
@@ -232,6 +236,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : gameScene(id
 		addEntity(_players[i]);
 	}
 
+	//Not paused at start
+	_paused = false;
 	//Set the starter state to LOADOUT
 	_currState = GS_SETUP;
 
@@ -267,6 +273,9 @@ bool GamePlayScene::run(){
 	//Then we deliver the messages
 	dispatch();
 
+	//Proccess Scene Messages
+	processScnMsgs();
+
 	switch (_currState)
 	{
 		//In this state, we should set up the players God (mesh renderer, habilities, etc) and playing cards
@@ -280,8 +289,8 @@ bool GamePlayScene::run(){
 		//Last state before leave the scene
 	case GS_END:
 		end();
-		break;
-	case GS_LOADING :
+	case GS_STOPPED:
+		
 		break;
 	default:
 		break;
@@ -301,25 +310,96 @@ void GamePlayScene::dispatch(){
 	gameScene::dispatch();
 }
 
-void GamePlayScene::loadOut(){
-	/*
-		If players are ready, go to the Battle state (charge the map, UI, etc)
-		bool ready = true;
-		for(int i = 0; i < _nPlayers; i++){
-			ready = ready & pReady[i];
-		}
-	*/
+void GamePlayScene::processScnMsgs(){
 
+	nMessages = _sceneMessages.size();
+	std::list<Message *>::iterator it = _sceneMessages.begin();
+	for (int i = 0; i < nMessages && it != _sceneMessages.end(); i++, it++) {
+		
+		switch ((*it)->getType())
+		{
+		case CONTROLLER_STATE_MSG:
+
+		default:
+			break;
+		}
+		
+		}
+
+}
+
+void GamePlayScene::loadOut(){
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+		bool playersAreReady = true;
+		for(int i = 0; i < _nPlayers; i++){
+			playersAreReady = playersAreReady & _pReady[i];
+		}
+		
+		if (playersAreReady){
+			_currState = GS_BATTLE;
+		}
 }
 
 void GamePlayScene::battle(){
 	/*
-		Pick data from the battle (_batState), and control the end of it
+		Pick data from the battle State (_bS), and control the end of it
 	*/
+
+	//Pre-battle: little wait time to let players getting ready
+	if (!_bS.battleStarted){
+
+
+
+	//Contador de 5 seg (por ejemplo) y empieza el combate
+	_bS.battleStarted = true;
+	_bS.timeCountStart = SDL_GetTicks();
+	}
+
+	//Battle
+	else{
+
+		//Update time elapsed
+		_bS.timeElapsed = SDL_GetTicks() - _bS.timeCountStart;
+
+		//If time is greater than limit, stop battle
+		if (_bS.timeElapsed > TIME_LIMIT){
+			_bS.battleEnded = true;
+			_currState = GS_END;
+		}
+
+
+
+
+	}
+
 
 
 }
 void GamePlayScene::end(){
+
+}
+
+void GamePlayScene::controllerDisconected(int id){
+
+	_paused = true;
+
 
 }
 #pragma endregion

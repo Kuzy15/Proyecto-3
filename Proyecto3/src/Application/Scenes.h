@@ -22,6 +22,7 @@ public:
 	//Comunication methods
 	void getMessage(Message *);
 	virtual void dispatch();
+	virtual void processScnMsgs();
 
 	//Main loop of the scene.
 	//Each scene implements it differently
@@ -38,6 +39,7 @@ protected:
 	//Messaging attributes and methods
 	std::list<Entity *> _entities;
 	std::list<Message *> _messages;
+	std::list<Message *> _sceneMessages;
 
 
 };
@@ -81,14 +83,18 @@ To manage all this data, the scene stores information of the game (like number o
 
 //Definition of the 3 possible states.
 typedef enum GameplayState{
-	GS_SETUP, GS_BATTLE, GS_END, GS_LOADING
+	GS_SETUP, GS_BATTLE, GS_END, GS_STOPPED
 };
 //Struct and global variables that stores the battle information
 const int MAX_ROUNDS = 3;
+const float TIME_LIMIT = 0;
 
 struct BattleState{
+	bool battleStarted = false; //Bool battle started
+	bool battleEnded = false;
 	float timeElapsed = 0;		//Time elapsed sice the start of the battle
 	int roundsCompleted = 0;	//Rounds completed
+	float timeCountStart = 0	//Time when battle started
 };
 
 
@@ -100,12 +106,14 @@ public:
 
 	virtual bool run();
 	virtual void dispatch();
+	virtual void processScnMsgs();
 
 private:
 	//Methods that manages the state of the scene
 	void loadOut();
 	void battle();
 	void end();
+	void controllerDisconected(int id);
 
 	Ogre::SceneManager * scnMgr;
 	Ogre::Viewport * vp;
@@ -113,11 +121,11 @@ private:
 	Ogre::Light * light;
 
 	GameplayState _currState;	//The current state of the scene
-	BattleState _batState;		//The state of the battle
+	BattleState _bS;		//The state of the battle
 	int _nPlayers;				//Number of players
 	std::vector<Entity*> _players = std::vector<Entity*>(4);	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
-
+	bool _paused;
 
 };
 
