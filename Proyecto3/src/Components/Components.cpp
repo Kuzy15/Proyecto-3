@@ -146,7 +146,7 @@ RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::V
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), gameComponent(PHYSICS_COMPONENT,father) {
 	
 	//Sets the pos attached to the render.
-	_pos.x = posInPixels.z / PPM;
+	_pos.x = posInPixels.x / PPM;
 	_pos.y = posInPixels.y / PPM;
 
 	//Initial velocity 0.
@@ -217,16 +217,13 @@ RigidBodyComponent::~RigidBodyComponent() {
 }
 void RigidBodyComponent::tick(float delta) {
 
-	//Procesar los mensajes que han llegado
+	
 
 	//Send the message to the entity.
 	//Transformation from physics world to ogre world.
-	Ogre::Vector3 v1(_body->GetTransform().q.GetXAxis().x, _body->GetTransform().q.GetXAxis().y, 0);
-	Ogre::Vector3 v2(_body->GetTransform().q.GetYAxis().x, _body->GetTransform().q.GetYAxis().y, 0);
-	Ogre::Vector3 v3(0, 0, -1);
-	Ogre::Quaternion Q(v3, v2, v1);//posibles errores de rotacion, REVISAR
 	
-	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, _body->GetPosition().y * PPM, _body->GetPosition().x * PPM), Q, pEnt->getID());
+	
+	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(_body->GetPosition().x * PPM, _body->GetPosition().y * PPM, 0), Ogre::Quaternion::IDENTITY, pEnt->getID());
 	pEnt->getMessage(m);
 
 	std::cout << pEnt->getID()  << _body->GetPosition().y << std::endl;
@@ -236,21 +233,17 @@ void RigidBodyComponent::tick(float delta) {
 
 }
 void RigidBodyComponent::getMessage(Message * m) {
-	//Tipo de mover
-	/*if (m->getType() == "me tengo que mover" ){
-		if (m->miMando o algo asi == myController){
-			//transformarlo
-			b2Vec2 newDir = m->static_cast<MoveController o algo asi*>(m)getDir();
-			float torque = m->static_cast<MoveController o algo asi*>(m)getRot();
-
-			_body->ApplyForceToCenter(newDir,true);
-			_body->ApplyTorque(torque,true);
-
-			
-			
-		}
 	
-	}*/
+	if (m->getType() == MSG_PLAYER_MOVE_X){
+		
+			//transformarlo
+		float value = static_cast<MessagePlayerMoveX*>(m)->GetValue();
+		value = value / 1000;
+		b2Vec2 newForce(0, value);
+		_body->ApplyForceToCenter(newForce,true);
+		std::cout << "Aplicada fuerza de: " << value << std::endl;	
+	
+	}
 
 }
 
@@ -258,7 +251,7 @@ void RigidBodyComponent::getMessage(Message * m) {
 
 //Player Controller Component
 #pragma region PlayerControllerComponent
-PlayerControllerComponent::PlayerControllerComponent(Entity* f): gameComponent(PLAYER_CONTROLLER_COMPONENT, f){
+PlayerControllerComponent::PlayerControllerComponent(Entity* f, int i): gameComponent(PLAYER_CONTROLLER_COMPONENT, f), _id(i){
 	
 }
 
@@ -269,16 +262,20 @@ void PlayerControllerComponent::tick(float delta){
 
 void PlayerControllerComponent::getMessage(Message* m){
 	//If the msg type is CInputState, read the input and process it
-	if (m->getType() == CONTROLLER_STATE_MSG){
-		CInputState cState = static_cast<InputStateMessage*>(m)->getCInputState();
-		
-		if (cState.Button_A == BTT_PRESSED){
-			std::cout << "Se ha pulsado el boton A"  << std::endl;
+	if (m->getType() == INPUT_STATE_MSG){
+		InputStateMessage* inputM = static_cast<InputStateMessage*>(m);
+		if (inputM->getId() == _id){
+
+			CInputState cState = inputM->getCInputState();
+
+			if (cState.Button_A == BTT_PRESSED){
+				std::cout << "Se ha pulsado el boton A" << std::endl;
+			}
+			if (cState.Axis_LeftX > 0){
+				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
+				pEnt->getMessage(m);
+			}
 		}
-		if (cState.Axis_RightX > 0){
-			std::cout << "Valor del eje X del joystick derecho: " << cState.Axis_RightX << std::endl;
-		}
-		
 	}
 }
 #pragma endregion

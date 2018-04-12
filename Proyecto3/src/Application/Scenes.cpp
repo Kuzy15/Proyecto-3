@@ -102,8 +102,8 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 
 	//Self-explanatory methods
 	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 150);
-	cam->lookAt(0, 0, -300);
+	cam->setPosition(0, 0, 50);
+	cam->lookAt(0, 0, 0);
 	cam->setNearClipDistance(5);
 
 
@@ -153,6 +153,7 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 
 
 	test1->addComponent(new RigidBodyComponent(test1, game->getPhysicsWorld(), Ogre::Vector3(0, 40, 100), 5,20,DYNAMIC,POLYGON));
+	test1->addComponent(new PlayerControllerComponent(test1, 0));
 	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,40,100),"Ra.mesh", test1, scnMgr));
 
 	
