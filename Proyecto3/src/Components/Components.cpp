@@ -67,9 +67,7 @@ messageSendComponent::messageSendComponent(Entity * father):gameComponent(MESSAG
 messageSendComponent::~messageSendComponent() {
 }
 void messageSendComponent::tick(float delta) {
-	i++;
-	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, 0, i/5.0), Ogre::Quaternion::IDENTITY, pEnt->getID());
-	pEnt->getMessage(m);
+
 	
 }
 void messageSendComponent::getMessage(Message * m) {
@@ -99,7 +97,7 @@ void renderComponent::getMessage(Message *m) {
 	case ENTITY_UPDATETRANSFORM:
 		_ogrepos = static_cast<UpdateTransformMessage *>(m)->GetPos();
 		_ogrequat = static_cast<UpdateTransformMessage *>(m)->GetQuat();
-		std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
+		//std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
 		break;
 	default: 
 		break;
@@ -119,6 +117,7 @@ meshRenderComponent::meshRenderComponent(Ogre::Vector3 p, std::string meshName, 
 	pOgreSceneNode->setPosition(p);
 	_ogrepos = p;
 	_ogrequat = Ogre::Quaternion();
+	
 }
 meshRenderComponent::~meshRenderComponent() {
 	pOgreSceneNode->detachObject(pOgreEnt);
@@ -130,6 +129,7 @@ void meshRenderComponent::tick(float delta) {
 	//stored in the variables.
 	pOgreSceneNode->setPosition(_ogrepos);
 	pOgreSceneNode->setOrientation(_ogrequat);
+	
 }
 void meshRenderComponent::getMessage(Message * m) {
 	renderComponent::getMessage(m);
@@ -141,12 +141,12 @@ void meshRenderComponent::getMessage(Message * m) {
 
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
-#pragma region rigidBodyComponent
-rigidBodyComponent::rigidBodyComponent(Entity * father, b2World * world, Ogre::Vector2 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType) 
+#pragma region RigidBodyComponent
+RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType) 
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), gameComponent(PHYSICS_COMPONENT,father) {
 	
 	//Sets the pos attached to the render.
-	_pos.x = posInPixels.x / PPM;
+	_pos.x = posInPixels.z / PPM;
 	_pos.y = posInPixels.y / PPM;
 
 	//Initial velocity 0.
@@ -154,6 +154,9 @@ rigidBodyComponent::rigidBodyComponent(Entity * father, b2World * world, Ogre::V
 
 	//Body definition.
 	_bodyDef.position.Set(_pos.x, _pos.y);
+	/*_bodyDef.linearDamping = 5.0f;
+	_bodyDef.angularDamping = 0.0f;*/
+	
 	switch (rbType)
 	{
 		case DYNAMIC:
@@ -172,6 +175,7 @@ rigidBodyComponent::rigidBodyComponent(Entity * father, b2World * world, Ogre::V
 	//Body creation.
 	_body = _myWorld->CreateBody(&_bodyDef);
 	
+	
 	//Shape creation.
 	switch (shType)
 	{
@@ -188,10 +192,13 @@ rigidBodyComponent::rigidBodyComponent(Entity * father, b2World * world, Ogre::V
 			break;
 	}
 
+	
+
 	//Fixture Definition.
 	_fixtureDef.shape = _shape;
 	_fixtureDef.density = 1.0;
 	_fixtureDef.friction = 0;
+
 	/* FALTA ESTO POR CONFIGURAR
 	fDef.filter.categoryBits = Juego::JUGADOR;
 	fDef.filter.maskBits = Juego::ENEMIGO | Juego::ITEM | Juego::ESCENARIO | Juego::ESCENARIO_NOCOL | Juego::AT_ENEMIGO;
@@ -204,21 +211,46 @@ rigidBodyComponent::rigidBodyComponent(Entity * father, b2World * world, Ogre::V
 
 
 }
-rigidBodyComponent::~rigidBodyComponent() {
+RigidBodyComponent::~RigidBodyComponent() {
 	_myWorld->DestroyBody(_body);
 	_body = nullptr;
 }
-void rigidBodyComponent::tick(float delta) {
+void RigidBodyComponent::tick(float delta) {
 
 	//Procesar los mensajes que han llegado
 
+	//Send the message to the entity.
+	//Transformation from physics world to ogre world.
+	Ogre::Vector3 v1(_body->GetTransform().q.GetXAxis().x, _body->GetTransform().q.GetXAxis().y, 0);
+	Ogre::Vector3 v2(_body->GetTransform().q.GetYAxis().x, _body->GetTransform().q.GetYAxis().y, 0);
+	Ogre::Vector3 v3(0, 0, -1);
+	Ogre::Quaternion Q(v3, v2, v1);//posibles errores de rotacion, REVISAR
 	
+	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, _body->GetPosition().y * PPM, _body->GetPosition().x * PPM), Q, pEnt->getID());
+	pEnt->getMessage(m);
+
+	std::cout << pEnt->getID()  << _body->GetPosition().y << std::endl;
 
 
 
 
 }
-void rigidBodyComponent::getMessage(Message * m) {
+void RigidBodyComponent::getMessage(Message * m) {
+	//Tipo de mover
+	/*if (m->getType() == "me tengo que mover" ){
+		if (m->miMando o algo asi == myController){
+			//transformarlo
+			b2Vec2 newDir = m->static_cast<MoveController o algo asi*>(m)getDir();
+			float torque = m->static_cast<MoveController o algo asi*>(m)getRot();
+
+			_body->ApplyForceToCenter(newDir,true);
+			_body->ApplyTorque(torque,true);
+
+			
+			
+		}
+	
+	}*/
 
 }
 

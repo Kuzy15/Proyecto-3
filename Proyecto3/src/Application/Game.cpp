@@ -60,6 +60,9 @@ Game::Game(){
  Ogre::Root * Game::getRoot(){
 	 return root;
  }
+ b2World* Game::getPhysicsWorld(){
+	 return world;
+ }
 #pragma endregion
 
 #pragma region Ogre Game functions

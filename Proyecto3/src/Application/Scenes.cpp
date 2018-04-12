@@ -140,17 +140,26 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 	Entity * test1 = new Entity("test1", this);
 	Entity * test2 = new Entity("test2", this);
-	Entity * test3 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
+	Entity * test3 = new Entity("test3", this);
+	Entity * test4 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
+
+	test3->addComponent(new RigidBodyComponent(test3, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 100), 1.5, 20, STATIC, POLYGON));
+	test3->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 100), "Barrel.mesh", test3, scnMgr));
+
+
 	test2->addComponent(new stringComponent(test2));
 	
 	
 
-	test1->addComponent(new messageSendComponent(test1));
-	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,0,100),"Ra.mesh", test1, scnMgr));
+
+	test1->addComponent(new RigidBodyComponent(test1, game->getPhysicsWorld(), Ogre::Vector3(0, 40, 100), 5,20,DYNAMIC,POLYGON));
+	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,40,100),"Ra.mesh", test1, scnMgr));
 
 	
 	addEntity(test1);
 	addEntity(test2);
+	addEntity(test3);
+	addEntity(test4);
 	
 }
 
