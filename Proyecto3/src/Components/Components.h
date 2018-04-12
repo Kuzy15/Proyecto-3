@@ -31,7 +31,8 @@ typedef enum componentType {
 	STRING_COMPONENT,
 	MESSAGESEND_COMPONENT,
 	MESH_RENDER_COMPONENT,
-	PHYSICS_COMPONENT
+	PHYSICS_COMPONENT,
+	PLAYER_CH_COMPONENT
 
 };
 
@@ -131,12 +132,22 @@ private:
 
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
+
+typedef enum filterMask {
+	PLAYER = 0x0001,
+	STATIC_TERRAIN = 0x0002,
+	DINAMIC_TERRAIN = 0x0004,
+	BULLET = 0x0008
+};
+
+
+
 //--------- RIGID BODY COMPONENT ---------
 class rigidBodyComponent : public gameComponent
 {
 public:
 	rigidBodyComponent(Entity * father, b2World * world, Ogre::Vector2 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
-	~rigidBodyComponent();
+	virtual ~rigidBodyComponent();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -156,6 +167,32 @@ private:
 	b2Fixture* _fixture;
 	
 };
+/*
+//--------- COLLISION HANDLER COMPONENT ---------
+//Interface for collision handler component
+class CollisionHandlerComponent : public gameComponent
+{
+public:
+	CollisionHandlerComponent();
+	~CollisionHandlerComponent();
+	
+	virtual void onCollisionEnter();
+	virtual void onCollisionEnd();
 
+private:
+
+};
+
+*/
+//--------- PLAYER C.H. COMPONENT ---------
+class PlayerCollisionHandlerComponent : public gameComponent
+{
+	PlayerCollisionHandlerComponent(Entity* father);
+	virtual ~PlayerCollisionHandlerComponent();
+
+	void tick(float delta);
+	void getMessage(Message * m);
+	
+};
 
 #endif

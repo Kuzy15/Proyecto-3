@@ -151,6 +151,9 @@ rigidBodyComponent::rigidBodyComponent(Entity * father, b2World * world, Ogre::V
 	//Body creation.
 	_body = _myWorld->CreateBody(&_bodyDef);
 	
+	//Set the body data pointer to entity
+	_body->SetUserData(this);
+	
 	//Shape creation.
 	switch (shType)
 	{
@@ -191,14 +194,29 @@ void rigidBodyComponent::tick(float delta) {
 
 	//Procesar los mensajes que han llegado
 
-	
-
-
-
 
 }
 void rigidBodyComponent::getMessage(Message * m) {
 
 }
 
+
+#pragma endregion
+//PlayerCollisionHandler Componenet
+#pragma region PlayerCollisionHandler
+
+PlayerCollisionHandlerComponent::PlayerCollisionHandlerComponent(Entity* father) :gameComponent(PLAYER_CH_COMPONENT, father) {
+}
+PlayerCollisionHandlerComponent::~PlayerCollisionHandlerComponent(){
+}
+
+void PlayerCollisionHandlerComponent::tick(float delta){}
+void PlayerCollisionHandlerComponent::getMessage(Message * m){
+
+
+
+
+
+
+}
 #pragma endregion
