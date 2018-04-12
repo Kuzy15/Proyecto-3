@@ -38,6 +38,10 @@ protected:
 	std::list<Entity *> _entities;
 	std::list<Message *> _messages;
 
+	//Basic Ogre atributes common to every scene
+	Ogre::SceneManager * scnMgr;
+	Ogre::Viewport * vp;
+
 
 };
 
@@ -56,11 +60,7 @@ public:
 	virtual void dispatch();
 
 private:
-	Ogre::SceneManager * scnMgr;
-	Ogre::Viewport * vp;
-	Ogre::Camera * cam;
 	Ogre::Light * light;
-	
 	
 };
 

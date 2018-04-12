@@ -22,7 +22,7 @@ Game * Game::_instance = nullptr;
 
 #pragma region Constructor and destructor
 Game::Game(){
-
+	_instance = this;
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
 
@@ -49,6 +49,7 @@ Game::Game(){
 	 //Delete the physics world
 	 delete world;
 	 world = nullptr;
+	 delete root;
  }
 #pragma endregion
 
@@ -64,7 +65,7 @@ Game::Game(){
 
 #pragma region getters and setters
  Game * Game::getInstance() {
-	 if (_instance = nullptr)_instance =  new Game();
+	 if (_instance == nullptr)_instance =  new Game();
 	return _instance;
  }
 

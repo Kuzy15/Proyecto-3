@@ -12,7 +12,7 @@ class gameComponent;
 
 
 typedef enum msgType{
-	STRING_MSG, INPUT_MSG, I_BUTTONDOWN_MSG, ENTITY_UPDATETRANSFORM
+	STRING_MSG, INPUT_MSG, I_BUTTONDOWN_MSG, MSG_UPDATETRANSFORM,
 };
 
 typedef enum msgDest {
@@ -94,17 +94,16 @@ private:
 class UpdateTransformMessage: public Message
 {
 public:
-	UpdateTransformMessage(Ogre::Vector3 newPos, Ogre::Quaternion newQuaternion, std::string emmiter);
+	UpdateTransformMessage(Ogre::Vector3 newPos, float nRotation, std::string emmiter);
 	~UpdateTransformMessage();
 	Ogre::Vector3 GetPos();
-	Ogre::Quaternion GetQuat();
+	float getRotation();
 
 private:
 	//Private fields for the new position and quaternion of the entity
 	Ogre::Vector3 _nPos;
-	Ogre::Quaternion _nQuat;
+	float _nRotation;
 };
-
 
 
 #endif

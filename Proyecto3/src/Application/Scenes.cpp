@@ -25,7 +25,7 @@
 
 #pragma region gameScene 
 
-gameScene::gameScene(std::string id, Game * game) :_id(id), pGame(game){
+gameScene::gameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
 	nMessages = -1;
 }
 gameScene::~gameScene()
@@ -36,6 +36,7 @@ gameScene::~gameScene()
 		_entities.pop_front();
 		delete ent;
 	}
+	
 
 }
 bool gameScene::updateEnts(float delta){
@@ -127,13 +128,11 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	Entity * test2 = new Entity("test2", this);
 	Entity * cam = new Entity ("Camera1", this);
 
-
 	cam->addComponent(
-		new CameraComponent(cam, this, vp, "MainCamera", Ogre::Vector3(0, 150, 0), Ogre::Vector3(0, 0, 0), 1, 5)
+		new CameraComponent(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(20, -20, 100), Ogre::Vector3(0,0,0), 5)
 	);
 	test2->addComponent(new stringComponent(test2));
 	//test2->addComponent()
-	
 
 	test1->addComponent(new messageSendComponent(test1));
 	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,0,100),"Ra.mesh", test1, scnMgr));
@@ -141,11 +140,11 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 
 	addEntity(test1);
 	addEntity(test2);
+	addEntity(cam);
 	
 }
 basicScene::~basicScene(){
 	delete light;
-	delete cam;
 	delete vp;
 	delete scnMgr;
 

@@ -79,7 +79,7 @@ messageSendComponent::~messageSendComponent() {
 }
 void messageSendComponent::tick(float delta) {
 	i++;
-	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, 0, i/5.0), Ogre::Quaternion::IDENTITY, pEnt->getID());
+	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
 	pEnt->getMessage(m);
 	
 }
@@ -107,9 +107,9 @@ renderComponent::~renderComponent(){
 //Get Message general to every other render component child to this
 void renderComponent::getMessage(Message *m) {
 	switch (m->getType()) {
-	case ENTITY_UPDATETRANSFORM:
+	case MSG_UPDATETRANSFORM:
 		_ogrepos = static_cast<UpdateTransformMessage *>(m)->GetPos();
-		_ogrequat = static_cast<UpdateTransformMessage *>(m)->GetQuat();
+		pOgreSceneNode->roll((Ogre::Radian)static_cast<UpdateTransformMessage *>(m)->getRotation());
 		std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
 		break;
 	default: 
@@ -150,22 +150,45 @@ void meshRenderComponent::getMessage(Message * m) {
 
 #pragma endregion
 #pragma region Camera Component
-CameraComponent::CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, Ogre::Real ratio, int clipDistance)
-	: gameComponent(CAMERA_COMPONENT, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt)
+CameraComponent::CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
+	: gameComponent(CAMERA_COMPONENT, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
 {
-	_cam = _scnMgr->createCamera(_camName);
-	_cam->setPosition(pos);
-	_cam->lookAt(lookAt);
-	_cam->setAspectRatio(ratio);
+	pCam = _scnMgr->createCamera(_camName);
+	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam); 
 
-	vp = Game::getInstance()->getRenderWindow()->addViewport(_cam); 
-	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
+	pCam->setPosition(_pos);
+	pCam->lookAt(_lookAt);
+	pCam->setAspectRatio(
+		Ogre::Real(vp->getActualWidth()) /
+		Ogre::Real(vp->getActualHeight()));
+
+	pCam->setNearClipDistance(clipDistance);
+
+	vp->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
 }
 CameraComponent::~CameraComponent() {
-	delete _cam;
+	delete pCam;
 }
+void CameraComponent::tick(float delta) {
+	if (_lookAt != _lastLookAt) {
+		pCam->lookAt(_lookAt);
+		_lastLookAt = _lookAt;
+	}
+	if (_pos != _lastPos) {
+		pCam->setPosition(_pos);
+		_lastPos = _pos;
+	}
+
+}
+void CameraComponent::getMessage(Message * m) {
+	//DEBUG MESSAGE RECEIVING
+	if (m->getType() == MSG_UPDATETRANSFORM) {
+		std::cout << "MESSAGE RECEIVED" << std::endl;
+		_lookAt = static_cast<UpdateTransformMessage *> (m)->GetPos();
+	}
 
 
+}
 
 #pragma endregion
 
