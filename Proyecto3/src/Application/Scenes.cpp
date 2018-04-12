@@ -18,6 +18,7 @@
 
 #include <Entity.h>
 #include "InputManager.h"
+#include "EntityFactory.h"
 #include "Game.h"
 #include "Messages.h"
 #include "Scenes.h"
@@ -139,15 +140,15 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 	Entity * test1 = new Entity("test1", this);
 	Entity * test2 = new Entity("test2", this);
-
+	Entity * test3 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
 	test2->addComponent(new stringComponent(test2));
-	//test2->addComponent()
+	
 	
 
 	test1->addComponent(new messageSendComponent(test1));
 	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,0,100),"Ra.mesh", test1, scnMgr));
 
-
+	
 	addEntity(test1);
 	addEntity(test2);
 	

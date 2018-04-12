@@ -3,6 +3,7 @@
 class Entity;
 class Message;
 class Game;
+
  
 
 /*----------------------------- GAME SCENE -----------------------------*/
@@ -58,6 +59,7 @@ public:
 	virtual bool run();
 	virtual void dispatch();
 	void processScnMsgs();
+	inline Ogre::SceneManager* getScnMngr(){ return scnMgr; }
 
 private:
 	Ogre::SceneManager * scnMgr;

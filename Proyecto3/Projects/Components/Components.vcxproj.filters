@@ -24,7 +24,7 @@
     <ClInclude Include="..\..\src\Components\Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EF_Entities.h">
+    <ClInclude Include="..\..\src\Components\EF_Entities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="..\..\src\Components\Messages.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EF_Entities.cpp">
+    <ClCompile Include="..\..\src\Components\EF_Entities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
