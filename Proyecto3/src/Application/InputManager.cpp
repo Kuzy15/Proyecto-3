@@ -56,7 +56,7 @@ InputManager::~InputManager()
 
 InputManager& InputManager::getInstance(){
 	// Lazy initialize.
-	if (InputManager::_instance == NULL) InputManager::_instance = new InputManager();
+	if (InputManager::_instance == nullptr) InputManager::_instance = new InputManager();
 	return *InputManager::_instance;
 }
 

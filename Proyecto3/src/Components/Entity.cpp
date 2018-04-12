@@ -45,7 +45,7 @@ void Entity::deleteComponent(componentType id){
 			aux = *it;
 			it = components.erase(it);
 			delete aux;
-			found = false;
+			found = true;
 		}
 		else it++;
 	}

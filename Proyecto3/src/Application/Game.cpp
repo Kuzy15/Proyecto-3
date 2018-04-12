@@ -44,10 +44,11 @@ Game::Game(){
 
 	 //Remove the game from the window listeners
 	 Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
-	 
 	 //Delete the physics world
 	 delete world;
 	 world = nullptr;
+	 //Borrar escena
+	 //delete actScene;
  }
 #pragma endregion
 

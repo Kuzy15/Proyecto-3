@@ -184,6 +184,8 @@ void basicScene::dispatch(){
 
 }
 
+void basicScene::processScnMsgs(){};
+
 #pragma endregion
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.

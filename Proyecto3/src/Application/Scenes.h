@@ -22,7 +22,7 @@ public:
 	//Comunication methods
 	void getMessage(Message *);
 	virtual void dispatch();
-	virtual void processScnMsgs();
+	virtual void processScnMsgs() = 0;
 
 	//Main loop of the scene.
 	//Each scene implements it differently
@@ -57,6 +57,7 @@ public:
 
 	virtual bool run();
 	virtual void dispatch();
+	void processScnMsgs();
 
 private:
 	Ogre::SceneManager * scnMgr;
@@ -94,7 +95,7 @@ struct BattleState{
 	bool battleEnded = false;
 	float timeElapsed = 0;		//Time elapsed sice the start of the battle
 	int roundsCompleted = 0;	//Rounds completed
-	float timeCountStart = 0	//Time when battle started
+	float timeCountStart = 0;	//Time when battle started
 };
 
 
