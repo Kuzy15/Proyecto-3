@@ -278,4 +278,42 @@ void PlayerControllerComponent::getMessage(Message* m){
 		}
 	}
 }
+
+#pragma endregion
+
+//Life Component
+#pragma region Life Component
+LifeComponent::LifeComponent(Entity* father):gameComponent(LIFE_COMPONENT,father), maxLife(MAX_LIFE), _currentLife(MAX_LIFE){}
+LifeComponent::~LifeComponent(){}
+
+void LifeComponent::tick(float delta){}
+void LifeComponent::getMessage(Message* m){}
+#pragma endregion
+
+//Move Component
+#pragma region Player Move Component
+PlayerMoveComponent::PlayerMoveComponent(Entity* father, float vel) :gameComponent(PLAYER_MOVEMENT_COMPONENT, father), _maxSpeed(MAX_SPEED), _moveVel(vel){}
+PlayerMoveComponent::~PlayerMoveComponent(){}
+
+void PlayerMoveComponent::tick(float delta){}
+void PlayerMoveComponent::getMessage(Message* m){}
+#pragma endregion
+
+//Jump Component
+#pragma region Player Jump Component
+PlayerJumpComponent::PlayerJumpComponent(Entity* father, float startDist) :gameComponent(PLAYER_JUMP_COMPONENT, father), _maxDistance(MAX_JUMP_DISTANCE), _jumpDist(startDist){}
+PlayerJumpComponent::~PlayerJumpComponent(){}
+
+void PlayerJumpComponent::tick(float delta){}
+void PlayerJumpComponent::getMessage(Message* m){}
+#pragma endregion
+
+//Basic Attack Component
+#pragma region Player Jump Component
+PlayerBasicAttackComponent::PlayerBasicAttackComponent(Entity* father, float fireRate, E_BULLET bT) :gameComponent(PLAYER_BASIC_ATTACK_COMPONENT, father),
+_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT) {}
+PlayerBasicAttackComponent::~PlayerBasicAttackComponent(){}
+
+void PlayerBasicAttackComponent::tick(float delta){}
+void PlayerBasicAttackComponent::getMessage(Message* m){}
 #pragma endregion
