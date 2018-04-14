@@ -19,17 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Application\CollisionManager.cpp" />
+    <ClCompile Include="..\..\src\Application\EntityFactory.cpp" />
     <ClCompile Include="..\..\src\Application\Game.cpp" />
     <ClCompile Include="..\..\src\Application\InputManager.cpp" />
     <ClCompile Include="..\..\src\Application\main.cpp" />
     <ClCompile Include="..\..\src\Application\Scenes.cpp" />
-    <ClCompile Include="CollisionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Application\CollisionManager.h" />
+    <ClInclude Include="..\..\src\Application\EntityFactory.h" />
     <ClInclude Include="..\..\src\Application\Game.h" />
     <ClInclude Include="..\..\src\Application\InputManager.h" />
     <ClInclude Include="..\..\src\Application\Scenes.h" />
-    <ClInclude Include="CollisionManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3EAF9323-B00F-448E-9D0A-BCC0A88F7988}</ProjectGuid>

@@ -8,6 +8,7 @@
 #include <list>
 #include <Box2D.h>
 
+
 class Entity;
 class Message;
 //Pixels per meter
@@ -31,8 +32,13 @@ typedef enum componentType {
 	STRING_COMPONENT,
 	MESSAGESEND_COMPONENT,
 	MESH_RENDER_COMPONENT,
+
 	PHYSICS_COMPONENT,
-	PLAYER_CH_COMPONENT
+	PLAYER_CH_COMPONENT,
+	INPUT_BASE_COMPONENT,	
+	PLAYER_CONTROLLER_COMPONENT
+
+
 
 };
 
@@ -106,20 +112,24 @@ class renderComponent : public gameComponent
 public:
 	~renderComponent();
 	Ogre::SceneNode * getSceneNode();
+	virtual void getMessage(Message *m);
 
 protected:
 	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);
-	//En el nodo de Ogre estarán todos los valores de renderizado (x,y,z en la escena de ogre, inclinaciones, etc.)
+	// Inside the Ogre Node we can find al the render values needed by ogre
 	Ogre::SceneNode * pOgreSceneNode;
-	//Puntero al sceneManager que lo ha creado
+	// Pointer to the Ogre Scene Manager that created the component
 	Ogre::SceneManager * pSceneMgr;
+	// Cache value for the rendering positions. They will be updated when needed in the tick function
+	Ogre::Vector3 _ogrepos;
+	Ogre::Quaternion _ogrequat;
 };
 
 //--------- MESH RENDER COMPONENT ---------
 class meshRenderComponent: public renderComponent
 {
 public:
-	meshRenderComponent(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
+	meshRenderComponent(Ogre::Vector3, std::string meshName, Entity * father, Ogre::SceneManager * scnM);
 	~meshRenderComponent();
 
 	virtual void tick(float delta);
@@ -127,6 +137,17 @@ public:
 
 private:
 	Ogre::Entity * pOgreEnt;
+	
+};
+//--------- PLANE RENDER COMPONENT ---------
+class planeRenderComponent: public renderComponent
+{
+public:
+	planeRenderComponent();
+	~planeRenderComponent();
+
+private:
+
 };
 
 
@@ -143,11 +164,13 @@ typedef enum filterMask {
 
 
 //--------- RIGID BODY COMPONENT ---------
-class rigidBodyComponent : public gameComponent
+class RigidBodyComponent : public gameComponent
 {
 public:
-	rigidBodyComponent(Entity * father, b2World * world, Ogre::Vector2 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
-	virtual ~rigidBodyComponent();
+
+	RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
+	virtual ~RigidBodyComponent();
+
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -183,6 +206,7 @@ private:
 
 };
 
+<<<<<<< HEAD
 */
 //--------- PLAYER C.H. COMPONENT ---------
 class PlayerCollisionHandlerComponent : public gameComponent
@@ -194,5 +218,22 @@ class PlayerCollisionHandlerComponent : public gameComponent
 	void getMessage(Message * m);
 	
 };
+
+/*-----------------------------	PLAYER CONTROLLER COMPONENT	--------------------*/
+//This component take the input events to send new messages to control the player (attack, move, etc.)
+class PlayerControllerComponent : public gameComponent
+{
+public:
+	PlayerControllerComponent(Entity * father, int playerId);
+	~PlayerControllerComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	inline const int getId(){ return _id; };
+private:
+	int _id;
+};
+
 
 #endif

@@ -84,7 +84,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDIr)Src\Application;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SDL2\Build\include;$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDIr)Src\Application;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,7 +117,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDIr)Src\Application;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SDL2\Build\include;$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDIr)Src\Application;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -151,11 +151,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Components\Components.h" />
+    <ClInclude Include="..\..\src\Components\EF_Entities.h" />
     <ClInclude Include="..\..\src\Components\Entity.h" />
     <ClInclude Include="..\..\src\Components\Messages.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Components\Components.cpp" />
+    <ClCompile Include="..\..\src\Components\EF_Entities.cpp" />
     <ClCompile Include="..\..\src\Components\Entity.cpp" />
     <ClCompile Include="..\..\src\Components\Messages.cpp" />
   </ItemGroup>
