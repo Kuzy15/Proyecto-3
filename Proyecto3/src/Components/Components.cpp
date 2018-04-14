@@ -257,8 +257,20 @@ PlayerCollisionHandlerComponent::~PlayerCollisionHandlerComponent(){
 
 void PlayerCollisionHandlerComponent::tick(float delta){}
 void PlayerCollisionHandlerComponent::getMessage(Message * m){
-
-
+	
+	//If the msg is the type Collision, read the mask and category bits and process it.
+	if (m->getType() == MSG_COLLISION){
+		uint16_t me = static_cast<MessageCollision*>(m)->GetMyCategory();
+		uint16_t contact = static_cast<MessageCollision*>(m)->GetContactMask();
+		if (contact == BULLET){
+			//me haacen pupa
+		}/*
+		else if (){
+		
+		
+		}*/	
+	
+	}
 
 }
 

@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <list>
 #include <Ogre.h>
+#include <stdint.h>
 
 class Entity;
 class gameComponent;
@@ -52,7 +53,7 @@ typedef enum msgType{
 
 	STRING_MSG, INPUT_STATE_MSG,
 	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM,
-	MSG_PLAYER_MOVE_X
+	MSG_PLAYER_MOVE_X, MSG_COLLISION
 
 
 };
@@ -174,6 +175,23 @@ public:
 private:
 	//Private fields for the new position and quaternion of the entity
 	float _value;
+};
+
+//--------------------------------------------------	COLLISION MSG		----------------------------------------------------------//
+class MessageCollision : public Message
+{
+public:
+	MessageCollision(uint16_t me, uint16_t contact, std::string emmiter);
+	~MessageCollision();
+
+	uint16_t GetMyCategory(){ return _myCategory; };
+	uint16_t GetContactMask(){ return _contactMask; };
+
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	uint16_t _myCategory;
+	uint16_t _contactMask;
 };
 
 

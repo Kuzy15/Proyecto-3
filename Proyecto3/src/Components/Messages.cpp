@@ -90,3 +90,13 @@ MessagePlayerMoveX::MessagePlayerMoveX(float v, int i, std::string emmiter) : Me
 MessagePlayerMoveX::~MessagePlayerMoveX(){};
 
 #pragma endregion 
+
+#pragma region MessageCollision
+
+MessageCollision::MessageCollision(uint16_t me, uint16_t contact, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
+	_myCategory(me), _contactMask(contact){}
+MessageCollision::~MessageCollision(){}
+#pragma endregion
+
+ 
+
