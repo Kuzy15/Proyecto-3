@@ -200,7 +200,7 @@ RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::V
 
 	//Fixture Definition.
 	_fixtureDef.shape = _shape;
-	_fixtureDef.density = 1.0;
+	_fixtureDef.density = 950.0;
 	_fixtureDef.friction = 0;
 
 	/* FALTA ESTO POR CONFIGURAR
@@ -241,8 +241,8 @@ void RigidBodyComponent::getMessage(Message * m) {
 
 		//transformarlo
 		float value = static_cast<MessagePlayerMoveX*>(m)->GetValue();
-		value = value / 1000;
-		b2Vec2 newForce(0, value);
+		value = value;
+		b2Vec2 newForce(0, 700);
 		_body->ApplyForceToCenter(newForce, true);
 		std::cout << "Aplicada fuerza de: " << value << std::endl;
 
@@ -299,11 +299,11 @@ void PlayerControllerComponent::getMessage(Message* m){
 			CInputState cState = inputM->getCInputState();
 
 			if (cState.Button_A == BTT_PRESSED){
-				std::cout << "Se ha pulsado el boton A" << std::endl;
-			}
-			if (cState.Axis_LeftX > 0){
 				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
+			}
+			if (cState.Axis_LeftX > 0){
+				
 			}
 		}
 	}
