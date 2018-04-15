@@ -238,14 +238,20 @@ void RigidBodyComponent::tick(float delta) {
 void RigidBodyComponent::getMessage(Message * m) {
 
 	if (m->getType() == MSG_PLAYER_MOVE_X){
-
 		//transformarlo
 		float value = static_cast<MessagePlayerMoveX*>(m)->GetValue();
-		value = value;
-		b2Vec2 newForce(0, 700);
-		_body->ApplyForceToCenter(newForce, true);
-		std::cout << "Aplicada fuerza de: " << value << std::endl;
-
+		value = value / 1000;
+		b2Vec2 v (value,0);
+		_body->SetLinearVelocity(v);
+		
+		std::cout << "Aplicada vel de: " << value << std::endl;
+	}
+	else if (m->getType() == MSG_PLAYER_JUMP){
+		if (static_cast<MessagePlayerJump*>(m)->GetJump()){
+			b2Vec2 newForce(0, 700);
+			_body->ApplyForceToCenter(newForce, true);		
+		}
+	
 	}
 }
 #pragma endregion
@@ -299,12 +305,21 @@ void PlayerControllerComponent::getMessage(Message* m){
 			CInputState cState = inputM->getCInputState();
 
 			if (cState.Button_A == BTT_PRESSED){
-				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
+				MessagePlayerJump* m = new MessagePlayerJump(true, pEnt->getID());
+				pEnt->getMessage(m);
+			}
+			else if (cState.Button_A == BTT_RELEASED){
+				MessagePlayerJump* m = new MessagePlayerJump(false, pEnt->getID());
 				pEnt->getMessage(m);
 			}
 			if (cState.Axis_LeftX > 0){
-				
+				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
+				pEnt->getMessage(m);				
 			}
+			if (cState.Axis_LeftX < 0){
+				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
+				pEnt->getMessage(m);
+			}			
 		}
 	}
 

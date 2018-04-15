@@ -53,7 +53,8 @@ typedef enum msgType{
 
 	STRING_MSG, INPUT_STATE_MSG,
 	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM,
-	MSG_PLAYER_MOVE_X, MSG_COLLISION
+	MSG_PLAYER_MOVE_X, MSG_COLLISION,
+	MSG_PLAYER_JUMP
 
 
 };
@@ -176,6 +177,28 @@ private:
 	//Private fields for the new position and quaternion of the entity
 	float _value;
 };
+
+
+
+
+//--------------------------------------------------	PLAYER JUMP MSG		----------------------------------------------------------//
+class MessagePlayerJump : public Message
+{
+public:
+	MessagePlayerJump(bool f, std::string emmiter);
+	~MessagePlayerJump();
+	inline bool GetJump(){ return _jump; };
+
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	bool _jump;
+};
+
+
+
+
+
 
 //--------------------------------------------------	COLLISION MSG		----------------------------------------------------------//
 class MessageCollision : public Message

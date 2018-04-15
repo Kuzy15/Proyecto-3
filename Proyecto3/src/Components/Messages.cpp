@@ -88,7 +88,12 @@ MessagePlayerInput::~MessagePlayerInput(){}
 #pragma region MessagePlayerMoveX
 MessagePlayerMoveX::MessagePlayerMoveX(float v, int i, std::string emmiter) : MessagePlayerInput(i, emmiter),_value(v){}
 MessagePlayerMoveX::~MessagePlayerMoveX(){};
+#pragma endregion 
 
+
+#pragma region MessagePlayerJump
+MessagePlayerJump::MessagePlayerJump(bool f, std::string emmiter) : Message(MSG_PLAYER_JUMP, ENTITY,emmiter), _jump(f){}
+MessagePlayerJump::~MessagePlayerJump(){};
 #pragma endregion 
 
 #pragma region MessageCollision
