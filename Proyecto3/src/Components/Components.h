@@ -155,10 +155,10 @@ private:
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 
 typedef enum filterMask {
-	PLAYER = 0x0001,
-	STATIC_TERRAIN = 0x0002,
-	DINAMIC_TERRAIN = 0x0004,
-	BULLET = 0x0008
+	MASK_PLAYER = 0x0001,
+	MASK_STATIC_TERRAIN = 0x0002,
+	MASK_DINAMIC_TERRAIN = 0x0004,
+	MASK_BULLET = 0x0008
 };
 
 
@@ -168,7 +168,7 @@ class RigidBodyComponent : public gameComponent
 {
 public:
 
-	RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType);
+	RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType, filterMask myCategory);
 	virtual ~RigidBodyComponent();
 
 

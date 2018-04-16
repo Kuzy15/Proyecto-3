@@ -142,7 +142,7 @@ void meshRenderComponent::getMessage(Message * m) {
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
 #pragma region RigidBodyComponent
-RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType) 
+RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType, filterMask myCategory)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), gameComponent(PHYSICS_COMPONENT,father) {
 	
 	//Sets the pos attached to the render.
@@ -203,6 +203,27 @@ RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::V
 	_fixtureDef.density = 950.0;
 	_fixtureDef.friction = 0;
 
+	switch (myCategory)
+	{
+		case MASK_PLAYER:
+			_fixtureDef.filter.categoryBits = MASK_PLAYER;				
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN;
+			break;
+		case MASK_STATIC_TERRAIN:
+			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
+			/*_fixtureDef.filter.maskBits = ;*/
+			break;
+		case MASK_DINAMIC_TERRAIN:
+			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
+			_fixtureDef.filter.maskBits = MASK_BULLET;
+			break;
+		case MASK_BULLET:
+			_fixtureDef.filter.categoryBits = MASK_BULLET;
+			_fixtureDef.filter.maskBits = MASK_PLAYER;
+			break;
+		default:
+			break;
+	}
 	/* FALTA ESTO POR CONFIGURAR
 	fDef.filter.categoryBits = Juego::JUGADOR;
 	fDef.filter.maskBits = Juego::ENEMIGO | Juego::ITEM | Juego::ESCENARIO | Juego::ESCENARIO_NOCOL | Juego::AT_ENEMIGO;
@@ -268,7 +289,7 @@ void PlayerCollisionHandlerComponent::getMessage(Message * m){
 	if (m->getType() == MSG_COLLISION){
 		uint16_t me = static_cast<MessageCollision*>(m)->GetMyCategory();
 		uint16_t contact = static_cast<MessageCollision*>(m)->GetContactMask();
-		if (contact == BULLET){
+		if (contact == MASK_BULLET){
 			//me haacen pupa
 		}/*
 		else if (){
@@ -312,14 +333,18 @@ void PlayerControllerComponent::getMessage(Message* m){
 				MessagePlayerJump* m = new MessagePlayerJump(false, pEnt->getID());
 				pEnt->getMessage(m);
 			}
-			if (cState.Axis_LeftX > 0){
+			if (cState.Axis_LeftX > 1){
 				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);				
 			}
-			if (cState.Axis_LeftX < 0){
+			if (cState.Axis_LeftX < -1){
 				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
-			}			
+			}
+			if (cState.Axis_LeftX <= 1 && cState.Axis_LeftX >= -1){
+				MessagePlayerMoveX* m = new MessagePlayerMoveX(0, _id, pEnt->getID());
+				pEnt->getMessage(m);
+			}
 		}
 	}
 

@@ -102,7 +102,7 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 
 	//Self-explanatory methods
 	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 50);
+	cam->setPosition(0, 0, 150);
 	cam->lookAt(0, 0, 0);
 	cam->setNearClipDistance(5);
 
@@ -143,8 +143,8 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	Entity * test3 = new Entity("test3", this);
 	Entity * test4 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
 
-	test3->addComponent(new RigidBodyComponent(test3, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 100), 1.5,2000, STATIC, POLYGON));
-	test3->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 100), "Barrel.mesh", test3, scnMgr));
+	test3->addComponent(new RigidBodyComponent(test3, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 0), 1.5,2000, STATIC, POLYGON, MASK_STATIC_TERRAIN));
+	test3->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 0), "Barrel.mesh", test3, scnMgr));
 
 
 	test2->addComponent(new stringComponent(test2));
@@ -152,15 +152,15 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 
 
-	test1->addComponent(new RigidBodyComponent(test1, game->getPhysicsWorld(), Ogre::Vector3(0, 40, 100), 5,20,DYNAMIC,POLYGON));
+	test1->addComponent(new RigidBodyComponent(test1, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5,20,DYNAMIC,POLYGON, MASK_PLAYER));
 	test1->addComponent(new PlayerControllerComponent(test1, 0));
-	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0,40,100),"Ra.mesh", test1, scnMgr));
+	test1->addComponent(new meshRenderComponent(Ogre::Vector3(10,0,0),"Ra.mesh", test1, scnMgr));
 
 	
 	addEntity(test1);
 	addEntity(test2);
 	addEntity(test3);
-	addEntity(test4);
+	//addEntity(test4);
 	
 }
 
