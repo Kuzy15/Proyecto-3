@@ -98,12 +98,14 @@ CRender::~CRender(){
 //Get Message general to every other render component child to this
 void CRender::getMessage(Message *m) {
 	switch (m->getType()) {
-	case ENTITY_UPDATETRANSFORM:
-		_ogrepos = static_cast<MUpdateTransform *>(m)->GetPos();
+	case MSG_UPDATE_TRANSFORM:
+		if (m->getEmmiter() == pEnt->getID()){
+			_ogrepos = static_cast<MUpdateTransform *>(m)->GetPos();
 
-		
-		pOgreSceneNode->roll((Ogre::Radian)static_cast<MUpdateTransform *>(m)->getRotation());
-		std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
+
+			pOgreSceneNode->roll((Ogre::Radian)static_cast<MUpdateTransform *>(m)->getRotation());
+			std::cout << "new position: " << _ogrepos.x << " " << _ogrepos.y << " " << _ogrepos.z << std::endl;
+		}
 		break;
 	default: 
 		break;
@@ -177,11 +179,11 @@ void CCamera::tick(float delta) {
 }
 void CCamera::getMessage(Message * m) {
 	//DEBUG MESSAGE RECEIVING
-	if (m->getType() == ENTITY_UPDATETRANSFORM) {
+	/*if (m->getType() == MSG_UPDATE_TRANSFORM) {
 		std::cout << "MESSAGE RECEIVED" << std::endl;
 		_lookAt = static_cast<MUpdateTransform *> (m)->GetPos();
 	}
-
+	*/
 
 }
 

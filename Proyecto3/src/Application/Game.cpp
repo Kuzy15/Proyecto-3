@@ -4,7 +4,7 @@
 #include <OgreRenderWindow.h>
 #include <exception>
 #include <OgreTextureManager.h>
-
+#include "DebugDraw.h"
 
 #include "Scenes.h"
 #include "InputManager.h"
@@ -23,6 +23,9 @@ Game * Game::_instance = nullptr;
 #pragma region Constructor and destructor
 Game::Game(){
 	_instance = this;
+
+	DebugDraw dInstance;
+	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
 

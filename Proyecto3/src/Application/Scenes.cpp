@@ -131,37 +131,31 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	//SCENE DEBUG
 	
-	Entity * test1 = new Entity("test1", this);
-	Entity * test2 = new Entity("test2", this);
-
-	Entity * test3 = new Entity("test3", this);
-	Entity * test4 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
-
-	test3->addComponent(new CRigidBody(test3, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 0), 1.5,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	test3->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", test3, scnMgr));
-
-
 	Entity * cam = new Entity ("Camera1", this);
-
-
 	cam->addComponent(
 		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(20, -20, 100), Ogre::Vector3(0,0,0), 5)
 	);
-	test2->addComponent(new CString(test2));
+	addEntity(cam);
 
+	Entity * Ra = new Entity("0", this);
+	Ra->addComponent(new CRigidBody(Ra, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5, 20, RB_DYNAMIC, SH_POLYGON, MASK_PLAYER));
+	Ra->addComponent(new CPlayerController(Ra, 0));
+	Ra->addComponent(new CMeshRender(Ogre::Vector3(10, 0, 0), "Ra.mesh", Ra, scnMgr));
+	
+	
+	
+	Entity * Suelo = new Entity("1", this);
+	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 0), 1.5,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
+	addEntity(Suelo);
 
-	test1->addComponent(new CRigidBody(test1, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5,20,RB_DYNAMIC,SH_POLYGON, MASK_PLAYER));
-	test1->addComponent(new CPlayerController(test1, 0));
-	test1->addComponent(new CMeshRender(Ogre::Vector3(10,0,0),"Ra.mesh", test1, scnMgr));
+	addEntity(Ra);
 
 	
-	addEntity(test1);
-	addEntity(test2);
 
-	//addEntity(test3);
-	//addEntity(test4);
+	
 
-	addEntity(cam);
+
 
 	
 }
@@ -264,11 +258,11 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id
 	//test2->addComponent()
 
 
-	test1->addComponent(new messageSendComponent(test1));
-	test1->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 100), "Ra.mesh", test1, scnMgr));
+	Ra->addComponent(new messageSendComponent(Ra));
+	Ra->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 100), "Ra.mesh", Ra, scnMgr));
 
 
-	addEntity(test1);
+	addEntity(Ra);
 	addEntity(test2);*/
 
 }
