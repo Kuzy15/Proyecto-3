@@ -8,7 +8,7 @@
 
 
 
-class gameScene;
+class GameScene;
 
 //Game is a window event listener,
 //Therefore we can react to the window events
@@ -59,7 +59,7 @@ private:
 
 
 	//This will be removed. Just to test
-	gameScene * actScene;
+	GameScene * actScene;
 
 	//Singleton
 	static Game * _instance;

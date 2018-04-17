@@ -26,10 +26,10 @@
 
 #pragma region gameScene 
 
-gameScene::gameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
+GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
 	nMessages = -1;
 }
-gameScene::~gameScene()
+GameScene::~GameScene()
 {
 	Entity * del;
 	for (Entity * ent : _entities){
@@ -40,19 +40,19 @@ gameScene::~gameScene()
 	
 
 }
-bool gameScene::updateEnts(float delta){
+bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
 		if(ent != NULL)ent->tick(delta);
 	}
 	return true;
 } 
-void gameScene::getMessage(Message * m){
+void GameScene::getMessage(Message * m){
 	_messages.push_back(m);
 }
-void gameScene::addEntity(Entity * ent){
+void GameScene::addEntity(Entity * ent){
 	_entities.push_back(ent);
 }
-void gameScene::dispatch() {
+void GameScene::dispatch() {
 	/*We only process as many messages as we had at the start of the update.
 	*Any messsage introduced as a result of reading a message is processed
 	in the next frame*/
@@ -69,7 +69,7 @@ void gameScene::dispatch() {
 }
 //Message disposal to use just before finishing the current scene loop.
 // It uses the variable nMessages, that is set in the dispatch function.
-void gameScene::clearMessageQueue() {
+void GameScene::clearMessageQueue() {
 	
 	for (int i = 0; i < nMessages; i++) {
 		Message * aux = _messages.front();
@@ -77,7 +77,7 @@ void gameScene::clearMessageQueue() {
 		_messages.pop_front();
 	}
 }
-void gameScene::deleteEntity(std::string id){
+void GameScene::deleteEntity(std::string id){
 	Entity * aux;
 	bool found = false;
 	for (std::list<Entity *>::iterator it = _entities.begin(); it != _entities.end() && !found;){
@@ -97,16 +97,12 @@ void gameScene::deleteEntity(std::string id){
 //SCENE ENTITY LIST. IT IS ONLY IN OGRE ENTITIES LIST.
 //ALSO CREATS A BASIC ENTITY WITH A stringComponent attached
 #pragma region basicScene
-basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
+BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 
 
-	//Self-explanatory methods
-	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 150);
-	cam->lookAt(0, 0, 0);
-	cam->setNearClipDistance(5);
+	
 
 
 
@@ -141,28 +137,28 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	Entity * test3 = new Entity("test3", this);
 	Entity * test4 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
 
-	test3->addComponent(new RigidBodyComponent(test3, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 0), 1.5,2000, STATIC, POLYGON, MASK_STATIC_TERRAIN));
-	test3->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 0), "Barrel.mesh", test3, scnMgr));
+	test3->addComponent(new CRigidBody(test3, game->getPhysicsWorld(), Ogre::Vector3(0, 0, 0), 1.5,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	test3->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", test3, scnMgr));
 
 
 	Entity * cam = new Entity ("Camera1", this);
 
 
 	cam->addComponent(
-		new CameraComponent(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(20, -20, 100), Ogre::Vector3(0,0,0), 5)
+		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(20, -20, 100), Ogre::Vector3(0,0,0), 5)
 	);
-	test2->addComponent(new stringComponent(test2));
+	test2->addComponent(new CString(test2));
 
 
-	test1->addComponent(new RigidBodyComponent(test1, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5,20,DYNAMIC,POLYGON, MASK_PLAYER));
-	test1->addComponent(new PlayerControllerComponent(test1, 0));
-	test1->addComponent(new meshRenderComponent(Ogre::Vector3(10,0,0),"Ra.mesh", test1, scnMgr));
+	test1->addComponent(new CRigidBody(test1, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5,20,RB_DYNAMIC,SH_POLYGON, MASK_PLAYER));
+	test1->addComponent(new CPlayerController(test1, 0));
+	test1->addComponent(new CMeshRender(Ogre::Vector3(10,0,0),"Ra.mesh", test1, scnMgr));
 
 	
 	addEntity(test1);
 	addEntity(test2);
 
-	addEntity(test3);
+	//addEntity(test3);
 	//addEntity(test4);
 
 	addEntity(cam);
@@ -171,19 +167,19 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 }
 
 
-basicScene::~basicScene(){
+BasicScene::~BasicScene(){
 	delete light;
 	delete vp;
 	delete scnMgr;
 
 }
-bool basicScene::run(){
+bool BasicScene::run(){
 	//Here we would get the time between frames
 
 	//Take messages from input
 	InputManager::getInstance().getMessages(_messages);
 	//Then we deliver the messages
-	gameScene::dispatch();
+	GameScene::dispatch();
 
 	//Logic simulation done here
 	bool aux = updateEnts(0.025);
@@ -195,17 +191,17 @@ bool basicScene::run(){
 
 }
 
-void basicScene::dispatch(){
+void BasicScene::dispatch(){
 
 
 }
 
-void basicScene::processScnMsgs(){};
+void BasicScene::processScnMsgs(){};
 
 #pragma endregion
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
-GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : gameScene(id, game) {
+GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 
@@ -325,7 +321,7 @@ bool GamePlayScene::run(){
 }
 
 void GamePlayScene::dispatch(){
-	gameScene::dispatch();
+	GameScene::dispatch();
 }
 
 void GamePlayScene::processScnMsgs(){
@@ -336,7 +332,7 @@ void GamePlayScene::processScnMsgs(){
 		
 		switch ((*it)->getType())
 		{
-		case CONTROLLER_STATE_MSG:
+		case MSG_CONTROLLER_STATE:
 
 		default:
 			break;

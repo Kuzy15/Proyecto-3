@@ -77,7 +77,7 @@ void InputManager::handleInput(){
 	//Create main Input message who contains the events and variables to store the values
 	for (int i = 0; i < _currentNPlayers; i++){
 
-		_inputMsg[i] = new InputStateMessage(i,BROADCAST, _emitter);
+		_inputMsg[i] = new MInputState(i,BROADCAST, _emitter);
 
 	}
 	float axisMotion;
@@ -216,11 +216,11 @@ void InputManager::handleInput(){
 //Events for Controller recognize: connect and disconnect
 		case SDL_CONTROLLERDEVICEADDED:
 			addJoystick();
-			_myQueue.push_back(new ControllerStateMessage(BROADCAST, _emitter, event.cdevice.which, 1));
+			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 1));
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
 			deleteJoystick(event.cdevice.which);
-			_myQueue.push_back(new ControllerStateMessage(BROADCAST, _emitter, event.cdevice.which, 0));
+			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 0));
 			break;
 		
 		default:

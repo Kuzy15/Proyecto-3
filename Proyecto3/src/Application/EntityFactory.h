@@ -17,7 +17,7 @@ public:
 	static EntityFactory& getInstance();
 
 	//Base method wich returns a new entity depending on the type and the class. For example: TYPE = GOD, CLASS = RA.
-	Entity* createEntity(E_TYPE typeE, int classE, gameScene* s);
+	Entity* createEntity(E_TYPE typeE, int classE, GameScene* s);
 	
 private:
 	EntityFactory();
@@ -30,7 +30,7 @@ private:
 	unsigned int _idCount;				//The id variable to put the diferent id to new entities 
 
 	//Methods for create gods and define their behaviour (Components, etc)
-	Entity* createGod(E_GOD god ,std::string id, gameScene* s);
+	Entity* createGod(E_GOD god ,std::string id, GameScene* s);
 
 };
 

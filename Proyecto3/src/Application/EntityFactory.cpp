@@ -25,7 +25,7 @@ EntityFactory& EntityFactory::getInstance(){
 
 
 //Depend on the type of the entity, we call one or other function passing it the class 
-Entity* EntityFactory::createEntity(E_TYPE typE, int classE, gameScene* s ){
+Entity* EntityFactory::createEntity(E_TYPE typE, int classE, GameScene* s ){
 
 	
 	Entity* e;											//The pointer to the entity who will be returned
@@ -44,7 +44,7 @@ Entity* EntityFactory::createEntity(E_TYPE typE, int classE, gameScene* s ){
 }
 
 //The create god methods search in the map the func that returns the entity that E_GOD variable indicates
-Entity* EntityFactory::createGod(E_GOD cE, std::string id, gameScene* s){
+Entity* EntityFactory::createGod(E_GOD cE, std::string id, GameScene* s){
 	
 	createGodFunc c = _createGodFuncs.at(cE);
 	Entity* debug = c(id, s);

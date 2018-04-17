@@ -9,11 +9,11 @@ class Game;
 /*----------------------------- GAME SCENE -----------------------------*/
 //Father class to every scene in the game.
 //Implements the basic attributes shared by every scene.
-class gameScene
+class GameScene
 {
 public:
-	gameScene(std::string id, Game * pGame);
-	virtual ~gameScene();
+	GameScene(std::string id, Game * pGame);
+	virtual ~GameScene();
 
 
 	//Entity Management
@@ -53,11 +53,11 @@ protected:
 
 //Basic class to debug and test the ogre implementation
 //and the behaviour of the components
-class basicScene: public gameScene
+class BasicScene: public GameScene
 {
 public:
-	basicScene(std::string id, Game * game);
-	virtual ~basicScene();
+	BasicScene(std::string id, Game * game);
+	virtual ~BasicScene();
 
 
 	virtual bool run();
@@ -101,7 +101,7 @@ struct BattleState{
 };
 
 
-class GamePlayScene : public gameScene
+class GamePlayScene : public GameScene
 {
 public:
 	GamePlayScene(std::string id, Game * game, int nPlayers);

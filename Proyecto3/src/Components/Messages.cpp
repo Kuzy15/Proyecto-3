@@ -4,16 +4,16 @@
 
 //Basic Message Class implementation.
 #pragma region basic Message 
-Message::Message(msgType t, msgDest dst, std::string emmiter): _messageType(t), _messageDestination(dst), _emmiter(emmiter)
+Message::Message(MessageType t, MessageDestination dst, std::string emmiter): _messageType(t), _messageDestination(dst), _emmiter(emmiter)
 {
 }
 Message::~Message()
 {
 }
-msgType Message::getType() {
+MessageType Message::getType() {
 	return _messageType;
 }
-msgDest Message::getDestination() {
+MessageDestination Message::getDestination() {
 	return _messageDestination;
 }
 std::string Message::getEmmiter() {
@@ -22,42 +22,42 @@ std::string Message::getEmmiter() {
 #pragma endregion
 
 #pragma region stringMessage
-stringMessage::stringMessage(std::string t, msgDest dest, std::string emmiter): Message(STRING_MSG,BROADCAST,emmiter), _text(t) {
+MString::MString(std::string t, MessageDestination dest, std::string emmiter): Message(MSG_STRING,BROADCAST,emmiter), _text(t) {
 
 }
-stringMessage::~stringMessage() {
+MString::~MString() {
 
 }
 
-std::string stringMessage::getText() {
+std::string MString::getText() {
 	return _text;
 }
 #pragma endregion
 
 //Input Message implementation 
 #pragma region InputStateMessage
-InputStateMessage::InputStateMessage(int i, msgDest d, std::string emmiter) :Message(INPUT_STATE_MSG, BROADCAST, emmiter), _controllerId(i){
+MInputState::MInputState(int i, MessageDestination d, std::string emmiter) :Message(MSG_INPUT_STATE, BROADCAST, emmiter), _controllerId(i){
 
 	
 }
 
-InputStateMessage::~InputStateMessage(){ 
+MInputState::~MInputState(){ 
 
 }
 
-CInputState& InputStateMessage::getCInputState(){
+ControllerInputState& MInputState::getCInputState(){
 	_cState.nEvents++;
 	return _cState;
 }
 #pragma endregion
 
 #pragma region ControllerStateMessage
-ControllerStateMessage::ControllerStateMessage(msgDest d, std::string emmiter, int id, int action) :Message(CONTROLLER_STATE_MSG, SCENE, emmiter){
+MControllerState::MControllerState(MessageDestination d, std::string emmiter, int id, int action) :Message(MSG_CONTROLLER_STATE, SCENE, emmiter){
 	_controllerId = id;
 	_action = action;
 }
 
-ControllerStateMessage::~ControllerStateMessage(){
+MControllerState::~MControllerState(){
 
 }
 
@@ -68,39 +68,39 @@ ControllerStateMessage::~ControllerStateMessage(){
 
 #pragma region UpdateTransform Message 
 
-UpdateTransformMessage::UpdateTransformMessage(Ogre::Vector3 newPos, float newRotation, std::string emmiter):Message(MSG_UPDATETRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation){
+MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, std::string emmiter) :Message(ENTITY_UPDATETRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation){
 
 };
-UpdateTransformMessage::~UpdateTransformMessage() {
+MUpdateTransform::~MUpdateTransform() {
 
 }
-Ogre::Vector3 UpdateTransformMessage::GetPos() { return _nPos; }
-float UpdateTransformMessage::getRotation() { return _nRotation; }
+Ogre::Vector3 MUpdateTransform::GetPos() { return _nPos; }
+float MUpdateTransform::getRotation() { return _nRotation; }
 
 #pragma endregion
 
 #pragma region MessageInputPlayer
 
-MessagePlayerInput::MessagePlayerInput(int i, std::string emmiter): Message(MSG_PLAYER_MOVE_X,ENTITY,emmiter), _id(i){}
-MessagePlayerInput::~MessagePlayerInput(){}
+MPlayerInput::MPlayerInput(int i, std::string emmiter): Message(MSG_PLAYER_MOVE_X,ENTITY,emmiter), _id(i){}
+MPlayerInput::~MPlayerInput(){}
 #pragma endregion
 
 #pragma region MessagePlayerMoveX
-MessagePlayerMoveX::MessagePlayerMoveX(float v, int i, std::string emmiter) : MessagePlayerInput(i, emmiter),_value(v){}
-MessagePlayerMoveX::~MessagePlayerMoveX(){};
+MPlayerMoveX::MPlayerMoveX(float v, int i, std::string emmiter) : MPlayerInput(i, emmiter),_value(v){}
+MPlayerMoveX::~MPlayerMoveX(){};
 #pragma endregion 
 
 
 #pragma region MessagePlayerJump
-MessagePlayerJump::MessagePlayerJump(bool f, std::string emmiter) : Message(MSG_PLAYER_JUMP, ENTITY,emmiter), _jump(f){}
-MessagePlayerJump::~MessagePlayerJump(){};
+MJump::MJump(bool f, std::string emmiter) : Message(MSG_PLAYER_JUMP, ENTITY,emmiter), _jump(f){}
+MJump::~MJump(){};
 #pragma endregion 
 
 #pragma region MessageCollision
 
-MessageCollision::MessageCollision(uint16_t me, uint16_t contact, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
+MCollisionBegin::MCollisionBegin(uint16_t me, uint16_t contact, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
 	_myCategory(me), _contactMask(contact){}
-MessageCollision::~MessageCollision(){}
+MCollisionBegin::~MCollisionBegin(){}
 #pragma endregion
 
  

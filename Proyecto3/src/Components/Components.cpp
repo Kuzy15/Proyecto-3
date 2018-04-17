@@ -18,23 +18,23 @@
 //It implements basic behaviours like gets, sets 
 //and message sending
 #pragma region gameComponent
-gameComponent::gameComponent(componentType id, Entity * father): _id(id), pEnt(father)
+GameComponent::GameComponent(ComponentType id, Entity * father): _id(id), pEnt(father)
 {
 	
 }
-gameComponent::~gameComponent(){
+GameComponent::~GameComponent(){
 
 }
-componentType gameComponent::getID(){
+ComponentType GameComponent::getID(){
 	return _id;
 }
-bool gameComponent::getActive(){
+bool GameComponent::getActive(){
 	return _active;
 }
-void gameComponent::setActive(bool nw){
+void GameComponent::setActive(bool nw){
 	_active = nw;
 }
-void gameComponent::sendMessage(Message * m){
+void GameComponent::sendMessage(Message * m){
 	pEnt->getMessage(m);
 }
 
@@ -43,18 +43,18 @@ void gameComponent::sendMessage(Message * m){
 /*-------------------------DEBUG COMPONENTS------------------------------------*/
 //PRINTS A STRING WHEN RECEIVEING A STRING_MESSAGE
 #pragma region stringComponent
-stringComponent::stringComponent(Entity * fath) : gameComponent(STRING_COMPONENT, fath), whatSay("HOLA, soy el componente basico"){
+CString::CString(Entity * fath) : GameComponent(CMP_STRING, fath), whatSay("HOLA, soy el componente basico"){
 }
-stringComponent::~stringComponent(){
+CString::~CString(){
 
 }
-void stringComponent::getMessage(Message * m){
+void CString::getMessage(Message * m){
 #ifdef _DEBUG
 	//if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
 	
 #endif
 }
-void stringComponent::tick(float delta){
+void CString::tick(float delta){
 #ifdef _DEBUG
 #endif
 }
@@ -62,19 +62,19 @@ void stringComponent::tick(float delta){
 #pragma endregion
 
 #pragma region messageSendComponent
-messageSendComponent::messageSendComponent(Entity * father):gameComponent(MESSAGESEND_COMPONENT, father) {
+CMessageSend::CMessageSend(Entity * father):GameComponent(CMP_MESSAGE_SEND, father) {
 	i = 0;
 }
-messageSendComponent::~messageSendComponent() {
+CMessageSend::~CMessageSend() {
 }
-void messageSendComponent::tick(float delta) {
+void CMessageSend::tick(float delta) {
 	i++;
-	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
+	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
 	pEnt->getMessage(m);
 
 	
 }
-void messageSendComponent::getMessage(Message * m) {
+void CMessageSend::getMessage(Message * m) {
 
 }
 
@@ -86,23 +86,23 @@ void messageSendComponent::getMessage(Message * m) {
 //other render component.
 #pragma region renderComponent
 
-renderComponent::renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM)
-	: gameComponent(t, father), pSceneMgr(scnM)
+CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
+	: GameComponent(t, father), pSceneMgr(scnM)
 {
 	pOgreSceneNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
 }
-renderComponent::~renderComponent(){
+CRender::~CRender(){
 	pSceneMgr->destroySceneNode(pOgreSceneNode);
 }
 
 //Get Message general to every other render component child to this
-void renderComponent::getMessage(Message *m) {
+void CRender::getMessage(Message *m) {
 	switch (m->getType()) {
-	case MSG_UPDATETRANSFORM:
-		_ogrepos = static_cast<UpdateTransformMessage *>(m)->GetPos();
+	case ENTITY_UPDATETRANSFORM:
+		_ogrepos = static_cast<MUpdateTransform *>(m)->GetPos();
 
 		
-		pOgreSceneNode->roll((Ogre::Radian)static_cast<UpdateTransformMessage *>(m)->getRotation());
+		pOgreSceneNode->roll((Ogre::Radian)static_cast<MUpdateTransform *>(m)->getRotation());
 		std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
 		break;
 	default: 
@@ -117,7 +117,7 @@ void renderComponent::getMessage(Message *m) {
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma region meshRenderComponent
-meshRenderComponent::meshRenderComponent(Ogre::Vector3 p, std::string meshName, Entity * father, Ogre::SceneManager * scnM) :renderComponent(MESH_RENDER_COMPONENT, father, scnM) {
+CMeshRender::CMeshRender(Ogre::Vector3 p, std::string meshName, Entity * father, Ogre::SceneManager * scnM) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->attachObject(pOgreEnt);
 	pOgreSceneNode->setPosition(p);
@@ -125,11 +125,11 @@ meshRenderComponent::meshRenderComponent(Ogre::Vector3 p, std::string meshName, 
 	_ogrequat = Ogre::Quaternion();
 	
 }
-meshRenderComponent::~meshRenderComponent() {
+CMeshRender::~CMeshRender() {
 	pOgreSceneNode->detachObject(pOgreEnt);
 	pSceneMgr->destroyEntity(pOgreEnt);
 }
-void meshRenderComponent::tick(float delta) {
+void CMeshRender::tick(float delta) {
 
 	//Firstly we update the Ogre position and rotation with the values
 	//stored in the variables.
@@ -137,16 +137,16 @@ void meshRenderComponent::tick(float delta) {
 	pOgreSceneNode->setOrientation(_ogrequat);
 	
 }
-void meshRenderComponent::getMessage(Message * m) {
-	renderComponent::getMessage(m);
+void CMeshRender::getMessage(Message * m) {
+	CRender::getMessage(m);
 	//TO DO: IMPLEMENT MESSAGE RECEIVEING TO MOVE.
 
 }
 
 #pragma endregion
 #pragma region Camera Component
-CameraComponent::CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
-	: gameComponent(CAMERA_COMPONENT, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
+CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
+	: GameComponent(CMP_CAMERA, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
 {
 	pCam = _scnMgr->createCamera(_camName);
 	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam); 
@@ -161,10 +161,10 @@ CameraComponent::CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, O
 
 	vp->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
 }
-CameraComponent::~CameraComponent() {
+CCamera::~CCamera() {
 	delete pCam;
 }
-void CameraComponent::tick(float delta) {
+void CCamera::tick(float delta) {
 	if (_lookAt != _lastLookAt) {
 		pCam->lookAt(_lookAt);
 		_lastLookAt = _lookAt;
@@ -175,11 +175,11 @@ void CameraComponent::tick(float delta) {
 	}
 
 }
-void CameraComponent::getMessage(Message * m) {
+void CCamera::getMessage(Message * m) {
 	//DEBUG MESSAGE RECEIVING
-	if (m->getType() == MSG_UPDATETRANSFORM) {
+	if (m->getType() == ENTITY_UPDATETRANSFORM) {
 		std::cout << "MESSAGE RECEIVED" << std::endl;
-		_lookAt = static_cast<UpdateTransformMessage *> (m)->GetPos();
+		_lookAt = static_cast<MUpdateTransform *> (m)->GetPos();
 	}
 
 
@@ -194,8 +194,8 @@ void CameraComponent::getMessage(Message * m) {
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
 #pragma region RigidBodyComponent
-RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType, filterMask myCategory)
-: _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), gameComponent(PHYSICS_COMPONENT,father) {
+CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
+: _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 	
 	//Sets the pos attached to the render.
 	_pos.x = posInPixels.x / PPM;
@@ -211,13 +211,13 @@ RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::V
 	
 	switch (rbType)
 	{
-		case DYNAMIC:
+		case RB_DYNAMIC:
 			_bodyDef.type = b2_dynamicBody;
 			break;
-		case STATIC:
+		case RB_STATIC:
 			_bodyDef.type = b2_staticBody;
 			break;
-		case KINEMATIC:
+		case RB_KINEMATIC:
 			_bodyDef.type = b2_kinematicBody;
 			break;
 		default:
@@ -235,12 +235,12 @@ RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::V
 	//Shape creation.
 	switch (shType)
 	{
-		case CIRCLE:
+		case SH_CIRCLE:
 			_shape = new b2CircleShape;
 			static_cast<b2CircleShape*>(_shape)->m_p.Set(0, 0);
 			static_cast<b2CircleShape*>(_shape)->m_radius = _rbWeight;
 			break;
-		case POLYGON:
+		case SH_POLYGON:
 			_shape = new b2PolygonShape;
 			static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 			break;
@@ -288,11 +288,11 @@ RigidBodyComponent::RigidBodyComponent(Entity * father, b2World * world, Ogre::V
 
 
 }
-RigidBodyComponent::~RigidBodyComponent() {
+CRigidBody::~CRigidBody() {
 	_myWorld->DestroyBody(_body);
 	_body = nullptr;
 }
-void RigidBodyComponent::tick(float delta) {
+void CRigidBody::tick(float delta) {
 
 	
 
@@ -300,7 +300,7 @@ void RigidBodyComponent::tick(float delta) {
 	//Transformation from physics world to ogre world.
 	
 	
-	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(_body->GetPosition().x * PPM, _body->GetPosition().y * PPM, 0), Ogre::Quaternion::IDENTITY, pEnt->getID());
+	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3(_body->GetPosition().x * PPM, _body->GetPosition().y * PPM, 0), _body->GetAngle(), pEnt->getID());
 	pEnt->getMessage(m);
 
 	//std::cout << pEnt->getID()  << _body->GetPosition().y << std::endl;
@@ -308,11 +308,11 @@ void RigidBodyComponent::tick(float delta) {
 
 }
 
-void RigidBodyComponent::getMessage(Message * m) {
+void CRigidBody::getMessage(Message * m) {
 
 	if (m->getType() == MSG_PLAYER_MOVE_X){
 		//transformarlo
-		float value = static_cast<MessagePlayerMoveX*>(m)->GetValue();
+		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
 		value = value / 1000;
 		b2Vec2 v (value,0);
 		_body->SetLinearVelocity(v);
@@ -320,7 +320,7 @@ void RigidBodyComponent::getMessage(Message * m) {
 		std::cout << "Aplicada vel de: " << value << std::endl;
 	}
 	else if (m->getType() == MSG_PLAYER_JUMP){
-		if (static_cast<MessagePlayerJump*>(m)->GetJump()){
+		if (static_cast<MJump*>(m)->GetJump()){
 			b2Vec2 newForce(0, 700);
 			_body->ApplyForceToCenter(newForce, true);		
 		}
@@ -329,18 +329,18 @@ void RigidBodyComponent::getMessage(Message * m) {
 }
 #pragma endregion
 
-PlayerCollisionHandlerComponent::PlayerCollisionHandlerComponent(Entity* father) :gameComponent(PLAYER_CH_COMPONENT, father) {
+CPlayerCollisionHandler::CPlayerCollisionHandler(Entity* father) :GameComponent(CMP_PLAYER_CH, father) {
 }
-PlayerCollisionHandlerComponent::~PlayerCollisionHandlerComponent(){
+CPlayerCollisionHandler::~CPlayerCollisionHandler(){
 }
 
-void PlayerCollisionHandlerComponent::tick(float delta){}
-void PlayerCollisionHandlerComponent::getMessage(Message * m){
+void CPlayerCollisionHandler::tick(float delta){}
+void CPlayerCollisionHandler::getMessage(Message * m){
 	
 	//If the msg is the type Collision, read the mask and category bits and process it.
 	if (m->getType() == MSG_COLLISION){
-		uint16_t me = static_cast<MessageCollision*>(m)->GetMyCategory();
-		uint16_t contact = static_cast<MessageCollision*>(m)->GetContactMask();
+		uint16_t me = static_cast<MCollisionBegin*>(m)->GetMyCategory();
+		uint16_t contact = static_cast<MCollisionBegin*>(m)->GetContactMask();
 		if (contact == MASK_BULLET){
 			//me haacen pupa
 		}/*
@@ -360,41 +360,41 @@ void PlayerCollisionHandlerComponent::getMessage(Message * m){
 
 //Player Controller Component
 #pragma region PlayerControllerComponent
-PlayerControllerComponent::PlayerControllerComponent(Entity* f, int i): gameComponent(PLAYER_CONTROLLER_COMPONENT, f), _id(i){
+CPlayerController::CPlayerController(Entity* f, int i): GameComponent(CMP_PLAYER_CONTROLLER, f), _id(i){
 	
 }
 
-PlayerControllerComponent::~PlayerControllerComponent(){}
+CPlayerController::~CPlayerController(){}
 
-void PlayerControllerComponent::tick(float delta){
+void CPlayerController::tick(float delta){
 }
 
-void PlayerControllerComponent::getMessage(Message* m){
+void CPlayerController::getMessage(Message* m){
 	//If the msg type is CInputState, read the input and process it
-	if (m->getType() == INPUT_STATE_MSG){
-		InputStateMessage* inputM = static_cast<InputStateMessage*>(m);
+	if (m->getType() == MSG_INPUT_STATE){
+		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _id){
 
-			CInputState cState = inputM->getCInputState();
+			ControllerInputState cState = inputM->getCInputState();
 
 			if (cState.Button_A == BTT_PRESSED){
-				MessagePlayerJump* m = new MessagePlayerJump(true, pEnt->getID());
+				MJump* m = new MJump(true, pEnt->getID());
 				pEnt->getMessage(m);
 			}
 			else if (cState.Button_A == BTT_RELEASED){
-				MessagePlayerJump* m = new MessagePlayerJump(false, pEnt->getID());
+				MJump* m = new MJump(false, pEnt->getID());
 				pEnt->getMessage(m);
 			}
 			if (cState.Axis_LeftX > 1){
-				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
+				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);				
 			}
 			if (cState.Axis_LeftX < -1){
-				MessagePlayerMoveX* m = new MessagePlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
+				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
 			if (cState.Axis_LeftX <= 1 && cState.Axis_LeftX >= -1){
-				MessagePlayerMoveX* m = new MessagePlayerMoveX(0, _id, pEnt->getID());
+				MPlayerMoveX* m = new MPlayerMoveX(0, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
 		}
@@ -406,37 +406,37 @@ void PlayerControllerComponent::getMessage(Message* m){
 
 //Life Component
 #pragma region Life Component
-LifeComponent::LifeComponent(Entity* father):gameComponent(LIFE_COMPONENT,father), maxLife(MAX_LIFE), _currentLife(MAX_LIFE){}
-LifeComponent::~LifeComponent(){}
+CLife::CLife(Entity* father):GameComponent(CMP_LIFE,father), maxLife(MAX_LIFE), _currentLife(MAX_LIFE){}
+CLife::~CLife(){}
 
-void LifeComponent::tick(float delta){}
-void LifeComponent::getMessage(Message* m){}
+void CLife::tick(float delta){}
+void CLife::getMessage(Message* m){}
 #pragma endregion
 
 //Move Component
 #pragma region Player Move Component
-PlayerMoveComponent::PlayerMoveComponent(Entity* father, float vel) :gameComponent(PLAYER_MOVEMENT_COMPONENT, father), _maxSpeed(MAX_SPEED), _moveVel(vel){}
-PlayerMoveComponent::~PlayerMoveComponent(){}
+CPlayerMove::CPlayerMove(Entity* father, float vel) :GameComponent(CMP_MOVEMENT_SPEED, father), _maxSpeed(MAX_SPEED), _moveVel(vel){}
+CPlayerMove::~CPlayerMove(){}
 
-void PlayerMoveComponent::tick(float delta){}
-void PlayerMoveComponent::getMessage(Message* m){}
+void CPlayerMove::tick(float delta){}
+void CPlayerMove::getMessage(Message* m){}
 #pragma endregion
 
 //Jump Component
 #pragma region Player Jump Component
-PlayerJumpComponent::PlayerJumpComponent(Entity* father, float startDist) :gameComponent(PLAYER_JUMP_COMPONENT, father), _maxDistance(MAX_JUMP_DISTANCE), _jumpDist(startDist){}
-PlayerJumpComponent::~PlayerJumpComponent(){}
+CPlayerJump::CPlayerJump(Entity* father, float startDist) :GameComponent(CMP_JUMP, father), _maxDistance(MAX_JUMP_DISTANCE), _jumpDist(startDist){}
+CPlayerJump::~CPlayerJump(){}
 
-void PlayerJumpComponent::tick(float delta){}
-void PlayerJumpComponent::getMessage(Message* m){}
+void CPlayerJump::tick(float delta){}
+void CPlayerJump::getMessage(Message* m){}
 #pragma endregion
 
 //Basic Attack Component
 #pragma region Player Jump Component
-PlayerBasicAttackComponent::PlayerBasicAttackComponent(Entity* father, float fireRate, E_BULLET bT) :gameComponent(PLAYER_BASIC_ATTACK_COMPONENT, father),
+CPlayerBasicAttack::CPlayerBasicAttack(Entity* father, float fireRate, E_BULLET bT) :GameComponent(CMP_BASIC_ATTACK, father),
 _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT) {}
-PlayerBasicAttackComponent::~PlayerBasicAttackComponent(){}
+CPlayerBasicAttack::~CPlayerBasicAttack(){}
 
-void PlayerBasicAttackComponent::tick(float delta){}
-void PlayerBasicAttackComponent::getMessage(Message* m){}
+void CPlayerBasicAttack::tick(float delta){}
+void CPlayerBasicAttack::getMessage(Message* m){}
 #pragma endregion

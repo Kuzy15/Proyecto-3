@@ -18,7 +18,7 @@ class InputManager
 {
 private:
 	InputManager();
-	void putMessage(InputStateMessage* newMessage);						//Push a new message to the local queue
+	void putMessage(MInputState* newMessage);						//Push a new message to the local queue
 	void addJoystick();											//Add a new Controller
 	void deleteJoystick(int w);										//Delete a Controller
 	
@@ -27,7 +27,7 @@ private:
 	std::vector<SDL_Joystick*> _playersJoystick = std::vector<SDL_Joystick*>(MAX_PLAYERS);				//Player 1 and Player 2 Joysticks structs 
 	std::vector<SDL_GameController*> _playerController = std::vector<SDL_GameController*>(MAX_PLAYERS);;
 	std::vector<Message*> _myQueue;																		//Internal list for messages.
-	std::vector<InputStateMessage*> _inputMsg = std::vector<InputStateMessage*>(MAX_PLAYERS);							//Array for controllers input
+	std::vector<MInputState*> _inputMsg = std::vector<MInputState*>(MAX_PLAYERS);							//Array for controllers input
 	int _currentNPlayers;
 	
 	const std::string _emitter = "InputManager";

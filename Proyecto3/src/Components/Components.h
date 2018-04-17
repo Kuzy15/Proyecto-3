@@ -27,44 +27,43 @@ const int PPM = 100;
 
 
 /*--------------------------- ENUM AND STRUCT DEFINITIONS ----------------*/
-typedef enum rigidBodyType {
+typedef enum RigidBodyType {
 	
-	DYNAMIC,
-	STATIC,
-	KINEMATIC
+	RB_DYNAMIC,
+	RB_STATIC,
+	RB_KINEMATIC
 };
 
-typedef enum shapeType {
+typedef enum ShapeType {
 
-	CIRCLE,
-	POLYGON
+	SH_CIRCLE,
+	SH_POLYGON
 };
 
-typedef enum componentType {
+typedef enum ComponentType {
 	//to be deleted
-	STRING_COMPONENT,
-	MESSAGESEND_COMPONENT,
-	MESH_RENDER_COMPONENT,
-	PHYSICS_COMPONENT,
-	PLAYER_CH_COMPONENT,
-	INPUT_BASE_COMPONENT,	
-	PLAYER_CONTROLLER_COMPONENT,
-	LIFE_COMPONENT,
-	PLAYER_MOVEMENT_COMPONENT,
-	PLAYER_JUMP_COMPONENT,
-	PLAYER_BASIC_ATTACK_COMPONENT,
-	CAMERA_COMPONENT
+	CMP_STRING,
+	CMP_MESSAGE_SEND,
+	CMP_MESH_RENDER,
+	CMP_PHYSICS,
+	CMP_PLAYER_CH,
+	CMP_PLAYER_CONTROLLER,
+	CMP_LIFE,
+	CMP_MOVEMENT_SPEED,
+	CMP_JUMP,
+	CMP_BASIC_ATTACK,
+	CMP_CAMERA
 
 
 
 };
 
 //Basic gameComponent class from which every other component will inherit.
-class gameComponent
+class GameComponent
 {
 public:
 	
-	virtual ~gameComponent();
+	virtual ~GameComponent();
 	//Update method
 	virtual void tick(float delta) = 0;
 	//Gets a message from the entity and acts according to it
@@ -73,7 +72,7 @@ public:
 	//Getters and setters
 	bool getActive();
 	void setActive(bool nw);
-	componentType getID();
+	ComponentType getID();
 
 
   
@@ -85,21 +84,21 @@ protected:
 
 	//Constructor protected so that only
 	//other game components inheriting from this class can use it
-	gameComponent(componentType id, Entity * ent);
+	GameComponent(ComponentType id, Entity * ent);
 
 	//pointer to the components' entity
 	Entity * pEnt;
 	//basic atributes of the component
-	componentType _id;
+	ComponentType _id;
 	bool _active;
 
 };
 /*-------------------------DEBUG COMPONENTS------------------------------------*/
-class stringComponent : public gameComponent
+class CString : public GameComponent
 {
 public:
-	stringComponent(Entity *);
-	~stringComponent();
+	CString(Entity *);
+	~CString();
 	virtual void getMessage(Message * m);
 	virtual void tick(float delta);
 
@@ -107,11 +106,11 @@ private:
 	std::string whatSay;
 
 };
-class messageSendComponent:public gameComponent
+class CMessageSend:public GameComponent
 {
 public:
-	messageSendComponent(Entity * ent);
-	~messageSendComponent();
+	CMessageSend(Entity * ent);
+	~CMessageSend();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
@@ -124,15 +123,15 @@ private:
 
 /*-------------------------RENDER COMPONENTS------------------------------------*/
 //--------- RENDER COMPONENT ---------
-class renderComponent : public gameComponent
+class CRender : public GameComponent
 {
 public:
-	~renderComponent();
-	Ogre::SceneNode * getSceneNode();
+	~CRender();
+	//Ogre::SceneNode * getSceneNode();
 	virtual void getMessage(Message *m);
 
 protected:
-	renderComponent(componentType t, Entity * father, Ogre::SceneManager * scnM);
+	CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM);
 	// Inside the Ogre Node we can find al the render values needed by ogre
 	Ogre::SceneNode * pOgreSceneNode;
 	// Pointer to the Ogre Scene Manager that created the component
@@ -143,11 +142,11 @@ protected:
 };
 
 //--------- MESH RENDER COMPONENT ---------
-class meshRenderComponent: public renderComponent
+class CMeshRender: public CRender
 {
 public:
-	meshRenderComponent(Ogre::Vector3, std::string meshName, Entity * father, Ogre::SceneManager * scnM);
-	~meshRenderComponent();
+	CMeshRender(Ogre::Vector3, std::string meshName, Entity * father, Ogre::SceneManager * scnM);
+	~CMeshRender();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -156,22 +155,22 @@ private:
 	Ogre::Entity * pOgreEnt;
 	
 };
-//--------- PLANE RENDER COMPONENT ---------
-class planeRenderComponent: public renderComponent
+/*//--------- PLANE RENDER COMPONENT ---------
+class CPlaneRender: public CRender
 {
 public:
-	planeRenderComponent();
-	~planeRenderComponent();
+	CPlaneRender();
+	~CPlaneRender();
 
 private:
 
-};
+};*/
 //---------   CAMERA COMPONENT   ---------
-class CameraComponent: public gameComponent
+class CCamera: public GameComponent
 {
 public:
-	CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt,  int clipDistance);
-	~CameraComponent();
+	CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt,  int clipDistance);
+	~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
@@ -188,7 +187,7 @@ private:
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 
-typedef enum filterMask {
+typedef enum FilterMask {
 	MASK_PLAYER = 0x0001,
 	MASK_STATIC_TERRAIN = 0x0002,
 	MASK_DINAMIC_TERRAIN = 0x0004,
@@ -198,12 +197,12 @@ typedef enum filterMask {
 
 
 //--------- RIGID BODY COMPONENT ---------
-class RigidBodyComponent : public gameComponent
+class CRigidBody : public GameComponent
 {
 public:
 
-	RigidBodyComponent(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, rigidBodyType rbType, shapeType shType, filterMask myCategory);
-	virtual ~RigidBodyComponent();
+	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory);
+	virtual ~CRigidBody();
 
 
 	virtual void tick(float delta);
@@ -243,10 +242,10 @@ private:
 <<<<<<< HEAD
 */
 //--------- PLAYER C.H. COMPONENT ---------
-class PlayerCollisionHandlerComponent : public gameComponent
+class CPlayerCollisionHandler : public GameComponent
 {
-	PlayerCollisionHandlerComponent(Entity* father);
-	virtual ~PlayerCollisionHandlerComponent();
+	CPlayerCollisionHandler(Entity* father);
+	virtual ~CPlayerCollisionHandler();
 
 	void tick(float delta);
 	void getMessage(Message * m);
@@ -255,11 +254,11 @@ class PlayerCollisionHandlerComponent : public gameComponent
 
 /*-----------------------------	PLAYER CONTROLLER COMPONENT	--------------------*/
 //This component take the input events to send new messages to control the player (attack, move, etc.)
-class PlayerControllerComponent : public gameComponent
+class CPlayerController : public GameComponent
 {
 public:
-	PlayerControllerComponent(Entity * father, int playerId);
-	~PlayerControllerComponent();
+	CPlayerController(Entity * father, int playerId);
+	~CPlayerController();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -272,11 +271,11 @@ private:
 
 /*-----------------------------	LIFE COMPONENT	--------------------*/
 //Provides life to an entity
-class LifeComponent : public gameComponent
+class CLife : public GameComponent
 {
 public:
-	LifeComponent(Entity * father);
-	~LifeComponent();
+	CLife(Entity * father);
+	~CLife();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -292,11 +291,11 @@ private:
 
 /*-----------------------------	PLAYER MOVE COMPONENT	--------------------*/
 //Set the move velocity for the entity
-class PlayerMoveComponent : public gameComponent
+class CPlayerMove : public GameComponent
 {
 public:
-	PlayerMoveComponent(Entity * father, float vel);
-	~PlayerMoveComponent();
+	CPlayerMove(Entity * father, float vel);
+	~CPlayerMove();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -311,11 +310,11 @@ private:
 
 /*-----------------------------	PLAYER JUMP COMPONENT	--------------------*/
 //Provides an entity the capacity to jump
-class PlayerJumpComponent : public gameComponent
+class CPlayerJump : public GameComponent
 {
 public:
-	PlayerJumpComponent(Entity * father, float dist);
-	~PlayerJumpComponent();
+	CPlayerJump(Entity * father, float dist);
+	~CPlayerJump();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -330,11 +329,11 @@ private:
 
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
 //Provides an entity the capacity shot bullet as basic attack. 
-class PlayerBasicAttackComponent : public gameComponent
+class CPlayerBasicAttack : public GameComponent
 {
 public:
-	PlayerBasicAttackComponent(Entity * father, float fireRate, E_BULLET bT);
-	~PlayerBasicAttackComponent();
+	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT);
+	~CPlayerBasicAttack();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);

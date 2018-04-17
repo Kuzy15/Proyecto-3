@@ -6,14 +6,14 @@
 #define ENTITY_H
 
 class Message;
-class gameComponent;
-class gameScene;
-enum componentType;
+class GameComponent;
+class GameScene;
+enum ComponentType;
 
 class Entity
 {
 public:
-	Entity(std::string id, gameScene * sc);
+	Entity(std::string id, GameScene * sc);
 	~Entity();
 	void tick(float delta);
 
@@ -27,18 +27,18 @@ public:
 	void sendMessage(Message *);
 
 	//Component methods
-	void addComponent(gameComponent * c);
-	void deleteComponent(componentType id);
+	void addComponent(GameComponent * c);
+	void deleteComponent(ComponentType id);
 
 
 
 private:
 	bool _active;
 	std::string _id;
-	std::list<gameComponent *> components;
+	std::list<GameComponent *> components;
 	std::queue <Message*>msgs;
 
-	gameScene * scene;
+	GameScene * scene;
 	//queue managing during tick function
 	void dispatch();
 };

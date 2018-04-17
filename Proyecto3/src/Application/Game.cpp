@@ -39,7 +39,7 @@ Game::Game(){
 	 initOgre();
 
 
-	 actScene = new basicScene("testScene", this);
+	 actScene = new BasicScene("testScene", this);
 }
  Game::~Game(){
 

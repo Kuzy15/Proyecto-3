@@ -11,7 +11,7 @@
 
 
 #pragma region Constructors and Destructors
-Entity::Entity(std::string id, gameScene * sc) :_id(id), scene(sc)
+Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc)
 {
 
 }
@@ -19,7 +19,7 @@ Entity::~Entity()
 {
 	dispatch();
 	
-	for (gameComponent * c : components){
+	for (GameComponent * c : components){
 		components.pop_front();
 		delete c;
 	}
@@ -34,13 +34,13 @@ Entity::~Entity()
 #pragma endregion
 
 #pragma region Component Interaction
-void Entity::addComponent(gameComponent * gc){
+void Entity::addComponent(GameComponent * gc){
 	components.push_back(gc);
 }
-void Entity::deleteComponent(componentType id){
-	gameComponent * aux;
+void Entity::deleteComponent(ComponentType id){
+	GameComponent * aux;
 	bool found = false;
-	for (std::list<gameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
+	for (std::list<GameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
 		if ((*it)->getID() == id){
 			aux = *it;
 			it = components.erase(it);

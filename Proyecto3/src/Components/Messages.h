@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 class Entity;
-class gameComponent;
+class GameComponent;
 
 #pragma region CInputState
 
@@ -15,7 +15,7 @@ typedef enum ButtonState{
 	BTT_PRESSED = 0, BTT_RELEASED = 1, BTT_NONE = 2
 };
 
-struct CInputState{
+struct ControllerInputState{
 
 	int nEvents = 0;
 
@@ -49,15 +49,15 @@ struct CInputState{
 
 #pragma endregion
 
-typedef enum msgType{
+typedef enum MessageType{
 
-	STRING_MSG, INPUT_STATE_MSG,
-	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM,
+	MSG_STRING, MSG_INPUT_STATE,
+	MSG_CONTROLLER_STATE, ENTITY_UPDATETRANSFORM,
 	MSG_PLAYER_MOVE_X, MSG_COLLISION,
 	MSG_PLAYER_JUMP
 };
 
-typedef enum msgDest {
+typedef enum MessageDestination {
 	//Message only meant to reach the components of the entity in which
 	//it is created.
 	ENTITY,
@@ -74,22 +74,22 @@ class Message
 public:
 	
 	virtual ~Message();
-	msgType getType();
-	msgDest getDestination();
+	MessageType getType();
+	MessageDestination getDestination();
 	std::string getEmmiter();
 	
 protected:
-	Message(msgType type, msgDest destination, std::string emmiter);
-	msgType _messageType;
-	msgDest _messageDestination;
+	Message(MessageType type, MessageDestination destination, std::string emmiter);
+	MessageType _messageType;
+	MessageDestination _messageDestination;
 	std::string _emmiter;
 };
 
-class stringMessage : public Message
+class MString : public Message
 {
 public:
-	stringMessage(std::string message, msgDest d, std::string emmiter);
-	~stringMessage();
+	MString(std::string message, MessageDestination d, std::string emmiter);
+	~MString();
 	std::string getText();
 
 private:
@@ -99,29 +99,29 @@ private:
 
 //---------------------------------------------------		INPUT STATE MSG		----------------------------------------------------------//
 //Message who contains all the input taken from the current frame. One for controller/player.
-class InputStateMessage : public Message
+class MInputState : public Message
 {
 public:
-	InputStateMessage(int i,msgDest d, std::string emmiter);
-	virtual ~InputStateMessage();
+	MInputState(int i,MessageDestination d, std::string emmiter);
+	virtual ~MInputState();
 
-	CInputState& getCInputState();
+	ControllerInputState& getCInputState();
 	inline int getId(){ return _controllerId; };
 	inline int getNumMessages() { return _cState.nEvents; };
 
 private:
-	CInputState _cState;
+	ControllerInputState _cState;
 	int _controllerId;
 };
 
 
 //---------------------------------------------------		INPUT CONTROLLER CONNECTED MSG		----------------------------------------------------------//
 //Notice that a new controller has connected or disconnected. Values: 1 for connected, 0 for disconnected.
-class ControllerStateMessage : public Message
+class MControllerState : public Message
 {
 public:
-	ControllerStateMessage(msgDest d, std::string emmiter, int id, int action);
-	virtual ~ControllerStateMessage();
+	MControllerState(MessageDestination d, std::string emmiter, int id, int action);
+	virtual ~MControllerState();
 
 	inline int getId(){ return _controllerId; };
 
@@ -131,11 +131,11 @@ private:
 	int _action;
 };
 //--------------------------------------------------	UPDATETRANSFORM MSG		----------------------------------------------------------//
-class UpdateTransformMessage: public Message
+class MUpdateTransform: public Message
 {
 public:
-	UpdateTransformMessage(Ogre::Vector3 newPos, float nRotation, std::string emmiter);
-	~UpdateTransformMessage();
+	MUpdateTransform(Ogre::Vector3 newPos, float nRotation, std::string emmiter);
+	~MUpdateTransform();
 	Ogre::Vector3 GetPos();
 	float getRotation();
 
@@ -147,11 +147,11 @@ private:
 
 
 //--------------------------------------------------	INPUT PLAYER MSG	 (ABSTRACT)	----------------------------------------------------------//
-class MessagePlayerInput : public Message
+class MPlayerInput : public Message
 {
 public:
-	MessagePlayerInput(int i, std::string emmiter);
-	~MessagePlayerInput();
+	MPlayerInput(int i, std::string emmiter);
+	~MPlayerInput();
 	inline int GetId(){ return _id; };
 
 
@@ -163,11 +163,11 @@ private:
 
 
 //--------------------------------------------------	PLAYER MOVEMENT X MSG		----------------------------------------------------------//
-class MessagePlayerMoveX : public MessagePlayerInput
+class MPlayerMoveX : public MPlayerInput
 {
 public:
-	MessagePlayerMoveX(float v, int i, std::string emmiter);
-	~MessagePlayerMoveX();
+	MPlayerMoveX(float v, int i, std::string emmiter);
+	~MPlayerMoveX();
 	inline float GetValue(){ return _value; };
 	
 
@@ -180,11 +180,11 @@ private:
 
 
 //--------------------------------------------------	PLAYER JUMP MSG		----------------------------------------------------------//
-class MessagePlayerJump : public Message
+class MJump : public Message
 {
 public:
-	MessagePlayerJump(bool f, std::string emmiter);
-	~MessagePlayerJump();
+	MJump(bool f, std::string emmiter);
+	~MJump();
 	inline bool GetJump(){ return _jump; };
 
 
@@ -199,11 +199,11 @@ private:
 
 
 //--------------------------------------------------	COLLISION MSG		----------------------------------------------------------//
-class MessageCollision : public Message
+class MCollisionBegin : public Message
 {
 public:
-	MessageCollision(uint16_t me, uint16_t contact, std::string emmiter);
-	~MessageCollision();
+	MCollisionBegin(uint16_t me, uint16_t contact, std::string emmiter);
+	~MCollisionBegin();
 
 	uint16_t GetMyCategory(){ return _myCategory; };
 	uint16_t GetContactMask(){ return _contactMask; };
