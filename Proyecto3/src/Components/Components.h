@@ -52,8 +52,8 @@ typedef enum componentType {
 	LIFE_COMPONENT,
 	PLAYER_MOVEMENT_COMPONENT,
 	PLAYER_JUMP_COMPONENT,
-	PLAYER_BASIC_ATTACK_COMPONENT
-
+	PLAYER_BASIC_ATTACK_COMPONENT,
+	CAMERA_COMPONENT
 
 
 
@@ -166,7 +166,24 @@ public:
 private:
 
 };
+//---------   CAMERA COMPONENT   ---------
+class CameraComponent: public gameComponent
+{
+public:
+	CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt,  int clipDistance);
+	~CameraComponent();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
 
+private:
+	std::string _camName;
+	Ogre::SceneManager * _scnMgr;
+	Ogre::Viewport * _vp;
+	Ogre::Vector3 _pos, _lastPos;
+	Ogre::Vector3 _lookAt, _lastLookAt;
+	
+	Ogre::Camera * pCam;
+};
 
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/

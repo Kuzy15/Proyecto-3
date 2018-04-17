@@ -3,6 +3,7 @@
 #include <OgreEntity.h>
 #include <OgreSceneNode.h>
 #include "Messages.h"
+#include "Game.h"
 
 
 
@@ -67,6 +68,9 @@ messageSendComponent::messageSendComponent(Entity * father):gameComponent(MESSAG
 messageSendComponent::~messageSendComponent() {
 }
 void messageSendComponent::tick(float delta) {
+	i++;
+	UpdateTransformMessage * m = new UpdateTransformMessage(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
+	pEnt->getMessage(m);
 
 	
 }
@@ -77,7 +81,7 @@ void messageSendComponent::getMessage(Message * m) {
 #pragma endregion
 
 
-/*-------------------------RENDER COMPONENTS------------------------------------*/
+/*-------------------------OGRE COMPONENTS------------------------------------*/
 //Render Component class. Father to every
 //other render component.
 #pragma region renderComponent
@@ -94,10 +98,12 @@ renderComponent::~renderComponent(){
 //Get Message general to every other render component child to this
 void renderComponent::getMessage(Message *m) {
 	switch (m->getType()) {
-	case ENTITY_UPDATETRANSFORM:
+	case MSG_UPDATETRANSFORM:
 		_ogrepos = static_cast<UpdateTransformMessage *>(m)->GetPos();
-		_ogrequat = static_cast<UpdateTransformMessage *>(m)->GetQuat();
-		//std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
+
+		
+		pOgreSceneNode->roll((Ogre::Radian)static_cast<UpdateTransformMessage *>(m)->getRotation());
+		std::cout << "new position: " << _ogrepos.x << " "<< _ogrepos.y << " " << _ogrepos.z << std::endl;
 		break;
 	default: 
 		break;
@@ -138,6 +144,52 @@ void meshRenderComponent::getMessage(Message * m) {
 }
 
 #pragma endregion
+#pragma region Camera Component
+CameraComponent::CameraComponent(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
+	: gameComponent(CAMERA_COMPONENT, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
+{
+	pCam = _scnMgr->createCamera(_camName);
+	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam); 
+
+	pCam->setPosition(_pos);
+	pCam->lookAt(_lookAt);
+	pCam->setAspectRatio(
+		Ogre::Real(vp->getActualWidth()) /
+		Ogre::Real(vp->getActualHeight()));
+
+	pCam->setNearClipDistance(clipDistance);
+
+	vp->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+}
+CameraComponent::~CameraComponent() {
+	delete pCam;
+}
+void CameraComponent::tick(float delta) {
+	if (_lookAt != _lastLookAt) {
+		pCam->lookAt(_lookAt);
+		_lastLookAt = _lookAt;
+	}
+	if (_pos != _lastPos) {
+		pCam->setPosition(_pos);
+		_lastPos = _pos;
+	}
+
+}
+void CameraComponent::getMessage(Message * m) {
+	//DEBUG MESSAGE RECEIVING
+	if (m->getType() == MSG_UPDATETRANSFORM) {
+		std::cout << "MESSAGE RECEIVED" << std::endl;
+		_lookAt = static_cast<UpdateTransformMessage *> (m)->GetPos();
+	}
+
+
+}
+
+#pragma endregion
+
+
+
+/*-------------------------BOX2D COMPONENTS------------------------------------*/
 
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics

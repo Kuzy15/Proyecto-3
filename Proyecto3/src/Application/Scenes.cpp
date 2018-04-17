@@ -26,7 +26,7 @@
 
 #pragma region gameScene 
 
-gameScene::gameScene(std::string id, Game * game) :_id(id), pGame(game){
+gameScene::gameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
 	nMessages = -1;
 }
 gameScene::~gameScene()
@@ -37,6 +37,7 @@ gameScene::~gameScene()
 		_entities.pop_front();
 		delete ent;
 	}
+	
 
 }
 bool gameScene::updateEnts(float delta){
@@ -100,6 +101,7 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 
+
 	//Self-explanatory methods
 	cam = scnMgr->createCamera("MainCam");
 	cam->setPosition(0, 0, 150);
@@ -107,14 +109,9 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	cam->setNearClipDistance(5);
 
 
+
 	//------------------------------------------------------------------------------------------------------
 	//ViewPort Addition
-	vp = game->getRenderWindow()->addViewport(cam);
-	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
-
-	cam->setAspectRatio(
-		Ogre::Real(vp->getActualWidth()) /
-		Ogre::Real(vp->getActualHeight()));
 	
 	
 	//------------------------------------------------------------------------------------------------------
@@ -140,6 +137,7 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 	Entity * test1 = new Entity("test1", this);
 	Entity * test2 = new Entity("test2", this);
+
 	Entity * test3 = new Entity("test3", this);
 	Entity * test4 = EntityFactory::getInstance().createEntity(ET_GOD, EG_RA, this);
 
@@ -147,9 +145,13 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	test3->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 0), "Barrel.mesh", test3, scnMgr));
 
 
+	Entity * cam = new Entity ("Camera1", this);
+
+
+	cam->addComponent(
+		new CameraComponent(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(20, -20, 100), Ogre::Vector3(0,0,0), 5)
+	);
 	test2->addComponent(new stringComponent(test2));
-	
-	
 
 
 	test1->addComponent(new RigidBodyComponent(test1, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5,20,DYNAMIC,POLYGON, MASK_PLAYER));
@@ -159,15 +161,18 @@ basicScene::basicScene(std::string id, Game * game): gameScene(id, game) {
 	
 	addEntity(test1);
 	addEntity(test2);
+
 	addEntity(test3);
 	//addEntity(test4);
+
+	addEntity(cam);
+
 	
 }
 
 
 basicScene::~basicScene(){
 	delete light;
-	delete cam;
 	delete vp;
 	delete scnMgr;
 

@@ -55,8 +55,6 @@ typedef enum msgType{
 	CONTROLLER_STATE_MSG, ENTITY_UPDATETRANSFORM,
 	MSG_PLAYER_MOVE_X, MSG_COLLISION,
 	MSG_PLAYER_JUMP
-
-
 };
 
 typedef enum msgDest {
@@ -136,15 +134,15 @@ private:
 class UpdateTransformMessage: public Message
 {
 public:
-	UpdateTransformMessage(Ogre::Vector3 newPos, Ogre::Quaternion newQuaternion, std::string emmiter);
+	UpdateTransformMessage(Ogre::Vector3 newPos, float nRotation, std::string emmiter);
 	~UpdateTransformMessage();
 	Ogre::Vector3 GetPos();
-	Ogre::Quaternion GetQuat();
+	float getRotation();
 
 private:
 	//Private fields for the new position and quaternion of the entity
 	Ogre::Vector3 _nPos;
-	Ogre::Quaternion _nQuat;
+	float _nRotation;
 };
 
 
@@ -216,9 +214,5 @@ private:
 	uint16_t _myCategory;
 	uint16_t _contactMask;
 };
-
-
-
-
 
 #endif

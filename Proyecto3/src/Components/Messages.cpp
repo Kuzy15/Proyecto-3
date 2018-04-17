@@ -68,14 +68,14 @@ ControllerStateMessage::~ControllerStateMessage(){
 
 #pragma region UpdateTransform Message 
 
-UpdateTransformMessage::UpdateTransformMessage(Ogre::Vector3 newPos, Ogre::Quaternion newQuaternion, std::string emmiter):Message(ENTITY_UPDATETRANSFORM, ENTITY,emmiter), _nPos(newPos), _nQuat(newQuaternion){
+UpdateTransformMessage::UpdateTransformMessage(Ogre::Vector3 newPos, float newRotation, std::string emmiter):Message(MSG_UPDATETRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation){
 
 };
 UpdateTransformMessage::~UpdateTransformMessage() {
 
 }
 Ogre::Vector3 UpdateTransformMessage::GetPos() { return _nPos; }
-Ogre::Quaternion UpdateTransformMessage::GetQuat() { return _nQuat; }
+float UpdateTransformMessage::getRotation() { return _nRotation; }
 
 #pragma endregion
 

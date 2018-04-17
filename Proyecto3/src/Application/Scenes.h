@@ -42,6 +42,10 @@ protected:
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
 
+	//Basic Ogre atributes common to every scene
+	Ogre::SceneManager * scnMgr;
+	Ogre::Viewport * vp;
+
 
 };
 
@@ -62,11 +66,7 @@ public:
 	inline Ogre::SceneManager* getScnMngr(){ return scnMgr; }
 
 private:
-	Ogre::SceneManager * scnMgr;
-	Ogre::Viewport * vp;
-	Ogre::Camera * cam;
 	Ogre::Light * light;
-	
 	
 };
 
