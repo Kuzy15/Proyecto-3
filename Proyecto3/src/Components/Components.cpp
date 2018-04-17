@@ -104,7 +104,7 @@ void CRender::getMessage(Message *m) {
 
 
 			pOgreSceneNode->roll((Ogre::Radian)static_cast<MUpdateTransform *>(m)->getRotation());
-			std::cout << "new position: " << _ogrepos.x << " " << _ogrepos.y << " " << _ogrepos.z << std::endl;
+			//std::cout << "new position: " << _ogrepos.x << " " << _ogrepos.y << " " << _ogrepos.z << std::endl;
 		}
 		break;
 	default: 

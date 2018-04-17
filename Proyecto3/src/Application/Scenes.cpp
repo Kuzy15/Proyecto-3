@@ -1,7 +1,6 @@
 #include <OgreRoot.h>
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
-
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
@@ -22,6 +21,10 @@
 #include "Game.h"
 #include "Messages.h"
 #include "Scenes.h"
+#include "DebugDraw.h"
+
+
+DebugDraw dInstance;
 
 
 #pragma region gameScene 
@@ -40,6 +43,8 @@ GameScene::~GameScene()
 	
 
 }
+
+void GameScene::clearDebugDraw(){ dInstance.clear(); }
 bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
 		if(ent != NULL)ent->tick(delta);
@@ -100,6 +105,10 @@ void GameScene::deleteEntity(std::string id){
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
+	//Debug draw
+	dInstance.setSceneManager(scnMgr);
+	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
+	dInstance.SetFlags(b2Draw::e_aabbBit | b2Draw::e_shapeBit);
 
 
 	
@@ -133,7 +142,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	Entity * cam = new Entity ("Camera1", this);
 	cam->addComponent(
-		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(20, -20, 100), Ogre::Vector3(0,0,0), 5)
+		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(0, 0, 100), Ogre::Vector3(0,0,0), 5)
 	);
 	addEntity(cam);
 
@@ -167,6 +176,10 @@ BasicScene::~BasicScene(){
 	delete scnMgr;
 
 }
+
+
+
+
 bool BasicScene::run(){
 	//Here we would get the time between frames
 
@@ -180,6 +193,8 @@ bool BasicScene::run(){
 
 	//Clear dispatched messages
 	clearMessageQueue();
+	
+	
 
 	return aux;
 

@@ -4,7 +4,7 @@
 #include <OgreRenderWindow.h>
 #include <exception>
 #include <OgreTextureManager.h>
-#include "DebugDraw.h"
+
 
 #include "Scenes.h"
 #include "InputManager.h"
@@ -24,10 +24,12 @@ Game * Game::_instance = nullptr;
 Game::Game(){
 	_instance = this;
 
-	DebugDraw dInstance;
+	
 	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
+	
+	
 
 	//Inicialization of SDL. Only starts JOYSTICK functionality.
 	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
@@ -43,6 +45,7 @@ Game::Game(){
 
 
 	 actScene = new BasicScene("testScene", this);
+	 
 }
  Game::~Game(){
 
@@ -194,8 +197,9 @@ void Game::loop() {
 			frames++;
 		}
 		//std::cout << frames << std::endl;
-		
+		world->DrawDebugData();
 		render();
+		actScene->clearDebugDraw();
 	}
 
 }

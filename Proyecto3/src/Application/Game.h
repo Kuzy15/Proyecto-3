@@ -8,7 +8,10 @@
 
 
 
+
 class GameScene;
+
+
 
 //Game is a window event listener,
 //Therefore we can react to the window events

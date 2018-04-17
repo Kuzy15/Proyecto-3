@@ -4,6 +4,8 @@ class Entity;
 class Message;
 class Game;
 
+
+
  
 
 /*----------------------------- GAME SCENE -----------------------------*/
@@ -29,6 +31,9 @@ public:
 	//Each scene implements it differently
 	virtual bool run() = 0;
 	bool updateEnts(float delta);
+
+	//Debug
+	void clearDebugDraw();
 
 
 protected:

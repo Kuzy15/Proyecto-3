@@ -3,6 +3,9 @@
 
 #include <Box2D.h>
 #include <Ogre.h>
+#include <stdio.h>
+#include <iostream>
+#include "Components.h"
 
 class DebugDraw : public b2Draw
 {
@@ -11,32 +14,49 @@ class DebugDraw : public b2Draw
 private:
 
 	Ogre::SceneManager* mSceneMgr;
+	Ogre::ManualObject* mDebug;
 
 public:
 
 	//DebugDraw(){}
 	//~DebugDraw(){}
 
-	void setSceneManager(Ogre::SceneManager* sM){ mSceneMgr = sM; }
+	void setSceneManager(Ogre::SceneManager* sM){
+		mSceneMgr = sM; 
+		mDebug = mSceneMgr->createManualObject("manual");
+		mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(mDebug);
+
+	};
+
+	void clear(){ mDebug->clear(); }
+
 	void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
-	
-		Ogre::ManualObject* manual = mSceneMgr->createManualObject("manual");
-		manual->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_STRIP);
 
-		manual->position(-100.0, -100.0, 0.0);  // start position
-		manual->position(100.0, -100.0, 0.0);  // draw first line
-		manual->position(100.0, 100.0, 0.0);
-		manual->position(-100.0, 100.0, 0.0);
-		manual->position(-100.0, -100.0, 0.0);  // draw fourth line
+		mDebug->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_STRIP);
 
-		manual->end();
-		mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(manual);
+
+		b2Vec2 firstVertex = vertices[0];
+		mDebug->position(firstVertex.x * PPM, firstVertex.y* PPM, 0.0);
+
+		for (int i = 1; i < vertexCount; i++){
+			mDebug->position(vertices[i].x * PPM, vertices[i].y * PPM, 0.0 * PPM);
+		}
+		mDebug->position(firstVertex.x* PPM, firstVertex.y* PPM, 0.0);
+
+		mDebug->end();
 
 	}
 
 
 
-	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {}
+	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
+	
+
+		
+	
+	
+	
+	}
 	void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& color) {}
 	void DrawSolidCircle(const b2Vec2& center, float32 radius, const b2Vec2& axis, const b2Color& color) {}
 	void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {}
