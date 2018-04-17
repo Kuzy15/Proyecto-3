@@ -11,9 +11,22 @@
 
 class Entity;
 class Message;
+typedef enum E_BULLET;
+
+/*---------------------------- CONSTANTS DEFINITION ----------------------*/
+//Limits for the components variables 
+const float MAX_SPEED = 0.0f;
+const int MAX_LIFE = 0;
+const float MAX_JUMP_DISTANCE = 0.0f;
+const float MAX_FIRE_RATE = 0.0f;
+
 //Pixels per meter
 const int PPM = 100;
 
+
+
+
+/*--------------------------- ENUM AND STRUCT DEFINITIONS ----------------*/
 typedef enum rigidBodyType {
 	
 	DYNAMIC,
@@ -32,11 +45,15 @@ typedef enum componentType {
 	STRING_COMPONENT,
 	MESSAGESEND_COMPONENT,
 	MESH_RENDER_COMPONENT,
-
 	PHYSICS_COMPONENT,
 	PLAYER_CH_COMPONENT,
 	INPUT_BASE_COMPONENT,	
-	PLAYER_CONTROLLER_COMPONENT
+	PLAYER_CONTROLLER_COMPONENT,
+	LIFE_COMPONENT,
+	PLAYER_MOVEMENT_COMPONENT,
+	PLAYER_JUMP_COMPONENT,
+	PLAYER_BASIC_ATTACK_COMPONENT
+
 
 
 
@@ -233,6 +250,85 @@ public:
 	inline const int getId(){ return _id; };
 private:
 	int _id;
+};
+
+
+/*-----------------------------	LIFE COMPONENT	--------------------*/
+//Provides life to an entity
+class LifeComponent : public gameComponent
+{
+public:
+	LifeComponent(Entity * father);
+	~LifeComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	//Returns the current life of the entity
+	inline int getCurrentLife(){ return _currentLife; };
+
+private:
+	int maxLife;			//Max number for the HPs
+	int _currentLife;		//The current life of the entity
+};
+
+
+/*-----------------------------	PLAYER MOVE COMPONENT	--------------------*/
+//Set the move velocity for the entity
+class PlayerMoveComponent : public gameComponent
+{
+public:
+	PlayerMoveComponent(Entity * father, float vel);
+	~PlayerMoveComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	//Returns the current life of the entity
+	inline float getVelocity(){ return _moveVel; };
+
+private:
+	float _maxSpeed;			//Max velocity
+	float _moveVel;				//The  current movemente speed the entity has
+};
+
+/*-----------------------------	PLAYER JUMP COMPONENT	--------------------*/
+//Provides an entity the capacity to jump
+class PlayerJumpComponent : public gameComponent
+{
+public:
+	PlayerJumpComponent(Entity * father, float dist);
+	~PlayerJumpComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	//Returns the current jump distance of the entity
+	inline float getVelocity(){ return _jumpDist; };
+
+private:
+	float _maxDistance;			//Max number of jump units
+	float _jumpDist;			//The current jump units of the entity
+};
+
+/*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
+//Provides an entity the capacity shot bullet as basic attack. 
+class PlayerBasicAttackComponent : public gameComponent
+{
+public:
+	PlayerBasicAttackComponent(Entity * father, float fireRate, E_BULLET bT);
+	~PlayerBasicAttackComponent();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	//Returns the current fire rate of the entity
+	inline float getFireRate(){ return _fireRate; };
+
+private:
+	float _maxFireRate;			//Max fire rate
+	float _fireRate;			//The current fire rate 
+	E_BULLET _bulletType;		//The type of bullet who will be instantiated
 };
 
 
