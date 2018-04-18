@@ -108,7 +108,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	//Debug draw
 	dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
-	dInstance.SetFlags(b2Draw::e_aabbBit | b2Draw::e_shapeBit);
+	dInstance.SetFlags(b2Draw::e_shapeBit | b2Draw::e_aabbBit);
 
 
 	
@@ -147,9 +147,10 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	addEntity(cam);
 
 	Entity * Ra = new Entity("0", this);
-	Ra->addComponent(new CRigidBody(Ra, game->getPhysicsWorld(), Ogre::Vector3(100, 0, 0), 5, 20, RB_DYNAMIC, SH_POLYGON, MASK_PLAYER));
+	Ra->addComponent(new CRigidBody(Ra, game->getPhysicsWorld(), Ogre::Vector3(5, 0, 0), 15, 3, RB_DYNAMIC, SH_POLYGON, MASK_PLAYER));
 	Ra->addComponent(new CPlayerController(Ra, 0));
-	Ra->addComponent(new CMeshRender(Ogre::Vector3(10, 0, 0), "Ra.mesh", Ra, scnMgr));
+	Ra->addComponent(new CMeshRender(Ogre::Vector3(8.0f, 0, 0), "Ra.mesh", Ra, scnMgr));
+	addEntity(Ra);
 	
 	
 	
@@ -158,7 +159,6 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
 	addEntity(Suelo);
 
-	addEntity(Ra);
 
 	
 

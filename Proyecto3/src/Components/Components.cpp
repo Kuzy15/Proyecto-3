@@ -254,8 +254,9 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	//Fixture Definition.
 	_fixtureDef.shape = _shape;
-	_fixtureDef.density = 950.0;
-	_fixtureDef.friction = 0;
+	_fixtureDef.density = 950.0f;
+	_fixtureDef.restitution = 0.0f;
+	_fixtureDef.friction = 0.3f;
 
 	switch (myCategory)
 	{
