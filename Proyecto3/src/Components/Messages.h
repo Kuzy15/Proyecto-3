@@ -134,15 +134,19 @@ private:
 class MUpdateTransform: public Message
 {
 public:
-	MUpdateTransform(Ogre::Vector3 newPos, float nRotation, std::string emmiter);
+	MUpdateTransform(Ogre::Vector3 newPos, float nRotation,float h, float w, std::string emmiter);
 	~MUpdateTransform();
 	Ogre::Vector3 GetPos();
 	float getRotation();
+	inline float getW(){ return _w; }
+	inline float getH(){ return _h; }
 
 private:
 	//Private fields for the new position and quaternion of the entity
 	Ogre::Vector3 _nPos;
 	float _nRotation;
+	float _w;
+	float _h;
 };
 
 

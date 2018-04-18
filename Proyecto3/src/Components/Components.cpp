@@ -68,9 +68,9 @@ CMessageSend::CMessageSend(Entity * father):GameComponent(CMP_MESSAGE_SEND, fath
 CMessageSend::~CMessageSend() {
 }
 void CMessageSend::tick(float delta) {
-	i++;
+	/*i++;
 	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
-	pEnt->getMessage(m);
+	pEnt->getMessage(m);*/
 
 	
 }
@@ -90,6 +90,8 @@ CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
 	: GameComponent(t, father), pSceneMgr(scnM)
 {
 	pOgreSceneNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
+	pChild = pOgreSceneNode->createChildSceneNode();
+	
 }
 CRender::~CRender(){
 	pSceneMgr->destroySceneNode(pOgreSceneNode);
@@ -100,11 +102,33 @@ void CRender::getMessage(Message *m) {
 	switch (m->getType()) {
 	case MSG_UPDATE_TRANSFORM:
 		if (m->getEmmiter() == pEnt->getID()){
-			_ogrepos = static_cast<MUpdateTransform *>(m)->GetPos();
+			//Message cast
+			MUpdateTransform* msg = static_cast<MUpdateTransform *>(m);
 
+			//We get the size of the colliderbox.
+			float w = msg->getW();
+			float h = msg->getH();
 
-			pOgreSceneNode->roll((Ogre::Radian)static_cast<MUpdateTransform *>(m)->getRotation());
-			//std::cout << "new position: " << _ogrepos.x << " " << _ogrepos.y << " " << _ogrepos.z << std::endl;
+			//Where our node will rotate.
+			Ogre::Vector3 parentPos = msg->GetPos();
+			
+			//Where our mesh is relative to the parent.
+			//The real pos of the object is the parent pos + this variable, _ogrepos.
+			_ogrepos.x = w / 2;
+			_ogrepos.y = 0;	
+			_ogrepos.z = 0;
+
+			//Move the parent to the collider location of rotation.
+			pOgreSceneNode->setPosition(parentPos);			
+			//Move the child to the real pos of the collider.
+			pChild->setPosition(_ogrepos);
+
+			//Rotate the parent node the same degree as the collider.
+			float angleRad = msg->getRotation();
+			float grades = (angleRad * 180) / 3.14159265359;
+			pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
+
+		
 		}
 		break;
 	default: 
@@ -121,22 +145,25 @@ void CRender::getMessage(Message *m) {
 #pragma region meshRenderComponent
 CMeshRender::CMeshRender(Ogre::Vector3 p, std::string meshName, Entity * father, Ogre::SceneManager * scnM) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
-	pOgreSceneNode->attachObject(pOgreEnt);
+	
+	pChild->attachObject(pOgreEnt);
 	pOgreSceneNode->setPosition(p);
+	
 	_ogrepos = p;
 	_ogrequat = Ogre::Quaternion();
 	
 }
 CMeshRender::~CMeshRender() {
-	pOgreSceneNode->detachObject(pOgreEnt);
+	pChild->detachObject(pOgreEnt);
 	pSceneMgr->destroyEntity(pOgreEnt);
 }
 void CMeshRender::tick(float delta) {
 
-	//Firstly we update the Ogre position and rotation with the values
-	//stored in the variables.
-	pOgreSceneNode->setPosition(_ogrepos);
-	pOgreSceneNode->setOrientation(_ogrequat);
+
+
+	
+	
+	
 	
 }
 void CMeshRender::getMessage(Message * m) {
@@ -289,7 +316,6 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	
 
 
-
 }
 CRigidBody::~CRigidBody() {
 	_myWorld->DestroyBody(_body);
@@ -303,10 +329,10 @@ void CRigidBody::tick(float delta) {
 	//Transformation from physics world to ogre world.
 	
 	
-	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3(_body->GetPosition().x * PPM, _body->GetPosition().y * PPM, 0), _body->GetAngle(), pEnt->getID());
+	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x  /*+ (_rbWeight / 2)*/)* PPM , _body->GetPosition().y /*+ (_rbHeight / 2)9*/ * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
-	//std::cout << pEnt->getID()  << _body->GetPosition().y << std::endl;
+	std::cout << _body->GetAngle() << std::endl;
 
 
 }
@@ -325,7 +351,10 @@ void CRigidBody::getMessage(Message * m) {
 	else if (m->getType() == MSG_PLAYER_JUMP){
 		if (static_cast<MJump*>(m)->GetJump()){
 			b2Vec2 newForce(0, 700);
-			_body->ApplyForceToCenter(newForce, true);		
+			//_body->ApplyForceToCenter(newForce, true);		
+			
+			_body->SetAngularVelocity(2);
+			
 		}
 	
 	}

@@ -139,6 +139,8 @@ protected:
 	// Cache value for the rendering positions. They will be updated when needed in the tick function
 	Ogre::Vector3 _ogrepos;
 	Ogre::Quaternion _ogrequat;
+	Ogre::SceneNode* pChild;
+	
 };
 
 //--------- MESH RENDER COMPONENT ---------
@@ -153,6 +155,7 @@ public:
 
 private:
 	Ogre::Entity * pOgreEnt;
+	
 	
 };
 /*//--------- PLANE RENDER COMPONENT ---------
@@ -210,7 +213,7 @@ public:
 	
 
 private:
-
+	
 	float _rbWeight;
 	float _rbHeight;
 	b2World* _myWorld;

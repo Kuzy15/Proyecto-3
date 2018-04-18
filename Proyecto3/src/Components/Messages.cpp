@@ -68,7 +68,8 @@ MControllerState::~MControllerState(){
 
 #pragma region UpdateTransform Message 
 
-MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, std::string emmiter) :Message(MSG_UPDATE_TRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation){
+MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, float h, float w, std::string emmiter) :Message(MSG_UPDATE_TRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation)
+, _w(w), _h(h){
 
 };
 MUpdateTransform::~MUpdateTransform() {
