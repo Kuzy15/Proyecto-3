@@ -24,6 +24,8 @@ public:
 
 	//Comunication methods
 	void getMessage(Message *);
+	Ogre::SceneManager * getSceneManager();
+	Game* getGame();
 	virtual void dispatch();
 	virtual void processScnMsgs() = 0;
 
@@ -68,7 +70,7 @@ public:
 	virtual bool run();
 	virtual void dispatch();
 	void processScnMsgs();
-	inline Ogre::SceneManager* getScnMngr(){ return scnMgr; }
+	
 
 private:
 	Ogre::Light * light;

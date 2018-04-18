@@ -54,7 +54,8 @@ typedef enum MessageType{
 	MSG_STRING, MSG_INPUT_STATE,
 	MSG_CONTROLLER_STATE, MSG_UPDATE_TRANSFORM,
 	MSG_PLAYER_MOVE_X, MSG_COLLISION,
-	MSG_PLAYER_JUMP
+	MSG_PLAYER_JUMP,
+	MSG_PLAYER_SHOT
 };
 
 typedef enum MessageDestination {
@@ -218,5 +219,24 @@ private:
 	uint16_t _myCategory;
 	uint16_t _contactMask;
 };
+
+
+//--------------------------------------------------	PLAYER SHOT MSG		----------------------------------------------------------//
+class MPlayerShot : public Message
+{
+public:
+	MPlayerShot(float axisXValue, float axisYValue, std::string emmiter);
+	~MPlayerShot();
+
+	float getXValue(){ return _XValue; };
+	float getYValue(){ return _YValue; };
+
+
+private:
+	
+	float _XValue;						//Shot direction
+	float _YValue;
+};
+
 
 #endif

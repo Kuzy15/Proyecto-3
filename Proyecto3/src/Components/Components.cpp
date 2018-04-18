@@ -462,11 +462,47 @@ void CPlayerJump::getMessage(Message* m){}
 #pragma endregion
 
 //Basic Attack Component
-#pragma region Player Jump Component
+#pragma region Player Basic Attack Component
+
 CPlayerBasicAttack::CPlayerBasicAttack(Entity* father, float fireRate, E_BULLET bT) :GameComponent(CMP_BASIC_ATTACK, father),
-_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT) {}
+_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT) 
+{
+	_lastTimeShot = 0;
+	_timeCounter = 0;
+
+}
 CPlayerBasicAttack::~CPlayerBasicAttack(){}
 
 void CPlayerBasicAttack::tick(float delta){}
-void CPlayerBasicAttack::getMessage(Message* m){}
+void CPlayerBasicAttack::getMessage(Message* m){
+
+	if (m->getType() == MSG_PLAYER_SHOT){
+		MPlayerShot* mPS = static_cast<MPlayerShot*>(m);
+
+		//Check if the player can spawn the next bullet
+		_timeCounter = (SDL_GetTicks() * 1000);
+		if ((_timeCounter - _lastTimeShot) > _fireRate){
+			//Spawn bullet
+			_lastTimeShot = (SDL_GetTicks() * 1000);
+		}
+	}
+}
+#pragma endregion
+
+//Bullet Component
+#pragma region Bullet Component
+
+CBullet::CBullet(Entity* father, E_BULLET bT, float damage, float vel) :GameComponent(CMP_BASIC_ATTACK, father), _damage(damage)
+, _velocity(vel)
+{
+	
+
+}
+CBullet::~CBullet(){}
+
+void CBullet::tick(float delta){}
+void CBullet::getMessage(Message* m){
+
+	
+}
 #pragma endregion

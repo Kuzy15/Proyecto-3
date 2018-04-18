@@ -51,6 +51,16 @@ bool GameScene::updateEnts(float delta){
 	}
 	return true;
 } 
+
+Ogre::SceneManager * GameScene::getSceneManager(){
+
+	return scnMgr;
+}
+
+Game* GameScene::getGame(){
+	return pGame;
+}
+
 void GameScene::getMessage(Message * m){
 	_messages.push_back(m);
 }

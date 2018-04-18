@@ -9,7 +9,11 @@ EntityFactory::EntityFactory()
 	_idCount = 0;
 
 	//Define all create Entity methods
+	//Gods
 	_createGodFuncs.emplace(EG_RA, &createGodRa);
+
+	//Bullets
+	_createBulletFuncs.emplace(EB_RA, &createBulletRa);
 }
 
 
@@ -36,6 +40,8 @@ Entity* EntityFactory::createEntity(E_TYPE typE, int classE, GameScene* s ){
 	case ET_GOD:
 		e = createGod((E_GOD)classE, idS, s);
 		break;
+	case ET_BULLET:
+		e = createBullet((E_BULLET)classE, idS, s);
 	default:
 		break;
 	}
@@ -49,4 +55,11 @@ Entity* EntityFactory::createGod(E_GOD cE, std::string id, GameScene* s){
 	createGodFunc c = _createGodFuncs.at(cE);
 	Entity* debug = c(id, s);
 	return debug;
+}
+
+//The create bullet methods return a new bullet
+Entity* EntityFactory::createBullet(E_BULLET cE, std::string id, GameScene* s){
+
+	creteBulletFunc c = _createBulletFuncs.at(cE);
+	return c(id, s);
 }

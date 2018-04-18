@@ -9,12 +9,15 @@
 
 #include <string>
 
+
 class Entity;
 class GameScene;
+
 
 //Typedefs to name functions types for entity creation
 #pragma region Typedef functions
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s);
+typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s);
 
 #pragma endregion
 
@@ -26,9 +29,12 @@ typedef enum E_BULLET { EB_RA = 0 };
 #pragma endregion
 
 //Creating methods definitions for all entities
-#pragma region Methods definition 
+#pragma region Gods 
 Entity* createGodRa(std::string id, GameScene* s);
 
 #pragma endregion
 
+#pragma region Bullets
+Entity* createBulletRa(std::string id, GameScene* s);
+#pragma endregion
 #endif

@@ -52,7 +52,8 @@ typedef enum ComponentType {
 	CMP_MOVEMENT_SPEED,
 	CMP_JUMP,
 	CMP_BASIC_ATTACK,
-	CMP_CAMERA
+	CMP_CAMERA,
+	CMP_BULLET
 
 
 
@@ -347,8 +348,30 @@ public:
 private:
 	float _maxFireRate;			//Max fire rate
 	float _fireRate;			//The current fire rate 
+	float _lastTimeShot;		//The last time in SDL time when player spawn a bullet (Fire rate control)
+	float _timeCounter;			//Variable for the fire rate control.
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
 };
 
+
+/*-----------------------------	BULLET COMPONENT	--------------------*/
+//Provides an entity the behavior of a bullet
+class CBullet : public GameComponent
+{
+public:
+	CBullet(Entity * father, E_BULLET bT, float damage, float vel);
+	~CBullet();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+private:
+	E_BULLET _bulletType;		//The type of bullet who will be instantiated
+	float _damage;				//The damage done by one bullet 
+	float _velocity;			//The movement velocity of the bullet
+	//rango de explosión
+
+};
 
 #endif

@@ -24,6 +24,7 @@ private:
 
 	//Data structures that stores the diferents functions which creates entities
 	map<E_GOD, createGodFunc> _createGodFuncs;
+	map<E_BULLET, creteBulletFunc> _createBulletFuncs;
 
 
 	static EntityFactory* _instance;	//The unique instance of the class
@@ -31,6 +32,7 @@ private:
 
 	//Methods for create gods and define their behaviour (Components, etc)
 	Entity* createGod(E_GOD god ,std::string id, GameScene* s);
+	Entity* createBullet(E_BULLET bullte, std::string id, GameScene* s);
 
 };
 
