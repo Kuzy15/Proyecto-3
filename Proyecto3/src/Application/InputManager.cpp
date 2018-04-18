@@ -13,22 +13,7 @@ InputManager::InputManager()
 	_currentNPlayers = 0;
 
 	//Open all the joystick files conected.
-	/*
-	int i = 0;
-	while( i < SDL_NumJoysticks() && i < MAX_PLAYERS)
-	{
-		_playersJoystick[i] = ( SDL_JoystickOpen(i));
-		if (_playersJoystick[i] == NULL && SDL_IsGameController(i)){
-			//ERROR MESSAGE
-		}
-		_playerController[i] = (SDL_GameControllerOpen(i));
-#ifdef _DEBUG
-		printf("    %s\n", SDL_JoystickName(_playersJoystick[i]));
-#endif
 	
-		i++;
-	}
-	*/
 	//Enable event flow
 	SDL_JoystickEventState(SDL_ENABLE);
 
@@ -70,7 +55,7 @@ void InputManager::getMessages(std::list<Message*> &sceneQueue){
 }
 
 void InputManager::handleInput(){
-	
+
 	SDL_Event event;
 	/* Other initializtion code goes here */
 
@@ -80,7 +65,6 @@ void InputManager::handleInput(){
 		_inputMsg[i] = new MInputState(i,BROADCAST, _emitter);
 
 	}
-	float axisMotion;
 
 	/* Start main game loop here */
 	while (SDL_PollEvent(&event))
@@ -88,131 +72,9 @@ void InputManager::handleInput(){
 		switch (event.type)
 		{
 		case SDL_KEYDOWN:
-			
 			break;
-
 		case SDL_QUIT:
-			
-			break;
-//Mapping for controller buttons (Press and Release)			
-#pragma region CONTROLLERBUTTONDOWN
-		case SDL_CONTROLLERBUTTONDOWN:
-			switch (event.cbutton.button)
-			{
-			case SDL_CONTROLLER_BUTTON_A:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_A = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_B:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_B = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_X:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_X = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_Y:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_Y = BTT_PRESSED;
-			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-				_inputMsg[event.cbutton.which]->getCInputState().Left_Shoulder = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-				_inputMsg[event.cbutton.which]->getCInputState().Right_Shoulder = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-				_inputMsg[event.cbutton.which]->getCInputState().Right_Stick = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-				_inputMsg[event.cbutton.which]->getCInputState().Left_Stick = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_START:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_Start = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_BACK:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_Back = BTT_PRESSED;
-			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Down = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_DPAD_UP:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Up = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Left = BTT_PRESSED;
-				break;
-			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Right = BTT_PRESSED;
-				break;
-			default:
-				break;
-			}
-			
-			std::cout << "Button pressed" << std::endl;
-			break;
-#pragma endregion
-#pragma region CONTROLLERBUTTONUP
-		case SDL_CONTROLLERBUTTONUP:
-			switch (event.cbutton.button)
-			{
-			case SDL_CONTROLLER_BUTTON_A:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_A = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_B:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_B = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_X:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_X = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_Y:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_Y = BTT_RELEASED;
-			case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-				_inputMsg[event.cbutton.which]->getCInputState().Left_Shoulder = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-				_inputMsg[event.cbutton.which]->getCInputState().Right_Shoulder = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-				_inputMsg[event.cbutton.which]->getCInputState().Right_Stick = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-				_inputMsg[event.cbutton.which]->getCInputState().Left_Stick = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_START:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_Start = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_BACK:
-				_inputMsg[event.cbutton.which]->getCInputState().Button_Back = BTT_RELEASED;
-			case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Down = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_DPAD_UP:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Up = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Left = BTT_RELEASED;
-				break;
-			case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
-				_inputMsg[event.cbutton.which]->getCInputState().DPad_Right = BTT_RELEASED;
-				break;
-			default:
-				break;
-			}
-			break;
-#pragma endregion
-//Mapping for both joysticks
-		case SDL_CONTROLLERAXISMOTION:
-			axisMotion = event.caxis.value / PARSE_VALUE;
-			if ((axisMotion < -DEAD_ZONE) || (axisMotion > DEAD_ZONE))
-			{
-				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX){
-					_inputMsg[event.caxis.which]->getCInputState().Axis_LeftX = axisMotion;
-				}
-				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
-					_inputMsg[event.caxis.which]->getCInputState().Axis_LeftY = axisMotion;
-					
-				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX)
-					_inputMsg[event.caxis.which]->getCInputState().Axis_RightX = axisMotion;
-					
-				else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY)
-					_inputMsg[event.caxis.which]->getCInputState().Axis_RightY = axisMotion;
-			}
-			break;
+			break;			
 //Events for Controller recognize: connect and disconnect
 		case SDL_CONTROLLERDEVICEADDED:
 			addJoystick();
@@ -226,6 +88,10 @@ void InputManager::handleInput(){
 		default:
 			break;
 		}
+
+
+		
+
 #ifdef _DEBUG
 		//PRINT DEBUG FOR CONSOLE:
 		//printf(std::to_string(event.cbutton.button).c_str());
@@ -233,9 +99,11 @@ void InputManager::handleInput(){
 #endif
 
 	}
+
 	//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
 	for (int i = 0; i < _currentNPlayers; i++){
-		if (_inputMsg[i] != nullptr && _inputMsg[i]->getNumMessages() > 0) {
+		if (_inputMsg[i] != nullptr) {
+			updateControllersState(_inputMsg[i]->getCInputState(),i);
 			_myQueue.push_back(_inputMsg[i]);
 		}
 		else{
@@ -276,4 +144,38 @@ void InputManager::deleteJoystick(int wich){
 		SDL_GameControllerClose(_playerController[wich]);
 		_currentNPlayers--;
 	}
+}
+
+
+void InputManager::updateControllersState(ControllerInputState &cState, int id){
+
+	//Axis
+	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX);
+	cState.Axis_LeftY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY);
+	cState.Axis_RightX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTX);
+	cState.Axis_RightY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY);
+
+	//Triggers
+	cState.Trigger_Left = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+	cState.Trigger_Right = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+
+	//Main Buttons
+	cState.Button_A = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_A);
+	cState.Button_B = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_B);
+	cState.Button_X = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_X);
+	cState.Button_Y = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_Y);
+	cState.Left_Shoulder = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+	cState.Right_Shoulder = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+
+	//Pads
+	cState.DPad_Down = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+	cState.DPad_Up = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_UP);
+	cState.DPad_Left = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+	cState.DPad_Right = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+
+	//Other Buttons
+	cState.Button_Back = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_BACK);
+	cState.Button_Start = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_START);
+	cState.Left_Stick = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_LEFTSTICK);
+	cState.Right_Stick = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_RIGHTSTICK);
 }

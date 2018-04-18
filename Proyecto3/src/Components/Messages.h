@@ -12,7 +12,7 @@ class GameComponent;
 #pragma region CInputState
 
 typedef enum ButtonState{
-	BTT_PRESSED = 0, BTT_RELEASED = 1, BTT_NONE = 2
+	BTT_PRESSED = 1, BTT_NONE = 0
 };
 
 struct ControllerInputState{

@@ -413,19 +413,17 @@ void CPlayerController::getMessage(Message* m){
 				MJump* m = new MJump(true, pEnt->getID());
 				pEnt->getMessage(m);
 			}
-			else if (cState.Button_A == BTT_RELEASED){
-				MJump* m = new MJump(false, pEnt->getID());
-				pEnt->getMessage(m);
-			}
-			if (cState.Axis_LeftX > 1){
+			
+
+			if (cState.Axis_LeftX > 100){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);				
 			}
-			if (cState.Axis_LeftX < -1){
+			else if (cState.Axis_LeftX < -100){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
-			if (cState.Axis_LeftX <= 1 && cState.Axis_LeftX >= -1){
+			else if (cState.Axis_LeftX <= 100 && cState.Axis_LeftX >= -100){
 				MPlayerMoveX* m = new MPlayerMoveX(0, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
