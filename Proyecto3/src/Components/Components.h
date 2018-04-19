@@ -148,7 +148,7 @@ protected:
 class CMeshRender: public CRender
 {
 public:
-	CMeshRender(Ogre::Vector3, std::string meshName, Entity * father, Ogre::SceneManager * scnM);
+	CMeshRender(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
 	~CMeshRender();
 
 	virtual void tick(float delta);
@@ -248,11 +248,18 @@ private:
 //--------- PLAYER C.H. COMPONENT ---------
 class CPlayerCollisionHandler : public GameComponent
 {
+public:
 	CPlayerCollisionHandler(Entity* father);
 	virtual ~CPlayerCollisionHandler();
 
 	void tick(float delta);
 	void getMessage(Message * m);
+	uint16_t getMyMask(){ return _myMask; }
+
+private:
+	
+	uint16_t _myMask;
+
 	
 };
 
@@ -278,7 +285,7 @@ private:
 class CLife : public GameComponent
 {
 public:
-	CLife(Entity * father);
+	CLife(Entity * father, float iniLife);
 	~CLife();
 
 	virtual void tick(float delta);
@@ -288,8 +295,8 @@ public:
 	inline int getCurrentLife(){ return _currentLife; };
 
 private:
-	int maxLife;			//Max number for the HPs
-	int _currentLife;		//The current life of the entity
+	float _maxLife;			//Max number for the HPs
+	float _currentLife;		//The current life of the entity
 };
 
 
@@ -324,11 +331,13 @@ public:
 	virtual void getMessage(Message * m);
 
 	//Returns the current jump distance of the entity
-	inline float getVelocity(){ return _jumpDist; };
+	inline float getForce(){ return _jumpForce; };
 
 private:
-	float _maxDistance;			//Max number of jump units
-	float _jumpDist;			//The current jump units of the entity
+	float _maxForce;			//Max number of jump units
+	float _jumpForce;			//The current jump units of the entity
+	int _nJumps;				//Remaining jumps
+	int _maxJumps;				//Max jumps
 };
 
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/

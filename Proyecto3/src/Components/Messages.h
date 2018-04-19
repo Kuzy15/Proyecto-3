@@ -55,7 +55,12 @@ typedef enum MessageType{
 	MSG_CONTROLLER_STATE, MSG_UPDATE_TRANSFORM,
 	MSG_PLAYER_MOVE_X, MSG_COLLISION,
 	MSG_PLAYER_JUMP,
-	MSG_PLAYER_SHOT
+	MSG_PLAYER_SHOT,
+	MSG_RIGIDBODY_MOVE_X,
+	MSG_RIGIDBODY_JUMP,
+	MSG_COLLISION_TERRAIN
+
+
 };
 
 typedef enum MessageDestination {
@@ -188,7 +193,7 @@ private:
 class MJump : public Message
 {
 public:
-	MJump(bool f, std::string emmiter);
+	MJump(std::string emmiter);
 	~MJump();
 	inline bool GetJump(){ return _jump; };
 
@@ -238,5 +243,44 @@ private:
 	float _YValue;
 };
 
+
+//--------------------------------------------------	RIGIDBODY MOVE X MSG		----------------------------------------------------------//
+class MRigidbodyMoveX : public Message
+{
+public:
+	MRigidbodyMoveX(float axisXValue, std::string emmiter);
+	~MRigidbodyMoveX();
+
+	float getXValue(){ return _XValue; };
+
+private:
+
+	float _XValue;						//Shot direction
+
+};
+
+//--------------------------------------------------	RIGIDBODY JUMP MSG		----------------------------------------------------------//
+class MRigidbodyJump : public Message
+{
+public:
+	MRigidbodyJump(float f, std::string emmiter);
+	~MRigidbodyJump();
+
+	float getForce(){ return _force; };
+
+private:
+
+	float _force;						//Shot direction
+
+};
+
+//--------------------------------------------------	COLLISION TERRAIN  MSG		----------------------------------------------------------//
+class MCollisionTerrain : public Message
+{
+public:
+	MCollisionTerrain( std::string emmiter);
+	~MCollisionTerrain();
+
+};
 
 #endif

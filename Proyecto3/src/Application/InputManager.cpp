@@ -150,15 +150,25 @@ void InputManager::deleteJoystick(int wich){
 void InputManager::updateControllersState(ControllerInputState &cState, int id){
 
 	//Axis
-	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX);
-	cState.Axis_LeftY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY);
-	cState.Axis_RightX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTX);
-	cState.Axis_RightY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY);
+	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX) / PARSE_VALUE;
+	if (cState.Axis_LeftX > -DEAD_ZONE && cState.Axis_LeftX < DEAD_ZONE)
+		cState.Axis_LeftX = 0;
+	cState.Axis_LeftY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY) / PARSE_VALUE;
+	if (cState.Axis_LeftY > -DEAD_ZONE && cState.Axis_LeftY < DEAD_ZONE)
+		cState.Axis_LeftY = 0;
+	cState.Axis_RightX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTX) / PARSE_VALUE;
+	if (cState.Axis_RightX > -DEAD_ZONE && cState.Axis_RightX < DEAD_ZONE)
+		cState.Axis_RightX = 0;
+	cState.Axis_RightY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY) / PARSE_VALUE;
+	if (cState.Axis_RightY > -DEAD_ZONE && cState.Axis_RightY < DEAD_ZONE)
+		cState.Axis_RightY = 0;
+
 
 	//Triggers
-	cState.Trigger_Left = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-	cState.Trigger_Right = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+	cState.Trigger_Left = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERLEFT) / PARSE_VALUE;
+	cState.Trigger_Right = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERRIGHT) / PARSE_VALUE;
 
+	
 	//Main Buttons
 	cState.Button_A = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_A);
 	cState.Button_B = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_B);

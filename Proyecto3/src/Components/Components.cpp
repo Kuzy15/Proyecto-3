@@ -143,15 +143,9 @@ void CRender::getMessage(Message *m) {
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma region meshRenderComponent
-CMeshRender::CMeshRender(Ogre::Vector3 p, std::string meshName, Entity * father, Ogre::SceneManager * scnM) :CRender(CMP_MESH_RENDER, father, scnM) {
+CMeshRender::CMeshRender( std::string meshName, Entity * father, Ogre::SceneManager * scnM) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
-	
 	pChild->attachObject(pOgreEnt);
-	pOgreSceneNode->setPosition(p);
-	
-	_ogrepos = p;
-	_ogrequat = Ogre::Quaternion();
-	
 }
 CMeshRender::~CMeshRender() {
 	pChild->detachObject(pOgreEnt);
@@ -235,6 +229,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	//Body definition.
 	_bodyDef.position.Set(_pos.x, _pos.y);
+	_bodyDef.fixedRotation = true;
 	/*_bodyDef.linearDamping = 5.0f;
 	_bodyDef.angularDamping = 0.0f;*/
 	
@@ -258,7 +253,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	
 
 	//Set the body data pointer to entity
-	_body->SetUserData(this);
+	_body->SetUserData(pEnt);
 
 	
 	//Shape creation.
@@ -282,7 +277,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	//Fixture Definition.
 	_fixtureDef.shape = _shape;
 	_fixtureDef.density = 950.0f;
-	_fixtureDef.restitution = 0.0f;
+	//_fixtureDef.restitution = 0.0f;
 	_fixtureDef.friction = 0.3f;
 
 	switch (myCategory)
@@ -290,10 +285,11 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		case MASK_PLAYER:
 			_fixtureDef.filter.categoryBits = MASK_PLAYER;				
 			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN;
+			
 			break;
 		case MASK_STATIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
-			/*_fixtureDef.filter.maskBits = ;*/
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_PLAYER | MASK_DINAMIC_TERRAIN;;
 			break;
 		case MASK_DINAMIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
@@ -329,7 +325,7 @@ void CRigidBody::tick(float delta) {
 	//Transformation from physics world to ogre world.
 	
 	
-	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x  /*+ (_rbWeight / 2)*/)* PPM , _body->GetPosition().y /*+ (_rbHeight / 2)9*/ * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
+	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
 	std::cout << _body->GetAngle() << std::endl;
@@ -339,24 +335,25 @@ void CRigidBody::tick(float delta) {
 
 void CRigidBody::getMessage(Message * m) {
 
-	if (m->getType() == MSG_PLAYER_MOVE_X){
-		//transformarlo
-		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
-		value = value / 1000;
-		b2Vec2 v (value,0);
-		_body->SetLinearVelocity(v);
-		
-		std::cout << "Aplicada vel de: " << value << std::endl;
-	}
-	else if (m->getType() == MSG_PLAYER_JUMP){
-		if (static_cast<MJump*>(m)->GetJump()){
-			b2Vec2 newForce(0, 700);
-			//_body->ApplyForceToCenter(newForce, true);		
-			
-			_body->SetAngularVelocity(2);
-			
-		}
 	
+	MRigidbodyMoveX* mMove;
+	float velX;
+	MRigidbodyJump* mJump;
+	float jForce;
+	
+	switch (m->getType()){
+		case MSG_RIGIDBODY_MOVE_X:
+			mMove = static_cast<MRigidbodyMoveX*>(m);
+			velX = mMove->getXValue();
+			_body->SetLinearVelocity(b2Vec2(velX, _body->GetLinearVelocity().y));
+			break;
+		case MSG_RIGIDBODY_JUMP:
+			mJump = static_cast<MRigidbodyJump*>(m);
+			jForce = mJump->getForce();
+			_body->ApplyForceToCenter(b2Vec2(0, jForce),true);
+			break;
+		default:
+			break;
 	}
 }
 #pragma endregion
@@ -369,20 +366,21 @@ CPlayerCollisionHandler::~CPlayerCollisionHandler(){
 void CPlayerCollisionHandler::tick(float delta){}
 void CPlayerCollisionHandler::getMessage(Message * m){
 	
-	//If the msg is the type Collision, read the mask and category bits and process it.
-	if (m->getType() == MSG_COLLISION){
-		uint16_t me = static_cast<MCollisionBegin*>(m)->GetMyCategory();
-		uint16_t contact = static_cast<MCollisionBegin*>(m)->GetContactMask();
-		if (contact == MASK_BULLET){
-			//me haacen pupa
-		}/*
-		else if (){
-		
-		
-		}*/	
-	
-	}
 
+	if (m->getType() == MSG_COLLISION){
+		
+		
+		MCollisionBegin* mColBegin = static_cast<MCollisionBegin*>(m);
+		_myMask = mColBegin->GetMyCategory();
+
+		switch (mColBegin->GetContactMask()){
+			case MASK_STATIC_TERRAIN:
+				pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 
@@ -410,7 +408,7 @@ void CPlayerController::getMessage(Message* m){
 			ControllerInputState cState = inputM->getCInputState();
 
 			if (cState.Button_A == BTT_PRESSED){
-				MJump* m = new MJump(true, pEnt->getID());
+				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 			}
 			
@@ -436,7 +434,7 @@ void CPlayerController::getMessage(Message* m){
 
 //Life Component
 #pragma region Life Component
-CLife::CLife(Entity* father):GameComponent(CMP_LIFE,father), maxLife(MAX_LIFE), _currentLife(MAX_LIFE){}
+CLife::CLife(Entity* father, float iniLife):GameComponent(CMP_LIFE,father), _maxLife(iniLife), _currentLife(iniLife){}
 CLife::~CLife(){}
 
 void CLife::tick(float delta){}
@@ -449,16 +447,44 @@ CPlayerMove::CPlayerMove(Entity* father, float vel) :GameComponent(CMP_MOVEMENT_
 CPlayerMove::~CPlayerMove(){}
 
 void CPlayerMove::tick(float delta){}
-void CPlayerMove::getMessage(Message* m){}
+void CPlayerMove::getMessage(Message* m)
+{
+	if (m->getType() == MSG_PLAYER_MOVE_X){
+		//transformarlo
+		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
+		value = value / 200.0f;
+		if (value > _moveVel)
+			value = _moveVel;
+		
+		pEnt->getMessage(new MRigidbodyMoveX(value, pEnt->getID()));
+	}
+
+
+}
 #pragma endregion
 
 //Jump Component
 #pragma region Player Jump Component
-CPlayerJump::CPlayerJump(Entity* father, float startDist) :GameComponent(CMP_JUMP, father), _maxDistance(MAX_JUMP_DISTANCE), _jumpDist(startDist){}
+CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JUMP, father), _maxForce(MAX_JUMP_DISTANCE), _jumpForce(startForce), _maxJumps(2), _nJumps(2){}
 CPlayerJump::~CPlayerJump(){}
 
 void CPlayerJump::tick(float delta){}
-void CPlayerJump::getMessage(Message* m){}
+void CPlayerJump::getMessage(Message* m)
+{
+
+	switch (m->getType()){
+	case MSG_PLAYER_JUMP:
+		if (_nJumps > 0){
+			_nJumps--;
+			pEnt->getMessage(new MRigidbodyJump(_jumpForce, pEnt->getID()));
+		}
+		break;
+	case MSG_COLLISION_TERRAIN:
+		_nJumps = _maxJumps;
+		break;
+
+	}
+}
 #pragma endregion
 
 //Basic Attack Component

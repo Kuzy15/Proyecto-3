@@ -5,6 +5,7 @@
 #include <string>
 #include "EF_Entities.h"
 
+
 using namespace std;
 
 
@@ -17,7 +18,7 @@ public:
 	static EntityFactory& getInstance();
 
 	//Base method wich returns a new entity depending on the type and the class. For example: TYPE = GOD, CLASS = RA.
-	Entity* createEntity(E_TYPE typeE, int classE, GameScene* s);
+	Entity* createEntity(E_TYPE typeE, int classE, GameScene* s, Ogre::Vector3 iniPos);
 	
 private:
 	EntityFactory();
@@ -31,8 +32,8 @@ private:
 	unsigned int _idCount;				//The id variable to put the diferent id to new entities 
 
 	//Methods for create gods and define their behaviour (Components, etc)
-	Entity* createGod(E_GOD god ,std::string id, GameScene* s);
-	Entity* createBullet(E_BULLET bullte, std::string id, GameScene* s);
+	Entity* createGod(E_GOD god, std::string id, GameScene* s, Ogre::Vector3 iniPos);
+	Entity* createBullet(E_BULLET bullte, std::string id, GameScene* s, Ogre::Vector3 iniPos);
 
 };
 

@@ -93,7 +93,7 @@ MPlayerMoveX::~MPlayerMoveX(){};
 
 
 #pragma region MessagePlayerJump
-MJump::MJump(bool f, std::string emmiter) : Message(MSG_PLAYER_JUMP, ENTITY,emmiter), _jump(f){}
+MJump::MJump( std::string emmiter) : Message(MSG_PLAYER_JUMP, ENTITY,emmiter){}
 MJump::~MJump(){};
 #pragma endregion 
 
@@ -104,5 +104,28 @@ MCollisionBegin::MCollisionBegin(uint16_t me, uint16_t contact, std::string emmi
 MCollisionBegin::~MCollisionBegin(){}
 #pragma endregion
 
- 
 
+//--------------------------------------------------	RIGIDBODY MOVE X MSG		----------------------------------------------------------//
+#pragma region MessageRigidBodyMoveX
+
+MRigidbodyMoveX::MRigidbodyMoveX(float v, std::string emmiter) : Message(MSG_RIGIDBODY_MOVE_X, ENTITY, emmiter), _XValue(v){}
+MRigidbodyMoveX::~MRigidbodyMoveX(){}
+
+#pragma endregion
+
+
+//--------------------------------------------------	RIGIDBODY JUMP MSG		----------------------------------------------------------//
+#pragma region MessageRigidBodyJump
+
+MRigidbodyJump::MRigidbodyJump(float f, std::string emmiter) : Message(MSG_RIGIDBODY_JUMP, ENTITY, emmiter), _force(f){}
+MRigidbodyJump::~MRigidbodyJump(){}
+
+#pragma endregion
+
+//--------------------------------------------------	RIGIDBODY JUMP MSG		----------------------------------------------------------//
+#pragma region MessageCollisionTerrain
+
+MCollisionTerrain::MCollisionTerrain(std::string emmiter) : Message(MSG_COLLISION_TERRAIN, ENTITY, emmiter){}
+MCollisionTerrain::~MCollisionTerrain(){}
+
+#pragma endregion

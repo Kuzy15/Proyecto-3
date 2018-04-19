@@ -9,6 +9,7 @@
 #include "Scenes.h"
 #include "InputManager.h"
 #include "Game.h"
+#include "CollisionManager.h"
 
 
 
@@ -19,6 +20,8 @@
 #endif
 
 Game * Game::_instance = nullptr;
+CollisionManager collisionManager;
+
 
 #pragma region Constructor and destructor
 Game::Game(){
@@ -28,6 +31,7 @@ Game::Game(){
 	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
+	world->SetContactListener(&collisionManager);
 	
 	
 

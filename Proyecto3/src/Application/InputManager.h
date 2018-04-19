@@ -7,8 +7,8 @@
 #include "Messages.h"
 
 //Const values for the deadzones of the controller's joystick
-const float DEAD_ZONE = 50.0f;			//Then, the values are in the range [50,327] or [-50,-327]			
 const float PARSE_VALUE = 100.0f;
+const float DEAD_ZONE = 5.0f;			//Then, the values are in the range [50,327] or [-50,-327]			
 //Max player (no debe estar aquí)
 const int MAX_PLAYERS = 2;									
 

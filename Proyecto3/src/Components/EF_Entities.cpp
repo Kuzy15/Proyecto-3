@@ -7,22 +7,46 @@
 //-------------------------------------------    GODS    -------------------------------------------//
 #pragma region Gods
 //Ra
-Entity* createGodRa(std::string id, GameScene* s){
-	Entity * test1 = new Entity(id, s);
-	test1->addComponent(new CMessageSend(test1));
-	
-	return test1;;
+Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
+
+	Entity* Ra = new Entity(id, s);
+
+	//Mesh Render
+	Ra->addComponent(new CMeshRender("Ra.mesh", Ra, s->getSceneManager()));
+
+	//RigidBody
+	float height = 6.0f;
+	float width = 4.0f;
+	Ra->addComponent(new CRigidBody(Ra, s->getGame()->getPhysicsWorld(), iniPos, height, width, RB_DYNAMIC, SH_POLYGON, MASK_PLAYER));
+
+	//PlayerController
+	Ra->addComponent(new CPlayerController(Ra, 0));
+	//CollisionHandler
+	Ra->addComponent(new CPlayerCollisionHandler(Ra));
+
+	//LIfe
+	Ra->addComponent(new CLife(Ra, 100.0f));
+	//Jump
+	float jumpForce = 120.0f;
+	Ra->addComponent(new CPlayerJump(Ra, jumpForce));
+	//Move
+	float v = 1.6f;
+	Ra->addComponent(new CPlayerMove(Ra, v));
+	//Basic Attack
+
+
+	return Ra;
 }
 
 #pragma endregion
 
 #pragma region Bullets
 
-Entity* createBulletRa(std::string id, GameScene* s){
+Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
 	Entity * bRa = new Entity(id, s);
 	//Mesh Render
-	bRa->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Bullet_Ra", bRa, s->getSceneManager()));
+	bRa->addComponent(new CMeshRender("Bullet_Ra", bRa, s->getSceneManager()));
 
 	//RigidBody
 	float weight = 0.0f;

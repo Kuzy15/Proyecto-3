@@ -8,6 +8,7 @@
 */
 
 #include <string>
+#include <Ogre.h>
 
 
 class Entity;
@@ -16,8 +17,8 @@ class GameScene;
 
 //Typedefs to name functions types for entity creation
 #pragma region Typedef functions
-typedef Entity*(*createGodFunc)(std::string id, GameScene* s);
-typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s);
+typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos);
+typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 
 #pragma endregion
 
@@ -30,11 +31,11 @@ typedef enum E_BULLET { EB_RA = 0 };
 
 //Creating methods definitions for all entities
 #pragma region Gods 
-Entity* createGodRa(std::string id, GameScene* s);
+Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 
 #pragma endregion
 
 #pragma region Bullets
-Entity* createBulletRa(std::string id, GameScene* s);
+Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 #pragma endregion
 #endif

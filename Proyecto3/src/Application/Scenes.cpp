@@ -155,12 +155,8 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(0, 0, 100), Ogre::Vector3(0,0,0), 5)
 	);
 	addEntity(cam);
-
-	Entity * Ra = new Entity("0", this);
-	Ra->addComponent(new CRigidBody(Ra, game->getPhysicsWorld(), Ogre::Vector3(0, 20, 0), 6, 4, RB_DYNAMIC, SH_POLYGON, MASK_PLAYER));
-	Ra->addComponent(new CPlayerController(Ra, 0));
-	Ra->addComponent(new CMeshRender(Ogre::Vector3(8.0f, 0, 0), "Ra.mesh", Ra, scnMgr));
-	addEntity(Ra);
+	
+	addEntity(EntityFactory::getInstance().createEntity(ET_GOD,EG_RA,this,Ogre::Vector3(0,10,0)));
 	
 	Entity * Suelo2 = new Entity("2", this);
 	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-3, 5, 0), 3, 4, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
@@ -172,7 +168,9 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
 	addEntity(Suelo);
 
+	
 
+	//EntityFactory::getInstance().createEntity(,,)
 	
 
 	
