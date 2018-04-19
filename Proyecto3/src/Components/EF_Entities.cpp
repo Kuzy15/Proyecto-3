@@ -27,10 +27,10 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
 	//Jump
-	float jumpForce = 120.0f;
+	float jumpForce = 150.0f;
 	Ra->addComponent(new CPlayerJump(Ra, jumpForce));
 	//Move
-	float v = 1.6f;
+	float v = 0.8f;
 	Ra->addComponent(new CPlayerMove(Ra, v));
 	//Basic Attack
 

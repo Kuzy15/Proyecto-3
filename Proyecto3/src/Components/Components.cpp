@@ -455,6 +455,8 @@ void CPlayerMove::getMessage(Message* m)
 		value = value / 200.0f;
 		if (value > _moveVel)
 			value = _moveVel;
+		else if (value < - _moveVel)
+			value = - _moveVel;
 		
 		pEnt->getMessage(new MRigidbodyMoveX(value, pEnt->getID()));
 	}
