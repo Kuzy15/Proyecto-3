@@ -122,10 +122,27 @@ MRigidbodyJump::~MRigidbodyJump(){}
 
 #pragma endregion
 
-//--------------------------------------------------	RIGIDBODY JUMP MSG		----------------------------------------------------------//
+//--------------------------------------------------	 COLLISION TERRAIN MSG		----------------------------------------------------------//
 #pragma region MessageCollisionTerrain
 
 MCollisionTerrain::MCollisionTerrain(std::string emmiter) : Message(MSG_COLLISION_TERRAIN, ENTITY, emmiter){}
 MCollisionTerrain::~MCollisionTerrain(){}
 
 #pragma endregion
+
+//--------------------------------------------------	ADD ENTITY MSG		----------------------------------------------------------//
+#pragma region MessageAddEntity
+
+MAddEntity::MAddEntity(std::string emmiter, Entity* newEntity) : Message(MSG_ADD_ENTITY, SCENE_ONLY, emmiter), _newEntity(newEntity){}
+MAddEntity::~MAddEntity(){}
+
+#pragma endregion
+
+//--------------------------------------------------	PLAYER SHOT MSG		----------------------------------------------------------//
+#pragma region MessagePlayerShot
+
+MPlayerShot::MPlayerShot(float axisXValue, float axisYValue, std::string emmiter) : Message(MSG_PLAYER_SHOT, ENTITY, emmiter), _XValue(axisXValue), _YValue(axisYValue){}
+MPlayerShot::~MPlayerShot(){}
+
+#pragma endregion
+

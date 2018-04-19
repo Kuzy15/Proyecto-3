@@ -69,6 +69,8 @@ bool Entity::getActive()
 std::string Entity::getID(){
 	return _id;
 }
+
+GameScene* Entity::getScene(){ return scene; }
 #pragma endregion
 
 #pragma region Message methods

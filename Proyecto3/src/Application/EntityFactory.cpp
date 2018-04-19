@@ -28,38 +28,23 @@ EntityFactory& EntityFactory::getInstance(){
 }
 
 
-//Depend on the type of the entity, we call one or other function passing it the class 
-Entity* EntityFactory::createEntity(E_TYPE typE, int classE, GameScene* s, Ogre::Vector3 iniPos ){
 
-	
-	Entity* e;											//The pointer to the entity who will be returned
-	std::string idS = to_string(_idCount++);			//The unique id	
-
-	switch (typE)
-	{
-	case ET_GOD:
-		e = createGod((E_GOD)classE, idS, s, iniPos);
-		break;
-	case ET_BULLET:
-		e = createBullet((E_BULLET)classE, idS, s, iniPos);
-	default:
-		break;
-	}
-
-	return e;
-}
 
 //The create god methods search in the map the func that returns the entity that E_GOD variable indicates
-Entity* EntityFactory::createGod(E_GOD cE, std::string id, GameScene* s, Ogre::Vector3 iniPos){
+Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos){
 	
+	newEntity();
+
 	createGodFunc c = _createGodFuncs.at(cE);
-	Entity* debug = c(id, s, iniPos);
-	return debug;
+	return c(to_string(_idCount), s, iniPos);
+	
 }
 
 //The create bullet methods return a new bullet
-Entity* EntityFactory::createBullet(E_BULLET cE, std::string id, GameScene* s, Ogre::Vector3 iniPos){
+Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 iniPos, float angle){
+
+	newEntity();
 
 	creteBulletFunc c = _createBulletFuncs.at(cE);
-	return c(id, s, iniPos);
+	return c(to_string(_idCount), s, iniPos, angle);
 }

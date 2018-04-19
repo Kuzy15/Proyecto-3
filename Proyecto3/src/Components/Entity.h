@@ -20,6 +20,7 @@ public:
 //Getters and setters
 	bool getActive();
 	void setActive(bool nw);
+	GameScene* getScene();
 	std::string getID();
 
 // Message Methods
@@ -29,6 +30,7 @@ public:
 	//Component methods
 	void addComponent(GameComponent * c);
 	void deleteComponent(ComponentType id);
+
 
 
 

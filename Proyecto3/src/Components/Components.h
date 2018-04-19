@@ -342,6 +342,9 @@ private:
 
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
 //Provides an entity the capacity shot bullet as basic attack. 
+
+const int SPAWN_PARSE = 1.0f / 327.0f;
+
 class CPlayerBasicAttack : public GameComponent
 {
 public:
@@ -360,6 +363,9 @@ private:
 	float _lastTimeShot;		//The last time in SDL time when player spawn a bullet (Fire rate control)
 	float _timeCounter;			//Variable for the fire rate control.
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
+	float _radius;
+
+	Ogre::Vector3 calculateSpawnPoint(float vX, float vY);
 };
 
 

@@ -58,7 +58,8 @@ typedef enum MessageType{
 	MSG_PLAYER_SHOT,
 	MSG_RIGIDBODY_MOVE_X,
 	MSG_RIGIDBODY_JUMP,
-	MSG_COLLISION_TERRAIN
+	MSG_COLLISION_TERRAIN,
+	MSG_ADD_ENTITY
 
 
 };
@@ -70,6 +71,8 @@ typedef enum MessageDestination {
 	//Message ment to reach every other entity in the scene plus the scene,
 	// but not the entity in which it is created
 	SCENE,
+	//Message wich is read only by the scene class. ****Luego se cambia el nombre****
+	SCENE_ONLY,
 	//This message will reach everyone in the scene. The entity in which it
 	//was created AND other entities in the scene.
 	BROADCAST	
@@ -233,8 +236,8 @@ public:
 	MPlayerShot(float axisXValue, float axisYValue, std::string emmiter);
 	~MPlayerShot();
 
-	float getXValue(){ return _XValue; };
-	float getYValue(){ return _YValue; };
+	inline float getXValue(){ return _XValue; };
+	inline float getYValue(){ return _YValue; };
 
 
 private:
@@ -281,6 +284,18 @@ public:
 	MCollisionTerrain( std::string emmiter);
 	~MCollisionTerrain();
 
+};
+
+//--------------------------------------------------	ADD ENTITY  MSG		----------------------------------------------------------//
+class MAddEntity : public Message
+{
+public:
+	MAddEntity(std::string emmiter, Entity* newEntity);
+	~MAddEntity();
+
+	inline Entity* getEntity(){ return _newEntity; };
+private:
+	Entity* _newEntity;
 };
 
 #endif

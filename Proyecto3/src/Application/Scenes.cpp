@@ -74,11 +74,20 @@ void GameScene::dispatch() {
 	nMessages = _messages.size();
 	std::list<Message *>::iterator it =_messages.begin();
 	for (int i = 0; i < nMessages && it != _messages.end(); i++, it++) {
-		if ((*it)->getDestination() == SCENE)
+		//If the message destination is only the scene, we only push it to the local queue.
+		if ((*it)->getDestination() == SCENE_ONLY)
+		{
 			_sceneMessages.push_back((*it));
-		for (Entity * aux : _entities) {
-			if((*it)->getEmmiter() != aux->getID())
-				aux->getMessage(*it);
+		}
+		//If the message have more receivers than the scene, push them to the entities.
+		else
+		{
+			if ((*it)->getDestination() == SCENE)
+				_sceneMessages.push_back((*it));
+			for (Entity * aux : _entities) {
+				if ((*it)->getEmmiter() != aux->getID())
+					aux->getMessage(*it);
+			}
 		}
 	}
 }
@@ -156,7 +165,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	);
 	addEntity(cam);
 	
-	addEntity(EntityFactory::getInstance().createEntity(ET_GOD,EG_RA,this,Ogre::Vector3(0,10,0)));
+	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(0,10,0)));
 	
 	Entity * Suelo2 = new Entity("2", this);
 	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-3, 5, 0), 3, 4, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
@@ -219,11 +228,27 @@ bool BasicScene::run(){
 }
 
 void BasicScene::dispatch(){
-
+	GameScene::dispatch();
 
 }
 
-void BasicScene::processScnMsgs(){};
+void BasicScene::processScnMsgs()
+{
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		if (m->getType() == MSG_ADD_ENTITY)
+		{
+			addEntity(static_cast<MAddEntity*>(m)->getEntity());
+		}
+		
+		
+		
+		
+		it++;
+	}
+	
+};
 
 #pragma endregion
 #pragma region GamePlayScene

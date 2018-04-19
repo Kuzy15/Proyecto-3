@@ -4,7 +4,7 @@
 #include <OgreSceneNode.h>
 #include "Messages.h"
 #include "Game.h"
-
+#include "EntityFactory.h"
 
 
 //Debug 
@@ -411,6 +411,25 @@ void CPlayerController::getMessage(Message* m){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 			}
+
+			if (cState.Trigger_Right > 100){
+				float xValue = cState.Axis_RightX;
+				float yValue = cState.Axis_LeftY;
+				//Tal vez estas comprobaciones no sean necesarias, testear la sensibilidad de los joysticks al disparar
+				float finalXValue, finalYValue;
+				//Check joystick rotation, to control the bullet spawn
+				if ((xValue > 10.0f || xValue < -10.0f) && (yValue > 10.0f || yValue < -10.0f)){
+					finalXValue = cState.Axis_LeftX;
+					finalYValue = cState.Axis_LeftY;
+				}
+				else{
+					//if
+					//if
+				}
+				
+				pEnt->getMessage(new MPlayerShot(finalXValue, finalYValue, pEnt->getID()));
+
+			}
 			
 
 			if (cState.Axis_LeftX > 100){
@@ -497,6 +516,7 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT)
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
+	_radius = 2.0f;
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){}
@@ -506,15 +526,38 @@ void CPlayerBasicAttack::getMessage(Message* m){
 
 	if (m->getType() == MSG_PLAYER_SHOT){
 		MPlayerShot* mPS = static_cast<MPlayerShot*>(m);
-
+		
 		//Check if the player can spawn the next bullet
 		_timeCounter = (SDL_GetTicks() * 1000);
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
-			//Spawn bullet
+			Ogre::Vector3 iniPos = calculateSpawnPoint(mPS->getXValue(), mPS->getYValue());
+			float angle = 0.0f;
+			Entity* b = EntityFactory::getInstance().createBullet(EB_RA, pEnt->getScene(), iniPos, angle);
+			//pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 			_lastTimeShot = (SDL_GetTicks() * 1000);
 		}
 	}
 }
+
+Ogre::Vector3 CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY){
+
+	/*5 - 327*/
+	//Normalize
+	float normalX = vX * SPAWN_PARSE;
+	float normalY = vY * SPAWN_PARSE;
+	//Calculate circumference point
+	float factorX = (1.0f / normalX) * _radius;
+	float factorY = (1.0f / normalY) * _radius;
+	float valX = factorX * normalX;
+	float valY = factorY * normalY;
+
+	//Round
+	valX = roundf(valX * 100) / 100;
+	valY = roundf(valY * 100) / 100;
+
+	return Ogre::Vector3(valX,valY,0.0f);
+}
+
 #pragma endregion
 
 //Bullet Component

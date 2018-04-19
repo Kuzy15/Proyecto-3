@@ -18,13 +18,12 @@ class GameScene;
 //Typedefs to name functions types for entity creation
 #pragma region Typedef functions
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos);
-typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos);
+typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
 
 #pragma endregion
 
 //Enum definitions for all entities
 #pragma region Enums
-typedef enum E_TYPE {ET_GOD = 0, ET_BULLET = 1};
 typedef enum E_GOD { EG_RA = 0 };
 typedef enum E_BULLET { EB_RA = 0 };
 #pragma endregion
@@ -36,6 +35,6 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 #pragma endregion
 
 #pragma region Bullets
-Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos);
+Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
 #pragma endregion
 #endif

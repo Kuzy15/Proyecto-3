@@ -166,7 +166,11 @@ void InputManager::updateControllersState(ControllerInputState &cState, int id){
 
 	//Triggers
 	cState.Trigger_Left = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERLEFT) / PARSE_VALUE;
+	if (cState.Trigger_Left < DEAD_ZONE)
+		cState.Trigger_Left = 0;
 	cState.Trigger_Right = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERRIGHT) / PARSE_VALUE;
+	if (cState.Trigger_Right < DEAD_ZONE)
+		cState.Trigger_Right = 0;
 
 	
 	//Main Buttons

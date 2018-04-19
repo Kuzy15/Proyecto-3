@@ -42,7 +42,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
 #pragma region Bullets
 
-Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
+Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle){
 
 	Entity * bRa = new Entity(id, s);
 	//Mesh Render
