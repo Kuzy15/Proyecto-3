@@ -343,12 +343,12 @@ private:
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
 //Provides an entity the capacity shot bullet as basic attack. 
 
-const int SPAWN_PARSE = 1.0f / 327.0f;
+const float SPAWN_PARSE = 1.0f / 328.0f;
 
 class CPlayerBasicAttack : public GameComponent
 {
 public:
-	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT);
+	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos);
 	~CPlayerBasicAttack();
 
 	virtual void tick(float delta);
@@ -364,8 +364,9 @@ private:
 	float _timeCounter;			//Variable for the fire rate control.
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
 	float _radius;
+	Ogre::Vector3 _ogrepos;
 
-	Ogre::Vector3 calculateSpawnPoint(float vX, float vY);
+	Ogre::Vector3 calculateSpawnPoint(float vX, float vY, float &angle);
 };
 
 

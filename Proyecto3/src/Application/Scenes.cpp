@@ -215,6 +215,8 @@ bool BasicScene::run(){
 	//Then we deliver the messages
 	GameScene::dispatch();
 
+	processScnMsgs();
+
 	//Logic simulation done here
 	bool aux = updateEnts(0.025);
 

@@ -137,8 +137,6 @@ void CRender::getMessage(Message *m) {
 }
 
 #pragma endregion
-
-
 //Mesh Render component.
 //Takes a string with the name of the mesh to render
 //and renders it.
@@ -209,9 +207,6 @@ void CCamera::getMessage(Message * m) {
 }
 
 #pragma endregion
-
-
-
 /*-------------------------BOX2D COMPONENTS------------------------------------*/
 
 //Rigid Body component.
@@ -358,6 +353,7 @@ void CRigidBody::getMessage(Message * m) {
 }
 #pragma endregion
 
+#pragma region CollisionHandler
 CPlayerCollisionHandler::CPlayerCollisionHandler(Entity* father) :GameComponent(CMP_PLAYER_CH, father) {
 }
 CPlayerCollisionHandler::~CPlayerCollisionHandler(){
@@ -414,20 +410,21 @@ void CPlayerController::getMessage(Message* m){
 
 			if (cState.Trigger_Right > 100){
 				float xValue = cState.Axis_RightX;
-				float yValue = cState.Axis_LeftY;
+				float yValue = cState.Axis_RightY;
 				//Tal vez estas comprobaciones no sean necesarias, testear la sensibilidad de los joysticks al disparar
 				float finalXValue, finalYValue;
+				finalXValue = finalYValue = 0.0f;
 				//Check joystick rotation, to control the bullet spawn
 				if ((xValue > 10.0f || xValue < -10.0f) && (yValue > 10.0f || yValue < -10.0f)){
-					finalXValue = cState.Axis_LeftX;
-					finalYValue = cState.Axis_LeftY;
+					finalXValue = cState.Axis_RightX;
+					finalYValue = cState.Axis_RightY;
 				}
 				else{
 					//if
 					//if
 				}
-				
-				pEnt->getMessage(new MPlayerShot(finalXValue, finalYValue, pEnt->getID()));
+				MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
+				pEnt->getMessage(m);
 
 			}
 			
@@ -511,8 +508,8 @@ void CPlayerJump::getMessage(Message* m)
 //Basic Attack Component
 #pragma region Player Basic Attack Component
 
-CPlayerBasicAttack::CPlayerBasicAttack(Entity* father, float fireRate, E_BULLET bT) :GameComponent(CMP_BASIC_ATTACK, father),
-_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT) 
+CPlayerBasicAttack::CPlayerBasicAttack(Entity* father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos) :GameComponent(CMP_BASIC_ATTACK, father),
+_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entPos)
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
@@ -520,8 +517,10 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT)
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){}
+void CPlayerBasicAttack::tick(float delta){
 
-void CPlayerBasicAttack::tick(float delta){}
+
+}
 void CPlayerBasicAttack::getMessage(Message* m){
 
 	if (m->getType() == MSG_PLAYER_SHOT){
@@ -530,17 +529,45 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		//Check if the player can spawn the next bullet
 		_timeCounter = (SDL_GetTicks() * 1000);
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
-			Ogre::Vector3 iniPos = calculateSpawnPoint(mPS->getXValue(), mPS->getYValue());
-			float angle = 0.0f;
+			float angle;
+			Ogre::Vector3 iniPos = calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle);
+			iniPos.x += _ogrepos.x;
+			iniPos.y += _ogrepos.y;
 			Entity* b = EntityFactory::getInstance().createBullet(EB_RA, pEnt->getScene(), iniPos, angle);
-			//pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
+			pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 			_lastTimeShot = (SDL_GetTicks() * 1000);
 		}
 	}
+
+	else if (m->getType() == MSG_UPDATE_TRANSFORM){
+		if (m->getEmmiter() == pEnt->getID()){
+			//Message cast
+			MUpdateTransform* msg = static_cast<MUpdateTransform *>(m);
+
+			//We get the size of the colliderbox.
+			float w = msg->getW();
+			float h = msg->getH();
+
+
+
+			//Where our node will rotate.
+			Ogre::Vector3 parentPos = msg->GetPos();
+
+			//Where our mesh is relative to the parent.
+			//The real pos of the object is the parent pos + this variable, _ogrepos.
+			_ogrepos.x = w / 2;
+			_ogrepos.y = 0;
+			_ogrepos.z = 0;
+
+			//Rotate the parent node the same degree as the collider.
+			float angleRad = msg->getRotation();
+			float grades = (angleRad * 180) / 3.14159265359;
+		}
+	}
 }
+Ogre::Vector3 CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle){
 
-Ogre::Vector3 CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY){
-
+	//Calculate point
 	/*5 - 327*/
 	//Normalize
 	float normalX = vX * SPAWN_PARSE;
@@ -554,6 +581,10 @@ Ogre::Vector3 CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY){
 	//Round
 	valX = roundf(valX * 100) / 100;
 	valY = roundf(valY * 100) / 100;
+
+	//Calculate rotation
+
+	angle = 0.0f;
 
 	return Ogre::Vector3(valX,valY,0.0f);
 }
