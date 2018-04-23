@@ -143,9 +143,11 @@ void CRender::getMessage(Message *m) {
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma region meshRenderComponent
-CMeshRender::CMeshRender( std::string meshName, Entity * father, Ogre::SceneManager * scnM) :CRender(CMP_MESH_RENDER, father, scnM) {
+CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
+	pOgreSceneNode->setPosition(pos);
 	pChild->attachObject(pOgreEnt);
+	pChild->scale(scale);
 }
 CMeshRender::~CMeshRender() {
 	//pChild->detachObject(pOgreEnt);
@@ -154,7 +156,7 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-
+	std::cout << pOgreSceneNode->getPosition().x << std::endl;
 	
 	
 	
@@ -230,7 +232,8 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	//Body definition.
 	_bodyDef.position.Set(_pos.x, _pos.y);
-	_bodyDef.fixedRotation = true;
+	if (myCategory == MASK_PLAYER)
+		_bodyDef.fixedRotation = true;
 	/*_bodyDef.linearDamping = 5.0f;
 	_bodyDef.angularDamping = 0.0f;*/
 	
@@ -254,62 +257,79 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	
 
 	//Set the body data pointer to entity
-	_body->SetUserData(pEnt);
+	_body->SetUserData(pEnt);	
 
-	
-	//Shape creation.
-	switch (shType)
-	{
-		case SH_CIRCLE:
-			_shape = new b2CircleShape;
-			static_cast<b2CircleShape*>(_shape)->m_p.Set(0, 0);
-			static_cast<b2CircleShape*>(_shape)->m_radius = _rbWeight;
-			break;
-		case SH_POLYGON:
-			_shape = new b2PolygonShape;
-			static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
-			break;
-		default:
-			break;
-	}
-
-	
-
-	//Fixture Definition.
-	_fixtureDef.shape = _shape;
+	//Fixture Definition.	
 	_fixtureDef.density = 950.0f;
 	//_fixtureDef.restitution = 0.0f;
-	_fixtureDef.friction = 0.3f;
+	_fixtureDef.friction = 0.0f;
 
 	switch (myCategory)
 	{
 		case MASK_PLAYER:
-			_fixtureDef.filter.categoryBits = MASK_PLAYER;				
+			//_fixtureDef.filter.categoryBits = MASK_PLAYER;				
 			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN;
 			
 			break;
 		case MASK_STATIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_PLAYER | MASK_DINAMIC_TERRAIN;;
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD;
 			break;
 		case MASK_DINAMIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET;
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD;
 			break;
 		case MASK_BULLET:
 			_fixtureDef.filter.categoryBits = MASK_BULLET;
-			_fixtureDef.filter.maskBits = MASK_PLAYER;
+			_fixtureDef.filter.maskBits = MASK_LEGS | MASK_CHEST | MASK_HEAD | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
 			break;
 		default:
 			break;
 	}
-	/* FALTA ESTO POR CONFIGURAR
-	fDef.filter.categoryBits = Juego::JUGADOR;
-	fDef.filter.maskBits = Juego::ENEMIGO | Juego::ITEM | Juego::ESCENARIO | Juego::ESCENARIO_NOCOL | Juego::AT_ENEMIGO;
-	*/
+
+	float playerSize = _rbHeight / 3;
+	float legsSize = _rbWeight / 1.5f;
+
+	//Shape creation.
+	switch (shType)
+	{
+	case SH_CIRCLE:
+		_shape = new b2CircleShape;
+		static_cast<b2CircleShape*>(_shape)->m_p.Set(0, 0);
+		static_cast<b2CircleShape*>(_shape)->m_radius = _rbWeight;
+		_fixtureDef.shape = _shape;
+		//Fixture creation.
+		_fixture = _body->CreateFixture(&_fixtureDef);
+		break;
+	case SH_POLYGON:
+		_shape = new b2PolygonShape;
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
+		_fixtureDef.shape = _shape;
+		//Fixture creation.
+		_fixture = _body->CreateFixture(&_fixtureDef);
+		break;
+	case SH_PLAYER:
+		_shape = new b2PolygonShape;
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
+		_fixtureDef.shape = _shape;
+		_fixtureDef.filter.categoryBits = MASK_CHEST;
+		_body->CreateFixture(&_fixtureDef);		
+		
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize}, 0);
+		_fixtureDef.shape = _shape;
+		_fixtureDef.filter.categoryBits = MASK_HEAD;
+		_body->CreateFixture(&_fixtureDef);
+
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox( legsSize / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize}, 0);
+		_fixtureDef.shape = _shape;
+		_fixtureDef.filter.categoryBits = MASK_LEGS;
+		_fixture = _body->CreateFixture(&_fixtureDef);
+		break;
+	default:
+		break;
+	}
+
 	
-	//Fixture creation.
-	_fixture = _body->CreateFixture(&_fixtureDef);
 	
 
 
@@ -330,7 +350,7 @@ void CRigidBody::tick(float delta) {
 	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
-	std::cout << _body->GetAngle() << std::endl;
+	//std::cout << _body->GetAngle() << std::endl;
 
 
 }
@@ -371,14 +391,14 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 	
 
 	if (m->getType() == MSG_COLLISION){
-		
-		
+			
 		MCollisionBegin* mColBegin = static_cast<MCollisionBegin*>(m);
 		_myMask = mColBegin->GetMyCategory();
-
+		std::cout << mColBegin->GetContactMask() << std::endl;
 		switch (mColBegin->GetContactMask()){
 			case MASK_STATIC_TERRAIN:
-				pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
+				if (_myMask == MASK_LEGS)
+					pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
 				break;
 			default:
 				break;

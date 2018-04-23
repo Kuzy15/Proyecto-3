@@ -37,7 +37,8 @@ typedef enum RigidBodyType {
 typedef enum ShapeType {
 
 	SH_CIRCLE,
-	SH_POLYGON
+	SH_POLYGON,
+	SH_PLAYER
 };
 
 typedef enum ComponentType {
@@ -148,8 +149,10 @@ protected:
 class CMeshRender: public CRender
 {
 public:
-	CMeshRender(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
-	virtual ~CMeshRender();
+
+	CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale);
+	~CMeshRender();
+
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -195,7 +198,11 @@ typedef enum FilterMask {
 	MASK_PLAYER = 0x0001,
 	MASK_STATIC_TERRAIN = 0x0002,
 	MASK_DINAMIC_TERRAIN = 0x0004,
-	MASK_BULLET = 0x0008
+	MASK_BULLET = 0x0008,
+	MASK_HEAD = 0x0010,
+	MASK_CHEST = 0x0020,
+	MASK_LEGS = 0x0040
+
 };
 
 
@@ -243,7 +250,7 @@ private:
 
 };
 
-<<<<<<< HEAD
+
 */
 //--------- PLAYER C.H. COMPONENT ---------
 class CPlayerCollisionHandler : public GameComponent

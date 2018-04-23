@@ -17,12 +17,12 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	Entity* Ra = new Entity(id, s);
 
 	//Mesh Render
-	Ra->addComponent(new CMeshRender("Ra.mesh", Ra, s->getSceneManager()));
+	Ra->addComponent(new CMeshRender({2,2,0}, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
 
 	//RigidBody
 	float height = 6.0f;
 	float width = 4.0f;
-	Ra->addComponent(new CRigidBody(Ra, s->getGame()->getPhysicsWorld(), iniPos, height, width, RB_DYNAMIC, SH_POLYGON, MASK_PLAYER));
+	Ra->addComponent(new CRigidBody(Ra, s->getGame()->getPhysicsWorld(), iniPos, height, width, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
 
 	//PlayerController
 	Ra->addComponent(new CPlayerController(Ra, 0));
@@ -34,7 +34,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
 	//Jump
-	float jumpForce = 150.0f;
+	float jumpForce = 100.0f;
 	Ra->addComponent(new CPlayerJump(Ra, jumpForce));
 	//Move
 	float v = 0.8f;
@@ -54,7 +54,9 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 
 	Entity * bRa = new Entity(id, s);
 	//Mesh Render
-	bRa->addComponent(new CMeshRender("Ra.mesh", bRa, s->getSceneManager()));
+
+	bRa->addComponent(new CMeshRender({1,1,0},"Bullet_Ra", bRa, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
+
 
 	//RigidBody
 	float weight = 1.0f;

@@ -197,36 +197,36 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(0, 0, 100), Ogre::Vector3(0,0,0), 5)
 	);
 	addEntity(cam);
+
+	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
+
+	addEntity(EntityFactory::getInstance().createEntity(ET_GOD,EG_RA,this,Ogre::Vector3(0,10,0)));
 	
-	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(0,10,0)));
-	
-	/*Entity * Suelo2 = new Entity("2", this);
-	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-3, 5, 0), 3, 4, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Entity * Suelo2 = new Entity("2", this);
+	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-51, -15, 0), 10, 1, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+
 	addEntity(Suelo2);
 
 	Entity * Suelo3 = new Entity("3", this);
-	Suelo2->addComponent(new CRigidBody(Suelo3, game->getPhysicsWorld(), Ogre::Vector3(33, 5, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Suelo2->addComponent(new CRigidBody(Suelo3, game->getPhysicsWorld(), Ogre::Vector3(33, 5, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	addEntity(Suelo3);
 
 	Entity * Suelo4 = new Entity("4", this);
-	Suelo2->addComponent(new CRigidBody(Suelo4, game->getPhysicsWorld(), Ogre::Vector3(33, -26, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Suelo2->addComponent(new CRigidBody(Suelo4, game->getPhysicsWorld(), Ogre::Vector3(33, -26, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	addEntity(Suelo4);
 	
 	Entity * Suelo = new Entity("1", this);
-	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -40, 0), 3,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
-	addEntity(Suelo);*/
 
+	addEntity(Suelo);
+	
+	Entity * e1 = new Entity("5", this);
+	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	e1->addComponent(new CMeshRender({-30,-15,-30}, "paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
+	addEntity(e1);
 	
 
-	//EntityFactory::getInstance().createEntity(,,)
-	
-
-	
-
-
-
-	
 }
 
 
