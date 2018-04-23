@@ -48,7 +48,7 @@ private:
 
 	//Box2D parameters
 	b2World* world;		//Pointer to the world
-	const b2Vec2 GRAVITY = b2Vec2(0.0,-9.8f);
+	const b2Vec2 GRAVITY = b2Vec2(0.0,-5.0f);
 	const float FPS_CAP = 1.0f / 60.0f;		//World step time simulation (60 frames per second).
 
 	//Input manager parameter
@@ -59,6 +59,7 @@ private:
 	float newTime;
 	float frameTime;
 	float accumulator;
+	float inputTime;
 	
 
 

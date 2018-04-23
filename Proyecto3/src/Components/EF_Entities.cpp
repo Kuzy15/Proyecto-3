@@ -34,7 +34,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
 	//Jump
-	float jumpForce = 100.0f;
+	float jumpForce = 75.0f;
 	Ra->addComponent(new CPlayerJump(Ra, jumpForce));
 	//Move
 	float v = 0.8f;
