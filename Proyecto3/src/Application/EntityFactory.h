@@ -12,6 +12,7 @@ class EntityFactory
 public:
 	~EntityFactory();
 	static EntityFactory& getInstance();
+	static void resetInstance();
 
 	//Methods for create gods and define their behaviour (Components, etc)
 	Entity* createGod(E_GOD god, GameScene* s, Ogre::Vector3 iniPos);

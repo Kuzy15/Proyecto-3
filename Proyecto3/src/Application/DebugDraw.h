@@ -19,7 +19,10 @@ private:
 public:
 
 	//DebugDraw(){}
-	//~DebugDraw(){}
+	~DebugDraw(){
+		delete mDebug;
+		
+	}
 
 	void setSceneManager(Ogre::SceneManager* sM){
 		mSceneMgr = sM; 

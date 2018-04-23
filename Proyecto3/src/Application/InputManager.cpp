@@ -37,6 +37,13 @@ InputManager::~InputManager()
 		delete _myQueue[i];
 		
 	}
+
+	for (int i = 0; i < _currentNPlayers; i++){
+
+		delete _inputMsg[i];
+
+	}
+
 	//Close SDL
 	SDL_Quit();
 }

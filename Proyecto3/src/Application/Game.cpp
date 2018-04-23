@@ -58,6 +58,10 @@ Game::Game(){
 }
  Game::~Game(){
 
+	 
+
+	 if (actScene != nullptr)
+		 delete actScene;
 	 //Remove the game from the window listeners
 	 Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
 
@@ -66,9 +70,6 @@ Game::Game(){
 	 world = nullptr;
 
 	 InputManager::resetInstance();
-	 
-	 if (actScene != nullptr)
-		 delete actScene;
 	 /*if (root != nullptr)
 		delete root;*/
 

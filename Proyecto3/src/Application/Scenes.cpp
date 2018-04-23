@@ -26,11 +26,12 @@
 #include "Scenes.h"
 #include "DebugDraw.h"
 
-DebugDraw dInstance;
+//DebugDraw dInstance;
 
 #pragma region gameScene 
 
 GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
+	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 	nMessages = -1;
 }
 GameScene::~GameScene()
@@ -47,9 +48,11 @@ GameScene::~GameScene()
 		_entities.pop_front();
 	}
 	
-	//InputManager::resetInstance();
 	
+	
+	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
+	scnMgr->destroyAllManualObjects();
 	
 	if (scnMgr != nullptr)
 		pGame->getRoot()->destroySceneManager(scnMgr);
@@ -57,7 +60,7 @@ GameScene::~GameScene()
 	
 }
 
-void GameScene::clearDebugDraw(){ dInstance.clear(); }
+void GameScene::clearDebugDraw(){ /*dInstance.clear();*/ }
 bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
 		if(ent != NULL)ent->tick(delta);
@@ -150,13 +153,14 @@ void GameScene::deleteEntity(std::string id){
 //ALSO CREATS A BASIC ENTITY WITH A stringComponent attached
 #pragma region basicScene
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
-	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	
 	
 
 	//Debug draw
-	dInstance.setSceneManager(scnMgr);
+	/*dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
-	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
+	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit);
+	*/
 
 
 	
@@ -227,7 +231,8 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 
 BasicScene::~BasicScene(){
-	delete light;
+	//dInstance.~DebugDraw();
+	//delete light;
 
 }
 
@@ -270,8 +275,6 @@ void BasicScene::processScnMsgs()
 		{
 			addEntity(static_cast<MAddEntity*>(m)->getEntity());
 		}
-
-
 
 		it++;
 		_sceneMessages.pop_front();

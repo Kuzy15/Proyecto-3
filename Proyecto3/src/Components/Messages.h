@@ -144,7 +144,7 @@ class MUpdateTransform: public Message
 {
 public:
 	MUpdateTransform(Ogre::Vector3 newPos, float nRotation,float h, float w, std::string emmiter);
-	~MUpdateTransform();
+	virtual ~MUpdateTransform();
 	Ogre::Vector3 GetPos();
 	float getRotation();
 	inline float getW(){ return _w; }

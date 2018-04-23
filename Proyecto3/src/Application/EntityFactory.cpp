@@ -23,8 +23,17 @@ EntityFactory::EntityFactory()
 
 EntityFactory::~EntityFactory()
 {
+	_createBulletFuncs.clear();
+	_createGodFuncs.clear();
 
+	
 }
+
+void EntityFactory::resetInstance(){
+	delete EntityFactory::_instance;
+	_instance == nullptr;
+}
+
 
 EntityFactory& EntityFactory::getInstance(){
 	if (EntityFactory::_instance == nullptr) EntityFactory::_instance = new EntityFactory();
