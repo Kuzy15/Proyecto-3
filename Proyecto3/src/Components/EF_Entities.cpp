@@ -3,6 +3,11 @@
 #include "Components.h"
 #include "Scenes.h"
 #include "Game.h"
+#include "DebugNew.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
 //-------------------------------------------    GODS    -------------------------------------------//
 #pragma region Gods
@@ -23,6 +28,8 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	Ra->addComponent(new CPlayerController(Ra, 0));
 	//CollisionHandler
 	Ra->addComponent(new CPlayerCollisionHandler(Ra));
+	//Basic Attack
+	Ra->addComponent(new CPlayerBasicAttack(Ra, 1000.0f, EB_RA,iniPos));
 
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
@@ -32,8 +39,8 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//Move
 	float v = 0.8f;
 	Ra->addComponent(new CPlayerMove(Ra, v));
-	//Basic Attack
-	Ra->addComponent(new CPlayerBasicAttack(Ra, 1000, EB_RA,iniPos));
+	Ra->addComponent(new CPlayerMove(Ra, v));
+	
 
 
 	return Ra;

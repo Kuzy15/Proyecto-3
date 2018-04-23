@@ -151,6 +151,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\Components\Components.h" />
+    <ClInclude Include="..\..\src\Components\DebugNew.h" />
     <ClInclude Include="..\..\src\Components\EF_Entities.h" />
     <ClInclude Include="..\..\src\Components\Entity.h" />
     <ClInclude Include="..\..\src\Components\Messages.h" />

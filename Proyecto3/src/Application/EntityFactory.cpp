@@ -1,5 +1,9 @@
 #include "EntityFactory.h"
+#include "DebugNew.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
 EntityFactory* EntityFactory::_instance = nullptr;
 

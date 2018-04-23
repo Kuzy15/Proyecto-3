@@ -1,6 +1,10 @@
 #include "Messages.h"
 #include "Entity.h"
 #include "Components.h"
+#include "DebugNew.h"
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
 //Basic Message Class implementation.
 #pragma region basic Message 

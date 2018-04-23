@@ -1,10 +1,13 @@
 #include <OgreRoot.h>
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
+#include "DebugNew.h"
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
+#define new DEBUG_NEW
 #endif
+
 
 
 
@@ -23,9 +26,7 @@
 #include "Scenes.h"
 #include "DebugDraw.h"
 
-
 DebugDraw dInstance;
-
 
 #pragma region gameScene 
 
@@ -34,14 +35,26 @@ GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),s
 }
 GameScene::~GameScene()
 {
-	Entity * del;
-	for (Entity * ent : _entities){
-		del = ent;
-		_entities.pop_front();
-		delete ent;
-	}
+
+
+	deleteAllMessages();
+
 	
 
+	list<Entity*>::iterator it = _entities.begin();
+	while (!_entities.empty()){
+		delete _entities.front();
+		_entities.pop_front();
+	}
+	
+	//InputManager::resetInstance();
+	
+	scnMgr->clearScene();
+	
+	if (scnMgr != nullptr)
+		pGame->getRoot()->destroySceneManager(scnMgr);
+	
+	
 }
 
 void GameScene::clearDebugDraw(){ dInstance.clear(); }
@@ -101,6 +114,21 @@ void GameScene::clearMessageQueue() {
 		_messages.pop_front();
 	}
 }
+
+void GameScene::deleteAllMessages(){
+
+	for (int i = 0; i < _messages.size(); i++) {
+		Message * aux = _messages.front();
+		delete aux;
+		_messages.pop_front();
+	}
+
+	for (int j = 0; j < _sceneMessages.size(); j++) {
+		Message * aux = _sceneMessages.front();
+		delete aux;
+		_sceneMessages.pop_front();
+	}
+}
 void GameScene::deleteEntity(std::string id){
 	Entity * aux;
 	bool found = false;
@@ -123,6 +151,7 @@ void GameScene::deleteEntity(std::string id){
 #pragma region basicScene
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	
 
 	//Debug draw
 	dInstance.setSceneManager(scnMgr);
@@ -167,7 +196,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(0,10,0)));
 	
-	Entity * Suelo2 = new Entity("2", this);
+	/*Entity * Suelo2 = new Entity("2", this);
 	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-3, 5, 0), 3, 4, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	addEntity(Suelo2);
 
@@ -182,7 +211,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	Entity * Suelo = new Entity("1", this);
 	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -40, 0), 3,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
-	addEntity(Suelo);
+	addEntity(Suelo);*/
 
 	
 
@@ -199,8 +228,6 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 BasicScene::~BasicScene(){
 	delete light;
-	delete vp;
-	delete scnMgr;
 
 }
 
@@ -243,16 +270,17 @@ void BasicScene::processScnMsgs()
 		{
 			addEntity(static_cast<MAddEntity*>(m)->getEntity());
 		}
-		
-		
-		
-		
+
+
+
 		it++;
+		_sceneMessages.pop_front();
 	}
 	
 };
 
 #pragma endregion
+
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id, game) {

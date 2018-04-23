@@ -127,7 +127,7 @@ private:
 class CRender : public GameComponent
 {
 public:
-	~CRender();
+	virtual ~CRender();
 	//Ogre::SceneNode * getSceneNode();
 	virtual void getMessage(Message *m);
 
@@ -149,7 +149,7 @@ class CMeshRender: public CRender
 {
 public:
 	CMeshRender(std::string meshName, Entity * father, Ogre::SceneManager * scnM);
-	~CMeshRender();
+	virtual ~CMeshRender();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -349,7 +349,7 @@ class CPlayerBasicAttack : public GameComponent
 {
 public:
 	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos);
-	~CPlayerBasicAttack();
+	virtual ~CPlayerBasicAttack();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);

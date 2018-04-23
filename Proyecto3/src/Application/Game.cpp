@@ -10,7 +10,11 @@
 #include "InputManager.h"
 #include "Game.h"
 #include "CollisionManager.h"
+#include "DebugNew.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
 
 
 
@@ -34,6 +38,7 @@ Game::Game(){
 	world->SetContactListener(&collisionManager);
 	
 	
+	
 
 	//Inicialization of SDL. Only starts JOYSTICK functionality.
 	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
@@ -55,14 +60,17 @@ Game::Game(){
 
 	 //Remove the game from the window listeners
 	 Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
+
 	 //Delete the physics world
 	 delete world;
 	 world = nullptr;
 
-	 //Borrar escena
-	 //delete actScene;
-
-	 delete root;
+	 InputManager::resetInstance();
+	 
+	 if (actScene != nullptr)
+		 delete actScene;
+	 /*if (root != nullptr)
+		delete root;*/
 
  }
 #pragma endregion

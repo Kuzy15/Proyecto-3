@@ -38,6 +38,7 @@ public:
 
 	//Methods
 	static InputManager& getInstance();							//Return the unique instance
+	void static resetInstance();
 	void handleInput();											//Main functiion. Read the input from SDL
 	void getMessages(std::list<Message*> &sceneQueue);			//Send input messages to another queue
 	int numMessages();											//Return the number of currently messages in the queue

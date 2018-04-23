@@ -3,10 +3,13 @@
 #include <exception>
 #include "Messages.h"
 #include "Scenes.h"
-
+#include "DebugNew.h"
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
+
+#define new DEBUG_NEW
+
 #endif
 
 
@@ -19,11 +22,27 @@ Entity::~Entity()
 {
 	dispatch();
 	
-	for (GameComponent * c : components){
-		components.pop_front();
-		delete c;
+	/*while (!components.empty()){
+		GameComponent* d = components.back();
+		delete d;
+		components.pop_back();
+	}*/
+
+	GameComponent* aux;
+	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end();){
+		
+		aux = *it;
+		try{
+
+			it = components.erase(it);
+		}
+		catch (std::exception &e){
+			std::cout << e.what() << std::endl;
+		}
+		delete aux;
+		
 	}
-	if (!components.empty())throw new std::exception("Components not deleted correctly");
+	
 	while (!msgs.empty()){
 		Message * aux = msgs.front();
 		msgs.pop();
@@ -40,7 +59,7 @@ void Entity::addComponent(GameComponent * gc){
 void Entity::deleteComponent(ComponentType id){
 	GameComponent * aux;
 	bool found = false;
-	for (std::list<GameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
+	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
 		if ((*it)->getID() == id){
 			aux = *it;
 			it = components.erase(it);

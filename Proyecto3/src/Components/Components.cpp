@@ -5,11 +5,12 @@
 #include "Messages.h"
 #include "Game.h"
 #include "EntityFactory.h"
-
+#include "DebugNew.h"
 
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
+#define new DEBUG_NEW
 #endif
 
 
@@ -94,7 +95,8 @@ CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
 	
 }
 CRender::~CRender(){
-	pSceneMgr->destroySceneNode(pOgreSceneNode);
+	//pSceneMgr->destroySceneNode(pChild);
+	//pSceneMgr->destroySceneNode(pOgreSceneNode);
 }
 
 //Get Message general to every other render component child to this
@@ -146,8 +148,8 @@ CMeshRender::CMeshRender( std::string meshName, Entity * father, Ogre::SceneMana
 	pChild->attachObject(pOgreEnt);
 }
 CMeshRender::~CMeshRender() {
-	pChild->detachObject(pOgreEnt);
-	pSceneMgr->destroyEntity(pOgreEnt);
+	//pChild->detachObject(pOgreEnt);
+	//pSceneMgr->destroyEntity(pOgreEnt);
 }
 void CMeshRender::tick(float delta) {
 
@@ -181,8 +183,12 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	pCam->setNearClipDistance(clipDistance);
 
 	vp->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+
+	//borrar
+	_vp = vp;
 }
 CCamera::~CCamera() {
+	delete _vp;
 	delete pCam;
 }
 void CCamera::tick(float delta) {
@@ -309,8 +315,9 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 }
 CRigidBody::~CRigidBody() {
-	_myWorld->DestroyBody(_body);
+	//_myWorld->DestroyBody(_body);
 	_body = nullptr;
+	
 }
 void CRigidBody::tick(float delta) {
 
@@ -516,7 +523,9 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entP
 	_radius = 2.0f;
 
 }
-CPlayerBasicAttack::~CPlayerBasicAttack(){}
+CPlayerBasicAttack::~CPlayerBasicAttack(){
+
+}
 void CPlayerBasicAttack::tick(float delta){
 
 
@@ -527,15 +536,15 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		MPlayerShot* mPS = static_cast<MPlayerShot*>(m);
 		
 		//Check if the player can spawn the next bullet
-		_timeCounter = (SDL_GetTicks() * 1000);
+		_timeCounter = (SDL_GetTicks());
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
 			float angle;
 			Ogre::Vector3 iniPos = calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle);
-			iniPos.x += _ogrepos.x;
-			iniPos.y += _ogrepos.y;
+			iniPos.x;
+			iniPos.y;
 			Entity* b = EntityFactory::getInstance().createBullet(EB_RA, pEnt->getScene(), iniPos, angle);
 			pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
-			_lastTimeShot = (SDL_GetTicks() * 1000);
+			_lastTimeShot = (SDL_GetTicks());
 		}
 	}
 
@@ -553,8 +562,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 			//Where our node will rotate.
 			Ogre::Vector3 parentPos = msg->GetPos();
 
-			//Where our mesh is relative to the parent.
-			//The real pos of the object is the parent pos + this variable, _ogrepos.
+			//Where our mesh is relative to the parent. The real pos of the object is the parent pos + this variable, _ogrepos.
 			_ogrepos.x = w / 2;
 			_ogrepos.y = 0;
 			_ogrepos.z = 0;

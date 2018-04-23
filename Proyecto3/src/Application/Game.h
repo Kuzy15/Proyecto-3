@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+
 #include <OgreRoot.h>
 #include <Box2D.h>
 #include <OgreConfigFile.h>

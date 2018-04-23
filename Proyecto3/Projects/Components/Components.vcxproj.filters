@@ -27,6 +27,9 @@
     <ClInclude Include="..\..\src\Components\EF_Entities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Components\DebugNew.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Components\Components.cpp">

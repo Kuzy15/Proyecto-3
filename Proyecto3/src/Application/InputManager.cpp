@@ -1,9 +1,11 @@
 #include "InputManager.h"
-
+#include "DebugNew.h"
 #ifdef _DEBUG
 #include <iostream>
 #include <string>
+#define new DEBUG_NEW
 #endif
+
 
 InputManager* InputManager::_instance = nullptr;	//Definition of the instance 
 
@@ -45,6 +47,10 @@ InputManager& InputManager::getInstance(){
 	return *InputManager::_instance;
 }
 
+void InputManager::resetInstance(){
+	delete InputManager::_instance;
+	_instance == nullptr;
+}
 
 //Send the local queue messages to the scene queue if there's any message
 void InputManager::getMessages(std::list<Message*> &sceneQueue){

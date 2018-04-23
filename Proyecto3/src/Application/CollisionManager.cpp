@@ -2,6 +2,12 @@
 #include <Entity.h>
 #include "Messages.h"
 
+#include "DebugNew.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
 CollisionManager::CollisionManager()
 {
 }

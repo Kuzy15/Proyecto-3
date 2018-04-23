@@ -1,5 +1,6 @@
 #include <list>
 #include <queue>
+#include <vector>
 
 
 #ifndef ENTITY_H
@@ -37,7 +38,7 @@ public:
 private:
 	bool _active;
 	std::string _id;
-	std::list<GameComponent *> components;
+	std::vector<GameComponent *> components;
 	std::queue <Message*>msgs;
 
 	GameScene * scene;

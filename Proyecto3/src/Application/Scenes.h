@@ -44,6 +44,7 @@ protected:
 	int nMessages;
 
 	void clearMessageQueue();
+	void deleteAllMessages();
 	//Messaging attributes and methods
 	std::list<Entity *> _entities;
 	std::list<Message *> _messages;
