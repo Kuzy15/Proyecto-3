@@ -54,8 +54,8 @@ GameScene::~GameScene()
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 	
-	if (scnMgr != nullptr)
-		pGame->getRoot()->destroySceneManager(scnMgr);
+	/*if (scnMgr != nullptr)
+		pGame->getRoot()->destroySceneManager(scnMgr);*/
 	
 	
 }
@@ -200,7 +200,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
-	addEntity(EntityFactory::getInstance().createEntity(ET_GOD,EG_RA,this,Ogre::Vector3(0,10,0)));
+	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(0,20,0)));
 	
 	Entity * Suelo2 = new Entity("2", this);
 	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-51, -15, 0), 10, 1, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));

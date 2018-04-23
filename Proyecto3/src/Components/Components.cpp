@@ -545,7 +545,7 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entP
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
-	_radius = 2.0f;
+	_radius = 10.0f;
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){
@@ -564,9 +564,12 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		_timeCounter = (SDL_GetTicks());
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
 			float angle;
-			Ogre::Vector3 iniPos = calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle);
-			iniPos.x;
-			iniPos.y;
+			Ogre::Vector3 iniPos;
+			calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle, iniPos);
+			iniPos.x += _ogrepos.x;
+			iniPos.y += _ogrepos.y;
+			iniPos.z = _ogrepos.z;
+
 			Entity* b = EntityFactory::getInstance().createBullet(EB_RA, pEnt->getScene(), iniPos, angle);
 			pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 			_lastTimeShot = (SDL_GetTicks());
@@ -588,9 +591,9 @@ void CPlayerBasicAttack::getMessage(Message* m){
 			Ogre::Vector3 parentPos = msg->GetPos();
 
 			//Where our mesh is relative to the parent. The real pos of the object is the parent pos + this variable, _ogrepos.
-			_ogrepos.x = w / 2;
-			_ogrepos.y = 0;
-			_ogrepos.z = 0;
+			_ogrepos.x = parentPos.x +  w / 2;
+			_ogrepos.y = parentPos.y + h / 2;
+			_ogrepos.z = parentPos.z;
 
 			//Rotate the parent node the same degree as the collider.
 			float angleRad = msg->getRotation();
@@ -598,28 +601,63 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		}
 	}
 }
-Ogre::Vector3 CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle){
+void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos){
 
 	//Calculate point
 	/*5 - 327*/
 	//Normalize
 	float normalX = vX * SPAWN_PARSE;
 	float normalY = vY * SPAWN_PARSE;
-	//Calculate circumference point
-	float factorX = (1.0f / normalX) * _radius;
-	float factorY = (1.0f / normalY) * _radius;
-	float valX = factorX * normalX;
-	float valY = factorY * normalY;
 
-	//Round
-	valX = roundf(valX * 100) / 100;
-	valY = roundf(valY * 100) / 100;
+	std::cout << vX << " " << vY << std::endl;
 
-	//Calculate rotation
+	float A = vY;
+	float B = -vX;
+	float yFinal = std::sqrt(std::pow (_radius,2) / (std::pow((-(B) / A),2) + 1)) ;
+	float xFinal = ((-B * yFinal) / A);
+	
 
-	angle = 0.0f;
+	std::cout << xFinal << " " << yFinal << std::endl;
 
-	return Ogre::Vector3(valX,valY,0.0f);
+	if (vY > 0.0f){
+		if (yFinal < 0)
+			yFinal = std::abs(yFinal);
+	}
+	else{
+		if (yFinal > 0)
+			yFinal *= -1.0f;
+	}
+
+	if (vX > 0.0f){
+		if (xFinal < 0)
+			xFinal = std::abs(xFinal);
+	}
+	else{
+		if (xFinal > 0)
+			xFinal *= -1.0f;
+	}
+
+	std::cout << xFinal << " " << yFinal << std::endl;
+
+	
+	/*if (vX > 0.0f)
+		xFinal = std::abs(xFinal);
+	else{
+		std::signbit(xFinal) ? xFinal = xFinal: xFinal *= -1.0f;
+	}*/
+	
+
+
+	iniPos = Ogre::Vector3(xFinal, yFinal, 0.0f);
+	Ogre::Vector3 idleVector(_radius, 0.0f, 0.0f);
+
+	float escalarProduct = (iniPos.x * idleVector.x) + (iniPos.y * idleVector.y);
+	float lengthIni = std::sqrt(std::pow(iniPos.x, 2) * std::pow(iniPos.y, 2));
+	float lengthIdle = _radius;
+
+	float cos = escalarProduct / (lengthIdle * lengthIni);
+
+	angle = std::acosf(cos);	
 }
 
 #pragma endregion

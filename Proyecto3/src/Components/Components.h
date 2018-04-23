@@ -373,7 +373,7 @@ private:
 	float _radius;
 	Ogre::Vector3 _ogrepos;
 
-	Ogre::Vector3 calculateSpawnPoint(float vX, float vY, float &angle);
+	void calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos);
 };
 
 

@@ -166,13 +166,13 @@ void InputManager::updateControllersState(ControllerInputState &cState, int id){
 	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX) / PARSE_VALUE;
 	if (cState.Axis_LeftX > -DEAD_ZONE && cState.Axis_LeftX < DEAD_ZONE)
 		cState.Axis_LeftX = 0;
-	cState.Axis_LeftY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY) / PARSE_VALUE;
+	cState.Axis_LeftY = -SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY) / PARSE_VALUE;
 	if (cState.Axis_LeftY > -DEAD_ZONE && cState.Axis_LeftY < DEAD_ZONE)
 		cState.Axis_LeftY = 0;
 	cState.Axis_RightX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTX) / PARSE_VALUE;
 	if (cState.Axis_RightX > -DEAD_ZONE && cState.Axis_RightX < DEAD_ZONE)
 		cState.Axis_RightX = 0;
-	cState.Axis_RightY = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY) / PARSE_VALUE;
+	cState.Axis_RightY = -SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY) / PARSE_VALUE;
 	if (cState.Axis_RightY > -DEAD_ZONE && cState.Axis_RightY < DEAD_ZONE)
 		cState.Axis_RightY = 0;
 
