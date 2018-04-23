@@ -43,7 +43,7 @@ Game::Game(){
 #endif
 	}
 
-	 currentTime = newTime = frameTime = accumulator = 0;
+	 currentTime = newTime = frameTime = accumulator = inputTime = 0;
 	
 	 initOgre();
 
@@ -194,6 +194,7 @@ void Game::loop() {
 
 		//Loop for game logic and physic step (60 times per second)
 		while (accumulator >= FPS_CAP){
+			
 			handleInput();
 			world->Step(FPS_CAP, 10, 2);
 			actScene->run();
@@ -221,8 +222,14 @@ void Game::render() {
 //Read the input
 void Game::handleInput(){
 	
-		
-	InputManager::getInstance().handleInput();
+	float current = SDL_GetTicks();
+	
+	//6 times per second
+	if (current > inputTime + 100){
+		InputManager::getInstance().handleInput();
+		inputTime = SDL_GetTicks();
+	}
+	
 
 }
 

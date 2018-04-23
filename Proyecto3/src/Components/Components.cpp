@@ -156,7 +156,7 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-	std::cout << pOgreSceneNode->getPosition().x << std::endl;
+	//std::cout << pOgreSceneNode->getPosition().x << std::endl;
 	
 	
 	
@@ -370,7 +370,11 @@ void CRigidBody::getMessage(Message * m) {
 		case MSG_RIGIDBODY_JUMP:
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
+			
 			_body->ApplyForceToCenter(b2Vec2(0, jForce),true);
+			break;
+		case MSG_COLLISION_TERRAIN:
+			_body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x,0));
 			break;
 		default:
 			break;
@@ -497,8 +501,9 @@ void CPlayerJump::getMessage(Message* m)
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
 		if (_nJumps > 0){
+			std::cout << _nJumps << std::endl;
+			pEnt->getMessage(new MRigidbodyJump(_jumpForce * _nJumps, pEnt->getID()));
 			_nJumps--;
-			pEnt->getMessage(new MRigidbodyJump(_jumpForce, pEnt->getID()));
 		}
 		break;
 	case MSG_COLLISION_TERRAIN:
