@@ -26,7 +26,7 @@
 #include "Scenes.h"
 #include "DebugDraw.h"
 
-//DebugDraw dInstance;
+DebugDraw dInstance;
 
 #pragma region gameScene 
 
@@ -159,8 +159,8 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	//Debug draw
 	/*dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
-	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit);
-	*/
+	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*//*);*/
+	
 
 
 	
@@ -223,7 +223,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	Entity * e1 = new Entity("5", this);
 	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	e1->addComponent(new CMeshRender({-30,-15,-30}, "paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
+	e1->addComponent(new CMeshRender({-30,-15,-30}, 0,"paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
 	addEntity(e1);
 	
 

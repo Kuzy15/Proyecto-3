@@ -150,7 +150,7 @@ class CMeshRender: public CRender
 {
 public:
 
-	CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale);
+	CMeshRender(Ogre::Vector3 pos, float grades, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale);
 	~CMeshRender();
 
 

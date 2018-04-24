@@ -57,9 +57,12 @@ typedef enum MessageType{
 	MSG_PLAYER_JUMP,
 	MSG_PLAYER_SHOT,
 	MSG_RIGIDBODY_MOVE_X,
+	MSG_RIGIDBODY_MOVE_Y,
 	MSG_RIGIDBODY_JUMP,
 	MSG_COLLISION_TERRAIN,
-	MSG_ADD_ENTITY
+	MSG_ADD_ENTITY,
+	MSG_SHOT
+	
 
 
 };
@@ -247,6 +250,24 @@ private:
 };
 
 
+//--------------------------------------------------	PLAYER SHOT MSG		----------------------------------------------------------//
+class MShot : public Message
+{
+public:
+	MShot(float axisXValue, float axisYValue, std::string emmiter);
+	~MShot();
+
+	inline float getXValue(){ return _XValue; };
+	inline float getYValue(){ return _YValue; };
+
+
+private:
+
+	float _XValue;						//Shot direction
+	float _YValue;
+};
+
+
 //--------------------------------------------------	RIGIDBODY MOVE X MSG		----------------------------------------------------------//
 class MRigidbodyMoveX : public Message
 {
@@ -261,6 +282,25 @@ private:
 	float _XValue;						//Shot direction
 
 };
+
+//--------------------------------------------------	RIGIDBODY MOVE Y MSG		----------------------------------------------------------//
+class MRigidbodyMoveY : public Message
+{
+public:
+	MRigidbodyMoveY(float axisYValue, std::string emmiter);
+	~MRigidbodyMoveY();
+
+	float getYValue(){ return _YValue; };
+
+private:
+
+	float _YValue;						//Shot direction
+
+};
+
+
+
+
 
 //--------------------------------------------------	RIGIDBODY JUMP MSG		----------------------------------------------------------//
 class MRigidbodyJump : public Message
@@ -297,5 +337,7 @@ public:
 private:
 	Entity* _newEntity;
 };
+
+
 
 #endif

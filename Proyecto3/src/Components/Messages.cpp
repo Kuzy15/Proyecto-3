@@ -117,6 +117,14 @@ MRigidbodyMoveX::~MRigidbodyMoveX(){}
 
 #pragma endregion
 
+//--------------------------------------------------	RIGIDBODY MOVE X MSG		----------------------------------------------------------//
+#pragma region MessageRigidBodyMoveY
+
+MRigidbodyMoveY::MRigidbodyMoveY(float v, std::string emmiter) : Message(MSG_RIGIDBODY_MOVE_Y, ENTITY, emmiter), _YValue(v){}
+MRigidbodyMoveY::~MRigidbodyMoveY(){}
+
+#pragma endregion
+
 
 //--------------------------------------------------	RIGIDBODY JUMP MSG		----------------------------------------------------------//
 #pragma region MessageRigidBodyJump
@@ -147,6 +155,13 @@ MAddEntity::~MAddEntity(){}
 
 MPlayerShot::MPlayerShot(float axisXValue, float axisYValue, std::string emmiter) : Message(MSG_PLAYER_SHOT, ENTITY, emmiter), _XValue(axisXValue), _YValue(axisYValue){}
 MPlayerShot::~MPlayerShot(){}
+
+#pragma endregion
+
+#pragma region MessageShot
+
+MShot::MShot(float axisXValue, float axisYValue, std::string emmiter) : Message(MSG_SHOT, ENTITY, emmiter), _XValue(axisXValue), _YValue(axisYValue){}
+MShot::~MShot(){}
 
 #pragma endregion
 
