@@ -15,9 +15,12 @@ EntityFactory::EntityFactory()
 	//Define all create Entity methods
 	//Gods
 	_createGodFuncs.emplace(EG_RA, &createGodRa);
+	_createGodFuncs.emplace(EG_AHPUCH, &createGodAhPuch);
 
 	//Bullets
 	_createBulletFuncs.emplace(EB_RA, &createBulletRa);
+	_createBulletFuncs.emplace(EB_AHPUCH, &createBulletAhPuch);
+
 }
 
 

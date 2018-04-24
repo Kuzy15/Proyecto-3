@@ -24,17 +24,19 @@ typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 in
 
 //Enum definitions for all entities
 #pragma region Enums
-typedef enum E_GOD { EG_RA = 0 };
-typedef enum E_BULLET { EB_RA = 0 };
+typedef enum E_GOD { EG_RA = 0, EG_AHPUCH = 1 };
+typedef enum E_BULLET { EB_RA = 0, EB_AHPUCH = 1};
 #pragma endregion
 
 //Creating methods definitions for all entities
 #pragma region Gods 
 Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos);
+Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 
 #pragma endregion
 
 #pragma region Bullets
 Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
+Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
 #pragma endregion
 #endif

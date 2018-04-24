@@ -202,6 +202,7 @@ typedef enum FilterMask {
 	MASK_HEAD = 0x0010,
 	MASK_CHEST = 0x0020,
 	MASK_LEGS = 0x0040
+	
 
 };
 

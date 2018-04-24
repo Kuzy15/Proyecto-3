@@ -274,7 +274,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	{
 		case MASK_PLAYER:
 			//_fixtureDef.filter.categoryBits = MASK_PLAYER;				
-			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST;
 			
 			break;
 		case MASK_STATIC_TERRAIN:
@@ -584,7 +584,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 			iniPos.y += _ogrepos.y;
 			iniPos.z = _ogrepos.z;
 
-			Entity* b = EntityFactory::getInstance().createBullet(EB_RA, pEnt->getScene(), iniPos, angle);
+			Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle);
 			pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 			b->getMessage(new MShot(dir.x, dir.y,pEnt->getID()));
 

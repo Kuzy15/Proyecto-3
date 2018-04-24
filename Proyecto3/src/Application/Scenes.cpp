@@ -60,7 +60,7 @@ GameScene::~GameScene()
 	
 }
 
-void GameScene::clearDebugDraw(){ /*dInstance.clear();*/ }
+void GameScene::clearDebugDraw(){ dInstance.clear(); }
 bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
 		if(ent != NULL)ent->tick(delta);
@@ -157,9 +157,9 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 
 	//Debug draw
-	/*dInstance.setSceneManager(scnMgr);
+	dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
-	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*//*);*/
+	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
 	
 
 
@@ -200,9 +200,10 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
-	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(0,20,0)));
+	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(-20,20,0)));
+	addEntity(EntityFactory::getInstance().createGod(EG_AHPUCH, this, Ogre::Vector3(20, 20, 0)));
 	
-	Entity * Suelo2 = new Entity("2", this);
+	/*Entity * Suelo2 = new Entity("2", this);
 	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-51, -15, 0), 10, 1, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 
 	addEntity(Suelo2);
@@ -213,15 +214,15 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Entity * Suelo4 = new Entity("4", this);
 	Suelo2->addComponent(new CRigidBody(Suelo4, game->getPhysicsWorld(), Ogre::Vector3(33, -26, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	addEntity(Suelo4);
+	addEntity(Suelo4);*/
 	
-	Entity * Suelo = new Entity("1", this);
+	Entity * Suelo = new Entity("2", this);
 	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
 
 	addEntity(Suelo);
 	
-	Entity * e1 = new Entity("5", this);
+	Entity * e1 = new Entity("3", this);
 	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	e1->addComponent(new CMeshRender({-30,-15,-30}, 0,"paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
 	addEntity(e1);
