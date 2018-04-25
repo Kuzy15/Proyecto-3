@@ -13,7 +13,6 @@
 #define new DEBUG_NEW
 #endif
 
-
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
 //It implements basic behaviours like gets, sets 
@@ -219,23 +218,29 @@ void CCamera::getMessage(Message * m) {
 
 #pragma region Action Camera Component 
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
-	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5), smooth(60) {
+	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5), smooth(10.0) {
 	_pj1 = Ogre::Vector3(20, 20, 0);
 	_pj2 = Ogre::Vector3(-20, 20, 0);
 
-	_lookAt = (_pj1 - _pj2) / 2.0;
-	_newPos = _pos;
+	_lastPos = Ogre::Vector3(0, 0, 100);
+	_pos = Ogre::Vector3(0, 0, 100);
+	_lookAt = (_pj1 + _pj2) / 2.0;
 }
 
 CActionCamera::~CActionCamera() {
 
 }
+
+//Function that calculates if a certain point is out of the defined boundaries for the camera
+bool outOfBoundaries() {
+
+	return true;
+}
 void CActionCamera::getMessage(Message * m) {
 	
 	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "AhPuch") {
-		MUpdateTransform * aux = static_cast<MUpdateTransform * >(m);
-			if (aux->GetPos() != _pj1)
-				_pj1 = aux->GetPos();
+			if (static_cast<MUpdateTransform * >(m)->GetPos() != _pj1)
+				_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
 
 	}
 	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Ra") {
@@ -243,25 +248,22 @@ void CActionCamera::getMessage(Message * m) {
 			_pj2 = static_cast<MUpdateTransform *>(m)->GetPos();
 	}
 	else return;
+	
+	//We calculate the midpoint between the 2 players
+	_newPos = (_pj1 + _pj2) / 2.0;
 
-	_toMove = Ogre::Vector3::ZERO;
-	_newPos = (_pj1 + _pj2) / 2;
-	_newPos.z = _pos.z; //Cambiar esto luego. Puenteado para la distancia
-	_toMove = (_pos + _newPos) / smooth;
-	_toMove.z = 0.0f;
-	_lookAt = Ogre::Vector3(_newPos.x, _newPos.y, 0.0);
+	//Now we want to make it smooth, for that we calculate the director vector of the line.
+	Ogre::Vector3 dir = (_newPos - _pos) / smooth;
 
-	//if("ra = -20")
+	
+
+	_pos += dir;
+	_pos.z = 100;
 
 
 }
 
 void CActionCamera::tick(float delta) {
-	float deltax = _newPos.x - _pos.x;
-	float deltay = _newPos.y - _pos.y;
-	if (sqrt(pow(deltax, 2)+pow(deltay,2)) > 5)
-		_pos += _toMove;
-
 	CCamera::tick(delta);
 
 }
