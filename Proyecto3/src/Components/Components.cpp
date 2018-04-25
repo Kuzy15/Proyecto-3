@@ -143,12 +143,21 @@ void CRender::getMessage(Message *m) {
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma region meshRenderComponent
-CMeshRender::CMeshRender(Ogre::Vector3 pos, float grades ,std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale) :CRender(CMP_MESH_RENDER, father, scnM) {
+CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->setPosition(pos);
-	pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
 	pChild->attachObject(pOgreEnt);
 	pChild->scale(scale);
+	
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0)));
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
+
+	
+	
+	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(90.0f), Ogre::Vector3(1, 0, 0)));
+	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
+	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
 }
 CMeshRender::~CMeshRender() {
 	//pChild->detachObject(pOgreEnt);
@@ -157,7 +166,7 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-	//std::cout << pOgreSceneNode->getPosition().x << std::endl;
+	std::cout << pOgreSceneNode->getPosition().x << std::endl;
 	
 	
 	
@@ -459,16 +468,17 @@ void CPlayerController::getMessage(Message* m){
 				float finalXValue, finalYValue;
 				finalXValue = finalYValue = 0.0f;
 				//Check joystick rotation, to control the bullet spawn
-				if ((xValue > 10.0f || xValue < -10.0f) && (yValue > 10.0f || yValue < -10.0f)){
+				if ((xValue > 27.0f || xValue < -27.0f) && (yValue > 27.0f || yValue < -27.0f)){
 					finalXValue = cState.Axis_RightX;
 					finalYValue = cState.Axis_RightY;
+					MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
+					pEnt->getMessage(m);
 				}
 				else{
 					//if
 					//if
 				}
-				MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
-				pEnt->getMessage(m);
+				
 
 			}
 			
@@ -578,15 +588,18 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
 			float angle;
 			Ogre::Vector3 iniPos;
-			calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle, iniPos);
-			Ogre::Vector3 dir = iniPos;
-			iniPos.x += _ogrepos.x;
-			iniPos.y += _ogrepos.y;
-			iniPos.z = _ogrepos.z;
+			if (mPS->getXValue() != 0 ||  mPS->getYValue() != 0){
+				calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle, iniPos);
+				Ogre::Vector3 dir = iniPos;
+				iniPos.x += _ogrepos.x;
+				iniPos.y += _ogrepos.y;
+				iniPos.z = _ogrepos.z;
 
-			Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle);
-			pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
-			b->getMessage(new MShot(dir.x, dir.y,pEnt->getID()));
+				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle);
+				pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
+				b->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
+
+			}
 
 			_lastTimeShot = (SDL_GetTicks());
 		}
