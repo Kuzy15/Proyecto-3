@@ -230,7 +230,6 @@ private:
 	b2Vec2 _vel;
 	b2Body* _body;
 	b2BodyDef _bodyDef;
-	b2Shape* _shape;
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
 	

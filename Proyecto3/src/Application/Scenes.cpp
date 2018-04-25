@@ -17,6 +17,7 @@
 #include <OgreEntity.h>
 #include <OgreSceneNode.h>
 #include <Components.h>
+#include <Box2D.h>
 
 #include <Entity.h>
 #include "InputManager.h"
@@ -54,6 +55,9 @@ GameScene::~GameScene()
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 	
+	destroyBodies();
+
+
 	/*if (scnMgr != nullptr)
 		pGame->getRoot()->destroySceneManager(scnMgr);*/
 	
@@ -145,6 +149,32 @@ void GameScene::deleteEntity(std::string id){
 		else it++;
 	}
 }
+
+void GameScene::addBodyToDelete(b2Body* b){
+	_physicBodies.emplace_back(b);
+}
+
+void GameScene::destroyBodies(){
+
+	for (size_t i = 0; i < _physicBodies.size(); i++){
+		pGame->getPhysicsWorld()->DestroyBody(_physicBodies[i]);
+	}
+
+	_physicBodies.clear();
+
+}
+
+void GameScene::addEntityToDelete(Entity * e){
+	_entitiesToDelete.emplace_back(e);
+}
+
+void GameScene::destroyEntities(){
+
+	for (size_t i = 0; i < _entitiesToDelete.size(); i++){
+		deleteEntity(_entitiesToDelete[i]->getID());
+	}
+	_entitiesToDelete.clear();
+}
 #pragma endregion
 
 //BASIC SCENE TO TEST SCENE IMPLEMENTATION.
@@ -232,7 +262,9 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 
 BasicScene::~BasicScene(){
-	//dInstance.~DebugDraw();
+	
+	
+
 	//delete light;
 
 }
@@ -255,7 +287,12 @@ bool BasicScene::run(){
 
 	//Clear dispatched messages
 	clearMessageQueue();
-	
+
+	//Delete entities removed from the scene at the last frame
+	destroyEntities();
+
+	//Delete box2d bodies of the removed entities
+	destroyBodies();
 	
 
 	return aux;
@@ -282,6 +319,9 @@ void BasicScene::processScnMsgs()
 	}
 	
 };
+
+
+
 
 #pragma endregion
 

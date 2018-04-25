@@ -3,6 +3,7 @@
 class Entity;
 class Message;
 class Game;
+class b2Body;
 
 
 
@@ -37,6 +38,9 @@ public:
 	//Debug
 	void clearDebugDraw();
 
+	//Box2d Bodies delete
+	void addBodyToDelete(b2Body* b);
+	void addEntityToDelete(Entity* e);
 
 protected:
 	std::string _id;
@@ -47,12 +51,18 @@ protected:
 	void deleteAllMessages();
 	//Messaging attributes and methods
 	std::list<Entity *> _entities;
+	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
+	std::vector<b2Body*> _physicBodies;
 
 	//Basic Ogre atributes common to every scene
 	Ogre::SceneManager * scnMgr;
 	Ogre::Viewport * vp;
+
+	//List of bodies to destruct at the end of the frame.
+	void destroyBodies();
+	void destroyEntities();
 
 
 };

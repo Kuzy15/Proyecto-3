@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "EntityFactory.h"
 #include "DebugNew.h"
+#include "Scenes.h"
 
 //Debug 
 #ifdef _DEBUG
@@ -296,38 +297,41 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	float playerSize = _rbHeight / 3;
 	float legsSize = _rbWeight / 1.5f;
 
+	b2PolygonShape _pShape;
+	b2CircleShape _cShape;
+
 	//Shape creation.
 	switch (shType)
 	{
 	case SH_CIRCLE:
-		_shape = new b2CircleShape;
-		static_cast<b2CircleShape*>(_shape)->m_p.Set(0, 0);
-		static_cast<b2CircleShape*>(_shape)->m_radius = _rbWeight;
-		_fixtureDef.shape = _shape;
+		static_cast<b2CircleShape*>(&_cShape)->m_p.Set(0, 0);
+		static_cast<b2CircleShape*>(&_cShape)->m_radius = _rbWeight;
+		_fixtureDef.shape = &_cShape;
 		//Fixture creation.
 		_fixture = _body->CreateFixture(&_fixtureDef);
 		break;
 	case SH_POLYGON:
-		_shape = new b2PolygonShape;
-		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
-		_fixtureDef.shape = _shape;
+		
+		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
+		_fixtureDef.shape = &_pShape;
+		
 		//Fixture creation.
 		_fixture = _body->CreateFixture(&_fixtureDef);
 		break;
 	case SH_PLAYER:
-		_shape = new b2PolygonShape;
-		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
-		_fixtureDef.shape = _shape;
+		
+		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
+		_fixtureDef.shape = &_pShape;
 		_fixtureDef.filter.categoryBits = MASK_CHEST;
 		_body->CreateFixture(&_fixtureDef);		
 		
-		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize}, 0);
-		_fixtureDef.shape = _shape;
+		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize }, 0);
+		_fixtureDef.shape = &_pShape;
 		_fixtureDef.filter.categoryBits = MASK_HEAD;
 		_body->CreateFixture(&_fixtureDef);
 
-		static_cast<b2PolygonShape*>(_shape)->SetAsBox( legsSize / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize}, 0);
-		_fixtureDef.shape = _shape;
+		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
+		_fixtureDef.shape = &_pShape;
 		_fixtureDef.filter.categoryBits = MASK_LEGS;
 		_fixture = _body->CreateFixture(&_fixtureDef);
 		break;
@@ -341,8 +345,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 }
 CRigidBody::~CRigidBody() {
-	//_myWorld->DestroyBody(_body);
-	_body = nullptr;
+	pEnt->getScene()->addBodyToDelete(_body);
 	
 }
 void CRigidBody::tick(float delta) {
@@ -710,6 +713,7 @@ void CBullet::getMessage(Message* m){
 	
 
 	switch (m->getType()){
+
 	case MSG_SHOT:
 		mShot = static_cast<MShot*>(m);
 
@@ -720,7 +724,9 @@ void CBullet::getMessage(Message* m){
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
 		
 		break;
-	
+	case MSG_COLLISION:
+		break;
+		pEnt->getScene()->addEntityToDelete(pEnt);
 	default:
 		break;
 	}
