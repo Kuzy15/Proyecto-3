@@ -17,7 +17,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	Entity* Ra = new Entity("Ra", s);
 
 	//Mesh Render
-	Ra->addComponent(new CMeshRender({2,2,0}, 0, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
+	Ra->addComponent(new CMeshRender({ 2, 2, 0 }, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 }));
 
 	//RigidBody
 	float height = 6.0f;
@@ -51,7 +51,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	Entity* AhPuch = new Entity("AhPuch", s);
 
 	//Mesh Render
-	AhPuch->addComponent(new CMeshRender({ 2, 2, 0 }, 0, "AhPuch.mesh", AhPuch, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
+	AhPuch->addComponent(new CMeshRender({ 2, 2, 0 }, "AhPuch.mesh", AhPuch, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, {0,0,0}));
 
 	//RigidBody
 	float height = 6.0f;
@@ -89,7 +89,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bRa->addComponent(new CMeshRender(pos, angle, "fish.mesh", bRa, s->getSceneManager(), { 0.4f, 0.4f, 0.4f }));
+	bRa->addComponent(new CMeshRender(pos, "fish.mesh", bRa, s->getSceneManager(), { 0.4f, 0.4f, 0.4f }, {0,0,angle}));
 
 
 	//RigidBody
@@ -112,7 +112,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bAhPuch->addComponent(new CMeshRender(pos, angle, "penguin.mesh", bAhPuch, s->getSceneManager(), { 0.1f, 0.1f, 0.1f }));
+	bAhPuch->addComponent(new CMeshRender(pos, "fish.mesh", bAhPuch, s->getSceneManager(), { 0.1f, 0.1f, 0.1f }, {0,0,angle}));
 
 
 	//RigidBody

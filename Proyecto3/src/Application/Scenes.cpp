@@ -196,7 +196,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	cam->addComponent(
 		new CActionCamera(cam, scnMgr, vp)
 	);
-	addEntity(cam);
+	//addEntity(cam);
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
@@ -224,9 +224,30 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	Entity * e1 = new Entity("3", this);
 	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	e1->addComponent(new CMeshRender({-30,-15,-30}, 0,"paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
+	e1->addComponent(new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, {0,-90.0f,0}));
 	addEntity(e1);
 	
+	Entity * porton = new Entity("4", this);
+	//porton->addComponent(new CRigidBody(porton, game->getPhysicsWorld(), Ogre::Vector3(0, -10, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, scnMgr, { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
+	addEntity(porton);
+
+	Entity * rightEdge = new Entity("5", this);
+	rightEdge->addComponent(new CRigidBody(rightEdge, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));	
+	addEntity(rightEdge);
+
+	Entity * temple = new Entity("6", this);
+	//temple->addComponent(new CRigidBody(temple, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
+	addEntity(temple);
+
+	Entity * portonCollider = new Entity("6", this);
+	portonCollider->addComponent(new CRigidBody(portonCollider, game->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	//temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
+	addEntity(portonCollider);
+
+
+
 
 }
 
