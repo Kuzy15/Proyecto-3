@@ -218,7 +218,8 @@ void CCamera::getMessage(Message * m) {
 
 #pragma region Action Camera Component 
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
-	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5), smooth(40.0), MAXZ(150), MINZ(99) {
+	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
+	smooth(40.0), MAXZ(150), MINZ(80) {
 	_pj1 = Ogre::Vector3(20, 20, 0);
 	_pj2 = Ogre::Vector3(-20, 20, 0);
 
@@ -276,8 +277,8 @@ void CActionCamera::getMessage(Message * m) {
 
 
 	//We dont want the camera to go too far away or too close
-	if (_newPos.z >= MAXZ)_newPos.z = MAXZ;
-	else if (_newPos.z < MINZ)_newPos.z = MINZ;
+	if (camz >= MAXZ)_newPos.z = MAXZ;
+	else if (camz < MINZ)_newPos.z = MINZ;
 	else _newPos.z = camz;
 
 	//Now we want to make it smooth, for that we calculate the director vector of the line.
