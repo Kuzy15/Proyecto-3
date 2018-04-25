@@ -169,6 +169,8 @@ void CMeshRender::getMessage(Message * m) {
 
 }
 
+
+/*------------------------- CAMERA COMPONENTS------------------------------------*/
 #pragma endregion
 #pragma region Camera Component
 CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
@@ -212,6 +214,55 @@ void CCamera::getMessage(Message * m) {
 		_lookAt = static_cast<MUpdateTransform *> (m)->GetPos();
 	}
 	*/
+}
+#pragma endregion
+
+#pragma region Action Camera Component 
+CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
+	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5), smooth(60) {
+	_pj1 = Ogre::Vector3(20, 20, 0);
+	_pj2 = Ogre::Vector3(-20, 20, 0);
+
+	_lookAt = (_pj1 - _pj2) / 2.0;
+	_newPos = _pos;
+}
+
+CActionCamera::~CActionCamera() {
+
+}
+void CActionCamera::getMessage(Message * m) {
+	
+	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "AhPuch") {
+		MUpdateTransform * aux = static_cast<MUpdateTransform * >(m);
+			if (aux->GetPos() != _pj1)
+				_pj1 = aux->GetPos();
+
+	}
+	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Ra") {
+		if (static_cast<MUpdateTransform *>(m)->GetPos() != _pj2)
+			_pj2 = static_cast<MUpdateTransform *>(m)->GetPos();
+	}
+	else return;
+
+	_toMove = Ogre::Vector3::ZERO;
+	_newPos = (_pj1 + _pj2) / 2;
+	_newPos.z = _pos.z; //Cambiar esto luego. Puenteado para la distancia
+	_toMove = (_pos + _newPos) / smooth;
+	_toMove.z = 0.0f;
+	_lookAt = Ogre::Vector3(_newPos.x, _newPos.y, 0.0);
+
+	//if("ra = -20")
+
+
+}
+
+void CActionCamera::tick(float delta) {
+	float deltax = _newPos.x - _pos.x;
+	float deltay = _newPos.y - _pos.y;
+	if (sqrt(pow(deltax, 2)+pow(deltay,2)) > 5)
+		_pos += _toMove;
+
+	CCamera::tick(delta);
 
 }
 

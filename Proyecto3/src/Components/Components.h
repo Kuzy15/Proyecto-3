@@ -177,19 +177,41 @@ class CCamera: public GameComponent
 {
 public:
 	CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt,  int clipDistance);
-	~CCamera();
+	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
+protected:
 	std::string _camName;
 	Ogre::SceneManager * _scnMgr;
 	Ogre::Viewport * _vp;
-	Ogre::Vector3 _pos, _lastPos;
+	Ogre::Vector3 _pos, _lastPos, _newPos;
 	Ogre::Vector3 _lookAt, _lastLookAt;
 	
+
+
+	//Parameters for the camera movement
 	Ogre::Camera * pCam;
 };
+
+class CActionCamera: public CCamera
+{
+public:
+	CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp);
+	~CActionCamera();
+
+	virtual void getMessage(Message * m);
+	virtual void tick(float delta);
+
+
+	Ogre::Vector3 _pj1, _pj2;
+	Ogre::Vector3 _toMove;
+	const float smooth;
+
+private:
+
+};
+
 
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/

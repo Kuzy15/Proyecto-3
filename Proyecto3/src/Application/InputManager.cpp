@@ -98,6 +98,7 @@ void InputManager::handleInput(){
 			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 0));
 			break;
 		
+		
 		default:
 			break;
 		}

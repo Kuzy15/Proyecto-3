@@ -14,7 +14,7 @@
 //Ra
 Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
-	Entity* Ra = new Entity(id, s);
+	Entity* Ra = new Entity("Ra", s);
 
 	//Mesh Render
 	Ra->addComponent(new CMeshRender({2,2,0}, 0, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
@@ -48,7 +48,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
 Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
-	Entity* AhPuch = new Entity(id, s);
+	Entity* AhPuch = new Entity("AhPuch", s);
 
 	//Mesh Render
 	AhPuch->addComponent(new CMeshRender({ 2, 2, 0 }, 0, "AhPuch.mesh", AhPuch, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
