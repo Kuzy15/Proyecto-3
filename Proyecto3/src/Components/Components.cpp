@@ -68,10 +68,6 @@ CMessageSend::CMessageSend(Entity * father):GameComponent(CMP_MESSAGE_SEND, fath
 CMessageSend::~CMessageSend() {
 }
 void CMessageSend::tick(float delta) {
-	/*i++;
-	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
-	pEnt->getMessage(m);*/
-
 	
 }
 void CMessageSend::getMessage(Message * m) {
@@ -216,12 +212,7 @@ void CCamera::tick(float delta) {
 
 }
 void CCamera::getMessage(Message * m) {
-	//DEBUG MESSAGE RECEIVING
-	/*if (m->getType() == MSG_UPDATE_TRANSFORM) {
-		std::cout << "MESSAGE RECEIVED" << std::endl;
-		_lookAt = static_cast<MUpdateTransform *> (m)->GetPos();
-	}
-	*/
+	
 }
 #pragma endregion
 
