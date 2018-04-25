@@ -203,10 +203,17 @@ public:
 	virtual void getMessage(Message * m);
 	virtual void tick(float delta);
 
-
+	//Cache positions of the players
 	Ogre::Vector3 _pj1, _pj2;
+	//Vector that we will use to add to our position
 	Ogre::Vector3 _toMove;
+	//Smooth factor, so the camera does not move sharply
 	const float smooth;
+	//Max and min Z coordinates for the camera.
+	const float MAXZ, MINZ;
+
+	//Z ratio, to calculate the Z after initialization
+	float zRatio;
 
 private:
 

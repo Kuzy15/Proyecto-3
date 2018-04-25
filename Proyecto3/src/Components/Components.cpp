@@ -218,13 +218,19 @@ void CCamera::getMessage(Message * m) {
 
 #pragma region Action Camera Component 
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
-	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5), smooth(10.0) {
+	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5), smooth(40.0), MAXZ(150), MINZ(99) {
 	_pj1 = Ogre::Vector3(20, 20, 0);
 	_pj2 = Ogre::Vector3(-20, 20, 0);
 
+	//Inicializating values for the camera
 	_lastPos = Ogre::Vector3(0, 0, 100);
 	_pos = Ogre::Vector3(0, 0, 100);
+
+	//We start looking at the center of the 2 players
 	_lookAt = (_pj1 + _pj2) / 2.0;
+
+	//And we calculate the zRatio.
+	zRatio = (_pj1.distance(_pj2) / _pos.z);
 }
 
 CActionCamera::~CActionCamera() {
@@ -232,33 +238,54 @@ CActionCamera::~CActionCamera() {
 }
 
 //Function that calculates if a certain point is out of the defined boundaries for the camera
-bool outOfBoundaries() {
+bool outOfBoundaries(const Ogre::Vector3 &pos) {
+	//Boundaries in each axis
+	const float BOUNDARY_X = 100;
+	const float BOUNDARY_Y = 100;
 
-	return true;
+	if ((pos.x > BOUNDARY_X || pos.x < -BOUNDARY_X) || (pos.y > BOUNDARY_Y || pos.y < -BOUNDARY_Y))return true;
+	else return false;
 }
 void CActionCamera::getMessage(Message * m) {
 	
 	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "AhPuch") {
-			if (static_cast<MUpdateTransform * >(m)->GetPos() != _pj1)
-				_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
+		//We check if the player is inside the boundaries of the camera. If so, we put its camera position to 0.0.0
+		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+			_pj1 = Ogre::Vector3::ZERO;
+		//if it has moved from its previous position, we update its position
+		else 
+			_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
 
 	}
 	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Ra") {
-		if (static_cast<MUpdateTransform *>(m)->GetPos() != _pj2)
-			_pj2 = static_cast<MUpdateTransform *>(m)->GetPos();
+		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+			_pj2 = Ogre::Vector3::ZERO;
+		else 
+			_pj2 = static_cast<MUpdateTransform * >(m)->GetPos();
 	}
 	else return;
 	
 	//We calculate the midpoint between the 2 players
 	_newPos = (_pj1 + _pj2) / 2.0;
+	
+	//we want the camera to be always a bit higher than the players
+	_newPos.y += 5;
+
+	//Now we want to know the camera new Z position
+	float camz = (_pj1.distance(_pj2) / zRatio);
+
+
+	//We dont want the camera to go too far away or too close
+	if (_newPos.z >= MAXZ)_newPos.z = MAXZ;
+	else if (_newPos.z < MINZ)_newPos.z = MINZ;
+	else _newPos.z = camz;
 
 	//Now we want to make it smooth, for that we calculate the director vector of the line.
+	//And we divide it by the smooth factor we declared at initialization
 	Ogre::Vector3 dir = (_newPos - _pos) / smooth;
-
 	
 
 	_pos += dir;
-	_pos.z = 100;
 
 
 }
