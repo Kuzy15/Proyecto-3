@@ -195,7 +195,7 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 
 	pCam->setNearClipDistance(clipDistance);
 
-	vp->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+	vp->setBackgroundColour(Ogre::ColourValue(0.2, 0.5, 0.8));
 
 	//borrar
 	_vp = vp;

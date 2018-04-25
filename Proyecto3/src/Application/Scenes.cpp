@@ -196,7 +196,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	cam->addComponent(
 		new CActionCamera(cam, scnMgr, vp)
 	);
-	//addEntity(cam);
+	addEntity(cam);
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
