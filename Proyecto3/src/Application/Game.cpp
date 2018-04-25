@@ -87,6 +87,10 @@ Game::Game(){
  b2World* Game::getPhysicsWorld(){
 	 return world;
  }
+ Ogre::OverlaySystem * Game::getOverlaySystem() { 
+	 return pOverSyst;
+ };
+
 #pragma endregion
 
 #pragma region getters and setters
@@ -119,6 +123,7 @@ bool Game::initOgre(){
 #endif
 		return false;
 	}
+
 	//------------------------------------------------------------------------------------------------------
 	//Setting UP Resources 
 
@@ -159,6 +164,8 @@ bool Game::initOgre(){
 	//Render Window Creation
 	pWindow = root->initialise(true, "OGRE3D Game");
 
+	
+
 
 
 	//------------------------------------------------------------------------------------------------------
@@ -171,6 +178,7 @@ bool Game::initOgre(){
 	//Now we init every resource previously added
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
+	pOverSyst = new Ogre::OverlaySystem();
 
 
 	//We register game as a listener of the window events, to know if it's been closed

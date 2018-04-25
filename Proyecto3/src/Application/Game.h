@@ -7,7 +7,7 @@
 #include <OgreConfigFile.h>
 #include <OgreWindowEventUtilities.h>
 
-
+#include <OgreOverlaySystem.h>
 
 
 class GameScene;
@@ -31,6 +31,8 @@ public:
 
 	static Game * getInstance();
 
+	Ogre::OverlaySystem * getOverlaySystem();
+
 
 
 private:
@@ -44,6 +46,8 @@ private:
 	Ogre::ConfigFile cf;
 	//window
 	Ogre::RenderWindow * pWindow;
+
+	Ogre::OverlaySystem * pOverSyst;
 
 
 	//Box2D parameters

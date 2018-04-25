@@ -9,6 +9,10 @@
 #endif
 
 
+#include <OgreOverlay.h>
+#include <OgreOverlayManager.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayContainer.h>
 
 
 //Later removable
@@ -32,6 +36,7 @@ DebugDraw dInstance;
 
 GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	scnMgr->addRenderQueueListener(Game::getInstance()->getOverlaySystem());
 	nMessages = -1;
 }
 GameScene::~GameScene()
@@ -155,35 +160,12 @@ void GameScene::deleteEntity(std::string id){
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	
-
 	//Debug draw
 	dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
-	
 
 
-	
-
-
-
-	//------------------------------------------------------------------------------------------------------
-	//ViewPort Addition
-	
-	
-	//------------------------------------------------------------------------------------------------------
-	//Scene SetUp
-
-/*	try {
-		Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
-		Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-		robotNode->attachObject(robot);
-	}
-	catch (Ogre::FileNotFoundException e) {
-		std::string a = e.getFullDescription();
-		std::cout << a;
-	}
-	*/
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
 	light = scnMgr->createLight("MainLight");
@@ -247,7 +229,20 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	addEntity(portonCollider);
 
 
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	// Create an overlay
+	Ogre::Overlay* overlay = overlayManager.create("OverlayName");
 
+	// Create a panel
+	Ogre::OverlayContainer* panel = static_cast<Ogre::OverlayContainer*>(overlayManager.createOverlayElement("Panel", "PanelName"));
+	panel->setPosition(0.0, 0.0);
+	panel->setDimensions(0.1, 0.1);
+	panel->setMaterialName("BaseWhite");
+	// Add the panel to the overlay
+	overlay->add2D(panel);
+
+	// Show the overlay
+	overlay->show();
 
 }
 
