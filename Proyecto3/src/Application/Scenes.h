@@ -1,5 +1,7 @@
 #ifndef SCENES_H
 #define SCENES_H
+
+
 class Entity;
 class Message;
 class Game;
@@ -53,8 +55,6 @@ protected:
 	//Basic Ogre atributes common to every scene
 	Ogre::SceneManager * scnMgr;
 	Ogre::Viewport * vp;
-
-
 };
 
 /*----------------------------- BASIC SCENE -----------------------------*/

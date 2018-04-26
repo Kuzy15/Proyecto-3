@@ -32,6 +32,7 @@ public:
 	static Game * getInstance();
 
 	Ogre::OverlaySystem * getOverlaySystem();
+	void setOverlaySystem(Ogre::OverlaySystem *);
 
 
 
@@ -48,6 +49,7 @@ private:
 	Ogre::RenderWindow * pWindow;
 
 	Ogre::OverlaySystem * pOverSyst;
+	Ogre::OverlayManager * pOverMan;
 
 
 	//Box2D parameters

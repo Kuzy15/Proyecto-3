@@ -12,6 +12,10 @@
 #include "CollisionManager.h"
 #include "DebugNew.h"
 
+#include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
+#include <OgreOverlayManager.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -124,6 +128,10 @@ bool Game::initOgre(){
 		return false;
 	}
 
+	pOverSyst = new Ogre::OverlaySystem();
+	pOverMan = Ogre::OverlayManager::getSingletonPtr();
+
+
 	//------------------------------------------------------------------------------------------------------
 	//Setting UP Resources 
 
@@ -179,7 +187,7 @@ bool Game::initOgre(){
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 	
-	pOverSyst = new Ogre::OverlaySystem();
+
 
 
 	//We register game as a listener of the window events, to know if it's been closed

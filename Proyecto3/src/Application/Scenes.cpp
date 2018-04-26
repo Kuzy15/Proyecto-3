@@ -15,6 +15,7 @@
 #include <OgreOverlayContainer.h>
 #include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
 
 //Later removable
 #include <OgreCamera.h>
@@ -231,6 +232,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
 	// Create an overlay
 
 	// Create a panel
@@ -242,7 +244,6 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	panel->setMaterialName("BaseWhite"); // Optional background material
 
 
-	/*THIS IS NOT WORKING YET.
 	// Create a text area
 	Ogre::TextAreaOverlayElement* textArea = static_cast<Ogre::TextAreaOverlayElement*>(
 		overlayManager.createOverlayElement("TextArea", "TextAreaName"));
@@ -251,19 +252,19 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	textArea->setDimensions(100, 100);
 	textArea->setCaption("Hello, World!");
 	textArea->setCharHeight(16);
-	textArea->setFontName("SdkTrays/Value");
+
+	textArea->setFontName("Caption");
+	
 	textArea->setColourBottom(Ogre::ColourValue(0.3, 0.5, 0.3));
 	textArea->setColourTop(Ogre::ColourValue(0.5, 0.7, 0.5));
 
 	// Create an overlay, and add the panel
 	
-	*/
-	
-	Ogre::Overlay* overlay = overlayManager.create("OverlayName");
+	Ogre::Overlay* overlay = overlayManager.create("GUI");
 	overlay->add2D(panel);
 
 	// Add the text area to the panel
-	//panel->addChild(textArea);
+	panel->addChild(textArea);
 	
 	// Show the overlay
 	overlay->show();
