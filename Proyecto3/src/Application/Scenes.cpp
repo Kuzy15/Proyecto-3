@@ -238,7 +238,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Entity * temple = new Entity("6", this);
 	//temple->addComponent(new CRigidBody(temple, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
+	temple->addComponent(new CMeshRender({ -30, -2, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
 	addEntity(temple);
 
 	Entity * portonCollider = new Entity("6", this);

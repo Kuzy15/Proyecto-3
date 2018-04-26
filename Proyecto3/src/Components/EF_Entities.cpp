@@ -17,7 +17,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	Entity* Ra = new Entity("Ra", s);
 
 	//Mesh Render
-	Ra->addComponent(new CMeshRender({ 2, 2, 0 }, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 }));
+	Ra->addComponent(new CMeshRender({ 2, 2, 0 }, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 90, 0 }));
 
 	//RigidBody
 	float height = 6.0f;
@@ -121,7 +121,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, 10.f, 1.0f));
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, 10.f, 20.0f));
 
 
 	return bAhPuch;

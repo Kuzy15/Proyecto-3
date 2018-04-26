@@ -161,7 +161,7 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-	std::cout << pOgreSceneNode->getPosition().x << std::endl;
+	//std::cout << pOgreSceneNode->getPosition().x << std::endl;
 	
 	
 	
@@ -219,7 +219,7 @@ void CCamera::getMessage(Message * m) {
 #pragma region Action Camera Component 
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
 	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
-	smooth(40.0), MAXZ(150), MINZ(80) {
+	smooth(40.0), MAXZ(100), MINZ(40) {
 	_pj1 = Ogre::Vector3(20, 20, 0);
 	_pj2 = Ogre::Vector3(-20, 20, 0);
 
@@ -287,7 +287,10 @@ void CActionCamera::getMessage(Message * m) {
 	
 
 	_pos += dir;
-
+	_lookAt = _pos;
+	_lookAt.z = 0;
+	_lookAt.y += 10;
+	
 
 }
 
@@ -492,7 +495,7 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 			
 		MCollisionBegin* mColBegin = static_cast<MCollisionBegin*>(m);
 		_myMask = mColBegin->GetMyCategory();
-		std::cout << mColBegin->GetContactMask() << std::endl;
+		//std::cout << mColBegin->GetContactMask() << std::endl;
 		switch (mColBegin->GetContactMask()){
 			case MASK_STATIC_TERRAIN:
 				if (_myMask == MASK_LEGS)
@@ -619,7 +622,7 @@ void CPlayerJump::getMessage(Message* m)
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
 		if (_nJumps > 0){
-			std::cout << _nJumps << std::endl;
+			//std::cout << _nJumps << std::endl;
 			pEnt->getMessage(new MRigidbodyJump(_jumpForce * _nJumps, pEnt->getID()));
 			_nJumps--;
 		}
@@ -761,7 +764,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 		float lengthIdle = _radius;
 
 		float cos = escalarProduct / (lengthIdle * lengthIni);
-		std::cout << cos << std::endl;
+//		std::cout << cos << std::endl;
 
 		if (cos > 1)
 			cos = 1;
