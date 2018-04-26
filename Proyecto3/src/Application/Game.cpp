@@ -178,6 +178,7 @@ bool Game::initOgre(){
 	//Now we init every resource previously added
 	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
+	
 	pOverSyst = new Ogre::OverlaySystem();
 
 

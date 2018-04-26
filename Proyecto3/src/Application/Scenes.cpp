@@ -13,7 +13,8 @@
 #include <OgreOverlayManager.h>
 #include <OgreOverlayElement.h>
 #include <OgreOverlayContainer.h>
-
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreFontManager.h>
 
 //Later removable
 #include <OgreCamera.h>
@@ -231,19 +232,41 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	// Create an overlay
-	Ogre::Overlay* overlay = overlayManager.create("OverlayName");
 
 	// Create a panel
-	Ogre::OverlayContainer* panel = static_cast<Ogre::OverlayContainer*>(overlayManager.createOverlayElement("Panel", "PanelName"));
-	panel->setPosition(0.0, 0.0);
-	panel->setDimensions(0.1, 0.1);
-	panel->setMaterialName("BaseWhite");
-	// Add the panel to the overlay
+	Ogre::OverlayContainer* panel = static_cast<Ogre::OverlayContainer*>(
+		overlayManager.createOverlayElement("Panel", "PanelName"));
+	panel->setMetricsMode(Ogre::GMM_PIXELS);
+	panel->setPosition(10, 10);
+	panel->setDimensions(100, 100);
+	panel->setMaterialName("BaseWhite"); // Optional background material
+
+
+	/*THIS IS NOT WORKING YET.
+	// Create a text area
+	Ogre::TextAreaOverlayElement* textArea = static_cast<Ogre::TextAreaOverlayElement*>(
+		overlayManager.createOverlayElement("TextArea", "TextAreaName"));
+	textArea->setMetricsMode(Ogre::GMM_PIXELS);
+	textArea->setPosition(0, 0);
+	textArea->setDimensions(100, 100);
+	textArea->setCaption("Hello, World!");
+	textArea->setCharHeight(16);
+	textArea->setFontName("SdkTrays/Value");
+	textArea->setColourBottom(Ogre::ColourValue(0.3, 0.5, 0.3));
+	textArea->setColourTop(Ogre::ColourValue(0.5, 0.7, 0.5));
+
+	// Create an overlay, and add the panel
+	
+	*/
+	
+	Ogre::Overlay* overlay = overlayManager.create("OverlayName");
 	overlay->add2D(panel);
 
+	// Add the text area to the panel
+	//panel->addChild(textArea);
+	
 	// Show the overlay
 	overlay->show();
-
 }
 
 
@@ -324,19 +347,6 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id
 		Ogre::Real(vp->getActualHeight()));
 
 
-	//------------------------------------------------------------------------------------------------------
-	//Scene SetUp
-
-	/*	try {
-	Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
-	Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-	robotNode->attachObject(robot);
-	}
-	catch (Ogre::FileNotFoundException e) {
-	std::string a = e.getFullDescription();
-	std::cout << a;
-	}
-	*/
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
 	light = scnMgr->createLight("MainLight");
@@ -358,20 +368,6 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id
 	_currState = GS_SETUP;
 
 
-
-	/*SCENE DEBUG
-
-
-	test2->addComponent(new stringComponent(test2));
-	//test2->addComponent()
-
-
-	Ra->addComponent(new messageSendComponent(Ra));
-	Ra->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 100), "Ra.mesh", Ra, scnMgr));
-
-
-	addEntity(Ra);
-	addEntity(test2);*/
 
 }
 GamePlayScene::~GamePlayScene(){
