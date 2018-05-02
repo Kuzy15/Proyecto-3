@@ -1,10 +1,11 @@
 #ifndef SCENES_H
 #define SCENES_H
-
+#include <OgreTextAreaOverlayElement.h>
 
 class Entity;
 class Message;
 class Game;
+
 
 
 
@@ -75,6 +76,9 @@ public:
 
 private:
 	Ogre::Light * light;
+	int i;
+	Ogre::TextAreaOverlayElement* textArea;
+	Ogre::OverlayContainer* panel;
 	
 };
 

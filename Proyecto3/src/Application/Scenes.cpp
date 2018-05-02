@@ -160,7 +160,7 @@ void GameScene::deleteEntity(std::string id){
 //ALSO CREATS A BASIC ENTITY WITH A stringComponent attached
 #pragma region basicScene
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
-	
+	i = 0;
 	
 	//Debug draw
 	dInstance.setSceneManager(scnMgr);
@@ -236,7 +236,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	// Create an overlay
 
 	// Create a panel
-	Ogre::OverlayContainer* panel = static_cast<Ogre::OverlayContainer*>(
+	 panel = static_cast<Ogre::OverlayContainer*>(
 		overlayManager.createOverlayElement("Panel", "PanelName"));
 	panel->setMetricsMode(Ogre::GMM_PIXELS);
 	panel->setPosition(10, 10);
@@ -245,7 +245,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 
 	// Create a text area
-	Ogre::TextAreaOverlayElement* textArea = static_cast<Ogre::TextAreaOverlayElement*>(
+	textArea = static_cast<Ogre::TextAreaOverlayElement*>(
 		overlayManager.createOverlayElement("TextArea", "TextAreaName"));
 	textArea->setMetricsMode(Ogre::GMM_PIXELS);
 	textArea->setPosition(0, 0);
@@ -290,6 +290,8 @@ bool BasicScene::run(){
 
 	processScnMsgs();
 
+	textArea->setCaption(to_string(++i));
+	panel->setDimensions(1000 * cos(i), 100);
 	//Logic simulation done here
 	bool aux = updateEnts(0.025);
 
