@@ -4,7 +4,10 @@
 
 #include "DebugNew.h"
 
+
+
 #ifdef _DEBUG
+#include <iostream>
 #define new DEBUG_NEW
 #endif
 

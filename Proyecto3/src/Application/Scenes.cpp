@@ -215,17 +215,20 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	Entity * Suelo4 = new Entity("4", this);
 	Suelo2->addComponent(new CRigidBody(Suelo4, game->getPhysicsWorld(), Ogre::Vector3(33, -26, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	addEntity(Suelo4);*/
+
+	Entity * e1 = new Entity("3", this);
+	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
+	e1->addComponent(cM);
+	addEntity(e1);
 	
 	Entity * Suelo = new Entity("2", this);
-	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3,cM->getSize().x, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
 
 	addEntity(Suelo);
 	
-	Entity * e1 = new Entity("3", this);
-	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	e1->addComponent(new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, {0,-90.0f,0}));
-	addEntity(e1);
+	
 	
 	Entity * porton = new Entity("4", this);
 	//porton->addComponent(new CRigidBody(porton, game->getPhysicsWorld(), Ogre::Vector3(0, -10, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));

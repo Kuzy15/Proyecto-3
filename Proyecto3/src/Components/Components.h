@@ -21,7 +21,7 @@ const float MAX_JUMP_DISTANCE = 0.0f;
 const float MAX_FIRE_RATE = 0.0f;
 
 //Pixels per meter
-const int PPM = 100;
+const float PPM = 3.0f;
 
 
 
@@ -156,6 +156,7 @@ public:
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	Ogre::Vector3 getSize();
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -230,7 +231,8 @@ typedef enum FilterMask {
 	MASK_BULLET = 0x0008,
 	MASK_HEAD = 0x0010,
 	MASK_CHEST = 0x0020,
-	MASK_LEGS = 0x0040
+	MASK_LEGS = 0x0040,
+	MASK_FOOT_SENSOR = 0x0080 ////0000 0000 1000 0000
 	
 
 };

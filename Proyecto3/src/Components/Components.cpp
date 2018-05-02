@@ -141,8 +141,11 @@ void CRender::getMessage(Message *m) {
 CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->setPosition(pos);
+	
 	pChild->attachObject(pOgreEnt);
 	pChild->scale(scale);
+	//pChild->showBoundingBox(true);
+	//pOgreEnt->setCastShadows(true);
 	
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
@@ -171,6 +174,19 @@ void CMeshRender::getMessage(Message * m) {
 	CRender::getMessage(m);
 	//TO DO: IMPLEMENT MESSAGE RECEIVEING TO MOVE.
 
+}
+
+Ogre::Vector3 CMeshRender::getSize(){
+
+	Ogre::Vector3 v;
+
+	//Ogre::AxisAlignedBox box = pSceneMgr->getSceneNode(pChild->getName())->_getWorldAABB();
+
+	Ogre::AxisAlignedBox box = pOgreEnt->getWorldBoundingBox(true);
+
+	v = box.getSize();
+
+	return v;
 }
 
 
@@ -350,7 +366,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	_body->SetUserData(pEnt);	
 
 	//Fixture Definition.	
-	_fixtureDef.density = 950.0f;
+	_fixtureDef.density = 9.0f / 3.0f;
 	//_fixtureDef.restitution = 0.0f;
 	_fixtureDef.friction = 0.0f;
 
@@ -358,20 +374,20 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	{
 		case MASK_PLAYER:
 			//_fixtureDef.filter.categoryBits = MASK_PLAYER;				
-			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST | MASK_BULLET;
 			
 			break;
 		case MASK_STATIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD;
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
 			break;
 		case MASK_DINAMIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD;
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
 			break;
 		case MASK_BULLET:
 			_fixtureDef.filter.categoryBits = MASK_BULLET;
-			_fixtureDef.filter.maskBits = /*MASK_LEGS | MASK_CHEST | MASK_HEAD |*/ MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
+			_fixtureDef.filter.maskBits = MASK_LEGS | MASK_CHEST | MASK_HEAD | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
 			break;
 		default:
 			break;
@@ -410,10 +426,20 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_fixtureDef.filter.categoryBits = MASK_HEAD;
 		_body->CreateFixture(&_fixtureDef);
 
-		static_cast<b2PolygonShape*>(_shape)->SetAsBox( legsSize / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize}, 0);
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
 		_fixtureDef.shape = _shape;
 		_fixtureDef.filter.categoryBits = MASK_LEGS;
 		_fixture = _body->CreateFixture(&_fixtureDef);
+
+		//Foot sensor
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, 0 }, 0);
+		//_fixtureDef.isSensor = true;
+		_fixtureDef.shape = _shape;
+		_fixtureDef.density = 1.0f;
+		_fixtureDef.filter.categoryBits = MASK_FOOT_SENSOR;
+		_fixtureDef.filter.maskBits = MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
+		_fixture = _body->CreateFixture(&_fixtureDef);
+		_fixture->SetSensor(true);	
 		break;
 	default:
 		break;
@@ -440,7 +466,7 @@ void CRigidBody::tick(float delta) {
 	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
-	//std::cout << _body->GetAngle() << std::endl;
+	//std::cout << _body->GetMass() << std::endl;
 
 
 }
@@ -469,12 +495,9 @@ void CRigidBody::getMessage(Message * m) {
 		case MSG_RIGIDBODY_JUMP:
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
-			
-			_body->ApplyForceToCenter(b2Vec2(0, jForce),true);
-			break;
-		case MSG_COLLISION_TERRAIN:
-			_body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x,0));
-			break;
+			std::cout << jForce << std::endl;
+			_body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x, jForce));
+			break;		
 		default:
 			break;
 	}
@@ -498,7 +521,7 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 		//std::cout << mColBegin->GetContactMask() << std::endl;
 		switch (mColBegin->GetContactMask()){
 			case MASK_STATIC_TERRAIN:
-				if (_myMask == MASK_LEGS)
+				if (_myMask == MASK_FOOT_SENSOR)
 					pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
 				break;
 			default:
@@ -597,7 +620,8 @@ void CPlayerMove::getMessage(Message* m)
 	if (m->getType() == MSG_PLAYER_MOVE_X){
 		//transformarlo
 		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
-		value = value / 200.0f;
+		value = value / 40;
+		//std::cout << value << std::endl;
 		if (value > _moveVel)
 			value = _moveVel;
 		else if (value < - _moveVel)
