@@ -18,15 +18,15 @@
 //It implements basic behaviours like gets, sets 
 //and message sending
 #pragma region gameComponent
-GameComponent::GameComponent(ComponentType id, Entity * father): _id(id), pEnt(father)
+GameComponent::GameComponent(ComponentType componentType, Entity * father) : _componentType(componentType), pEnt(father)
 {
 	
 }
 GameComponent::~GameComponent(){
 
 }
-ComponentType GameComponent::getID(){
-	return _id;
+ComponentType GameComponent::getComponentType(){
+	return _componentType;
 }
 bool GameComponent::getActive(){
 	return _active;
@@ -44,6 +44,7 @@ void GameComponent::sendMessage(Message * m){
 //PRINTS A STRING WHEN RECEIVEING A STRING_MESSAGE
 #pragma region stringComponent
 CString::CString(Entity * fath) : GameComponent(CMP_STRING, fath), whatSay("HOLA, soy el componente basico"){
+	
 }
 CString::~CString(){
 
@@ -606,6 +607,14 @@ void CPlayerMove::getMessage(Message* m)
 		pEnt->getMessage(new MRigidbodyMoveX(value, pEnt->getID()));
 	}
 
+	if (m->getType() == MSG_MOD_VEL){
+
+	}
+
+	if (m->getType() == MSG_MOD_VEL_JUMP){
+
+	}
+
 
 }
 #pragma endregion
@@ -630,6 +639,10 @@ void CPlayerJump::getMessage(Message* m)
 	case MSG_COLLISION_TERRAIN:
 		_nJumps = _maxJumps;
 		break;
+
+	case MSG_MOD_VEL_JUMP:
+		MModVelAndJump* mMod = static_cast<MModVelAndJump*>(m);
+		_jumpForce = _jumpForce + (_jumpForce * mMod->getJump() / 100);
 
 	}
 }
@@ -791,12 +804,18 @@ CBullet::~CBullet(){}
 void CBullet::tick(float delta){}
 void CBullet::getMessage(Message* m){
 
+	//posible error de memoria dinamica
 	
- 	MShot* mShot;
+	///todo esto deberia de estar dentro de cada case para queno halla fallos a la hoara de inicializar, asi con todo lo que este hecho en este estilo
+	MShot* mShot;
 	float xDir;
 	float yDir;
-	
 
+	MModDmg* mDmg;
+	float dmgValue;
+
+	MDeactivate* mDea;
+	
 	switch (m->getType()){
 	case MSG_SHOT:
 		mShot = static_cast<MShot*>(m);
@@ -808,10 +827,67 @@ void CBullet::getMessage(Message* m){
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
 		
 		break;
+
+	case MSG_MOD_DMG:
+		mDmg = static_cast<MModDmg*>(m);
+		dmgValue = mDmg->getValue();
+		_damage = _damage + (_damage* dmgValue / 100);
+
+//	case MSG_PASSMOD_DES:
+		//resetear var
+		break;
+
 	
 	default:
 		break;
 	}
 
 }
+#pragma endregion
+
+
+////////////iria debajo de la de life por mantener un orden
+//Armor Component
+/*#pragma region Armor Component
+CArmor::CArmor(Entity* father, float iniArmor) :GameComponent(CMP_ARMOR, father), _maxArmor(iniArmor), _currentArmor(iniArmor){}
+CArmor::~CArmor(){}
+
+void CArmor::tick(float delta){}
+void CArmor::getMessage(Message* m){}
+#pragma endregion
+*/
+
+//Passive Skill Component
+#pragma region CPSkill Component
+CPSkillHades::CPSkillHades(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+	pEnt->getMessage(new MModDmg(pEnt->getID(), 10));
+}
+CPSkillHades::~CPSkillHades(){}
+
+void CPSkillHades::tick(float delta){
+	if (_componentLife <= 0){
+		pEnt->getMessage(new MDeactivate(pEnt->getID()));
+	}
+}
+void CPSkillHades::getMessage(Message* m){}
+
+
+
+CPSkillUll::CPSkillUll(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+	pEnt->getMessage(new MModDmg(pEnt->getID(), -20));
+}
+CPSkillUll::~CPSkillUll(){}
+
+void CPSkillUll::tick(float delta){}
+void CPSkillUll::getMessage(Message* m){}
+
+
+CPSkillVali::CPSkillVali(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
+}
+CPSkillVali::~CPSkillVali(){}
+
+void CPSkillVali::tick(float delta){}
+void CPSkillVali::getMessage(Message* m){}
+
 #pragma endregion

@@ -50,11 +50,13 @@ typedef enum ComponentType {
 	CMP_PLAYER_CH,
 	CMP_PLAYER_CONTROLLER,
 	CMP_LIFE,
+	//CMP_ARMOR,
 	CMP_MOVEMENT_SPEED,
 	CMP_JUMP,
 	CMP_BASIC_ATTACK,
 	CMP_CAMERA,
-	CMP_BULLET
+	CMP_BULLET,
+	CMP_PASSIVE_SKILL
 
 
 
@@ -74,7 +76,7 @@ public:
 	//Getters and setters
 	bool getActive();
 	void setActive(bool nw);
-	ComponentType getID();
+	ComponentType getComponentType();
 
 
   
@@ -86,12 +88,12 @@ protected:
 
 	//Constructor protected so that only
 	//other game components inheriting from this class can use it
-	GameComponent(ComponentType id, Entity * ent);
+	GameComponent(ComponentType componentType, Entity * ent);
 
 	//pointer to the components' entity
 	Entity * pEnt;
 	//basic atributes of the component
-	ComponentType _id;
+	ComponentType _componentType;
 	bool _active;
 
 };
@@ -427,4 +429,75 @@ private:
 
 };
 
+
+/////////iria debajo del de vida por mantener un orden
+/*-----------------------------	ARMOR COMPONENT	--------------------*/
+//Provides life to an entity
+/*class CArmor : public GameComponent
+{
+public:
+	CArmor(Entity * father, float iniArmor);
+	~CArmor();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	inline void setNewArmor(float BA){ _maxArmor += BA; _currentArmor += BA; };
+
+	//Returns the current armor of the entity
+	inline int getCurrentArmor(){ return _currentArmor; };
+
+private:
+	float _maxArmor;			//Max number for the armor
+	float _currentArmor;		//The current armor of the entity
+};
+*/
+
+/*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
+//Increase damage of a god
+class CPSkillHades : public GameComponent
+{
+public:
+	CPSkillHades(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillHades();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+	float _componentLife;
+	float _componentArmor;
+};
+
+
+//Modify velocity of a god
+class CPSkillUll : public GameComponent
+{
+public:
+	CPSkillUll(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillUll();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+	float _componentLife;
+	float _componentArmor;
+};
+
+
+//Modify velocity and jump of a god
+class CPSkillVali : public GameComponent
+{
+public:
+	CPSkillVali(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillVali();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+	float _componentLife;
+	float _componentArmor;
+};
 #endif

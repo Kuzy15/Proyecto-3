@@ -165,3 +165,25 @@ MShot::~MShot(){}
 
 #pragma endregion
 
+
+//--------------------------------------------------	PASSIVE SKILL MSG		----------------------------------------------------------//
+#pragma region MessagePassiveSkill
+
+
+	MModDmg::MModDmg(std::string emmiter, float value) :Message(MSG_MOD_DMG, ENTITY, emmiter), _value(value){}
+	MModDmg::~MModDmg(){}
+	
+	MModVel::MModVel(std::string emmiter, float value) : Message(MSG_MOD_VEL, ENTITY, emmiter), _value(value){}
+	MModVel::~MModVel(){}
+
+	MModVelAndJump::MModVelAndJump(std::string emmiter, float valueVel, float valueJump) : Message(MSG_MOD_VEL_JUMP, ENTITY, emmiter), _valueVel(valueVel), _valueJump(valueJump){}
+	MModVelAndJump::~MModVelAndJump(){}
+
+	MDeactivate::MDeactivate(std::string emmiter) : Message(MSG_PASSMOD_DES, ENTITY, emmiter){}
+	MDeactivate::~MDeactivate(){}
+
+
+#pragma endregion
+
+
+

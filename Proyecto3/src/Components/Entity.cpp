@@ -60,7 +60,7 @@ void Entity::deleteComponent(ComponentType id){
 	GameComponent * aux;
 	bool found = false;
 	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
-		if ((*it)->getID() == id){
+		if ((*it)->getComponentType() == id){
 			aux = *it;
 			it = components.erase(it);
 			delete aux;

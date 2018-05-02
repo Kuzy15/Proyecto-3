@@ -13,7 +13,7 @@
 #pragma region Gods
 //Ra
 Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
-
+	
 	Entity* Ra = new Entity("Ra", s);
 
 	//Mesh Render
@@ -39,6 +39,9 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//Move
 	float v = 0.8f;
 	Ra->addComponent(new CPlayerMove(Ra, v));
+	Ra->addComponent(new CPSkillUll(Ra, 25, 100));
+
+
 	
 	
 
