@@ -352,10 +352,13 @@ public:
 
 	//Returns the current life of the entity
 	inline float getVelocity(){ return _moveVel; };
+	//reset var of component
+	inline void resetVel(){ _moveVel = _auxVelReset; };
 
 private:
 	float _maxSpeed;			//Max velocity
 	float _moveVel;				//The  current movemente speed the entity has
+	float _auxVelReset;
 };
 
 /*-----------------------------	PLAYER JUMP COMPONENT	--------------------*/
@@ -372,9 +375,12 @@ public:
 	//Returns the current jump distance of the entity
 	inline float getForce(){ return _jumpForce; };
 
+	inline void resetForceJump(){ _jumpForce = _auxJumpReset; };
+
 private:
 	float _maxForce;			//Max number of jump units
 	float _jumpForce;			//The current jump units of the entity
+	float _auxJumpReset;
 	int _nJumps;				//Remaining jumps
 	int _maxJumps;				//Max jumps
 };
@@ -387,7 +393,7 @@ const float SPAWN_PARSE = 1.0f / 328.0f;
 class CPlayerBasicAttack : public GameComponent
 {
 public:
-	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos);
+	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos, float damage);
 	virtual ~CPlayerBasicAttack();
 
 	virtual void tick(float delta);
@@ -396,14 +402,21 @@ public:
 	//Returns the current fire rate of the entity
 	inline float getFireRate(){ return _fireRate; };
 
+	inline void resetDamage(){ _auxDamageReset = _damage; };
+	inline void resetFireRate(){ _auxFireRateReset = _fireRate; };
+
+
 private:
 	float _maxFireRate;			//Max fire rate
 	float _fireRate;			//The current fire rate 
+	float _auxFireRateReset;
 	float _lastTimeShot;		//The last time in SDL time when player spawn a bullet (Fire rate control)
 	float _timeCounter;			//Variable for the fire rate control.
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
 	float _radius;
 	Ogre::Vector3 _ogrepos;
+	float _damage;
+	float _auxDamageReset;
 
 	void calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos);
 };
@@ -469,6 +482,22 @@ private:
 	float _componentArmor;
 };
 
+//invisibility
+class CPSkillVidar : public GameComponent
+{
+public:
+	CPSkillVidar(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillVidar();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+	float _componentLife;
+	float _componentArmor;
+};
+
+
 
 //Modify velocity of a god
 class CPSkillUll : public GameComponent
@@ -487,11 +516,11 @@ private:
 
 
 //Modify velocity and jump of a god
-class CPSkillVali : public GameComponent
+class CPSkillHermes : public GameComponent
 {
 public:
-	CPSkillVali(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
-	~CPSkillVali();
+	CPSkillHermes(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillHermes();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -500,4 +529,21 @@ private:
 	float _componentLife;
 	float _componentArmor;
 };
+
+
+//Modify vel of fire rate
+class CPSkillSyn : public GameComponent
+{
+public:
+	CPSkillSyn(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillSyn();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+	float _componentLife;
+	float _componentArmor;
+};
+
 #endif

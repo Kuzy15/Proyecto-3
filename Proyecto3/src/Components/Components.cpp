@@ -589,7 +589,7 @@ void CLife::getMessage(Message* m){}
 
 //Move Component
 #pragma region Player Move Component
-CPlayerMove::CPlayerMove(Entity* father, float vel) :GameComponent(CMP_MOVEMENT_SPEED, father), _maxSpeed(MAX_SPEED), _moveVel(vel){}
+CPlayerMove::CPlayerMove(Entity* father, float vel) :GameComponent(CMP_MOVEMENT_SPEED, father), _maxSpeed(MAX_SPEED), _moveVel(vel), _auxVelReset(vel){}
 CPlayerMove::~CPlayerMove(){}
 
 void CPlayerMove::tick(float delta){}
@@ -608,11 +608,23 @@ void CPlayerMove::getMessage(Message* m)
 	}
 
 	if (m->getType() == MSG_MOD_VEL){
-
+		float mModVelValue = static_cast<MModVel*>(m)->getValue();
+		_moveVel = _moveVel + (_moveVel * mModVelValue / 100.0f);
+		if (_moveVel > _maxSpeed){
+			_moveVel = _maxSpeed;
+		}
 	}
 
 	if (m->getType() == MSG_MOD_VEL_JUMP){
+		float mModVelValue = static_cast<MModVelAndJump*>(m)->getVelValue();
+		_moveVel = _moveVel + (_moveVel * mModVelValue / 100.0f);
+		if (_moveVel > _maxSpeed){
+			_moveVel = _maxSpeed;
+		}
+	}
 
+	if (m->getType() == MSG_PASSMOD_DES){
+		resetVel();
 	}
 
 
@@ -621,12 +633,14 @@ void CPlayerMove::getMessage(Message* m)
 
 //Jump Component
 #pragma region Player Jump Component
-CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JUMP, father), _maxForce(MAX_JUMP_DISTANCE), _jumpForce(startForce), _maxJumps(2), _nJumps(2){}
+CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JUMP, father), _maxForce(MAX_JUMP_DISTANCE), _jumpForce(startForce), _maxJumps(2), _nJumps(2), _auxJumpReset(startForce){}
 CPlayerJump::~CPlayerJump(){}
 
 void CPlayerJump::tick(float delta){}
 void CPlayerJump::getMessage(Message* m)
 {
+
+	MModVelAndJump* mModVelJump;
 
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
@@ -641,8 +655,19 @@ void CPlayerJump::getMessage(Message* m)
 		break;
 
 	case MSG_MOD_VEL_JUMP:
-		MModVelAndJump* mMod = static_cast<MModVelAndJump*>(m);
-		_jumpForce = _jumpForce + (_jumpForce * mMod->getJump() / 100);
+		mModVelJump = static_cast<MModVelAndJump*>(m);
+		_jumpForce = _jumpForce + (_jumpForce * mModVelJump->getJumpValue() / 100.0f);
+		if (_jumpForce > _maxForce){
+			_jumpForce = _maxForce;
+		}
+		break;
+
+	case MSG_PASSMOD_DES:
+		resetForceJump();
+		break;
+
+	default:
+		break;
 
 	}
 }
@@ -651,8 +676,8 @@ void CPlayerJump::getMessage(Message* m)
 //Basic Attack Component
 #pragma region Player Basic Attack Component
 
-CPlayerBasicAttack::CPlayerBasicAttack(Entity* father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos) :GameComponent(CMP_BASIC_ATTACK, father),
-_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entPos)
+CPlayerBasicAttack::CPlayerBasicAttack(Entity* father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos, float damage) :GameComponent(CMP_BASIC_ATTACK, father),
+_maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entPos), _damage(damage), _auxDamageReset(damage), _auxFireRateReset(fireRate)
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
@@ -670,20 +695,20 @@ void CPlayerBasicAttack::getMessage(Message* m){
 
 	if (m->getType() == MSG_PLAYER_SHOT){
 		MPlayerShot* mPS = static_cast<MPlayerShot*>(m);
-		
+
 		//Check if the player can spawn the next bullet
 		_timeCounter = (SDL_GetTicks());
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
 			float angle;
 			Ogre::Vector3 iniPos;
-			if (mPS->getXValue() != 0 ||  mPS->getYValue() != 0){
+			if (mPS->getXValue() != 0 || mPS->getYValue() != 0){
 				calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle, iniPos);
 				Ogre::Vector3 dir = iniPos;
 				iniPos.x += _ogrepos.x;
 				iniPos.y += _ogrepos.y;
 				iniPos.z = _ogrepos.z;
 
-				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle);
+				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle, _damage);
 				pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 				b->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
 
@@ -708,16 +733,38 @@ void CPlayerBasicAttack::getMessage(Message* m){
 			Ogre::Vector3 parentPos = msg->GetPos();
 
 			//Where our mesh is relative to the parent. The real pos of the object is the parent pos + this variable, _ogrepos.
-			_ogrepos.x = parentPos.x +  w / 2;
+			_ogrepos.x = parentPos.x + w / 2;
 			_ogrepos.y = parentPos.y + h / 2;
 			_ogrepos.z = parentPos.z;
 
 			//Rotate the parent node the same degree as the collider.
 			float angleRad = msg->getRotation();
-			float grades = (angleRad * 180) / 3.14159265359;
+			float grades = (angleRad * 180) / 3.14159265359f;
 		}
 	}
+
+
+	else if (m->getType() == MSG_MOD_DMG){
+		float dmgValue = static_cast<MModDmg*>(m)->getValue();
+		_damage = _damage + (_damage* dmgValue / 100.0f);
+	}
+
+	else if (m->getType() == MSG_MOD_FIRERATE){
+		float fireRateValue = static_cast<MModFireRate*>(m)->getFireRateValue();
+		_fireRate = _fireRate + (_fireRate*fireRateValue / 100.0f);
+		if (_fireRate > _maxFireRate){
+			_fireRate = _maxFireRate;
+		}
+		
+	}
+
+	else if (m->getType() == MSG_PASSMOD_DES){
+		resetDamage();
+		resetFireRate();
+	}
 }
+
+
 void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos){
 
 	//Calculate point
@@ -811,10 +858,6 @@ void CBullet::getMessage(Message* m){
 	float xDir;
 	float yDir;
 
-	MModDmg* mDmg;
-	float dmgValue;
-
-	MDeactivate* mDea;
 	
 	switch (m->getType()){
 	case MSG_SHOT:
@@ -827,17 +870,6 @@ void CBullet::getMessage(Message* m){
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
 		
 		break;
-
-	case MSG_MOD_DMG:
-		mDmg = static_cast<MModDmg*>(m);
-		dmgValue = mDmg->getValue();
-		_damage = _damage + (_damage* dmgValue / 100);
-
-//	case MSG_PASSMOD_DES:
-		//resetear var
-		break;
-
-	
 	default:
 		break;
 	}
@@ -859,8 +891,15 @@ void CArmor::getMessage(Message* m){}
 
 //Passive Skill Component
 #pragma region CPSkill Component
+
+
+/*vidar*/
+
+
+
+///modify dmg of a god
 CPSkillHades::CPSkillHades(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
-	pEnt->getMessage(new MModDmg(pEnt->getID(), 10));
+	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
 
@@ -872,9 +911,9 @@ void CPSkillHades::tick(float delta){
 void CPSkillHades::getMessage(Message* m){}
 
 
-
+///modify velocity of a god
 CPSkillUll::CPSkillUll(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
-	pEnt->getMessage(new MModDmg(pEnt->getID(), -20));
+	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
 
@@ -882,12 +921,26 @@ void CPSkillUll::tick(float delta){}
 void CPSkillUll::getMessage(Message* m){}
 
 
-CPSkillVali::CPSkillVali(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+/***vali*/
+
+
+///modify velocity and jump of a god
+CPSkillHermes::CPSkillHermes(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
+}
+CPSkillHermes::~CPSkillHermes(){}
+
+void CPSkillHermes::tick(float delta){}
+void CPSkillHermes::getMessage(Message* m){}
+
+
+///modify vel of fire rate
+CPSkillSyn::CPSkillSyn(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
-CPSkillVali::~CPSkillVali(){}
+CPSkillSyn::~CPSkillSyn(){}
 
-void CPSkillVali::tick(float delta){}
-void CPSkillVali::getMessage(Message* m){}
+void CPSkillSyn::tick(float delta){}
+void CPSkillSyn::getMessage(Message* m){}
 
 #pragma endregion

@@ -179,6 +179,9 @@ MShot::~MShot(){}
 	MModVelAndJump::MModVelAndJump(std::string emmiter, float valueVel, float valueJump) : Message(MSG_MOD_VEL_JUMP, ENTITY, emmiter), _valueVel(valueVel), _valueJump(valueJump){}
 	MModVelAndJump::~MModVelAndJump(){}
 
+	MModFireRate::MModFireRate(std::string emmiter, float valueFireRate) : Message(MSG_MOD_FIRERATE, ENTITY, emmiter), _valueFireRate(valueFireRate){}
+	MModFireRate::~MModFireRate(){}
+
 	MDeactivate::MDeactivate(std::string emmiter) : Message(MSG_PASSMOD_DES, ENTITY, emmiter){}
 	MDeactivate::~MDeactivate(){}
 
