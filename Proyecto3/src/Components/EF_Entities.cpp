@@ -13,7 +13,7 @@
 #pragma region Gods
 //Ra
 Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
-
+	
 	Entity* Ra = new Entity("Ra", s);
 
 	//Mesh Render
@@ -29,7 +29,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//CollisionHandler
 	Ra->addComponent(new CPlayerCollisionHandler(Ra));
 	//Basic Attack
-	Ra->addComponent(new CPlayerBasicAttack(Ra, 1000.0f, EB_RA,iniPos));
+	Ra->addComponent(new CPlayerBasicAttack(Ra, 1000.0f, EB_RA,iniPos,10.0f));
 
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
@@ -39,6 +39,15 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//Move
 	float v = 8.0f;
 	Ra->addComponent(new CPlayerMove(Ra, v));
+	//Ra->addComponent(new CPSkillHades(Ra, 10.0f, 10.0f));
+	//Ra->addComponent(new CPSkillHermes(Ra, 10.0f, 10.0f));
+	Ra->addComponent(new CPSkillUll(Ra, 25.0f, 100.0f));
+
+
+
+
+
+
 	
 	
 
@@ -63,7 +72,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//CollisionHandler
 	AhPuch->addComponent(new CPlayerCollisionHandler(AhPuch));
 	//Basic Attack
-	AhPuch->addComponent(new CPlayerBasicAttack(AhPuch, 1000.0f, EB_AHPUCH, iniPos));
+	AhPuch->addComponent(new CPlayerBasicAttack(AhPuch, 1000.0f, EB_AHPUCH, iniPos, 10.0f));
 
 	//LIfe
 	AhPuch->addComponent(new CLife(AhPuch, 100.0f));
@@ -83,7 +92,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
 #pragma region Bullets
 
-Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle){
+Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage){
 
 	Entity * bRa = new Entity(id, s);
 	//Mesh Render
@@ -98,7 +107,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	bRa->addComponent(new CRigidBody(bRa, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bRa->addComponent(new CBullet(bRa, EB_RA,10.f,10.0f));
+	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 10.0f));
 
 
 	return bRa;
@@ -106,7 +115,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 
 }
 
-Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle){
+Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage){
 
 	Entity * bAhPuch = new Entity(id, s);
 	//Mesh Render
@@ -121,7 +130,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, 10.f, 20.0f));
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 20.0f));
 
 
 	return bAhPuch;

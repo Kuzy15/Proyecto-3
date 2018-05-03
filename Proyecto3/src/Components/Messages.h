@@ -62,7 +62,14 @@ typedef enum MessageType{
 	MSG_COLLISION_TERRAIN,
 	MSG_ADD_ENTITY,
 	MSG_SHOT,
+	MSG_MOD_DMG,
+	MSG_MOD_VEL,
+	MSG_MOD_VEL_JUMP,
+	MSG_MOD_FIRERATE,
+	MSG_PASSMOD_DES,
 	MSG_DAMAGE
+	
+
 	
 
 
@@ -356,4 +363,64 @@ private:
 };
 
 
+
+//--------------------------------------------------	PASSIVE SKILL MSG		----------------------------------------------------------//
+//modify damage
+class MModDmg : public Message{
+public:
+	MModDmg(std::string emmiter, float value);
+	~MModDmg();
+
+	inline float getValue(){ return _value; };
+private:
+	float _value;
+};
+
+//modify vel
+class MModVel : public Message{
+public:
+	MModVel(std::string emmiter, float value);
+	~MModVel();
+
+	inline float getValue(){ return _value; };
+private:
+	float _value;
+};
+
+//modify vel and jump
+class MModVelAndJump : public Message{
+public:
+	MModVelAndJump(std::string emmiter, float valueVel, float valueJump);
+	~MModVelAndJump();
+
+	inline float getVelValue(){ return _valueVel; };
+	inline float getJumpValue(){ return _valueJump; };
+
+private:
+	float _valueVel;
+	float _valueJump;
+};
+
+
+//modify firerate
+class MModFireRate : public Message{
+public:
+	MModFireRate(std::string emmiter, float valueFireRate);
+	~MModFireRate();
+
+	inline float getFireRateValue(){ return _valueFireRate; };
+
+private:
+	float _valueFireRate;
+};
+
+//deactivate mod
+class MDeactivate : public Message{
+public:
+	MDeactivate(std::string emmiter);
+	~MDeactivate();
+private:
+	float _valueVel;
+	float _valueJump;
+};
 #endif

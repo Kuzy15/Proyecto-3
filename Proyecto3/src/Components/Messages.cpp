@@ -165,6 +165,7 @@ MShot::~MShot(){}
 
 #pragma endregion
 
+
 //--------------------------------------------------	DAMAGE MSG		----------------------------------------------------------//
 #pragma region DamageShot
 
@@ -172,3 +173,28 @@ MDamage::MDamage(float damage, std::string emmiter) : Message(MSG_DAMAGE, ENTITY
 MDamage::~MDamage(){}
 
 #pragma endregion
+
+
+//--------------------------------------------------	PASSIVE SKILL MSG		----------------------------------------------------------//
+#pragma region MessagePassiveSkill
+
+
+	MModDmg::MModDmg(std::string emmiter, float value) :Message(MSG_MOD_DMG, ENTITY, emmiter), _value(value){}
+	MModDmg::~MModDmg(){}
+	
+	MModVel::MModVel(std::string emmiter, float value) : Message(MSG_MOD_VEL, ENTITY, emmiter), _value(value){}
+	MModVel::~MModVel(){}
+
+	MModVelAndJump::MModVelAndJump(std::string emmiter, float valueVel, float valueJump) : Message(MSG_MOD_VEL_JUMP, ENTITY, emmiter), _valueVel(valueVel), _valueJump(valueJump){}
+	MModVelAndJump::~MModVelAndJump(){}
+
+	MModFireRate::MModFireRate(std::string emmiter, float valueFireRate) : Message(MSG_MOD_FIRERATE, ENTITY, emmiter), _valueFireRate(valueFireRate){}
+	MModFireRate::~MModFireRate(){}
+
+	MDeactivate::MDeactivate(std::string emmiter) : Message(MSG_PASSMOD_DES, ENTITY, emmiter){}
+	MDeactivate::~MDeactivate(){}
+
+
+#pragma endregion
+
+

@@ -18,7 +18,7 @@ class GameScene;
 //Typedefs to name functions types for entity creation
 #pragma region Typedef functions
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos);
-typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
+typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 
 #pragma endregion
 
@@ -36,7 +36,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 #pragma endregion
 
 #pragma region Bullets
-Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
-Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle);
+Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
+Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 #pragma endregion
 #endif

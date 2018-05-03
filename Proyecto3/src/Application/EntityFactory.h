@@ -16,7 +16,7 @@ public:
 
 	//Methods for create gods and define their behaviour (Components, etc)
 	Entity* createGod(E_GOD god, GameScene* s, Ogre::Vector3 iniPos);
-	Entity* createBullet(E_BULLET bullet, GameScene* s, Ogre::Vector3 iniPos, float angle);
+	Entity* createBullet(E_BULLET bullet, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 	
 private:
 	EntityFactory();
