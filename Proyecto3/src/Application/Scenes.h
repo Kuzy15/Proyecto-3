@@ -141,7 +141,7 @@ private:
 	GameplayState _currState;	//The current state of the scene
 	BattleState _bS;		//The state of the battle
 	int _nPlayers;				//Number of players
-	std::vector<Entity*> _players = std::vector<Entity*>(4);	//Array of pointer to the players Entities
+	std::vector<Entity*> _players = std::vector<Entity*>(2);	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
 	bool _paused;
 

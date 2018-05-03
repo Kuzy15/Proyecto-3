@@ -140,7 +140,7 @@ void CRender::getMessage(Message *m) {
 //Takes a string with the name of the mesh to render
 //and renders it.
 
-CMeshRender::CMeshRender(Ogre::Vector3 pos, float grades ,std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale) :CRender(CMP_MESH_RENDER, father, scnM) {
+CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->setPosition(pos);
 	

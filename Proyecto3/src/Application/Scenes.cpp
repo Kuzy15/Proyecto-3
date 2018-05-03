@@ -348,16 +348,38 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id
 	addEntity(EntityFactory::getInstance().createGod(EG_RA, this, Ogre::Vector3(-20, 20, 0)));
 	addEntity(EntityFactory::getInstance().createGod(EG_AHPUCH, this, Ogre::Vector3(20, 20, 0)));
 
-	Entity * Suelo = new Entity("3", this);
-	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3, 2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	Entity * e1 = new Entity("Suelo_01", this);
+	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
+	e1->addComponent(cM);
+	addEntity(e1);
+
+	Entity * Suelo = new Entity("ColliderSuelo_01", this);
+	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3, cM->getSize().x, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
 
 	addEntity(Suelo);
 
-	Entity * e1 = new Entity("4", this);
-	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	e1->addComponent(new CMeshRender({ -30, -15, -30 }, 0, "paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
-	addEntity(e1);
+
+
+	Entity * porton = new Entity("Porton_01", this);
+	//porton->addComponent(new CRigidBody(porton, game->getPhysicsWorld(), Ogre::Vector3(0, -10, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, scnMgr, { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
+	addEntity(porton);
+
+	Entity * rightEdge = new Entity("ColliderLimite_Dcho", this);
+	rightEdge->addComponent(new CRigidBody(rightEdge, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	addEntity(rightEdge);
+
+	Entity * temple = new Entity("Templo_01", this);
+	//temple->addComponent(new CRigidBody(temple, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	temple->addComponent(new CMeshRender({ -30, -2, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
+	addEntity(temple);
+
+	Entity * portonCollider = new Entity("ColliderPorton_01", this);
+	portonCollider->addComponent(new CRigidBody(portonCollider, game->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	//temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
+	addEntity(portonCollider);
 
 
 	//GAMEPLAY SCENE SET UP
@@ -515,6 +537,7 @@ void GamePlayScene::battle(){
 
 
 }
+
 void GamePlayScene::end(){
 
 }
