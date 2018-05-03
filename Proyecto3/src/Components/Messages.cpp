@@ -103,8 +103,8 @@ MJump::~MJump(){};
 
 #pragma region MessageCollision
 
-MCollisionBegin::MCollisionBegin(uint16_t me, uint16_t contact, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
-	_myCategory(me), _contactMask(contact){}
+MCollisionBegin::MCollisionBegin(uint16_t me, uint16_t contact, Entity* who, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
+	_myCategory(me), _contactMask(contact), _who(who){}
 MCollisionBegin::~MCollisionBegin(){}
 #pragma endregion
 
@@ -165,3 +165,10 @@ MShot::~MShot(){}
 
 #pragma endregion
 
+//--------------------------------------------------	DAMAGE MSG		----------------------------------------------------------//
+#pragma region DamageShot
+
+MDamage::MDamage(float damage, std::string emmiter) : Message(MSG_DAMAGE, ENTITY, emmiter), _damage(damage){}
+MDamage::~MDamage(){}
+
+#pragma endregion

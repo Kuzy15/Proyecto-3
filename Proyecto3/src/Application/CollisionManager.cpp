@@ -23,19 +23,19 @@ CollisionManager::~CollisionManager()
 void CollisionManager::BeginContact(b2Contact* c){
 
 	
-
+	void* bodyUserDataA = c->GetFixtureA()->GetBody()->GetUserData();
+	void* bodyUserDataB = c->GetFixtureB()->GetBody()->GetUserData();
 	//Get the pointer to the first entity in the contact
-	void* bodyUserData = c->GetFixtureA()->GetBody()->GetUserData();
-	if (bodyUserData){
-		MCollisionBegin* m = new MCollisionBegin(c->GetFixtureA()->GetFilterData().categoryBits, c->GetFixtureB()->GetFilterData().categoryBits, static_cast<Entity*>(bodyUserData)->getID());
-		static_cast<Entity*>(bodyUserData)->getMessage(m);
+	if (bodyUserDataA){
+		MCollisionBegin* m = new MCollisionBegin(c->GetFixtureA()->GetFilterData().categoryBits, c->GetFixtureB()->GetFilterData().categoryBits, static_cast<Entity*>(bodyUserDataB), static_cast<Entity*>(bodyUserDataA)->getID());
+		static_cast<Entity*>(bodyUserDataA)->getMessage(m);
 	}
 
 	//check if fixture B was a ball
-	bodyUserData = c->GetFixtureB()->GetBody()->GetUserData();
-	if (bodyUserData){
-		MCollisionBegin* m = new MCollisionBegin(c->GetFixtureB()->GetFilterData().categoryBits, c->GetFixtureA()->GetFilterData().categoryBits, static_cast<Entity*>(bodyUserData)->getID());
-		static_cast<Entity*>(bodyUserData)->getMessage(m);
+	
+	if (bodyUserDataB){
+		MCollisionBegin* m = new MCollisionBegin(c->GetFixtureB()->GetFilterData().categoryBits, c->GetFixtureA()->GetFilterData().categoryBits, static_cast<Entity*>(bodyUserDataA), static_cast<Entity*>(bodyUserDataB)->getID());
+		static_cast<Entity*>(bodyUserDataB)->getMessage(m);
 	}
 
 }

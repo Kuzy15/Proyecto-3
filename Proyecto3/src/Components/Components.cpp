@@ -91,8 +91,8 @@ CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
 	
 }
 CRender::~CRender(){
-	//pSceneMgr->destroySceneNode(pChild);
-	//pSceneMgr->destroySceneNode(pOgreSceneNode);
+	pSceneMgr->destroySceneNode(pChild);
+	pSceneMgr->destroySceneNode(pOgreSceneNode);
 }
 
 //Get Message general to every other render component child to this
@@ -159,8 +159,8 @@ CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * fathe
 	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
 }
 CMeshRender::~CMeshRender() {
-	//pChild->detachObject(pOgreEnt);
-	//pSceneMgr->destroyEntity(pOgreEnt);
+	pChild->detachObject(pOgreEnt);
+	pSceneMgr->destroyEntity(pOgreEnt);
 }
 void CMeshRender::tick(float delta) {
 
@@ -319,9 +319,9 @@ void CActionCamera::tick(float delta) {
 #pragma endregion
 /*-------------------------BOX2D COMPONENTS------------------------------------*/
 
+#pragma region RigidBodyComponent
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
-#pragma region RigidBodyComponent
 CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 	
@@ -404,15 +404,15 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	switch (shType)
 	{
 	case SH_CIRCLE:
-		static_cast<b2CircleShape*>(&_cShape)->m_p.Set(0, 0);
-		static_cast<b2CircleShape*>(&_cShape)->m_radius = _rbWeight;
+		_cShape.m_p.Set(0, 0);
+		_cShape.m_radius = _rbWeight;
 		_fixtureDef.shape = &_cShape;
 		//Fixture creation.
 		_fixture = _body->CreateFixture(&_fixtureDef);
 		break;
 	case SH_POLYGON:
 		
-		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
+		_pShape.SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 		_fixtureDef.shape = &_pShape;
 		
 		//Fixture creation.
@@ -420,26 +420,26 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		break;
 	case SH_PLAYER:
 		
-		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
+		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 		_fixtureDef.shape = &_pShape;
 		_fixtureDef.filter.categoryBits = MASK_CHEST;
 		_body->CreateFixture(&_fixtureDef);		
 		
-		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize }, 0);
+		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
 		_fixtureDef.filter.categoryBits = MASK_HEAD;
 		_body->CreateFixture(&_fixtureDef);
 
-		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
+		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
 
 		_fixtureDef.filter.categoryBits = MASK_LEGS;
 		_fixture = _body->CreateFixture(&_fixtureDef);
 
 		//Foot sensor
-		static_cast<b2PolygonShape*>(_shape)->SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, 0 }, 0);
+		_pShape.SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, 0 }, 0);
 		//_fixtureDef.isSensor = true;
-		_fixtureDef.shape = _shape;
+		_fixtureDef.shape = &_pShape;
 		_fixtureDef.density = 1.0f;
 		_fixtureDef.filter.categoryBits = MASK_FOOT_SENSOR;
 		_fixtureDef.filter.maskBits = MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
@@ -500,7 +500,7 @@ void CRigidBody::getMessage(Message * m) {
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
 			std::cout << jForce << std::endl;
-			_body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x, jForce));
+			_body->ApplyLinearImpulseToCenter(b2Vec2(0, jForce), true);
 			break;		
 		default:
 			break;
@@ -610,7 +610,21 @@ CLife::CLife(Entity* father, float iniLife):GameComponent(CMP_LIFE,father), _max
 CLife::~CLife(){}
 
 void CLife::tick(float delta){}
-void CLife::getMessage(Message* m){}
+void CLife::getMessage(Message* m){
+
+	switch (m->getType()){
+	case MSG_DAMAGE:
+		
+		_currentLife -= static_cast<MDamage*>(m)->getDamage();
+		
+		break;
+	default:
+		break;
+
+	}
+
+
+}
 #pragma endregion
 
 //Move Component
@@ -640,7 +654,13 @@ void CPlayerMove::getMessage(Message* m)
 
 //Jump Component
 #pragma region Player Jump Component
-CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JUMP, father), _maxForce(MAX_JUMP_DISTANCE), _jumpForce(startForce), _maxJumps(2), _nJumps(2){}
+CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JUMP, father), _maxForce(MAX_JUMP_DISTANCE), _jumpForce(startForce), _maxJumps(2), _nJumps(0)
+{
+	_timeCounter = 0.0f;
+	_lastTimeJump = 0.0f;
+	_jumpRate = 170.0f;
+ 
+}
 CPlayerJump::~CPlayerJump(){}
 
 void CPlayerJump::tick(float delta){}
@@ -649,14 +669,16 @@ void CPlayerJump::getMessage(Message* m)
 
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
-		if (_nJumps > 0){
+		_timeCounter = SDL_GetTicks();
+		if (_nJumps < _maxJumps && ((_timeCounter - _lastTimeJump) > _jumpRate)){
 			//std::cout << _nJumps << std::endl;
-			pEnt->getMessage(new MRigidbodyJump(_jumpForce * _nJumps, pEnt->getID()));
-			_nJumps--;
+			_nJumps++;
+			pEnt->getMessage(new MRigidbodyJump(_jumpForce , pEnt->getID()));
+			_lastTimeJump = SDL_GetTicks();
 		}
 		break;
 	case MSG_COLLISION_TERRAIN:
-		_nJumps = _maxJumps;
+		_nJumps = 0;
 		break;
 
 	}
@@ -809,7 +831,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 #pragma region Bullet Component
 
 CBullet::CBullet(Entity* father, E_BULLET bT, float damage, float vel) :GameComponent(CMP_BASIC_ATTACK, father), _damage(damage)
-, _velocity(vel)
+, _velocity(vel), _toDelete(false)
 {
 	
 
@@ -821,6 +843,7 @@ void CBullet::getMessage(Message* m){
 
 	
  	MShot* mShot;
+	MCollisionBegin* mCollision;
 	float xDir;
 	float yDir;
 	
@@ -838,8 +861,13 @@ void CBullet::getMessage(Message* m){
 		
 		break;
 	case MSG_COLLISION:
+		if (!_toDelete){
+			mCollision = static_cast<MCollisionBegin*>(m);
+			mCollision->GetWho()->getMessage(new MDamage(_damage, pEnt->getID()));
+			pEnt->getScene()->addEntityToDelete(pEnt);
+			_toDelete = true;
+		}
 		break;
-		pEnt->getScene()->addEntityToDelete(pEnt);
 	default:
 		break;
 	}

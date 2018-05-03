@@ -232,14 +232,7 @@ void Game::render() {
 //Read the input
 void Game::handleInput(){
 	
-	float current = SDL_GetTicks();
-	
-	//6 times per second
-	if (current > inputTime + 100){
 		InputManager::getInstance().handleInput();
-		inputTime = SDL_GetTicks();
-	}
-	
 
 }
 

@@ -374,6 +374,9 @@ public:
 private:
 	float _maxForce;			//Max number of jump units
 	float _jumpForce;			//The current jump units of the entity
+	float _timeCounter;
+	float _lastTimeJump;
+	float _jumpRate;
 	int _nJumps;				//Remaining jumps
 	int _maxJumps;				//Max jumps
 };
@@ -425,6 +428,7 @@ private:
 	float _damage;				//The damage done by one bullet 
 	float _velocity;			//The movement velocity of the bullet
 	//rango de explosión
+	bool _toDelete;
 
 };
 

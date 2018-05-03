@@ -61,7 +61,8 @@ typedef enum MessageType{
 	MSG_RIGIDBODY_JUMP,
 	MSG_COLLISION_TERRAIN,
 	MSG_ADD_ENTITY,
-	MSG_SHOT
+	MSG_SHOT,
+	MSG_DAMAGE
 	
 
 
@@ -218,17 +219,18 @@ private:
 class MCollisionBegin : public Message
 {
 public:
-	MCollisionBegin(uint16_t me, uint16_t contact, std::string emmiter);
+	MCollisionBegin(uint16_t me, uint16_t contact, Entity* who, std::string emmiter);
 	~MCollisionBegin();
 
 	uint16_t GetMyCategory(){ return _myCategory; };
 	uint16_t GetContactMask(){ return _contactMask; };
-
+	Entity* GetWho(){ return _who; };
 
 private:
 	//Private fields for the new position and quaternion of the entity
 	uint16_t _myCategory;
 	uint16_t _contactMask;
+	Entity* _who;
 };
 
 
@@ -338,6 +340,19 @@ private:
 	Entity* _newEntity;
 };
 
+
+//--------------------------------------------------	DAMAGE MSG		----------------------------------------------------------//
+class MDamage : public Message
+{
+public:
+	MDamage(float damage,std::string emmiter);
+	~MDamage();
+
+	inline float getDamage(){ return _damage; };
+
+private:
+	float _damage;
+};
 
 
 #endif
