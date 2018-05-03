@@ -136,9 +136,6 @@ private:
 	void end();
 	void controllerDisconected(int id);
 
-	Ogre::SceneManager * scnMgr;
-	Ogre::Viewport * vp;
-	Ogre::Camera * cam;
 	Ogre::Light * light;
 
 	GameplayState _currState;	//The current state of the scene

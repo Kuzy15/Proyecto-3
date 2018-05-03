@@ -2,15 +2,6 @@
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
 #include "DebugNew.h"
-//Debug 
-#ifdef _DEBUG
-#include <iostream>
-#define new DEBUG_NEW
-#endif
-
-
-
-
 //Later removable
 #include <OgreCamera.h>
 #include <OgreNode.h>
@@ -26,10 +17,15 @@
 #include "Messages.h"
 #include "Scenes.h"
 #include "DebugDraw.h"
+//Debug 
+#ifdef _DEBUG
+#include <iostream>
+#define new DEBUG_NEW
+#endif
 
 DebugDraw dInstance;
 
-#pragma region gameScene 
+#pragma region GameScene 
 
 GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
@@ -38,18 +34,13 @@ GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),s
 GameScene::~GameScene()
 {
 
-
 	deleteAllMessages();
-
-	
 
 	list<Entity*>::iterator it = _entities.begin();
 	while (!_entities.empty()){
 		delete _entities.front();
 		_entities.pop_front();
 	}
-	
-	
 	
 	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
@@ -60,7 +51,6 @@ GameScene::~GameScene()
 
 	/*if (scnMgr != nullptr)
 		pGame->getRoot()->destroySceneManager(scnMgr);*/
-	
 	
 }
 
@@ -124,13 +114,15 @@ void GameScene::clearMessageQueue() {
 
 void GameScene::deleteAllMessages(){
 
-	for (int i = 0; i < _messages.size(); i++) {
+	size_t nMessages = _messages.size();
+	for (size_t i = 0; i <nMessages; i++) {
 		Message * aux = _messages.front();
 		delete aux;
 		_messages.pop_front();
 	}
 
-	for (int j = 0; j < _sceneMessages.size(); j++) {
+	size_t nSceneMessages = _sceneMessages.size();
+	for (int j = 0; j < nSceneMessages; j++) {
 		Message * aux = _sceneMessages.front();
 		delete aux;
 		_sceneMessages.pop_front();
@@ -177,11 +169,11 @@ void GameScene::destroyEntities(){
 }
 #pragma endregion
 
-//BASIC SCENE TO TEST SCENE IMPLEMENTATION.
+#pragma region BasicScene
+/*BASIC SCENE TO TEST SCENE IMPLEMENTATION.
 //BUILDS A OGREHEAD BUT DOES NOT INCLUDE IT IN THE 
 //SCENE ENTITY LIST. IT IS ONLY IN OGRE ENTITIES LIST.
-//ALSO CREATS A BASIC ENTITY WITH A stringComponent attached
-#pragma region basicScene
+//ALSO CREATS A BASIC ENTITY WITH A stringComponent attached*/
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	
@@ -190,30 +182,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
-	
 
-
-	
-
-
-
-	//------------------------------------------------------------------------------------------------------
-	//ViewPort Addition
-	
-	
-	//------------------------------------------------------------------------------------------------------
-	//Scene SetUp
-
-/*	try {
-		Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
-		Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-		robotNode->attachObject(robot);
-	}
-	catch (Ogre::FileNotFoundException e) {
-		std::string a = e.getFullDescription();
-		std::cout << a;
-	}
-	*/
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
 	light = scnMgr->createLight("MainLight");
@@ -330,83 +299,65 @@ void BasicScene::processScnMsgs()
 GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id, game) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
+	//Debug draw
+#ifdef _DEBUG
+	dInstance.setSceneManager(scnMgr);
+	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
+	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
+#endif
 
-	//Self-explanatory methods
-	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 150);
-	cam->lookAt(0, 0, -300);
-	cam->setNearClipDistance(5);
-
-
-	//------------------------------------------------------------------------------------------------------
-	//ViewPort Addition
-	vp = game->getRenderWindow()->addViewport(cam);
-	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
-
-	cam->setAspectRatio(
-		Ogre::Real(vp->getActualWidth()) /
-		Ogre::Real(vp->getActualHeight()));
-
-
-	//------------------------------------------------------------------------------------------------------
-	//Scene SetUp
-
-	/*	try {
-	Ogre::Entity * robot = scnMgr->createEntity("ogrehead.mesh");
-	Ogre::SceneNode * robotNode = scnMgr->getRootSceneNode()->createChildSceneNode();
-	robotNode->attachObject(robot);
-	}
-	catch (Ogre::FileNotFoundException e) {
-	std::string a = e.getFullDescription();
-	std::cout << a;
-	}
-	*/
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
 	light = scnMgr->createLight("MainLight");
 	light->setPosition(20, 80, 50);
 
 
+	//SCENE DEBUG
+	Entity * cam = new Entity("Camera1", this);
+	cam->addComponent(
+		new CCamera(cam, scnMgr, vp, "MainCamera", Ogre::Vector3(0, 0, 100), Ogre::Vector3(0, 0, 0), 5)
+		);
+	addEntity(cam);
+
+	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
+
+	addEntity(EntityFactory::getInstance().createGod(EG_RA, this, Ogre::Vector3(-20, 20, 0)));
+	addEntity(EntityFactory::getInstance().createGod(EG_AHPUCH, this, Ogre::Vector3(20, 20, 0)));
+
+	Entity * Suelo = new Entity("3", this);
+	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3, 2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
+
+	addEntity(Suelo);
+
+	Entity * e1 = new Entity("4", this);
+	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	e1->addComponent(new CMeshRender({ -30, -15, -30 }, 0, "paisaje/Grid.mesh", e1, scnMgr, { 50.0f, 50.0f, 50.0f }));
+	addEntity(e1);
+
+
 	//GAMEPLAY SCENE SET UP
-	//Create the players Entities(depends on the parameter passed by argument. This value
+	/*Create the players Entities(depends on the parameter passed by argument. This value
 	//must correspond with the controllers connected).
 	_nPlayers = nP;
 	for (int i = 0; i < _nPlayers; i++){
 		_players[i] = new Entity(std::to_string(i), this);
 		addEntity(_players[i]);
 	}
+	*/
 
 	//Not paused at start
 	_paused = false;
+
 	//Set the starter state to LOADOUT
 	_currState = GS_SETUP;
-
-
-
-	/*SCENE DEBUG
-
-
-	test2->addComponent(new stringComponent(test2));
-	//test2->addComponent()
-
-
-	Ra->addComponent(new messageSendComponent(Ra));
-	Ra->addComponent(new meshRenderComponent(Ogre::Vector3(0, 0, 100), "Ra.mesh", Ra, scnMgr));
-
-
-	addEntity(Ra);
-	addEntity(test2);*/
-
 }
 GamePlayScene::~GamePlayScene(){
 	delete light;
-	delete cam;
-	delete vp;
-	delete scnMgr;
 
 }
 bool GamePlayScene::run(){
-	//Here we would get the time between frames
+	
 
 	//Take messages from input
 	InputManager::getInstance().getMessages(_messages);
@@ -420,7 +371,7 @@ bool GamePlayScene::run(){
 	{
 		//In this state, we should set up the players God (mesh renderer, habilities, etc) and playing cards
 	case GS_SETUP:
-		loadOut();
+		//loadOut();
 		break;
 		//This state should control the gameplay state (Time, rounds, the end, etc)
 	case GS_BATTLE:
@@ -442,8 +393,14 @@ bool GamePlayScene::run(){
 	//Clear dispatched messages
 	clearMessageQueue();
 
-	return aux;
+	//Delete entities removed from the scene at the last frame
+	destroyEntities();
 
+	//Delete box2d bodies of the removed entities
+	destroyBodies();
+
+	
+	return aux;
 }
 
 void GamePlayScene::dispatch(){
@@ -452,19 +409,21 @@ void GamePlayScene::dispatch(){
 
 void GamePlayScene::processScnMsgs(){
 
-	nMessages = _sceneMessages.size();
-	std::list<Message *>::iterator it = _sceneMessages.begin();
-	for (int i = 0; i < nMessages && it != _sceneMessages.end(); i++, it++) {
-		
-		switch ((*it)->getType())
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		if (m->getType() == MSG_ADD_ENTITY)
 		{
-		case MSG_CONTROLLER_STATE:
+			addEntity(static_cast<MAddEntity*>(m)->getEntity());
+		}
+		else if (m->getType() == MSG_CONTROLLER_STATE)
+		{
 
-		default:
-			break;
 		}
-		
-		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
 
 }
 

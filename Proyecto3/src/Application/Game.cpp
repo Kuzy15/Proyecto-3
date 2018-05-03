@@ -53,7 +53,7 @@ Game::Game(){
 	 initOgre();
 
 
-	 actScene = new BasicScene("testScene", this);
+	 actScene = new GamePlayScene("GamePlayScene", this,2);
 	 
 }
  Game::~Game(){
@@ -70,8 +70,8 @@ Game::Game(){
 	 world = nullptr;
 
 	 InputManager::resetInstance();
-	 /*if (root != nullptr)
-		delete root;*/
+	// if (root != nullptr)
+		//delete root;
 
  }
 #pragma endregion
@@ -82,7 +82,7 @@ Game::Game(){
 	 //else throw exception so we know no window is there
  }
  Ogre::Root * Game::getRoot(){
-	 return root;
+	 return Ogre::Root::getSingletonPtr();
  }
  b2World* Game::getPhysicsWorld(){
 	 return world;
@@ -111,6 +111,8 @@ bool Game::initOgre(){
 #endif
 	try{
 		root = new Ogre::Root(plugCfgLoc);
+		
+		
 	}
 	catch (std::exception e){
 #ifdef _DEBUG
@@ -222,7 +224,8 @@ void Game::loop() {
 void Game::render() {
 
 	Ogre::WindowEventUtilities::messagePump();
-	if (pWindow->isClosed())return;
+	if (pWindow->isClosed())
+		return;
 	if (!root->renderOneFrame())return;
 	
 

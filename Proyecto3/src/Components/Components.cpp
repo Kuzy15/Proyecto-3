@@ -84,9 +84,9 @@ void CMessageSend::getMessage(Message * m) {
 
 
 /*-------------------------OGRE COMPONENTS------------------------------------*/
+#pragma region RenderComponent
 //Render Component class. Father to every
 //other render component.
-#pragma region renderComponent
 
 CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
 	: GameComponent(t, father), pSceneMgr(scnM)
@@ -140,10 +140,10 @@ void CRender::getMessage(Message *m) {
 }
 
 #pragma endregion
+#pragma region meshRenderComponent
 //Mesh Render component.
 //Takes a string with the name of the mesh to render
 //and renders it.
-#pragma region meshRenderComponent
 CMeshRender::CMeshRender(Ogre::Vector3 pos, float grades ,std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->setPosition(pos);
@@ -219,9 +219,9 @@ void CCamera::getMessage(Message * m) {
 #pragma endregion
 /*-------------------------BOX2D COMPONENTS------------------------------------*/
 
+#pragma region RigidBodyComponent
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
-#pragma region RigidBodyComponent
 CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 	
