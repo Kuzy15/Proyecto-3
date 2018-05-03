@@ -15,9 +15,9 @@ typedef enum E_BULLET;
 
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
-const float MAX_SPEED = 0.0f;
-const int MAX_LIFE = 0;
-const float MAX_JUMP_DISTANCE = 0.0f;
+const float MAX_SPEED = 13.0f;
+const int MAX_LIFE = 150;
+const float MAX_JUMP_DISTANCE = 150.0f;
 const float MAX_FIRE_RATE = 0.0f;
 
 //Pixels per meter

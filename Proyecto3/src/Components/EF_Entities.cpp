@@ -108,7 +108,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	bRa->addComponent(new CRigidBody(bRa, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 10.0f));
+	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 500.0f));
 
 
 	return bRa;

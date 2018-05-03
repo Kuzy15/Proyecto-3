@@ -472,7 +472,7 @@ void CRigidBody::tick(float delta) {
 	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
-	//std::cout << _body->GetMass() << std::endl;
+	std::cout << _body->GetLinearVelocity().x << std::endl;
 
 
 }
@@ -502,12 +502,12 @@ void CRigidBody::getMessage(Message * m) {
 		case MSG_RIGIDBODY_JUMP:
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
-			std::cout << jForce << std::endl;
+			//std::cout << jForce << std::endl;
 			_body->ApplyLinearImpulseToCenter(b2Vec2(0, jForce), true);
 			break;
 		case MSG_DASH:
 			mDash = static_cast<MDash*>(m);
-			_body->ApplyLinearImpulseToCenter(*(mDash->getDashValue()), true);
+			_body->SetLinearVelocity(b2Vec2(mDash->getDashValue()->x, _body->GetLinearVelocity().y));
 			break;
 		default:
 			break;
@@ -645,8 +645,8 @@ void CPlayerMove::getMessage(Message* m)
 	if (m->getType() == MSG_PLAYER_MOVE_X){
 		//transformarlo
 		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
-		value = value / 40;
-		//std::cout << value << std::endl;
+		//value = value / 40;
+		std::cout << "VALUE: "<< value << std::endl;
 		if (value > _moveVel)
 			value = _moveVel;
 		else if (value < - _moveVel)
@@ -827,16 +827,35 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 
 	//Calculate point
 	/*5 - 327*/
+
+	//revisar esto no llega nunca a cero, pasa de -327 a -60 y entre -60 y 60 no detecta
+	//std::cout << vX << std::endl;
+
+
 	//Normalize
 	if (vX == 0){
 		iniPos.x = 0;
+		iniPos.z = 0;		
 		iniPos.y = _radius;
+
+		if (vY < 0)
+			iniPos.y =  - _radius;
+
+
+	
+	}
+	else if (vY <= 10 && vY >= -10){
+	
+		iniPos.x = _radius;
+		iniPos.y = 0;
 		iniPos.z = 0;
 
-		if (vY > 0)
-			angle = 180;
-		else
-			angle = 0;
+
+		if (vX < 0)
+			iniPos.x =  - _radius;
+
+	
+	
 	}
 	else{
 
@@ -1031,8 +1050,8 @@ void CPSkillSyn::getMessage(Message* m){}
 //Dash
 CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
 	_timeCounter = _lastTimeDash = 0;
-	_dashRate = 5000.0f; //5 seconds
-	_dashImpulse = 300.0f;
+	_dashRate = 500.0f; //5 seconds
+	_dashImpulse = 100.0f;
 }
 CShuHeaddress::~CShuHeaddress(){}
 
@@ -1045,7 +1064,7 @@ void CShuHeaddress::getMessage(Message* m)
 			_timeCounter = SDL_GetTicks();
 			ControllerInputState cState = inputM->getCInputState();
 			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _dashRate){
-				b2Vec2 *impulse = calculateDash(cState.Axis_RightX,cState.Axis_RightY);
+				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,cState.Axis_LeftY);
 				pEnt->getMessage(new MDash(pEnt->getID(), impulse));
 				_lastTimeDash = SDL_GetTicks();
 			}
@@ -1061,7 +1080,7 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 	float normalX = xValue * SPAWN_PARSE;
 	float normalY = yValue * SPAWN_PARSE;
 
-	return new b2Vec2(_dashImpulse * normalX, _dashImpulse * normalY);
+	return new b2Vec2(_dashImpulse * normalX, /*_dashImpulse * normalY*/ 0.0f);
 
 }
 #pragma endregion
