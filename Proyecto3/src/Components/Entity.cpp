@@ -37,7 +37,7 @@ Entity::~Entity()
 			it = components.erase(it);
 		}
 		catch (std::exception &e){
-			std::cout << e.what() << std::endl;
+//			std::cout << e.what() << std::endl;
 		}
 		delete aux;
 		

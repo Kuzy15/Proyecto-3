@@ -14,7 +14,6 @@
 #define new DEBUG_NEW
 #endif
 
-
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
 //It implements basic behaviours like gets, sets 
@@ -70,10 +69,6 @@ CMessageSend::CMessageSend(Entity * father):GameComponent(CMP_MESSAGE_SEND, fath
 CMessageSend::~CMessageSend() {
 }
 void CMessageSend::tick(float delta) {
-	/*i++;
-	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3(0, 0, i/5.0), 3.14*i/180.0, pEnt->getID());
-	pEnt->getMessage(m);*/
-
 	
 }
 void CMessageSend::getMessage(Message * m) {
@@ -144,12 +139,24 @@ void CRender::getMessage(Message *m) {
 //Takes a string with the name of the mesh to render
 //and renders it.
 #pragma region meshRenderComponent
-CMeshRender::CMeshRender(Ogre::Vector3 pos, float grades ,std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale) :CRender(CMP_MESH_RENDER, father, scnM) {
+CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(meshName);
 	pOgreSceneNode->setPosition(pos);
-	pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
+	
 	pChild->attachObject(pOgreEnt);
 	pChild->scale(scale);
+	//pChild->showBoundingBox(true);
+	//pOgreEnt->setCastShadows(true);
+	
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0)));
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
+
+	
+	
+	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(90.0f), Ogre::Vector3(1, 0, 0)));
+	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
+	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
 }
 CMeshRender::~CMeshRender() {
 	//pChild->detachObject(pOgreEnt);
@@ -170,6 +177,21 @@ void CMeshRender::getMessage(Message * m) {
 
 }
 
+Ogre::Vector3 CMeshRender::getSize(){
+
+	Ogre::Vector3 v;
+
+	//Ogre::AxisAlignedBox box = pSceneMgr->getSceneNode(pChild->getName())->_getWorldAABB();
+
+	Ogre::AxisAlignedBox box = pOgreEnt->getWorldBoundingBox(true);
+
+	v = box.getSize();
+
+	return v;
+}
+
+
+/*------------------------- CAMERA COMPONENTS------------------------------------*/
 #pragma endregion
 #pragma region Camera Component
 CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
@@ -186,7 +208,7 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 
 	pCam->setNearClipDistance(clipDistance);
 
-	vp->setBackgroundColour(Ogre::ColourValue(0.5, 0.5, 0.5));
+	vp->setBackgroundColour(Ogre::ColourValue(0.2, 0.5, 0.8));
 
 	//borrar
 	_vp = vp;
@@ -207,12 +229,90 @@ void CCamera::tick(float delta) {
 
 }
 void CCamera::getMessage(Message * m) {
-	//DEBUG MESSAGE RECEIVING
-	/*if (m->getType() == MSG_UPDATE_TRANSFORM) {
-		std::cout << "MESSAGE RECEIVED" << std::endl;
-		_lookAt = static_cast<MUpdateTransform *> (m)->GetPos();
+	
+}
+#pragma endregion
+
+#pragma region Action Camera Component 
+CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
+	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
+	smooth(40.0), MAXZ(100), MINZ(40) {
+	_pj1 = Ogre::Vector3(20, 20, 0);
+	_pj2 = Ogre::Vector3(-20, 20, 0);
+
+	//Inicializating values for the camera
+	_lastPos = Ogre::Vector3(0, 0, 100);
+	_pos = Ogre::Vector3(0, 0, 100);
+
+	//We start looking at the center of the 2 players
+	_lookAt = (_pj1 + _pj2) / 2.0;
+
+	//And we calculate the zRatio.
+	zRatio = (_pj1.distance(_pj2) / _pos.z);
+}
+
+CActionCamera::~CActionCamera() {
+
+}
+
+//Function that calculates if a certain point is out of the defined boundaries for the camera
+bool outOfBoundaries(const Ogre::Vector3 &pos) {
+	//Boundaries in each axis
+	const float BOUNDARY_X = 100;
+	const float BOUNDARY_Y = 100;
+
+	if ((pos.x > BOUNDARY_X || pos.x < -BOUNDARY_X) || (pos.y > BOUNDARY_Y || pos.y < -BOUNDARY_Y))return true;
+	else return false;
+}
+void CActionCamera::getMessage(Message * m) {
+	
+	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "AhPuch") {
+		//We check if the player is inside the boundaries of the camera. If so, we put its camera position to 0.0.0
+		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+			_pj1 = Ogre::Vector3::ZERO;
+		//if it has moved from its previous position, we update its position
+		else 
+			_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
+
 	}
-	*/
+	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Ra") {
+		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+			_pj2 = Ogre::Vector3::ZERO;
+		else 
+			_pj2 = static_cast<MUpdateTransform * >(m)->GetPos();
+	}
+	else return;
+	
+	//We calculate the midpoint between the 2 players
+	_newPos = (_pj1 + _pj2) / 2.0;
+	
+	//we want the camera to be always a bit higher than the players
+	_newPos.y += 5;
+
+	//Now we want to know the camera new Z position
+	float camz = (_pj1.distance(_pj2) / zRatio);
+
+
+	//We dont want the camera to go too far away or too close
+	if (camz >= MAXZ)_newPos.z = MAXZ;
+	else if (camz < MINZ)_newPos.z = MINZ;
+	else _newPos.z = camz;
+
+	//Now we want to make it smooth, for that we calculate the director vector of the line.
+	//And we divide it by the smooth factor we declared at initialization
+	Ogre::Vector3 dir = (_newPos - _pos) / smooth;
+	
+
+	_pos += dir;
+	_lookAt = _pos;
+	_lookAt.z = 0;
+	_lookAt.y += 10;
+	
+
+}
+
+void CActionCamera::tick(float delta) {
+	CCamera::tick(delta);
 
 }
 
@@ -267,7 +367,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	_body->SetUserData(pEnt);	
 
 	//Fixture Definition.	
-	_fixtureDef.density = 950.0f;
+	_fixtureDef.density = 9.0f / 3.0f;
 	//_fixtureDef.restitution = 0.0f;
 	_fixtureDef.friction = 0.0f;
 
@@ -275,20 +375,20 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	{
 		case MASK_PLAYER:
 			//_fixtureDef.filter.categoryBits = MASK_PLAYER;				
-			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST | MASK_BULLET;
 			
 			break;
 		case MASK_STATIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD;
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
 			break;
 		case MASK_DINAMIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD;
+			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
 			break;
 		case MASK_BULLET:
 			_fixtureDef.filter.categoryBits = MASK_BULLET;
-			_fixtureDef.filter.maskBits = /*MASK_LEGS | MASK_CHEST | MASK_HEAD |*/ MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
+			_fixtureDef.filter.maskBits = MASK_LEGS | MASK_CHEST | MASK_HEAD | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
 			break;
 		default:
 			break;
@@ -332,8 +432,19 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 		static_cast<b2PolygonShape*>(&_pShape)->SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
+
 		_fixtureDef.filter.categoryBits = MASK_LEGS;
 		_fixture = _body->CreateFixture(&_fixtureDef);
+
+		//Foot sensor
+		static_cast<b2PolygonShape*>(_shape)->SetAsBox(legsSize / 2, playerSize / 2, { _rbWeight / 2, 0 }, 0);
+		//_fixtureDef.isSensor = true;
+		_fixtureDef.shape = _shape;
+		_fixtureDef.density = 1.0f;
+		_fixtureDef.filter.categoryBits = MASK_FOOT_SENSOR;
+		_fixtureDef.filter.maskBits = MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
+		_fixture = _body->CreateFixture(&_fixtureDef);
+		_fixture->SetSensor(true);	
 		break;
 	default:
 		break;
@@ -359,7 +470,7 @@ void CRigidBody::tick(float delta) {
 	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
-	//std::cout << _body->GetAngle() << std::endl;
+	//std::cout << _body->GetMass() << std::endl;
 
 
 }
@@ -388,12 +499,9 @@ void CRigidBody::getMessage(Message * m) {
 		case MSG_RIGIDBODY_JUMP:
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
-			
-			_body->ApplyForceToCenter(b2Vec2(0, jForce),true);
-			break;
-		case MSG_COLLISION_TERRAIN:
-			_body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x,0));
-			break;
+			std::cout << jForce << std::endl;
+			_body->SetLinearVelocity(b2Vec2(_body->GetLinearVelocity().x, jForce));
+			break;		
 		default:
 			break;
 	}
@@ -414,10 +522,10 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 			
 		MCollisionBegin* mColBegin = static_cast<MCollisionBegin*>(m);
 		_myMask = mColBegin->GetMyCategory();
-		std::cout << mColBegin->GetContactMask() << std::endl;
+		//std::cout << mColBegin->GetContactMask() << std::endl;
 		switch (mColBegin->GetContactMask()){
 			case MASK_STATIC_TERRAIN:
-				if (_myMask == MASK_LEGS)
+				if (_myMask == MASK_FOOT_SENSOR)
 					pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
 				break;
 			default:
@@ -462,16 +570,17 @@ void CPlayerController::getMessage(Message* m){
 				float finalXValue, finalYValue;
 				finalXValue = finalYValue = 0.0f;
 				//Check joystick rotation, to control the bullet spawn
-				if ((xValue > 10.0f || xValue < -10.0f) && (yValue > 10.0f || yValue < -10.0f)){
+				if ((xValue > 27.0f || xValue < -27.0f) && (yValue > 27.0f || yValue < -27.0f)){
 					finalXValue = cState.Axis_RightX;
 					finalYValue = cState.Axis_RightY;
+					MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
+					pEnt->getMessage(m);
 				}
 				else{
 					//if
 					//if
 				}
-				MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
-				pEnt->getMessage(m);
+				
 
 			}
 			
@@ -515,7 +624,8 @@ void CPlayerMove::getMessage(Message* m)
 	if (m->getType() == MSG_PLAYER_MOVE_X){
 		//transformarlo
 		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
-		value = value / 200.0f;
+		value = value / 40;
+		//std::cout << value << std::endl;
 		if (value > _moveVel)
 			value = _moveVel;
 		else if (value < - _moveVel)
@@ -540,7 +650,7 @@ void CPlayerJump::getMessage(Message* m)
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
 		if (_nJumps > 0){
-			std::cout << _nJumps << std::endl;
+			//std::cout << _nJumps << std::endl;
 			pEnt->getMessage(new MRigidbodyJump(_jumpForce * _nJumps, pEnt->getID()));
 			_nJumps--;
 		}
@@ -581,15 +691,18 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		if ((_timeCounter - _lastTimeShot) > _fireRate){
 			float angle;
 			Ogre::Vector3 iniPos;
-			calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle, iniPos);
-			Ogre::Vector3 dir = iniPos;
-			iniPos.x += _ogrepos.x;
-			iniPos.y += _ogrepos.y;
-			iniPos.z = _ogrepos.z;
+			if (mPS->getXValue() != 0 ||  mPS->getYValue() != 0){
+				calculateSpawnPoint(mPS->getXValue(), mPS->getYValue(), angle, iniPos);
+				Ogre::Vector3 dir = iniPos;
+				iniPos.x += _ogrepos.x;
+				iniPos.y += _ogrepos.y;
+				iniPos.z = _ogrepos.z;
 
-			Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle);
-			pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
-			b->getMessage(new MShot(dir.x, dir.y,pEnt->getID()));
+				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle);
+				pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
+				b->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
+
+			}
 
 			_lastTimeShot = (SDL_GetTicks());
 		}
@@ -679,7 +792,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 		float lengthIdle = _radius;
 
 		float cos = escalarProduct / (lengthIdle * lengthIni);
-		std::cout << cos << std::endl;
+//		std::cout << cos << std::endl;
 
 		if (cos > 1)
 			cos = 1;

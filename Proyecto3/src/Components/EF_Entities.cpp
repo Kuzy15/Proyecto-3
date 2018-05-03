@@ -14,15 +14,15 @@
 //Ra
 Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
-	Entity* Ra = new Entity(id, s);
+	Entity* Ra = new Entity("Ra", s);
 
 	//Mesh Render
-	Ra->addComponent(new CMeshRender({2,2,0}, 0, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 90, 0 });
+	Ra->addComponent(cM);
 
 	//RigidBody
-	float height = 6.0f;
-	float width = 4.0f;
-	Ra->addComponent(new CRigidBody(Ra, s->getGame()->getPhysicsWorld(), iniPos, height, width, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	Ogre::Vector3 size = cM->getSize();
+	Ra->addComponent(new CRigidBody(Ra, s->getGame()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
 
 	//PlayerController
 	Ra->addComponent(new CPlayerController(Ra, 0));
@@ -34,10 +34,10 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
 	//Jump
-	float jumpForce = 75.0f;
+	float jumpForce = 5.0f;
 	Ra->addComponent(new CPlayerJump(Ra, jumpForce));
 	//Move
-	float v = 0.8f;
+	float v = 8.0f;
 	Ra->addComponent(new CPlayerMove(Ra, v));
 	
 	
@@ -48,15 +48,15 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
 Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 
-	Entity* AhPuch = new Entity(id, s);
+	Entity* AhPuch = new Entity("AhPuch", s);
 
 	//Mesh Render
-	AhPuch->addComponent(new CMeshRender({ 2, 2, 0 }, 0, "AhPuch.mesh", AhPuch, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }));
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "AhPuch.mesh", AhPuch, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 });
+	AhPuch->addComponent(cM);
 
 	//RigidBody
-	float height = 6.0f;
-	float width = 4.0f;
-	AhPuch->addComponent(new CRigidBody(AhPuch, s->getGame()->getPhysicsWorld(), iniPos, height, width, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	Ogre::Vector3 size = cM->getSize();
+	AhPuch->addComponent(new CRigidBody(AhPuch, s->getGame()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
 
 	//PlayerController
 	AhPuch->addComponent(new CPlayerController(AhPuch, 1));
@@ -71,7 +71,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	float jumpForce = 75.0f;
 	AhPuch->addComponent(new CPlayerJump(AhPuch, jumpForce));
 	//Move
-	float v = 0.8f;
+	float v = 5.0f;
 	AhPuch->addComponent(new CPlayerMove(AhPuch, v));
 
 
@@ -89,7 +89,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bRa->addComponent(new CMeshRender(pos, angle, "fish.mesh", bRa, s->getSceneManager(), { 0.4f, 0.4f, 0.4f }));
+	bRa->addComponent(new CMeshRender(pos, "WoodPallet.mesh", bRa, s->getSceneManager(), { 0.4f, 0.4f, 0.4f }, {0,0,angle}));
 
 
 	//RigidBody
@@ -112,7 +112,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bAhPuch->addComponent(new CMeshRender(pos, angle, "penguin.mesh", bAhPuch, s->getSceneManager(), { 0.1f, 0.1f, 0.1f }));
+	bAhPuch->addComponent(new CMeshRender(pos, "fish.mesh", bAhPuch, s->getSceneManager(), { 0.1f, 0.1f, 0.1f }, {0,0,angle}));
 
 
 	//RigidBody
@@ -121,7 +121,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, 10.f, 1.0f));
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, 10.f, 20.0f));
 
 
 	return bAhPuch;

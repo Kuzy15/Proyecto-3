@@ -31,10 +31,11 @@ CollisionManager collisionManager;
 Game::Game(){
 	_instance = this;
 
-	
+
 	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
+	//world->SetAllowSleeping(false);
 	world->SetContactListener(&collisionManager);
 	
 	

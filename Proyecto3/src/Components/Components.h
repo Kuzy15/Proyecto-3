@@ -21,7 +21,7 @@ const float MAX_JUMP_DISTANCE = 0.0f;
 const float MAX_FIRE_RATE = 0.0f;
 
 //Pixels per meter
-const int PPM = 100;
+const float PPM = 3.0f;
 
 
 
@@ -150,12 +150,13 @@ class CMeshRender: public CRender
 {
 public:
 
-	CMeshRender(Ogre::Vector3 pos, float grades, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale);
+	CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation);
 	~CMeshRender();
 
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	Ogre::Vector3 getSize();
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -177,19 +178,48 @@ class CCamera: public GameComponent
 {
 public:
 	CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt,  int clipDistance);
-	~CCamera();
+	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
+protected:
 	std::string _camName;
 	Ogre::SceneManager * _scnMgr;
 	Ogre::Viewport * _vp;
-	Ogre::Vector3 _pos, _lastPos;
+	Ogre::Vector3 _pos, _lastPos, _newPos;
 	Ogre::Vector3 _lookAt, _lastLookAt;
 	
+
+
+	//Parameters for the camera movement
 	Ogre::Camera * pCam;
 };
+
+class CActionCamera: public CCamera
+{
+public:
+	CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp);
+	~CActionCamera();
+
+	virtual void getMessage(Message * m);
+	virtual void tick(float delta);
+
+	//Cache positions of the players
+	Ogre::Vector3 _pj1, _pj2;
+	//Vector that we will use to add to our position
+	Ogre::Vector3 _toMove;
+	//Smooth factor, so the camera does not move sharply
+	const float smooth;
+	//Max and min Z coordinates for the camera.
+	const float MAXZ, MINZ;
+
+	//Z ratio, to calculate the Z after initialization
+	float zRatio;
+
+private:
+
+};
+
 
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
@@ -201,7 +231,8 @@ typedef enum FilterMask {
 	MASK_BULLET = 0x0008,
 	MASK_HEAD = 0x0010,
 	MASK_CHEST = 0x0020,
-	MASK_LEGS = 0x0040
+	MASK_LEGS = 0x0040,
+	MASK_FOOT_SENSOR = 0x0080 ////0000 0000 1000 0000
 	
 
 };
