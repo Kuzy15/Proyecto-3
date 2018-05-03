@@ -252,21 +252,34 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	textArea->setDimensions(100, 100);
 	textArea->setCaption("Hello, World!");
 	textArea->setCharHeight(16);
-
 	textArea->setFontName("Caption");
+
+	Ogre::TextAreaOverlayElement * secs = static_cast<Ogre::TextAreaOverlayElement*>(
+		overlayManager.createOverlayElement("TextArea", "Timer")
+		);
+
+
+	
 	
 	textArea->setColourBottom(Ogre::ColourValue(0.3, 0.5, 0.3));
 	textArea->setColourTop(Ogre::ColourValue(0.5, 0.7, 0.5));
 
 	// Create an overlay, and add the panel
 	
-	Ogre::Overlay* overlay = overlayManager.create("GUI");
-	overlay->add2D(panel);
+	//overlay = overlayManager.create("GUI");
+
+	//overlay->add2D(panel);
 
 	// Add the text area to the panel
 	panel->addChild(textArea);
-	
+
+	overlay = overlayManager.getByName("KEK");
+//	Ogre::OverlayContainer *  e = overlay->getChild("TimerPanel");
+//	e->getChild("TimerPanel/TimeText")->setCaption(to_string(i));
+
 	// Show the overlay
+	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	overlay->show();
 	overlay->show();
 }
 

@@ -56,6 +56,7 @@ protected:
 	//Basic Ogre atributes common to every scene
 	Ogre::SceneManager * scnMgr;
 	Ogre::Viewport * vp;
+	Ogre::Overlay* overlay;
 };
 
 /*----------------------------- BASIC SCENE -----------------------------*/

@@ -1,0 +1,57 @@
+
+// Graphical User Interface for the PlayScene.
+
+
+
+// The name of the overlay comes first
+KEK
+{
+    zorder 200
+
+    container Panel(TimerPanel)
+    {
+        // Center it horizontally, put it at the top
+        left 0.45
+        top 0.05
+        width 0.1
+        height 0.1
+	      material BaseWhite
+
+        // Another panel nested in this one
+        container TextArea(TimerPanel/TextArea)
+        {
+            metrics_mode relative
+            //Horizontal allignment can be
+            //Left, center or right
+            horz_align center
+            left 0
+            top 0
+            width 1
+            height 1
+            font_name Caption
+            colour 0 0 0
+            caption AA
+            char_height 0.02
+
+         }
+    }
+
+    container Panel(Player1)
+    {
+        top 0.01
+        left 0.01
+        width 0.3
+        height 0.2
+        material BaseWhite
+    }
+    container Panel(Player2)
+    {
+      top 0.01
+      left 0.69
+      width 0.3
+      height 0.2
+      material BaseWhite
+    }
+
+
+}

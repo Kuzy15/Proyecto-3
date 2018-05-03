@@ -184,9 +184,11 @@ bool Game::initOgre(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
 	//Now we init every resource previously added
-	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-
-	
+	try {
+		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; }
+		
 
 
 
