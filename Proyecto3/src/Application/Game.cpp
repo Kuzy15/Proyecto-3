@@ -31,10 +31,11 @@ CollisionManager collisionManager;
 Game::Game(){
 	_instance = this;
 
-	
+
 	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
+	//world->SetAllowSleeping(false);
 	world->SetContactListener(&collisionManager);
 	
 	
@@ -234,14 +235,7 @@ void Game::render() {
 //Read the input
 void Game::handleInput(){
 	
-	float current = SDL_GetTicks();
-	
-	//6 times per second
-	if (current > inputTime + 100){
 		InputManager::getInstance().handleInput();
-		inputTime = SDL_GetTicks();
-	}
-	
 
 }
 
