@@ -41,7 +41,8 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos){
 	Ra->addComponent(new CPlayerMove(Ra, v));
 	//Ra->addComponent(new CPSkillHades(Ra, 10.0f, 10.0f));
 	//Ra->addComponent(new CPSkillHermes(Ra, 10.0f, 10.0f));
-	Ra->addComponent(new CPSkillUll(Ra, 25.0f, 100.0f));
+	//Ra->addComponent(new CPSkillUll(Ra,0));
+	Ra->addComponent(new CShuHeaddress(Ra, 0));
 
 
 

@@ -2,9 +2,11 @@
 #include "Entity.h"
 #include "Components.h"
 #include "DebugNew.h"
+#include "Box2D.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
 
 //Basic Message Class implementation.
 #pragma region basic Message 
@@ -194,6 +196,17 @@ MDamage::~MDamage(){}
 	MDeactivate::MDeactivate(std::string emmiter) : Message(MSG_PASSMOD_DES, ENTITY, emmiter){}
 	MDeactivate::~MDeactivate(){}
 
+
+#pragma endregion
+
+
+	//--------------------------------------------------	DASH MSG		----------------------------------------------------------//
+#pragma region Dash
+
+	MDash::MDash(std::string emmiter, b2Vec2 *impulse) : Message(MSG_DASH, ENTITY, emmiter), _dashValue(impulse){}
+	MDash::~MDash(){
+		delete _dashValue;
+	}
 
 #pragma endregion
 

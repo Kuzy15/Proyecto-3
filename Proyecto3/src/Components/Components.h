@@ -475,83 +475,111 @@ private:
 */
 
 /*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
-//Increase damage of a god
-class CPSkillHades : public GameComponent
+class CAbility : public GameComponent
 {
 public:
-	CPSkillHades(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, int pId); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CAbility();
+
+	
+
+protected:
+	float _componentLife;
+	float _componentArmor;
+	int _playerId;
+};
+
+
+//Increase damage of a god
+class CPSkillHades : public CAbility
+{
+public:
+	CPSkillHades(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillHades();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
-	float _componentLife;
-	float _componentArmor;
+
 };
 
 //invisibility
-class CPSkillVidar : public GameComponent
+class CPSkillVidar : public CAbility
 {
 public:
-	CPSkillVidar(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillVidar(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillVidar();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
-	float _componentLife;
-	float _componentArmor;
+
 };
 
 
 
 //Modify velocity of a god
-class CPSkillUll : public GameComponent
+class CPSkillUll : public CAbility
 {
 public:
-	CPSkillUll(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillUll(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillUll();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
-	float _componentLife;
-	float _componentArmor;
+
 };
 
 
 //Modify velocity and jump of a god
-class CPSkillHermes : public GameComponent
+class CPSkillHermes : public CAbility
 {
 public:
-	CPSkillHermes(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHermes(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillHermes();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
-	float _componentLife;
-	float _componentArmor;
+
 };
 
 
 //Modify vel of fire rate
-class CPSkillSyn : public GameComponent
+class CPSkillSyn : public CAbility
 {
 public:
-	CPSkillSyn(Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillSyn(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillSyn();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
+
+};
+
+
+/*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
+
+class CShuHeaddress : public CAbility
+{
+public:
+	CShuHeaddress(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CShuHeaddress();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
 private:
-	float _componentLife;
-	float _componentArmor;
+
+	b2Vec2* calculateDash(float xValue, float yValue);
+
+	float _timeCounter;
+	float _lastTimeDash;
+	float _dashRate;
+	float _dashImpulse;
+
 };
 
 #endif

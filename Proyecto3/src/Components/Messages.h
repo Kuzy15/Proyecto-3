@@ -8,6 +8,7 @@
 
 class Entity;
 class GameComponent;
+class b2Vec2;
 
 #pragma region CInputState
 
@@ -67,7 +68,8 @@ typedef enum MessageType{
 	MSG_MOD_VEL_JUMP,
 	MSG_MOD_FIRERATE,
 	MSG_PASSMOD_DES,
-	MSG_DAMAGE
+	MSG_DAMAGE,
+	MSG_DASH
 	
 
 	
@@ -422,5 +424,17 @@ public:
 private:
 	float _valueVel;
 	float _valueJump;
+};
+
+//Dash Message
+class MDash : public Message{
+public:
+	MDash(std::string emmiter, b2Vec2* impulse);
+	~MDash();
+
+	inline b2Vec2* getDashValue(){ return _dashValue; }
+private:
+	b2Vec2* _dashValue;
+	
 };
 #endif

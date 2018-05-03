@@ -486,6 +486,7 @@ void CRigidBody::getMessage(Message * m) {
 	float velY;
 	MRigidbodyJump* mJump;
 	float jForce;
+	MDash* mDash;
 	
 	switch (m->getType()){
 		case MSG_RIGIDBODY_MOVE_X:
@@ -503,7 +504,11 @@ void CRigidBody::getMessage(Message * m) {
 			jForce = mJump->getForce();
 			std::cout << jForce << std::endl;
 			_body->ApplyLinearImpulseToCenter(b2Vec2(0, jForce), true);
-			break;		
+			break;
+		case MSG_DASH:
+			mDash = static_cast<MDash*>(m);
+			_body->ApplyLinearImpulseToCenter(*(mDash->getDashValue()), true);
+			break;
 		default:
 			break;
 	}
@@ -906,13 +911,10 @@ void CBullet::getMessage(Message* m){
 
 	//posible error de memoria dinamica
 	
-<<<<<<< HEAD
+
  	MShot* mShot;
 	MCollisionBegin* mCollision;
-=======
-	///todo esto deberia de estar dentro de cada case para queno halla fallos a la hoara de inicializar, asi con todo lo que este hecho en este estilo
-	MShot* mShot;
->>>>>>> origin/pssiveSkill
+
 	float xDir;
 	float yDir;
 
@@ -929,7 +931,7 @@ void CBullet::getMessage(Message* m){
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
 		
 		break;
-<<<<<<< HEAD
+
 	case MSG_COLLISION:
 		if (!_toDelete){
 			mCollision = static_cast<MCollisionBegin*>(m);
@@ -938,8 +940,7 @@ void CBullet::getMessage(Message* m){
 			_toDelete = true;
 		}
 		break;
-=======
->>>>>>> origin/pssiveSkill
+
 	default:
 		break;
 	}
@@ -947,6 +948,17 @@ void CBullet::getMessage(Message* m){
 }
 #pragma endregion
 
+
+
+#pragma region Ability Component
+CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, int pId) :GameComponent(c, father), _componentLife(componentLife),
+_componentArmor(componentArmor), _playerId(pId)
+{
+	
+}
+CAbility::~CAbility(){}
+
+#pragma endregion
 
 ////////////iria debajo de la de life por mantener un orden
 //Armor Component
@@ -968,7 +980,7 @@ void CArmor::getMessage(Message* m){}
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+CPSkillHades::CPSkillHades(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -982,7 +994,7 @@ void CPSkillHades::getMessage(Message* m){}
 
 
 ///modify velocity of a god
-CPSkillUll::CPSkillUll(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+CPSkillUll::CPSkillUll(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -995,7 +1007,7 @@ void CPSkillUll::getMessage(Message* m){}
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+CPSkillHermes::CPSkillHermes(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1005,7 +1017,7 @@ void CPSkillHermes::getMessage(Message* m){}
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity* father, float componentLife, float componentArmor) :GameComponent(CMP_PASSIVE_SKILL, father), _componentLife(componentLife), _componentArmor(componentArmor){
+CPSkillSyn::CPSkillSyn(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1013,4 +1025,43 @@ CPSkillSyn::~CPSkillSyn(){}
 void CPSkillSyn::tick(float delta){}
 void CPSkillSyn::getMessage(Message* m){}
 
+#pragma endregion
+
+#pragma region Shu Headdress
+//Dash
+CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
+	_timeCounter = _lastTimeDash = 0;
+	_dashRate = 5000.0f; //5 seconds
+	_dashImpulse = 300.0f;
+}
+CShuHeaddress::~CShuHeaddress(){}
+
+void CShuHeaddress::tick(float delta){}
+void CShuHeaddress::getMessage(Message* m)
+{
+	if (m->getType() == MSG_INPUT_STATE){
+		MInputState* inputM = static_cast<MInputState*>(m);
+		if (inputM->getId() == _playerId){
+			_timeCounter = SDL_GetTicks();
+			ControllerInputState cState = inputM->getCInputState();
+			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _dashRate){
+				b2Vec2 *impulse = calculateDash(cState.Axis_RightX,cState.Axis_RightY);
+				pEnt->getMessage(new MDash(pEnt->getID(), impulse));
+				_lastTimeDash = SDL_GetTicks();
+			}
+		}
+	}
+
+
+
+}
+
+b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
+
+	float normalX = xValue * SPAWN_PARSE;
+	float normalY = yValue * SPAWN_PARSE;
+
+	return new b2Vec2(_dashImpulse * normalX, _dashImpulse * normalY);
+
+}
 #pragma endregion
