@@ -11,6 +11,7 @@
 #include "Game.h"
 #include "CollisionManager.h"
 #include "DebugNew.h"
+#include "EF_Entities.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -53,8 +54,14 @@ Game::Game(){
 	
 	 initOgre();
 
+	 std::vector<Player> players(2);
+	 players[0].controllerId = 0;
+	 players[0].god = EG_RA;
 
-	 actScene = new GamePlayScene("GamePlayScene", this,2);
+	 players[1].controllerId = 1;
+	 players[1].god = EG_AHPUCH;
+
+	 actScene = new GamePlayScene("GamePlayScene", this, players, ES_TEMPLE);
 	 
 }
  Game::~Game(){

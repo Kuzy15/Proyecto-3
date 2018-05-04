@@ -56,7 +56,8 @@ typedef enum ComponentType {
 	CMP_BASIC_ATTACK,
 	CMP_CAMERA,
 	CMP_BULLET,
-	CMP_PASSIVE_SKILL
+	CMP_PASSIVE_SKILL,
+	CMP_SHU_HEADDRESS
 
 
 
@@ -478,7 +479,7 @@ private:
 class CAbility : public GameComponent
 {
 public:
-	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, int pId); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CAbility();
 
 	
@@ -486,7 +487,7 @@ public:
 protected:
 	float _componentLife;
 	float _componentArmor;
-	int _playerId;
+	
 };
 
 
@@ -494,7 +495,7 @@ protected:
 class CPSkillHades : public CAbility
 {
 public:
-	CPSkillHades(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHades(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillHades();
 
 	virtual void tick(float delta);
@@ -507,7 +508,7 @@ public:
 class CPSkillVidar : public CAbility
 {
 public:
-	CPSkillVidar(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillVidar(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillVidar();
 
 	virtual void tick(float delta);
@@ -522,7 +523,7 @@ public:
 class CPSkillUll : public CAbility
 {
 public:
-	CPSkillUll(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillUll(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillUll();
 
 	virtual void tick(float delta);
@@ -536,7 +537,7 @@ public:
 class CPSkillHermes : public CAbility
 {
 public:
-	CPSkillHermes(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHermes(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillHermes();
 
 	virtual void tick(float delta);
@@ -550,7 +551,7 @@ public:
 class CPSkillSyn : public CAbility
 {
 public:
-	CPSkillSyn(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillSyn(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillSyn();
 
 	virtual void tick(float delta);
@@ -575,6 +576,7 @@ private:
 
 	b2Vec2* calculateDash(float xValue, float yValue);
 
+	int _playerId;
 	float _timeCounter;
 	float _lastTimeDash;
 	float _dashRate;

@@ -268,7 +268,7 @@ bool outOfBoundaries(const Ogre::Vector3 &pos) {
 }
 void CActionCamera::getMessage(Message * m) {
 	
-	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "AhPuch") {
+	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Player_0") {
 		//We check if the player is inside the boundaries of the camera. If so, we put its camera position to 0.0.0
 		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
 			_pj1 = Ogre::Vector3::ZERO;
@@ -277,7 +277,7 @@ void CActionCamera::getMessage(Message * m) {
 			_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
 
 	}
-	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Ra") {
+	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Player_1") {
 		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
 			_pj2 = Ogre::Vector3::ZERO;
 		else 
@@ -970,8 +970,8 @@ void CBullet::getMessage(Message* m){
 
 
 #pragma region Ability Component
-CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, int pId) :GameComponent(c, father), _componentLife(componentLife),
-_componentArmor(componentArmor), _playerId(pId)
+CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor) :GameComponent(c, father), _componentLife(componentLife),
+_componentArmor(componentArmor)
 {
 	
 }
@@ -999,7 +999,7 @@ void CArmor::getMessage(Message* m){}
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -1013,7 +1013,7 @@ void CPSkillHades::getMessage(Message* m){}
 
 
 ///modify velocity of a god
-CPSkillUll::CPSkillUll(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
+CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -1026,7 +1026,7 @@ void CPSkillUll::getMessage(Message* m){}
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1036,7 +1036,7 @@ void CPSkillHermes::getMessage(Message* m){}
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1048,7 +1048,7 @@ void CPSkillSyn::getMessage(Message* m){}
 
 #pragma region Shu Headdress
 //Dash
-CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, id){
+CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
 	_dashRate = 500.0f; //5 seconds
 	_dashImpulse = 100.0f;

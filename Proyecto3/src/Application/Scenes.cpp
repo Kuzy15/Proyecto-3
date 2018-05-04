@@ -199,55 +199,6 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
-	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(-20,20,0)));
-	addEntity(EntityFactory::getInstance().createGod(EG_AHPUCH, this, Ogre::Vector3(20, 20, 0)));
-	
-	/*Entity * Suelo2 = new Entity("2", this);
-	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-51, -15, 0), 10, 1, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-
-	addEntity(Suelo2);
-
-	Entity * Suelo3 = new Entity("3", this);
-	Suelo2->addComponent(new CRigidBody(Suelo3, game->getPhysicsWorld(), Ogre::Vector3(33, 5, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	addEntity(Suelo3);
-
-	Entity * Suelo4 = new Entity("4", this);
-	Suelo2->addComponent(new CRigidBody(Suelo4, game->getPhysicsWorld(), Ogre::Vector3(33, -26, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	addEntity(Suelo4);*/
-
-	Entity * e1 = new Entity("Suelo_01", this);
-	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
-	e1->addComponent(cM);
-	addEntity(e1);
-	
-	Entity * Suelo = new Entity("ColliderSuelo_01", this);
-	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3,cM->getSize().x, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
-
-	addEntity(Suelo);
-	
-	
-	
-	Entity * porton = new Entity("Porton_01", this);
-	//porton->addComponent(new CRigidBody(porton, game->getPhysicsWorld(), Ogre::Vector3(0, -10, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, scnMgr, { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
-	addEntity(porton);
-
-	Entity * rightEdge = new Entity("ColliderLimite_Dcho", this);
-	rightEdge->addComponent(new CRigidBody(rightEdge, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));	
-	addEntity(rightEdge);
-
-	Entity * temple = new Entity("Templo_01", this);
-	//temple->addComponent(new CRigidBody(temple, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	temple->addComponent(new CMeshRender({ -30, -2, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	addEntity(temple);
-
-	Entity * portonCollider = new Entity("ColliderPorton_01", this);
-	portonCollider->addComponent(new CRigidBody(portonCollider, game->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	//temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	addEntity(portonCollider);
-
 
 
 
@@ -320,7 +271,7 @@ void BasicScene::processScnMsgs()
 
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
-GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id, game) {
+GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 	//Debug draw
@@ -330,74 +281,32 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
 #endif
 
-	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+	//The limit time to choose cards
+	_prepareLimitTime = 30000.0f; //30 seconds
+	_prepareCounter = 0.0f;
 
-	light = scnMgr->createLight("MainLight");
-	light->setPosition(20, 80, 50);
+	//Load the stage passed by parameter
+	loadStage();
 
-
-	//SCENE DEBUG
-
-	Entity * cam = new Entity("Camera1", this);
-	cam->addComponent(
-		new CActionCamera(cam, scnMgr, vp)
-		);
-	addEntity(cam);
-
-	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
-
-	addEntity(EntityFactory::getInstance().createGod(EG_RA, this, Ogre::Vector3(-20, 20, 0)));
-	addEntity(EntityFactory::getInstance().createGod(EG_AHPUCH, this, Ogre::Vector3(20, 20, 0)));
-
-	Entity * e1 = new Entity("Suelo_01", this);
-	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
-	e1->addComponent(cM);
-	addEntity(e1);
-
-	Entity * Suelo = new Entity("ColliderSuelo_01", this);
-	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3, cM->getSize().x, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
-
-	addEntity(Suelo);
-
-
-
-	Entity * porton = new Entity("Porton_01", this);
-	//porton->addComponent(new CRigidBody(porton, game->getPhysicsWorld(), Ogre::Vector3(0, -10, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, scnMgr, { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
-	addEntity(porton);
-
-	Entity * rightEdge = new Entity("ColliderLimite_Dcho", this);
-	rightEdge->addComponent(new CRigidBody(rightEdge, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	addEntity(rightEdge);
-
-	Entity * temple = new Entity("Templo_01", this);
-	//temple->addComponent(new CRigidBody(temple, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	temple->addComponent(new CMeshRender({ -30, -2, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	addEntity(temple);
-
-	Entity * portonCollider = new Entity("ColliderPorton_01", this);
-	portonCollider->addComponent(new CRigidBody(portonCollider, game->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	//temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	addEntity(portonCollider);
-
-
-	//GAMEPLAY SCENE SET UP
-	/*Create the players Entities(depends on the parameter passed by argument. This value
-	//must correspond with the controllers connected).
-	_nPlayers = nP;
-	for (int i = 0; i < _nPlayers; i++){
-		_players[i] = new Entity(std::to_string(i), this);
-		addEntity(_players[i]);
+	//Store and configure the players structure
+	_players = players;
+	std::vector<Ogre::Vector3> playersPos(2);
+	playersPos[0] = Ogre::Vector3(20.0f, 0.0f, 0.0f);
+	playersPos[1] = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
+	
+	int i = 0;
+	for (Player p : _players){
+		p.entity = EntityFactory::getInstance().createGod(p.god, this, playersPos[i],p.controllerId);
+		addEntity(p.entity);
+			i++;
 	}
-	*/
 
 	//Not paused at start
 	_paused = false;
 
-	//Set the starter state to LOADOUT
+	//Set the starter state to SETUP
 	_currState = GS_SETUP;
+	_prepareCounter = SDL_GetTicks();
 }
 GamePlayScene::~GamePlayScene(){
 	delete light;
@@ -422,11 +331,11 @@ bool GamePlayScene::run(){
 		break;
 		//This state should control the gameplay state (Time, rounds, the end, etc)
 	case GS_BATTLE:
-		battle();
+		battlePhase();
 		break;
 		//Last state before leave the scene
 	case GS_END:
-		end();
+		endPhase();
 	case GS_STOPPED:
 		
 		break;
@@ -474,11 +383,13 @@ void GamePlayScene::processScnMsgs(){
 
 }
 
-void GamePlayScene::loadOut(){
+void GamePlayScene::preparePhase(){
 	
 
-
-
+	float currentTime = SDL_GetTicks();
+	if (currentTime - _prepareCounter > _prepareLimitTime)
+		_currState = GS_BATTLE;
+	
 
 
 
@@ -503,7 +414,7 @@ void GamePlayScene::loadOut(){
 		}
 }
 
-void GamePlayScene::battle(){
+void GamePlayScene::battlePhase(){
 	/*
 		Pick data from the battle State (_bS), and control the end of it
 	*/
@@ -539,7 +450,7 @@ void GamePlayScene::battle(){
 
 }
 
-void GamePlayScene::end(){
+void GamePlayScene::endPhase(){
 
 }
 
@@ -548,5 +459,17 @@ void GamePlayScene::controllerDisconected(int id){
 	_paused = true;
 
 
+}
+
+void GamePlayScene::loadStage(){
+
+	//Store the entities in an aux array
+	std::vector<Entity*> stageEntities = EntityFactory::getInstance().createStage(_stage, this);
+
+	//Then push them to the main array of entities
+	for (Entity* e : stageEntities){
+		addEntity(e);
+	}
+	
 }
 #pragma endregion

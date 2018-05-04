@@ -4,10 +4,12 @@ class Entity;
 class Message;
 class Game;
 class b2Body;
+enum E_GOD;
+enum E_STAGE;
 
 
 
- 
+#pragma region Game Scene
 
 /*----------------------------- GAME SCENE -----------------------------*/
 //Father class to every scene in the game.
@@ -67,6 +69,9 @@ protected:
 
 };
 
+#pragma endregion
+
+#pragma region Basic Scene
 /*----------------------------- BASIC SCENE -----------------------------*/
 
 //Basic class to debug and test the ogre implementation
@@ -87,6 +92,10 @@ private:
 	Ogre::Light * light;
 	
 };
+
+#pragma endregion
+
+#pragma region GameplayScene
 
 /*----------------------------- GAMEPLAY SCENE -----------------------------*/
 
@@ -118,11 +127,17 @@ struct BattleState{
 	float timeCountStart = 0;	//Time when battle started
 };
 
+struct Player{
+	Entity* entity;
+	int controllerId;
+	E_GOD god;
+};
+
 
 class GamePlayScene : public GameScene
 {
 public:
-	GamePlayScene(std::string id, Game * game, int nPlayers);
+	GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage);
 	virtual ~GamePlayScene();
 
 	virtual bool run();
@@ -131,20 +146,30 @@ public:
 
 private:
 	//Methods that manages the state of the scene
-	void loadOut();
-	void battle();
-	void end();
+	void preparePhase();
+	void battlePhase();
+	void endPhase();
+	//Load the stage
+	void loadStage();
 	void controllerDisconected(int id);
 
 	Ogre::Light * light;
 
 	GameplayState _currState;	//The current state of the scene
 	BattleState _bS;		//The state of the battle
+	E_STAGE _stage;			//Stage type
+	const int TOTAL_ROUNDS = 3;
 	int _nPlayers;				//Number of players
-	std::vector<Entity*> _players = std::vector<Entity*>(2);	//Array of pointer to the players Entities
+	std::vector<Player> _players;	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
 	bool _paused;
 
+	float _prepareCounter;
+	float _prepareLimitTime;
+
 };
+
+
+#pragma endregion
 
 #endif

@@ -21,6 +21,8 @@ EntityFactory::EntityFactory()
 	_createBulletFuncs.emplace(EB_RA, &createBulletRa);
 	_createBulletFuncs.emplace(EB_AHPUCH, &createBulletAhPuch);
 
+	//Stages
+	_createStageFuncs.emplace(ES_TEMPLE, &createStageTemple);
 }
 
 
@@ -28,6 +30,7 @@ EntityFactory::~EntityFactory()
 {
 	_createBulletFuncs.clear();
 	_createGodFuncs.clear();
+	_createStageFuncs.clear();
 
 	
 }
@@ -47,12 +50,12 @@ EntityFactory& EntityFactory::getInstance(){
 
 
 //The create god methods search in the map the func that returns the entity that E_GOD variable indicates
-Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos){
+Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos, int controllerId){
 	
 	newEntity();
 
 	createGodFunc c = _createGodFuncs.at(cE);
-	return c(to_string(_idCount), s, iniPos);
+	return c(to_string(_idCount), s, iniPos, controllerId);
 	
 }
 
@@ -63,4 +66,11 @@ Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 in
 
 	creteBulletFunc c = _createBulletFuncs.at(cE);
 	return c(to_string(_idCount), s, iniPos, angle, damage);
+}
+
+std::vector<Entity*> EntityFactory::createStage(E_STAGE cE, GameScene* s){
+
+
+	createStageFunc c = _createStageFuncs.at(cE);
+	return c(s);
 }

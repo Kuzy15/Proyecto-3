@@ -17,8 +17,9 @@ class GameScene;
 
 //Typedefs to name functions types for entity creation
 #pragma region Typedef functions
-typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos);
+typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
+typedef std::vector<Entity*>(*createStageFunc)(GameScene* s);
 
 #pragma endregion
 
@@ -26,12 +27,13 @@ typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 in
 #pragma region Enums
 typedef enum E_GOD { EG_RA = 0, EG_AHPUCH = 1 };
 typedef enum E_BULLET { EB_RA = 0, EB_AHPUCH = 1};
+typedef enum E_STAGE {ES_TEMPLE = 0};
 #pragma endregion
 
 //Creating methods definitions for all entities
 #pragma region Gods 
-Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos);
-Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos);
+Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
+Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 
 #pragma endregion
 
@@ -39,4 +41,8 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos);
 Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 #pragma endregion
+
+#pragma region Stages
+std::vector<Entity*> createStageTemple(GameScene* s);
+#pragma endregion 
 #endif
