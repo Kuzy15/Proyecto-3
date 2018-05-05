@@ -17,7 +17,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	Entity* Ra = new Entity("Player_" + std::to_string(controllerId), s);
 
 	//Mesh Render
-	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 90, 0 });
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "Ra.mesh", Ra, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 });
 	Ra->addComponent(cM);
 
 	//RigidBody
@@ -44,15 +44,6 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CPSkillUll(Ra,0));
 	Ra->addComponent(new CShuHeaddress(Ra, controllerId));
 
-
-
-
-
-
-	
-	
-
-
 	return Ra;
 }
 
@@ -69,23 +60,90 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	AhPuch->addComponent(new CRigidBody(AhPuch, s->getGame()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
 
 	//PlayerController
-	AhPuch->addComponent(new CPlayerController(AhPuch, 1));
+	AhPuch->addComponent(new CPlayerController(AhPuch, controllerId));
 	//CollisionHandler
 	AhPuch->addComponent(new CPlayerCollisionHandler(AhPuch));
 	//Basic Attack
-	AhPuch->addComponent(new CPlayerBasicAttack(AhPuch, 1000.0f, EB_AHPUCH, iniPos, 10.0f));
+	AhPuch->addComponent(new CPlayerBasicAttack(AhPuch, 500.0f, EB_AHPUCH, iniPos, 2.0f));
 
 	//LIfe
 	AhPuch->addComponent(new CLife(AhPuch, 100.0f));
 	//Jump
-	float jumpForce = 75.0f;
+	float jumpForce = 150.0f;
 	AhPuch->addComponent(new CPlayerJump(AhPuch, jumpForce));
 	//Move
-	float v = 5.0f;
+	float v = 8.0f;
 	AhPuch->addComponent(new CPlayerMove(AhPuch, v));
 
 
 	return AhPuch;
+}
+
+
+Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId){
+
+	Entity* Zeus = new Entity("Player_" + std::to_string(controllerId), s);
+
+	//Mesh Render
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "AhPuch.mesh", Zeus, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 });
+	Zeus->addComponent(cM);
+
+	//RigidBody
+	Ogre::Vector3 size = cM->getSize();
+	Zeus->addComponent(new CRigidBody(Zeus, s->getGame()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+
+	//PlayerController
+	Zeus->addComponent(new CPlayerController(Zeus, controllerId));
+	//CollisionHandler
+	Zeus->addComponent(new CPlayerCollisionHandler(Zeus));
+	//Basic Attack
+	Zeus->addComponent(new CPlayerBasicAttack(Zeus, 1000.0f, EB_ZEUS, iniPos, 7.0f));
+
+	//LIfe
+	Zeus->addComponent(new CLife(Zeus, 100.0f));
+	//Jump
+	float jumpForce = 150.0f;
+	Zeus->addComponent(new CPlayerJump(Zeus, jumpForce));
+	//Move
+	float v = 8.0f;
+	Zeus->addComponent(new CPlayerMove(Zeus, v));
+
+
+	return Zeus;
+}
+
+
+
+Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId){
+
+	Entity* Hachiman = new Entity("Player_" + std::to_string(controllerId), s);
+
+	//Mesh Render
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "AhPuch.mesh", Hachiman, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 });
+	Hachiman->addComponent(cM);
+
+	//RigidBody
+	Ogre::Vector3 size = cM->getSize();
+	Hachiman->addComponent(new CRigidBody(Hachiman, s->getGame()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+
+	//PlayerController
+	Hachiman->addComponent(new CPlayerController(Hachiman, controllerId));
+	//CollisionHandler
+	Hachiman->addComponent(new CPlayerCollisionHandler(Hachiman));
+	//Basic Attack
+	Hachiman->addComponent(new CPlayerBasicAttack(Hachiman, 750.0f, EB_HACHIMAN, iniPos, 4.0f));
+
+	//LIfe
+	Hachiman->addComponent(new CLife(Hachiman, 100.0f));
+	//Jump
+	float jumpForce = 150.0f;
+	Hachiman->addComponent(new CPlayerJump(Hachiman, jumpForce));
+	//Move
+	float v = 8.0f;
+	Hachiman->addComponent(new CPlayerMove(Hachiman, v));
+
+
+	return Hachiman;
 }
 
 
@@ -99,7 +157,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bRa->addComponent(new CMeshRender(pos, "WoodPallet.mesh", bRa, s->getSceneManager(), { 0.4f, 0.4f, 0.4f }, {0,0,angle}));
+	bRa->addComponent(new CMeshRender(pos, "balas/EnergyBall.mesh", bRa, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, {0,0,angle}));
 
 
 	//RigidBody
@@ -108,7 +166,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	bRa->addComponent(new CRigidBody(bRa, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 500.0f));
+	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 400.0f));
 
 
 	return bRa;
@@ -122,7 +180,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bAhPuch->addComponent(new CMeshRender(pos, "fish.mesh", bAhPuch, s->getSceneManager(), { 0.1f, 0.1f, 0.1f }, {0,0,angle}));
+	bAhPuch->addComponent(new CMeshRender(pos, "balas/Cerbatana.mesh", bAhPuch, s->getSceneManager(), { 0.25f, 1.0f, 0.25f }, { 0, 0,angle }));
 
 
 	//RigidBody
@@ -131,7 +189,54 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 20.0f));
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 700.0f));
+
+
+	return bAhPuch;
+
+
+}
+
+
+Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage){
+
+	Entity * bAhPuch = new Entity(id, s);
+	//Mesh Render
+
+	Ogre::Vector3 pos = iniPos;
+	bAhPuch->addComponent(new CMeshRender(pos, "balas/Ray.mesh", bAhPuch, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, angle }));
+
+
+	//RigidBody
+	float weight = 1.0f;
+	float heigth = 0.5f;
+	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
+
+	//Bullet
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_ZEUS, damage, 1000.0f));
+
+
+	return bAhPuch;
+
+
+}
+
+Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage){
+
+	Entity * bAhPuch = new Entity(id, s);
+	//Mesh Render
+
+	Ogre::Vector3 pos = iniPos;
+	bAhPuch->addComponent(new CMeshRender(pos, "balas/Arrow.mesh", bAhPuch, s->getSceneManager(), { 1.0f, 0.5f, 1.0f }, { 0, 0, 90 }));
+
+
+	//RigidBody
+	float weight = 1.0f;
+	float heigth = 0.5f;
+	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
+
+	//Bullet
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_HACHIMAN, damage, 700.0f));
 
 
 	return bAhPuch;
@@ -157,6 +262,8 @@ std::vector<Entity*> createStageTemple(GameScene* s){
 	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp));
 	entities.push_back(cam);
 
+	
+	
 	Entity * e1 = new Entity("Suelo_01", s);
 	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, s->getSceneManager(), { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
 	e1->addComponent(cM);
@@ -166,6 +273,10 @@ std::vector<Entity*> createStageTemple(GameScene* s){
 	Suelo->addComponent(new CRigidBody(Suelo, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3, cM->getSize().x, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
 	entities.push_back(Suelo);
+
+	Entity * top = new Entity("ColliderTecho_01", s);
+	top->addComponent(new CRigidBody(top, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-100, 50, 0), 3, cM->getSize().x, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	entities.push_back(top);
 
 	Entity * porton = new Entity("Porton_01", s);
 	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));

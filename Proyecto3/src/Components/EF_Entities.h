@@ -25,8 +25,8 @@ typedef std::vector<Entity*>(*createStageFunc)(GameScene* s);
 
 //Enum definitions for all entities
 #pragma region Enums
-typedef enum E_GOD { EG_RA = 0, EG_AHPUCH = 1 };
-typedef enum E_BULLET { EB_RA = 0, EB_AHPUCH = 1};
+typedef enum E_GOD { EG_RA = 0, EG_AHPUCH = 1, EG_ZEUS = 2, EG_HACHIMAN = 3 };
+typedef enum E_BULLET { EB_RA = 0, EB_AHPUCH = 1, EB_ZEUS = 2, EB_HACHIMAN = 3};
 typedef enum E_STAGE {ES_TEMPLE = 0};
 #pragma endregion
 
@@ -34,12 +34,16 @@ typedef enum E_STAGE {ES_TEMPLE = 0};
 #pragma region Gods 
 Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
+Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
+Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 
 #pragma endregion
 
 #pragma region Bullets
 Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
+Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
+Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
 #pragma endregion
 
 #pragma region Stages

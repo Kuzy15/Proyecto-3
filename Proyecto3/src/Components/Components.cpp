@@ -124,8 +124,11 @@ void CRender::getMessage(Message *m) {
 
 			//Rotate the parent node the same degree as the collider.
 			float angleRad = msg->getRotation();
-			float grades = (angleRad * 180) / 3.14159265359;
-			pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
+
+			if (angleRad != -1){
+				float grades = (angleRad * 180) / 3.14159265359;
+				pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
+			}
 
 		
 		}
@@ -154,11 +157,7 @@ CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * fathe
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
 
-	
-	
-	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(90.0f), Ogre::Vector3(1, 0, 0)));
-	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
-	//pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
+
 }
 CMeshRender::~CMeshRender() {
 	pChild->detachObject(pOgreEnt);
@@ -340,6 +339,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_bodyDef.fixedRotation = true;
 	if (myCategory == MASK_BULLET){
 		_bodyDef.bullet = true;
+		_bodyDef.fixedRotation = true;
 		_bodyDef.gravityScale = 0.0f;
 	}
 
@@ -362,8 +362,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 			break;
 	}
 	//Body creation.
-	_body = _myWorld->CreateBody(&_bodyDef);
-	
+	_body = _myWorld->CreateBody(&_bodyDef);	
 
 	//Set the body data pointer to entity
 	_body->SetUserData(pEnt);	
@@ -468,9 +467,16 @@ void CRigidBody::tick(float delta) {
 	//Send the message to the entity.
 	//Transformation from physics world to ogre world.
 	
-	
-	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
-	pEnt->getMessage(m);
+	if (_body->IsFixedRotation()){
+		MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), -1,_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
+		pEnt->getMessage(m);	
+	}
+	else{
+		
+		MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x)* PPM, _body->GetPosition().y * PPM, 0), _body->GetAngle(), _rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
+		pEnt->getMessage(m);
+
+	}
 
 	
 

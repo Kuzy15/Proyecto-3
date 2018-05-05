@@ -16,10 +16,14 @@ EntityFactory::EntityFactory()
 	//Gods
 	_createGodFuncs.emplace(EG_RA, &createGodRa);
 	_createGodFuncs.emplace(EG_AHPUCH, &createGodAhPuch);
+	_createGodFuncs.emplace(EG_ZEUS, &createGodZeus);
+	_createGodFuncs.emplace(EG_HACHIMAN, &createGodHachiman);
 
 	//Bullets
 	_createBulletFuncs.emplace(EB_RA, &createBulletRa);
 	_createBulletFuncs.emplace(EB_AHPUCH, &createBulletAhPuch);
+	_createBulletFuncs.emplace(EB_ZEUS, &createBulletZeus);
+	_createBulletFuncs.emplace(EB_HACHIMAN, &createBulletHachiman);
 
 	//Stages
 	_createStageFuncs.emplace(ES_TEMPLE, &createStageTemple);
