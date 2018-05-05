@@ -211,3 +211,15 @@ MDamage::~MDamage(){}
 #pragma endregion
 
 
+	//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
+#pragma region Die
+
+	MDie::MDie(std::string emmiter) : Message(MSG_DIE, SCENE_ONLY, emmiter){}
+	MDie::~MDie(){
+		
+	}
+
+#pragma endregion
+
+
+

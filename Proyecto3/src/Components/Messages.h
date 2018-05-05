@@ -69,7 +69,8 @@ typedef enum MessageType{
 	MSG_MOD_FIRERATE,
 	MSG_PASSMOD_DES,
 	MSG_DAMAGE,
-	MSG_DASH
+	MSG_DASH,
+	MSG_DIE
 	
 
 	
@@ -437,4 +438,18 @@ private:
 	b2Vec2* _dashValue;
 	
 };
+
+//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
+class MDie : public Message
+{
+public:
+	MDie(std::string emmiter);
+	~MDie();
+
+	//inline float getDamage(){ return _damage; };
+
+private:
+	//float timeWhenDie
+};
+
 #endif

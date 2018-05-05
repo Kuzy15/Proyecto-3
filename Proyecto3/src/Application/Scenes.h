@@ -128,9 +128,10 @@ struct BattleState{
 };
 
 struct Player{
-	Entity* entity;
-	int controllerId;
+	Entity* entity = nullptr;
+	int controllerId = -1;
 	E_GOD god;
+	int roundsWon = 0;
 };
 
 
@@ -149,14 +150,18 @@ private:
 	void preparePhase();
 	void battlePhase();
 	void endPhase();
+	void changePhase(GameplayState);
 	//Load the stage
 	void loadStage();
 	void controllerDisconected(int id);
+	void controllerConnected(int id);
+
+	void playerDied(std::string playerDead);
 
 	Ogre::Light * light;
 
 	GameplayState _currState;	//The current state of the scene
-	BattleState _bS;		//The state of the battle
+	BattleState _battleState;		//The state of the battle
 	E_STAGE _stage;			//Stage type
 	const int TOTAL_ROUNDS = 3;
 	int _nPlayers;				//Number of players

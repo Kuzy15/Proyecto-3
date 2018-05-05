@@ -309,7 +309,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	_prepareCounter = SDL_GetTicks();
 }
 GamePlayScene::~GamePlayScene(){
-	delete light;
+	
 
 }
 bool GamePlayScene::run(){
@@ -368,13 +368,20 @@ void GamePlayScene::processScnMsgs(){
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
 		Message* m = (*it);
-		if (m->getType() == MSG_ADD_ENTITY)
+		switch (m->getType())
 		{
+		case MSG_ADD_ENTITY:
 			addEntity(static_cast<MAddEntity*>(m)->getEntity());
-		}
-		else if (m->getType() == MSG_CONTROLLER_STATE)
-		{
-
+			break;
+		case MSG_CONTROLLER_STATE:
+			break;
+		case MSG_DIE:
+			if (m->getEmmiter().compare(0, 6, std::string("Player")) == 0){
+				playerDied(m->getEmmiter());
+			}
+			break;
+		default:
+			break;
 		}
 
 		it++;
@@ -416,28 +423,28 @@ void GamePlayScene::preparePhase(){
 
 void GamePlayScene::battlePhase(){
 	/*
-		Pick data from the battle State (_bS), and control the end of it
+		Pick data from the battle State (_battleState), and control the end of it
 	*/
 
 	//Pre-battle: little wait time to let players getting ready
-	if (!_bS.battleStarted){
+	if (!_battleState.battleStarted){
 
 
 
 	//Contador de 5 seg (por ejemplo) y empieza el combate
-	_bS.battleStarted = true;
-	_bS.timeCountStart = SDL_GetTicks();
+	_battleState.battleStarted = true;
+	_battleState.timeCountStart = SDL_GetTicks();
 	}
 
 	//Battle
 	else{
 
 		//Update time elapsed
-		_bS.timeElapsed = SDL_GetTicks() - _bS.timeCountStart;
+		_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
 
 		//If time is greater than limit, stop battle
-		if (_bS.timeElapsed > TIME_LIMIT){
-			_bS.battleEnded = true;
+		if (_battleState.timeElapsed > TIME_LIMIT){
+			_battleState.battleEnded = true;
 			_currState = GS_END;
 		}
 
@@ -461,6 +468,10 @@ void GamePlayScene::controllerDisconected(int id){
 
 }
 
+void GamePlayScene::controllerConnected(int id){
+	_paused = false;
+}
+
 void GamePlayScene::loadStage(){
 
 	//Store the entities in an aux array
@@ -471,5 +482,43 @@ void GamePlayScene::loadStage(){
 		addEntity(e);
 	}
 	
+}
+
+void GamePlayScene::changePhase(GameplayState newState){
+
+	switch (newState){
+	case GS_SETUP:
+			break;
+	case GS_BATTLE:
+		break;
+	case GS_END:
+		break;
+	}
+
+}
+
+void GamePlayScene::playerDied(std::string e){
+
+	//Find which player was killed and wich won
+	int playerDeadId = std::stoi( e.substr(7, 8));
+	int playerWonId;
+	if (playerDeadId == 0){
+		playerWonId = 1;
+	}
+	else
+		playerWonId = 0;
+
+	//Increase runds completed
+	_players[playerWonId].roundsWon++;
+	_battleState.roundsCompleted++;
+
+	//If the rounds elapsed are 3, we finish the game. Else, continue.
+	if (_battleState.roundsCompleted == MAX_ROUNDS){
+		changePhase(GS_END);
+	}
+	else
+		changePhase(GS_SETUP);
+	
+
 }
 #pragma endregion

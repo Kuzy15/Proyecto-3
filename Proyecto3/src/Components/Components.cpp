@@ -472,7 +472,7 @@ void CRigidBody::tick(float delta) {
 	MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), _body->GetAngle(),_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 	pEnt->getMessage(m);
 
-	std::cout << _body->GetLinearVelocity().x << std::endl;
+	
 
 
 }
@@ -507,7 +507,7 @@ void CRigidBody::getMessage(Message * m) {
 			break;
 		case MSG_DASH:
 			mDash = static_cast<MDash*>(m);
-			_body->SetLinearVelocity(b2Vec2(mDash->getDashValue()->x, _body->GetLinearVelocity().y));
+			_body->ApplyLinearImpulseToCenter(b2Vec2(mDash->getDashValue()->x, mDash->getDashValue()->y), true);
 			break;
 		default:
 			break;
@@ -616,21 +616,23 @@ void CPlayerController::getMessage(Message* m){
 CLife::CLife(Entity* father, float iniLife):GameComponent(CMP_LIFE,father), _maxLife(iniLife), _currentLife(iniLife){}
 CLife::~CLife(){}
 
-void CLife::tick(float delta){}
+void CLife::tick(float delta){
+	
+
+}
 void CLife::getMessage(Message* m){
 
 	switch (m->getType()){
 	case MSG_DAMAGE:
-		
 		_currentLife -= static_cast<MDamage*>(m)->getDamage();
-		
+		if (_currentLife <= 0.0f){
+			pEnt->getMessage(new MDie(pEnt->getID()));
+		}
 		break;
 	default:
 		break;
 
 	}
-
-
 }
 #pragma endregion
 
@@ -646,7 +648,7 @@ void CPlayerMove::getMessage(Message* m)
 		//transformarlo
 		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
 		//value = value / 40;
-		std::cout << "VALUE: "<< value << std::endl;
+		
 		if (value > _moveVel)
 			value = _moveVel;
 		else if (value < - _moveVel)
@@ -1050,8 +1052,8 @@ void CPSkillSyn::getMessage(Message* m){}
 //Dash
 CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
-	_dashRate = 500.0f; //5 seconds
-	_dashImpulse = 100.0f;
+	_coolDown = 500.0f; //5 seconds
+	_dashImpulse = 1000.0f;
 }
 CShuHeaddress::~CShuHeaddress(){}
 
@@ -1063,16 +1065,13 @@ void CShuHeaddress::getMessage(Message* m)
 		if (inputM->getId() == _playerId){
 			_timeCounter = SDL_GetTicks();
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _dashRate){
+			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _coolDown){
 				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,cState.Axis_LeftY);
 				pEnt->getMessage(new MDash(pEnt->getID(), impulse));
 				_lastTimeDash = SDL_GetTicks();
 			}
 		}
 	}
-
-
-
 }
 
 b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
@@ -1080,7 +1079,57 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 	float normalX = xValue * SPAWN_PARSE;
 	float normalY = yValue * SPAWN_PARSE;
 
-	return new b2Vec2(_dashImpulse * normalX, /*_dashImpulse * normalY*/ 0.0f);
+	return new b2Vec2(_dashImpulse * normalX, _dashImpulse * normalY);
 
+}
+#pragma endregion
+
+#pragma region Jonsu Moon
+//Velocity improvement
+CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100), _playerId(id){
+	_timeCounter = _initTime = 0;
+	_timeActiveLimit = 5000.0f; //5 seconds
+	_coolDown = 10000.0f;
+	_velocityPercentage = 50.0f;
+	_isActive = false;
+	isAvailable = true;
+}
+CJonsuMoon::~CJonsuMoon(){}
+
+void CJonsuMoon::tick(float delta){
+
+	//Whe is active and timeActiveLimit completes, deactivate it and start cooldown
+	if (_isActive){
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _timeActiveLimit){
+			pEnt->getMessage(new MModVel(pEnt->getID(), -_velocityPercentage));
+			_isActive = false;
+			_initTime = SDL_GetTicks();
+		}
+	}
+	//If is not active and is not available, we count the cooldown. Then turn it to available.
+	else if(!isAvailable){
+		
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _coolDown){
+			isAvailable = true;
+		}
+		
+	}
+}
+void CJonsuMoon::getMessage(Message* m)
+{
+	if (m->getType() == MSG_INPUT_STATE){
+		MInputState* inputM = static_cast<MInputState*>(m);
+		if (inputM->getId() == _playerId && isAvailable){
+			ControllerInputState cState = inputM->getCInputState();
+			if (cState.Right_Shoulder == BTT_PRESSED ){
+				pEnt->getMessage(new MModVel(pEnt->getID(), _velocityPercentage));
+				_initTime = SDL_GetTicks();
+				_isActive = true;
+				isAvailable = false;
+			}
+		}
+	}
 }
 #pragma endregion

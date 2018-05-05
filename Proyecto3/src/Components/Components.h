@@ -57,7 +57,8 @@ typedef enum ComponentType {
 	CMP_CAMERA,
 	CMP_BULLET,
 	CMP_PASSIVE_SKILL,
-	CMP_SHU_HEADDRESS
+	CMP_SHU_HEADDRESS,
+	CMP_JONSU_MOON
 
 
 
@@ -487,6 +488,7 @@ public:
 protected:
 	float _componentLife;
 	float _componentArmor;
+	float _coolDown;
 	
 };
 
@@ -562,7 +564,7 @@ public:
 
 
 /*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
-
+//Shu Headdress
 class CShuHeaddress : public CAbility
 {
 public:
@@ -579,8 +581,30 @@ private:
 	int _playerId;
 	float _timeCounter;
 	float _lastTimeDash;
-	float _dashRate;
 	float _dashImpulse;
+	
+
+};
+
+//Jonsu Moon
+class CJonsuMoon : public CAbility
+{
+public:
+	CJonsuMoon(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CJonsuMoon();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
+	float _timeActiveLimit;
+	float _velocityPercentage;
+	bool _isActive;
+	bool isAvailable;
 
 };
 
