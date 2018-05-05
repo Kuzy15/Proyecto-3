@@ -67,6 +67,7 @@ typedef enum MessageType{
 	MSG_MOD_VEL,
 	MSG_MOD_VEL_JUMP,
 	MSG_MOD_FIRERATE,
+	MSG_MOD_INVS,
 	MSG_PASSMOD_DES,
 	MSG_DAMAGE,
 	MSG_DASH,
@@ -417,6 +418,17 @@ private:
 	float _valueFireRate;
 };
 
+
+//invisibility
+class MModInvisibility : public Message{
+public:
+	MModInvisibility(std::string emmiter);
+	~MModInvisibility();
+
+private:
+};
+
+
 //deactivate mod
 class MDeactivate : public Message{
 public:
@@ -427,6 +439,9 @@ private:
 	float _valueJump;
 };
 
+
+
+//--------------------------------------------------	ACTIVE SKILL MSG		----------------------------------------------------------//
 //Dash Message
 class MDash : public Message{
 public:

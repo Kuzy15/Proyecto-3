@@ -164,6 +164,8 @@ public:
 
 private:
 	Ogre::Entity * pOgreEnt;
+	bool invisActive;           //is invis´ component added
+
 	
 	
 };
@@ -392,6 +394,7 @@ private:
 
 	int _nJumps;				//Remaining jumps
 	int _maxJumps;				//Max jumps
+
 };
 
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
@@ -492,13 +495,12 @@ protected:
 	
 };
 
-
-//Increase damage of a god
-class CPSkillHades : public CAbility
+//invisibility
+class CPSkillVidar : public CAbility
 {
 public:
-	CPSkillHades(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
-	~CPSkillHades();
+	CPSkillVidar(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillVidar();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -506,12 +508,13 @@ public:
 
 };
 
-//invisibility
-class CPSkillVidar : public CAbility
+
+//Increase damage of a god
+class CPSkillHades : public CAbility
 {
 public:
-	CPSkillVidar(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
-	~CPSkillVidar();
+	CPSkillHades(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillHades();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -527,6 +530,18 @@ class CPSkillUll : public CAbility
 public:
 	CPSkillUll(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CPSkillUll();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+class CPSkillVali : public CAbility
+{
+public:
+	CPSkillVali(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillVali();
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);

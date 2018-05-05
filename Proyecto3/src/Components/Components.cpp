@@ -157,6 +157,8 @@ CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * fathe
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
 
+	invisActive = false;
+
 
 }
 CMeshRender::~CMeshRender() {
@@ -175,7 +177,27 @@ void CMeshRender::tick(float delta) {
 void CMeshRender::getMessage(Message * m) {
 	CRender::getMessage(m);
 	//TO DO: IMPLEMENT MESSAGE RECEIVEING TO MOVE.
+	switch (m->getType())
+	{
+	case MSG_MOD_INVS:
+		invisActive = true;
+		break;
 
+	case MSG_PLAYER_JUMP:
+		pOgreEnt->setVisible(false);
+		break;
+
+	case MSG_COLLISION_TERRAIN:
+		pOgreEnt->setVisible(true);
+		break;
+
+	case MSG_PASSMOD_DES:
+		invisActive = false;
+		break;
+
+	default:
+		break;
+	}
 }
 
 Ogre::Vector3 CMeshRender::getSize(){
@@ -695,7 +717,7 @@ CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JU
 	_timeCounter = 0.0f;
 	_lastTimeJump = 0.0f;
 	_jumpRate = 170.0f;
- 
+	
 }
 
 CPlayerJump::~CPlayerJump(){}
@@ -708,12 +730,14 @@ void CPlayerJump::getMessage(Message* m)
 
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
+
 		_timeCounter = SDL_GetTicks();
 		if (_nJumps < _maxJumps && ((_timeCounter - _lastTimeJump) > _jumpRate)){
 			//std::cout << _nJumps << std::endl;
 			_nJumps++;
-			pEnt->getMessage(new MRigidbodyJump(_jumpForce , pEnt->getID()));
+			pEnt->getMessage(new MRigidbodyJump(_jumpForce, pEnt->getID()));
 			_lastTimeJump = SDL_GetTicks();
+
 		}
 		break;
 	case MSG_COLLISION_TERRAIN:
@@ -1002,22 +1026,30 @@ void CArmor::getMessage(Message* m){}
 #pragma region CPSkill Component
 
 
-/*vidar*/
+///invisibility
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25){
+	//pEnt->getMessage();
+}
+CPSkillVidar::~CPSkillVidar(){}
 
+void CPSkillVidar::tick(float delta){}
+void CPSkillVidar::getMessage(Message* m){}
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
 
 void CPSkillHades::tick(float delta){
-	if (_componentLife <= 0){
-		pEnt->getMessage(new MDeactivate(pEnt->getID()));
-	}
+	/*if (_componentLife <= 0){
+		pEnt->getMessage(new MDeactivate(pEnt->getID()));//el mensage de daño se encarga asi no se tiene que estar comprobando todo el rato
+	}*/
 }
 void CPSkillHades::getMessage(Message* m){}
+
+
 
 
 ///modify velocity of a god
@@ -1030,11 +1062,18 @@ void CPSkillUll::tick(float delta){}
 void CPSkillUll::getMessage(Message* m){}
 
 
-/***vali*/
+///modify ********************************
+CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75){
+	//pEnt->getMessage();
+}
+CPSkillVali::~CPSkillVali(){}
+
+void CPSkillVali::tick(float delta){}
+void CPSkillVali::getMessage(Message* m){}
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1044,7 +1083,7 @@ void CPSkillHermes::getMessage(Message* m){}
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}

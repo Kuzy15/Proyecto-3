@@ -42,7 +42,9 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CPSkillHades(Ra, 10.0f, 10.0f));
 	//Ra->addComponent(new CPSkillHermes(Ra, 10.0f, 10.0f));
 	//Ra->addComponent(new CPSkillUll(Ra,0));
+	Ra->addComponent(new CPSkillVidar(Ra));
 	Ra->addComponent(new CShuHeaddress(Ra, controllerId));
+	
 
 	return Ra;
 }
