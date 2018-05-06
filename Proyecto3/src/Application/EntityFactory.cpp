@@ -16,11 +16,17 @@ EntityFactory::EntityFactory()
 	//Gods
 	_createGodFuncs.emplace(EG_RA, &createGodRa);
 	_createGodFuncs.emplace(EG_AHPUCH, &createGodAhPuch);
+	_createGodFuncs.emplace(EG_ZEUS, &createGodZeus);
+	_createGodFuncs.emplace(EG_HACHIMAN, &createGodHachiman);
 
 	//Bullets
 	_createBulletFuncs.emplace(EB_RA, &createBulletRa);
 	_createBulletFuncs.emplace(EB_AHPUCH, &createBulletAhPuch);
+	_createBulletFuncs.emplace(EB_ZEUS, &createBulletZeus);
+	_createBulletFuncs.emplace(EB_HACHIMAN, &createBulletHachiman);
 
+	//Stages
+	_createStageFuncs.emplace(ES_TEMPLE, &createStageTemple);
 }
 
 
@@ -28,6 +34,7 @@ EntityFactory::~EntityFactory()
 {
 	_createBulletFuncs.clear();
 	_createGodFuncs.clear();
+	_createStageFuncs.clear();
 
 	
 }
@@ -47,20 +54,27 @@ EntityFactory& EntityFactory::getInstance(){
 
 
 //The create god methods search in the map the func that returns the entity that E_GOD variable indicates
-Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos){
+Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos, int controllerId){
 	
 	newEntity();
 
 	createGodFunc c = _createGodFuncs.at(cE);
-	return c(to_string(_idCount), s, iniPos);
+	return c(to_string(_idCount), s, iniPos, controllerId);
 	
 }
 
 //The create bullet methods return a new bullet
-Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 iniPos, float angle){
+Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 iniPos, float angle, float damage){
 
 	newEntity();
 
 	creteBulletFunc c = _createBulletFuncs.at(cE);
-	return c(to_string(_idCount), s, iniPos, angle);
+	return c(to_string(_idCount), s, iniPos, angle, damage);
+}
+
+std::vector<Entity*> EntityFactory::createStage(E_STAGE cE, GameScene* s){
+
+
+	createStageFunc c = _createStageFuncs.at(cE);
+	return c(s);
 }

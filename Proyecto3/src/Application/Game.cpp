@@ -11,6 +11,7 @@
 #include "Game.h"
 #include "CollisionManager.h"
 #include "DebugNew.h"
+#include "EF_Entities.h"
 
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
@@ -35,10 +36,11 @@ CollisionManager collisionManager;
 Game::Game(){
 	_instance = this;
 
-	
+
 	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
+	//world->SetAllowSleeping(false);
 	world->SetContactListener(&collisionManager);
 	
 	
@@ -56,8 +58,14 @@ Game::Game(){
 	
 	 initOgre();
 
+	 std::vector<Player> players(2);
+	 players[0].controllerId = 0;
+	 players[0].god = EG_RA;
 
-	 actScene = new BasicScene("testScene", this);
+	 players[1].controllerId = 1;
+	 players[1].god = EG_AHPUCH;
+
+	 actScene = new GamePlayScene("GamePlayScene", this, players, ES_TEMPLE);
 	 
 }
  Game::~Game(){
@@ -74,8 +82,8 @@ Game::Game(){
 	 world = nullptr;
 
 	 InputManager::resetInstance();
-	 /*if (root != nullptr)
-		delete root;*/
+	// if (root != nullptr)
+		//delete root;
 
  }
 #pragma endregion
@@ -86,7 +94,7 @@ Game::Game(){
 	 //else throw exception so we know no window is there
  }
  Ogre::Root * Game::getRoot(){
-	 return root;
+	 return Ogre::Root::getSingletonPtr();
  }
  b2World* Game::getPhysicsWorld(){
 	 return world;
@@ -119,6 +127,8 @@ bool Game::initOgre(){
 #endif
 	try{
 		root = new Ogre::Root(plugCfgLoc);
+		
+		
 	}
 	catch (std::exception e){
 #ifdef _DEBUG
@@ -241,7 +251,8 @@ void Game::loop() {
 void Game::render() {
 
 	Ogre::WindowEventUtilities::messagePump();
-	if (pWindow->isClosed())return;
+	if (pWindow->isClosed())
+		return;
 	if (!root->renderOneFrame())return;
 	
 
@@ -250,14 +261,7 @@ void Game::render() {
 //Read the input
 void Game::handleInput(){
 	
-	float current = SDL_GetTicks();
-	
-	//6 times per second
-	if (current > inputTime + 100){
 		InputManager::getInstance().handleInput();
-		inputTime = SDL_GetTicks();
-	}
-	
 
 }
 

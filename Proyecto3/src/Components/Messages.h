@@ -8,6 +8,7 @@
 
 class Entity;
 class GameComponent;
+class b2Vec2;
 
 #pragma region CInputState
 
@@ -61,7 +62,19 @@ typedef enum MessageType{
 	MSG_RIGIDBODY_JUMP,
 	MSG_COLLISION_TERRAIN,
 	MSG_ADD_ENTITY,
-	MSG_SHOT
+	MSG_SHOT,
+	MSG_MOD_DMG,
+	MSG_MOD_VEL,
+	MSG_MOD_VEL_JUMP,
+	MSG_MOD_FIRERATE,
+	MSG_MOD_INVS,
+	MSG_MOD_VELBULLETS,
+	MSG_PASSMOD_DES,
+	MSG_DAMAGE,
+	MSG_DASH,
+	MSG_DIE
+	
+
 	
 
 
@@ -148,6 +161,7 @@ class MUpdateTransform: public Message
 public:
 	MUpdateTransform(Ogre::Vector3 newPos, float nRotation,float h, float w, std::string emmiter);
 	virtual ~MUpdateTransform();
+
 	Ogre::Vector3 GetPos();
 	float getRotation();
 	inline float getW(){ return _w; }
@@ -218,17 +232,18 @@ private:
 class MCollisionBegin : public Message
 {
 public:
-	MCollisionBegin(uint16_t me, uint16_t contact, std::string emmiter);
+	MCollisionBegin(uint16_t me, uint16_t contact, Entity* who, std::string emmiter);
 	~MCollisionBegin();
 
 	uint16_t GetMyCategory(){ return _myCategory; };
 	uint16_t GetContactMask(){ return _contactMask; };
-
+	Entity* GetWho(){ return _who; };
 
 private:
 	//Private fields for the new position and quaternion of the entity
 	uint16_t _myCategory;
 	uint16_t _contactMask;
+	Entity* _who;
 };
 
 
@@ -339,5 +354,131 @@ private:
 };
 
 
+//--------------------------------------------------	DAMAGE MSG		----------------------------------------------------------//
+class MDamage : public Message
+{
+public:
+	MDamage(float damage,std::string emmiter);
+	~MDamage();
+
+	inline float getDamage(){ return _damage; };
+
+private:
+	float _damage;
+};
+
+
+
+//--------------------------------------------------	PASSIVE SKILL MSG		----------------------------------------------------------//
+//modify damage
+class MModDmg : public Message{
+public:
+	MModDmg(std::string emmiter, float value);
+	~MModDmg();
+
+	inline float getValue(){ return _value; };
+private:
+	float _value;
+};
+
+//modify vel
+class MModVel : public Message{
+public:
+	MModVel(std::string emmiter, float value);
+	~MModVel();
+
+	inline float getValue(){ return _value; };
+private:
+	float _value;
+};
+
+//modify vel and jump
+class MModVelAndJump : public Message{
+public:
+	MModVelAndJump(std::string emmiter, float valueVel, float valueJump);
+	~MModVelAndJump();
+
+	inline float getVelValue(){ return _valueVel; };
+	inline float getJumpValue(){ return _valueJump; };
+
+private:
+	float _valueVel;
+	float _valueJump;
+};
+
+
+//modify firerate
+class MModFireRate : public Message{
+public:
+	MModFireRate(std::string emmiter, float valueFireRate);
+	~MModFireRate();
+
+	inline float getFireRateValue(){ return _valueFireRate; };
+
+private:
+	float _valueFireRate;
+};
+
+
+//modify vel of bullets
+class MModVelBullets : public Message{
+public:
+	MModVelBullets(std::string emmiter, float _valueVelBullets);
+	~MModVelBullets();
+
+	inline float getVelBulletsValue(){ return _valueVelBullets; };
+
+private:
+	float _valueVelBullets;
+};
+
+
+//invisibility
+class MModInvisibility : public Message{
+public:
+	MModInvisibility(std::string emmiter);
+	~MModInvisibility();
+
+private:
+};
+
+
+//deactivate mod
+class MDeactivate : public Message{
+public:
+	MDeactivate(std::string emmiter);
+	~MDeactivate();
+private:
+	float _valueVel;
+	float _valueJump;
+};
+
+
+
+//--------------------------------------------------	ACTIVE SKILL MSG		----------------------------------------------------------//
+//Dash Message
+class MDash : public Message{
+public:
+	MDash(std::string emmiter, b2Vec2* impulse);
+	~MDash();
+
+	inline b2Vec2* getDashValue(){ return _dashValue; }
+private:
+	b2Vec2* _dashValue;
+	
+};
+
+//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
+class MDie : public Message
+{
+public:
+	MDie(std::string emmiter);
+	~MDie();
+
+	//inline float getDamage(){ return _damage; };
+
+private:
+	//float timeWhenDie
+};
 
 #endif

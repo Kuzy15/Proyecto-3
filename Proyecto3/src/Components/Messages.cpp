@@ -2,9 +2,11 @@
 #include "Entity.h"
 #include "Components.h"
 #include "DebugNew.h"
+#include "Box2D.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
 
 //Basic Message Class implementation.
 #pragma region basic Message 
@@ -103,8 +105,8 @@ MJump::~MJump(){};
 
 #pragma region MessageCollision
 
-MCollisionBegin::MCollisionBegin(uint16_t me, uint16_t contact, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
-	_myCategory(me), _contactMask(contact){}
+MCollisionBegin::MCollisionBegin(uint16_t me, uint16_t contact, Entity* who, std::string emmiter) : Message(MSG_COLLISION, ENTITY, emmiter),
+	_myCategory(me), _contactMask(contact), _who(who){}
 MCollisionBegin::~MCollisionBegin(){}
 #pragma endregion
 
@@ -164,4 +166,65 @@ MShot::MShot(float axisXValue, float axisYValue, std::string emmiter) : Message(
 MShot::~MShot(){}
 
 #pragma endregion
+
+
+//--------------------------------------------------	DAMAGE MSG		----------------------------------------------------------//
+#pragma region DamageShot
+
+MDamage::MDamage(float damage, std::string emmiter) : Message(MSG_DAMAGE, ENTITY, emmiter), _damage(damage){}
+MDamage::~MDamage(){}
+
+#pragma endregion
+
+
+//--------------------------------------------------	PASSIVE SKILL MSG		----------------------------------------------------------//
+#pragma region MessagePassiveSkill
+
+	MModInvisibility::MModInvisibility(std::string emmiter) : Message(MSG_MOD_INVS, ENTITY, emmiter){}
+	MModInvisibility::~MModInvisibility(){}
+
+	MModDmg::MModDmg(std::string emmiter, float value) :Message(MSG_MOD_DMG, ENTITY, emmiter), _value(value){}
+	MModDmg::~MModDmg(){}
+	
+	MModVel::MModVel(std::string emmiter, float value) : Message(MSG_MOD_VEL, ENTITY, emmiter), _value(value){}
+	MModVel::~MModVel(){}
+
+	MModVelAndJump::MModVelAndJump(std::string emmiter, float valueVel, float valueJump) : Message(MSG_MOD_VEL_JUMP, ENTITY, emmiter), _valueVel(valueVel), _valueJump(valueJump){}
+	MModVelAndJump::~MModVelAndJump(){}
+
+	MModFireRate::MModFireRate(std::string emmiter, float valueFireRate) : Message(MSG_MOD_FIRERATE, ENTITY, emmiter), _valueFireRate(valueFireRate){}
+	MModFireRate::~MModFireRate(){}
+
+	MModVelBullets::MModVelBullets(std::string emmiter, float valueVelBullets) : Message(MSG_MOD_VELBULLETS, ENTITY, emmiter), _valueVelBullets(valueVelBullets){}
+	MModVelBullets::~MModVelBullets(){}
+
+	MDeactivate::MDeactivate(std::string emmiter) : Message(MSG_PASSMOD_DES, ENTITY, emmiter){}
+	MDeactivate::~MDeactivate(){}
+
+
+#pragma endregion
+
+
+	//--------------------------------------------------	DASH MSG		----------------------------------------------------------//
+#pragma region Dash
+
+	MDash::MDash(std::string emmiter, b2Vec2 *impulse) : Message(MSG_DASH, ENTITY, emmiter), _dashValue(impulse){}
+	MDash::~MDash(){
+		delete _dashValue;
+	}
+
+#pragma endregion
+
+
+	//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
+#pragma region Die
+
+	MDie::MDie(std::string emmiter) : Message(MSG_DIE, SCENE_ONLY, emmiter){}
+	MDie::~MDie(){
+		
+	}
+
+#pragma endregion
+
+
 

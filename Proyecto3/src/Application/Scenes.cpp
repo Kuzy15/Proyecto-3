@@ -2,6 +2,7 @@
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
 #include "DebugNew.h"
+
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
@@ -17,12 +18,14 @@
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 
+
 //Later removable
 #include <OgreCamera.h>
 #include <OgreNode.h>
 #include <OgreEntity.h>
 #include <OgreSceneNode.h>
 #include <Components.h>
+#include <Box2D.h>
 
 #include <Entity.h>
 #include "InputManager.h"
@@ -31,10 +34,15 @@
 #include "Messages.h"
 #include "Scenes.h"
 #include "DebugDraw.h"
+//Debug 
+#ifdef _DEBUG
+#include <iostream>
+#define new DEBUG_NEW
+#endif
 
 DebugDraw dInstance;
 
-#pragma region gameScene 
+#pragma region GameScene 
 
 GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
@@ -44,10 +52,7 @@ GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),s
 GameScene::~GameScene()
 {
 
-
 	deleteAllMessages();
-
-	
 
 	list<Entity*>::iterator it = _entities.begin();
 	while (!_entities.empty()){
@@ -55,15 +60,15 @@ GameScene::~GameScene()
 		_entities.pop_front();
 	}
 	
-	
-	
 	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 	
+	destroyBodies();
+
+
 	/*if (scnMgr != nullptr)
 		pGame->getRoot()->destroySceneManager(scnMgr);*/
-	
 	
 }
 
@@ -127,13 +132,15 @@ void GameScene::clearMessageQueue() {
 
 void GameScene::deleteAllMessages(){
 
-	for (int i = 0; i < _messages.size(); i++) {
+	size_t nMessages = _messages.size();
+	for (size_t i = 0; i <nMessages; i++) {
 		Message * aux = _messages.front();
 		delete aux;
 		_messages.pop_front();
 	}
 
-	for (int j = 0; j < _sceneMessages.size(); j++) {
+	size_t nSceneMessages = _sceneMessages.size();
+	for (int j = 0; j < nSceneMessages; j++) {
 		Message * aux = _sceneMessages.front();
 		delete aux;
 		_sceneMessages.pop_front();
@@ -152,13 +159,39 @@ void GameScene::deleteEntity(std::string id){
 		else it++;
 	}
 }
+
+void GameScene::addBodyToDelete(b2Body* b){
+	_physicBodies.emplace_back(b);
+}
+
+void GameScene::destroyBodies(){
+
+	for (size_t i = 0; i < _physicBodies.size(); i++){
+		pGame->getPhysicsWorld()->DestroyBody(_physicBodies[i]);
+	}
+
+	_physicBodies.clear();
+
+}
+
+void GameScene::addEntityToDelete(Entity * e){
+	_entitiesToDelete.emplace_back(e);
+}
+
+void GameScene::destroyEntities(){
+
+	for (size_t i = 0; i < _entitiesToDelete.size(); i++){
+		deleteEntity(_entitiesToDelete[i]->getID());
+	}
+	_entitiesToDelete.clear();
+}
 #pragma endregion
 
-//BASIC SCENE TO TEST SCENE IMPLEMENTATION.
+#pragma region BasicScene
+/*BASIC SCENE TO TEST SCENE IMPLEMENTATION.
 //BUILDS A OGREHEAD BUT DOES NOT INCLUDE IT IN THE 
 //SCENE ENTITY LIST. IT IS ONLY IN OGRE ENTITIES LIST.
-//ALSO CREATS A BASIC ENTITY WITH A stringComponent attached
-#pragma region basicScene
+//ALSO CREATS A BASIC ENTITY WITH A stringComponent attached*/
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	i = 0;
 	
@@ -166,7 +199,6 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	dInstance.setSceneManager(scnMgr);
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
-
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
@@ -184,108 +216,14 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
-	addEntity(EntityFactory::getInstance().createGod(EG_RA,this,Ogre::Vector3(-20,20,0)));
-	addEntity(EntityFactory::getInstance().createGod(EG_AHPUCH, this, Ogre::Vector3(20, 20, 0)));
-	
-	/*Entity * Suelo2 = new Entity("2", this);
-	Suelo2->addComponent(new CRigidBody(Suelo2, game->getPhysicsWorld(), Ogre::Vector3(-51, -15, 0), 10, 1, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
 
-	addEntity(Suelo2);
-
-	Entity * Suelo3 = new Entity("3", this);
-	Suelo2->addComponent(new CRigidBody(Suelo3, game->getPhysicsWorld(), Ogre::Vector3(33, 5, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	addEntity(Suelo3);
-
-	Entity * Suelo4 = new Entity("4", this);
-	Suelo2->addComponent(new CRigidBody(Suelo4, game->getPhysicsWorld(), Ogre::Vector3(33, -26, 0), 1, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	addEntity(Suelo4);*/
-	
-	Entity * Suelo = new Entity("2", this);
-	Suelo->addComponent(new CRigidBody(Suelo, game->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 3,2000, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	//Suelo->addComponent(new CMeshRender(Ogre::Vector3(0, 0, 0), "Barrel.mesh", Suelo, scnMgr));
-
-	addEntity(Suelo);
-	
-	Entity * e1 = new Entity("3", this);
-	//e1->addComponent(new CRigidBody(e1, game->getPhysicsWorld(), Ogre::Vector3(0, -20, 0), 3, 20, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	e1->addComponent(new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, scnMgr, { 100.0f, 100.0f, 100.0f }, {0,-90.0f,0}));
-	addEntity(e1);
-	
-	Entity * porton = new Entity("4", this);
-	//porton->addComponent(new CRigidBody(porton, game->getPhysicsWorld(), Ogre::Vector3(0, -10, 0), 3, 8, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, scnMgr, { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
-	addEntity(porton);
-
-	Entity * rightEdge = new Entity("5", this);
-	rightEdge->addComponent(new CRigidBody(rightEdge, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));	
-	addEntity(rightEdge);
-
-	Entity * temple = new Entity("6", this);
-	//temple->addComponent(new CRigidBody(temple, game->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	addEntity(temple);
-
-	Entity * portonCollider = new Entity("6", this);
-	portonCollider->addComponent(new CRigidBody(portonCollider, game->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	//temple->addComponent(new CMeshRender({ -30, 0, -20 }, "templo.mesh", temple, scnMgr, { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	addEntity(portonCollider);
-
-
-	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
-
-	// Create an overlay
-
-	// Create a panel
-	 panel = static_cast<Ogre::OverlayContainer*>(
-		overlayManager.createOverlayElement("Panel", "PanelName"));
-	panel->setMetricsMode(Ogre::GMM_PIXELS);
-	panel->setPosition(10, 10);
-	panel->setDimensions(100, 100);
-	panel->setMaterialName("BaseWhite"); // Optional background material
-
-
-	// Create a text area
-	textArea = static_cast<Ogre::TextAreaOverlayElement*>(
-		overlayManager.createOverlayElement("TextArea", "TextAreaName"));
-	textArea->setMetricsMode(Ogre::GMM_PIXELS);
-	textArea->setPosition(0, 0);
-	textArea->setDimensions(100, 100);
-	textArea->setCaption("Hello, World!");
-	textArea->setCharHeight(16);
-	textArea->setFontName("Caption");
-
-	Ogre::TextAreaOverlayElement * secs = static_cast<Ogre::TextAreaOverlayElement*>(
-		overlayManager.createOverlayElement("TextArea", "Timer")
-		);
-
-
-	
-	
-	textArea->setColourBottom(Ogre::ColourValue(0.3, 0.5, 0.3));
-	textArea->setColourTop(Ogre::ColourValue(0.5, 0.7, 0.5));
-
-	// Create an overlay, and add the panel
-	
-	//overlay = overlayManager.create("GUI");
-
-	//overlay->add2D(panel);
-
-	// Add the text area to the panel
-	panel->addChild(textArea);
-
-	overlay = overlayManager.getByName("KEK");
-//	Ogre::OverlayContainer *  e = overlay->getChild("TimerPanel");
-//	e->getChild("TimerPanel/TimeText")->setCaption(to_string(i));
-
-	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
-	overlay->show();
-	overlay->show();
 }
 
 
 BasicScene::~BasicScene(){
-	//dInstance.~DebugDraw();
+	
+	
+
 	//delete light;
 
 }
@@ -308,7 +246,12 @@ bool BasicScene::run(){
 
 	//Clear dispatched messages
 	clearMessageQueue();
-	
+
+	//Delete entities removed from the scene at the last frame
+	destroyEntities();
+
+	//Delete box2d bodies of the removed entities
+	destroyBodies();
 	
 
 	return aux;
@@ -336,63 +279,66 @@ void BasicScene::processScnMsgs()
 	
 };
 
+
+
+
 #pragma endregion
 
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
-GamePlayScene::GamePlayScene(std::string id, Game * game, int nP) : GameScene(id, game) {
+GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
 	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
-
-	//Self-explanatory methods
-	cam = scnMgr->createCamera("MainCam");
-	cam->setPosition(0, 0, 150);
-	cam->lookAt(0, 0, -300);
-	cam->setNearClipDistance(5);
-
-
-	//------------------------------------------------------------------------------------------------------
-	//ViewPort Addition
-	vp = game->getRenderWindow()->addViewport(cam);
-	vp->setBackgroundColour(Ogre::ColourValue(150, 150, 150));
-
-	cam->setAspectRatio(
-		Ogre::Real(vp->getActualWidth()) /
-		Ogre::Real(vp->getActualHeight()));
+	//Debug draw
+#ifdef _DEBUG
+	dInstance.setSceneManager(scnMgr);
+	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
+	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
+#endif
 
 
-	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 
-	light = scnMgr->createLight("MainLight");
-	light->setPosition(20, 80, 50);
+	// Create an overlay
+	overlay = overlayManager.getByName("KEK");
+	// Show the overlay
+	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	
+	//The limit time to choose cards
+	_prepareLimitTime = 30000.0f; //30 seconds
+	_prepareCounter = 0.0f;
 
+	//Load the stage passed by parameter
+	loadStage();
 
-	//GAMEPLAY SCENE SET UP
-	//Create the players Entities(depends on the parameter passed by argument. This value
-	//must correspond with the controllers connected).
-	_nPlayers = nP;
-	for (int i = 0; i < _nPlayers; i++){
-		_players[i] = new Entity(std::to_string(i), this);
-		addEntity(_players[i]);
+	//Store and configure the players structure
+	_players = players;
+	std::vector<Ogre::Vector3> playersPos(2);
+	playersPos[0] = Ogre::Vector3(20.0f, 0.0f, 0.0f);
+	playersPos[1] = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
+	
+	int i = 0;
+	for (Player p : _players){
+		p.entity = EntityFactory::getInstance().createGod(p.god, this, playersPos[i],p.controllerId);
+		addEntity(p.entity);
+			i++;
 	}
 
 	//Not paused at start
 	_paused = false;
-	//Set the starter state to LOADOUT
+
+	//Set the starter state to SETUP
 	_currState = GS_SETUP;
-
-
+	_prepareCounter = SDL_GetTicks();
+	overlay->show();
 
 }
 GamePlayScene::~GamePlayScene(){
-	delete light;
-	delete cam;
-	delete vp;
-	delete scnMgr;
+	
 
 }
 bool GamePlayScene::run(){
-	//Here we would get the time between frames
+	
 
 	//Take messages from input
 	InputManager::getInstance().getMessages(_messages);
@@ -406,21 +352,22 @@ bool GamePlayScene::run(){
 	{
 		//In this state, we should set up the players God (mesh renderer, habilities, etc) and playing cards
 	case GS_SETUP:
-		loadOut();
+		//loadOut();
 		break;
 		//This state should control the gameplay state (Time, rounds, the end, etc)
 	case GS_BATTLE:
-		battle();
+		battlePhase();
 		break;
 		//Last state before leave the scene
 	case GS_END:
-		end();
+		endPhase();
 	case GS_STOPPED:
 		
 		break;
 	default:
 		break;
 	}
+	overlay->show();
 
 	//Logic simulation done here
 	bool aux = updateEnts(0.025);
@@ -428,8 +375,14 @@ bool GamePlayScene::run(){
 	//Clear dispatched messages
 	clearMessageQueue();
 
-	return aux;
+	//Delete entities removed from the scene at the last frame
+	destroyEntities();
 
+	//Delete box2d bodies of the removed entities
+	destroyBodies();
+
+	
+	return aux;
 }
 
 void GamePlayScene::dispatch(){
@@ -438,27 +391,38 @@ void GamePlayScene::dispatch(){
 
 void GamePlayScene::processScnMsgs(){
 
-	nMessages = _sceneMessages.size();
-	std::list<Message *>::iterator it = _sceneMessages.begin();
-	for (int i = 0; i < nMessages && it != _sceneMessages.end(); i++, it++) {
-		
-		switch ((*it)->getType())
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		switch (m->getType())
 		{
+		case MSG_ADD_ENTITY:
+			addEntity(static_cast<MAddEntity*>(m)->getEntity());
+			break;
 		case MSG_CONTROLLER_STATE:
-
+			break;
+		case MSG_DIE:
+			if (m->getEmmiter().compare(0, 6, std::string("Player")) == 0){
+				playerDied(m->getEmmiter());
+			}
+			break;
 		default:
 			break;
 		}
-		
-		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
 
 }
 
-void GamePlayScene::loadOut(){
+void GamePlayScene::preparePhase(){
 	
 
-
-
+	float currentTime = SDL_GetTicks();
+	if (currentTime - _prepareCounter > _prepareLimitTime)
+		_currState = GS_BATTLE;
+	
 
 
 
@@ -483,30 +447,30 @@ void GamePlayScene::loadOut(){
 		}
 }
 
-void GamePlayScene::battle(){
+void GamePlayScene::battlePhase(){
 	/*
-		Pick data from the battle State (_bS), and control the end of it
+		Pick data from the battle State (_battleState), and control the end of it
 	*/
 
 	//Pre-battle: little wait time to let players getting ready
-	if (!_bS.battleStarted){
+	if (!_battleState.battleStarted){
 
 
 
 	//Contador de 5 seg (por ejemplo) y empieza el combate
-	_bS.battleStarted = true;
-	_bS.timeCountStart = SDL_GetTicks();
+	_battleState.battleStarted = true;
+	_battleState.timeCountStart = SDL_GetTicks();
 	}
 
 	//Battle
 	else{
 
 		//Update time elapsed
-		_bS.timeElapsed = SDL_GetTicks() - _bS.timeCountStart;
+		_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
 
 		//If time is greater than limit, stop battle
-		if (_bS.timeElapsed > TIME_LIMIT){
-			_bS.battleEnded = true;
+		if (_battleState.timeElapsed > TIME_LIMIT){
+			_battleState.battleEnded = true;
 			_currState = GS_END;
 		}
 
@@ -518,7 +482,8 @@ void GamePlayScene::battle(){
 
 
 }
-void GamePlayScene::end(){
+
+void GamePlayScene::endPhase(){
 
 }
 
@@ -526,6 +491,60 @@ void GamePlayScene::controllerDisconected(int id){
 
 	_paused = true;
 
+
+}
+
+void GamePlayScene::controllerConnected(int id){
+	_paused = false;
+}
+
+void GamePlayScene::loadStage(){
+
+	//Store the entities in an aux array
+	std::vector<Entity*> stageEntities = EntityFactory::getInstance().createStage(_stage, this);
+
+	//Then push them to the main array of entities
+	for (Entity* e : stageEntities){
+		addEntity(e);
+	}
+	
+}
+
+void GamePlayScene::changePhase(GameplayState newState){
+
+	switch (newState){
+	case GS_SETUP:
+			break;
+	case GS_BATTLE:
+		break;
+	case GS_END:
+		break;
+	}
+
+}
+
+void GamePlayScene::playerDied(std::string e){
+
+	//Find which player was killed and wich won
+	int playerDeadId = std::stoi( e.substr(7, 8));
+	int playerWonId;
+	if (playerDeadId == 0){
+		playerWonId = 1;
+	}
+	else
+		playerWonId = 0;
+
+	//Increase runds completed
+	_players[playerWonId].roundsWon++;
+	_battleState.roundsCompleted++;
+
+	//If the rounds elapsed are 3, we finish the game. Else, continue.
+	if (_battleState.roundsCompleted == MAX_ROUNDS){
+		changePhase(GS_END);
+	}
+	else
+		changePhase(GS_SETUP);
+	
 
 }
 #pragma endregion

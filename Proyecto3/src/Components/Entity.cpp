@@ -21,12 +21,6 @@ Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc)
 Entity::~Entity()
 {
 	dispatch();
-	
-	/*while (!components.empty()){
-		GameComponent* d = components.back();
-		delete d;
-		components.pop_back();
-	}*/
 
 	GameComponent* aux;
 	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end();){
@@ -37,7 +31,7 @@ Entity::~Entity()
 			it = components.erase(it);
 		}
 		catch (std::exception &e){
-			std::cout << e.what() << std::endl;
+//			std::cout << e.what() << std::endl;
 		}
 		delete aux;
 		
@@ -60,7 +54,7 @@ void Entity::deleteComponent(ComponentType id){
 	GameComponent * aux;
 	bool found = false;
 	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end() && !found;){
-		if ((*it)->getID() == id){
+		if ((*it)->getComponentType() == id){
 			aux = *it;
 			it = components.erase(it);
 			delete aux;
@@ -96,7 +90,7 @@ GameScene* Entity::getScene(){ return scene; }
 
 void Entity::getMessage(Message * m){
 	//If the message is SOMETHING we push it in the queue
-	if (m != NULL )
+	if (m != nullptr)
 		msgs.push(m);
 }
 //Method to send a message to the scene

@@ -36,6 +36,7 @@ public:
 	void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
 
 		mDebug->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_STRIP);
+		mDebug->colour(0, 0, 1,1);
 		b2Vec2 firstVertex = vertices[0];
 		mDebug->position(firstVertex.x * PPM, firstVertex.y* PPM, 0.0);
 
@@ -51,6 +52,7 @@ public:
 	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
 
 		mDebug->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_STRIP);
+		mDebug->colour(0, 0, 1, 1);
 		b2Vec2 firstVertex = vertices[0];
 		mDebug->position(firstVertex.x * PPM, firstVertex.y* PPM, 0.0);
 
@@ -66,7 +68,7 @@ public:
 	void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {
 	
 		mDebug->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_LINE_STRIP);
-
+		mDebug->colour(0, 0, 1, 1);
 		mDebug->position(p1.x * PPM, p1.y* PPM, 0.0);
 		mDebug->position(p2.x* PPM, p2.y* PPM, 0.0);
 
@@ -77,6 +79,7 @@ public:
 	void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color){
 	
 		mDebug->begin("BaseWhiteNoLighting", Ogre::RenderOperation::OT_POINT_LIST);
+		mDebug->colour(0, 0, 1, 1);
 		mDebug->position(p.x * PPM, p.y* PPM, 0.0);
 		mDebug->end();
 	

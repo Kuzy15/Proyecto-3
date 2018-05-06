@@ -15,13 +15,13 @@ typedef enum E_BULLET;
 
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
-const float MAX_SPEED = 0.0f;
-const int MAX_LIFE = 0;
-const float MAX_JUMP_DISTANCE = 0.0f;
+const float MAX_SPEED = 13.0f;
+const int MAX_LIFE = 150;
+const float MAX_JUMP_DISTANCE = 150.0f;
 const float MAX_FIRE_RATE = 0.0f;
 
 //Pixels per meter
-const int PPM = 100;
+const float PPM = 3.0f;
 
 
 
@@ -50,11 +50,15 @@ typedef enum ComponentType {
 	CMP_PLAYER_CH,
 	CMP_PLAYER_CONTROLLER,
 	CMP_LIFE,
+	//CMP_ARMOR,
 	CMP_MOVEMENT_SPEED,
 	CMP_JUMP,
 	CMP_BASIC_ATTACK,
 	CMP_CAMERA,
-	CMP_BULLET
+	CMP_BULLET,
+	CMP_PASSIVE_SKILL,
+	CMP_SHU_HEADDRESS,
+	CMP_JONSU_MOON
 
 
 
@@ -74,7 +78,7 @@ public:
 	//Getters and setters
 	bool getActive();
 	void setActive(bool nw);
-	ComponentType getID();
+	ComponentType getComponentType();
 
 
   
@@ -86,12 +90,12 @@ protected:
 
 	//Constructor protected so that only
 	//other game components inheriting from this class can use it
-	GameComponent(ComponentType id, Entity * ent);
+	GameComponent(ComponentType componentType, Entity * ent);
 
 	//pointer to the components' entity
 	Entity * pEnt;
 	//basic atributes of the component
-	ComponentType _id;
+	ComponentType _componentType;
 	bool _active;
 
 };
@@ -156,9 +160,12 @@ public:
 
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	Ogre::Vector3 getSize();
 
 private:
 	Ogre::Entity * pOgreEnt;
+	bool invisActive;           //is invis´ component added
+
 	
 	
 };
@@ -230,7 +237,8 @@ typedef enum FilterMask {
 	MASK_BULLET = 0x0008,
 	MASK_HEAD = 0x0010,
 	MASK_CHEST = 0x0020,
-	MASK_LEGS = 0x0040
+	MASK_LEGS = 0x0040,
+	MASK_FOOT_SENSOR = 0x0080 ////0000 0000 1000 0000
 	
 
 };
@@ -259,7 +267,6 @@ private:
 	b2Vec2 _vel;
 	b2Body* _body;
 	b2BodyDef _bodyDef;
-	b2Shape* _shape;
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
 	
@@ -350,10 +357,13 @@ public:
 
 	//Returns the current life of the entity
 	inline float getVelocity(){ return _moveVel; };
+	//reset var of component
+	inline void resetVel(){ _moveVel = _auxVelReset; };
 
 private:
 	float _maxSpeed;			//Max velocity
 	float _moveVel;				//The  current movemente speed the entity has
+	float _auxVelReset;
 };
 
 /*-----------------------------	PLAYER JUMP COMPONENT	--------------------*/
@@ -370,11 +380,21 @@ public:
 	//Returns the current jump distance of the entity
 	inline float getForce(){ return _jumpForce; };
 
+	inline void resetForceJump(){ _jumpForce = _auxJumpReset; };
+
 private:
 	float _maxForce;			//Max number of jump units
 	float _jumpForce;			//The current jump units of the entity
+
+	float _timeCounter;
+	float _lastTimeJump;
+	float _jumpRate;
+
+	float _auxJumpReset;
+
 	int _nJumps;				//Remaining jumps
 	int _maxJumps;				//Max jumps
+
 };
 
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
@@ -385,7 +405,7 @@ const float SPAWN_PARSE = 1.0f / 328.0f;
 class CPlayerBasicAttack : public GameComponent
 {
 public:
-	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos);
+	CPlayerBasicAttack(Entity * father, float fireRate, E_BULLET bT, Ogre::Vector3 entPos, float damage);
 	virtual ~CPlayerBasicAttack();
 
 	virtual void tick(float delta);
@@ -394,14 +414,21 @@ public:
 	//Returns the current fire rate of the entity
 	inline float getFireRate(){ return _fireRate; };
 
+	inline void resetDamage(){ _auxDamageReset = _damage; };
+	inline void resetFireRate(){ _auxFireRateReset = _fireRate; };
+
+
 private:
 	float _maxFireRate;			//Max fire rate
 	float _fireRate;			//The current fire rate 
+	float _auxFireRateReset;
 	float _lastTimeShot;		//The last time in SDL time when player spawn a bullet (Fire rate control)
 	float _timeCounter;			//Variable for the fire rate control.
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
 	float _radius;
 	Ogre::Vector3 _ogrepos;
+	float _damage;
+	float _auxDamageReset;
 
 	void calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos);
 };
@@ -418,12 +445,184 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
+	inline void resetVelocity(){ _auxVelocityReset = _velocity; };
 
 private:
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
 	float _damage;				//The damage done by one bullet 
 	float _velocity;			//The movement velocity of the bullet
 	//rango de explosión
+	bool _toDelete;
+	float _auxVelocityReset;
+
+};
+
+
+/////////iria debajo del de vida por mantener un orden
+/*-----------------------------	ARMOR COMPONENT	--------------------*/
+//Provides life to an entity
+/*class CArmor : public GameComponent
+{
+public:
+	CArmor(Entity * father, float iniArmor);
+	~CArmor();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+	inline void setNewArmor(float BA){ _maxArmor += BA; _currentArmor += BA; };
+
+	//Returns the current armor of the entity
+	inline int getCurrentArmor(){ return _currentArmor; };
+
+private:
+	float _maxArmor;			//Max number for the armor
+	float _currentArmor;		//The current armor of the entity
+};
+*/
+
+/*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
+class CAbility : public GameComponent
+{
+public:
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CAbility();
+
+	
+
+protected:
+	float _componentLife;
+	float _componentArmor;
+	float _coolDown;
+	
+};
+
+//invisibility
+class CPSkillVidar : public CAbility
+{
+public:
+	CPSkillVidar(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillVidar();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
+//Increase damage of a god
+class CPSkillHades : public CAbility
+{
+public:
+	CPSkillHades(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillHades();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
+
+//Modify velocity of a god
+class CPSkillUll : public CAbility
+{
+public:
+	CPSkillUll(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillUll();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+//modify vel of bullets
+class CPSkillVali : public CAbility
+{
+public:
+	CPSkillVali(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillVali();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
+//Modify velocity and jump of a god
+class CPSkillHermes : public CAbility
+{
+public:
+	CPSkillHermes(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillHermes();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
+//Modify vel of fire rate
+class CPSkillSyn : public CAbility
+{
+public:
+	CPSkillSyn(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CPSkillSyn();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
+/*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
+//Shu Headdress
+class CShuHeaddress : public CAbility
+{
+public:
+	CShuHeaddress(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CShuHeaddress();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	b2Vec2* calculateDash(float xValue, float yValue);
+
+	int _playerId;
+	float _timeCounter;
+	float _lastTimeDash;
+	float _dashImpulse;
+	
+
+};
+
+//Jonsu Moon
+class CJonsuMoon : public CAbility
+{
+public:
+	CJonsuMoon(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CJonsuMoon();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
+	float _timeActiveLimit;
+	float _velocityPercentage;
+	bool _isActive;
+	bool isAvailable;
 
 };
 

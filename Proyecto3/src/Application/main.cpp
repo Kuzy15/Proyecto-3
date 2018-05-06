@@ -20,10 +20,12 @@ int CALLBACK WinMain(
 	){
 #endif 
 
-	Game * game ;
+	Game * game;
 	game = new Game();
 	game->loop();
 	delete game;
+
+	
 	
 	return 0;
 }

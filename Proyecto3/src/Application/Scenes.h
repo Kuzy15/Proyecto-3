@@ -5,11 +5,14 @@
 class Entity;
 class Message;
 class Game;
+class b2Body;
+enum E_GOD;
+enum E_STAGE;
 
 
 
 
- 
+#pragma region Game Scene
 
 /*----------------------------- GAME SCENE -----------------------------*/
 //Father class to every scene in the game.
@@ -40,6 +43,9 @@ public:
 	//Debug
 	void clearDebugDraw();
 
+	//Box2d Bodies delete
+	void addBodyToDelete(b2Body* b);
+	void addEntityToDelete(Entity* e);
 
 protected:
 	std::string _id;
@@ -50,15 +56,26 @@ protected:
 	void deleteAllMessages();
 	//Messaging attributes and methods
 	std::list<Entity *> _entities;
+	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
+	std::vector<b2Body*> _physicBodies;
 
 	//Basic Ogre atributes common to every scene
 	Ogre::SceneManager * scnMgr;
 	Ogre::Viewport * vp;
 	Ogre::Overlay* overlay;
+
+
+	//List of bodies to destruct at the end of the frame.
+	void destroyBodies();
+	void destroyEntities();
+
 };
 
+#pragma endregion
+
+#pragma region Basic Scene
 /*----------------------------- BASIC SCENE -----------------------------*/
 
 //Basic class to debug and test the ogre implementation
@@ -82,6 +99,10 @@ private:
 	Ogre::OverlayContainer* panel;
 	
 };
+
+#pragma endregion
+
+#pragma region GameplayScene
 
 /*----------------------------- GAMEPLAY SCENE -----------------------------*/
 
@@ -113,11 +134,18 @@ struct BattleState{
 	float timeCountStart = 0;	//Time when battle started
 };
 
+struct Player{
+	Entity* entity = nullptr;
+	int controllerId = -1;
+	E_GOD god;
+	int roundsWon = 0;
+};
+
 
 class GamePlayScene : public GameScene
 {
 public:
-	GamePlayScene(std::string id, Game * game, int nPlayers);
+	GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage);
 	virtual ~GamePlayScene();
 
 	virtual bool run();
@@ -126,23 +154,34 @@ public:
 
 private:
 	//Methods that manages the state of the scene
-	void loadOut();
-	void battle();
-	void end();
+	void preparePhase();
+	void battlePhase();
+	void endPhase();
+	void changePhase(GameplayState);
+	//Load the stage
+	void loadStage();
 	void controllerDisconected(int id);
+	void controllerConnected(int id);
 
-	Ogre::SceneManager * scnMgr;
-	Ogre::Viewport * vp;
-	Ogre::Camera * cam;
+	void playerDied(std::string playerDead);
+
 	Ogre::Light * light;
 
 	GameplayState _currState;	//The current state of the scene
-	BattleState _bS;		//The state of the battle
+	BattleState _battleState;		//The state of the battle
+	E_STAGE _stage;			//Stage type
+	const int TOTAL_ROUNDS = 3;
 	int _nPlayers;				//Number of players
-	std::vector<Entity*> _players = std::vector<Entity*>(4);	//Array of pointer to the players Entities
+	std::vector<Player> _players;	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
 	bool _paused;
 
+	float _prepareCounter;
+	float _prepareLimitTime;
+
 };
+
+
+#pragma endregion
 
 #endif

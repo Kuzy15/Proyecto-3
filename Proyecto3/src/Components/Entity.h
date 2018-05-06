@@ -34,7 +34,6 @@ public:
 
 
 
-
 private:
 	bool _active;
 	std::string _id;
@@ -44,6 +43,7 @@ private:
 	GameScene * scene;
 	//queue managing during tick function
 	void dispatch();
+
 };
 
 
