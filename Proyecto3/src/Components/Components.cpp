@@ -1193,3 +1193,55 @@ void CJonsuMoon::getMessage(Message* m)
 	}
 }
 #pragma endregion
+
+
+#pragma region Khepri Beetle
+//Velocity improvement
+CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100), _playerId(id){
+	_timeCounter = _initTime = 0;
+	_timeActiveLimit = 3000.0f; //3 seconds
+	_coolDown = 10000.0f;
+	_fireRatePercentage = 40.0f;
+	_isActive = false;
+	isAvailable = true;
+}
+CKhepriBeetle::~CKhepriBeetle(){}
+
+void CKhepriBeetle::tick(float delta){
+
+	//Whe is active and timeActiveLimit completes, deactivate it and start cooldown
+	if (_isActive){
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _timeActiveLimit){
+			pEnt->getMessage(new MModFireRate(pEnt->getID(), -_fireRatePercentage));
+			_isActive = false;
+			_initTime = SDL_GetTicks();
+		}
+	}
+	//If is not active and is not available, we count the cooldown. Then turn it to available.
+	else if (!isAvailable){
+
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _coolDown){
+			isAvailable = true;
+		}
+
+	}
+}
+void CKhepriBeetle::getMessage(Message* m)
+{
+	if (m->getType() == MSG_INPUT_STATE){
+		MInputState* inputM = static_cast<MInputState*>(m);
+		if (inputM->getId() == _playerId && isAvailable){
+			ControllerInputState cState = inputM->getCInputState();
+			if (cState.Right_Shoulder == BTT_PRESSED){
+				pEnt->getMessage(new MModFireRate(pEnt->getID(), _fireRatePercentage));
+				_initTime = SDL_GetTicks();
+				_isActive = true;
+				isAvailable = false;
+			}
+		}
+	}
+}
+#pragma endregion
+
