@@ -2,7 +2,7 @@ template container Panel(SdkTrays/Cursor)
 {
 	metrics_mode pixels
 	transparent true
-	
+
 	// You can offset the image to change the cursor "hotspot"
 	element Panel(CursorImage)
 	{
@@ -18,7 +18,7 @@ template container BorderPanel(SdkTrays/Tray)
 	metrics_mode pixels
 	material SdkTrays/Tray
 	uv_coords 0.25 0.25 0.75 0.75
-	
+
 	border_material SdkTrays/Tray
 	border_size 16 16 16 16
 	border_topleft_uv     0.00 0.00 0.25 0.25
@@ -38,7 +38,7 @@ template container BorderPanel(SdkTrays/Button)
 	horz_align center
 	height 32
 	uv_coords 0.145 0.000 0.855 1.000
-	
+
 	border_material SdkTrays/Button/Up
 	border_size 16 16 0 0
 	border_left_uv  0.000 0.000 0.125 1.000
@@ -63,7 +63,7 @@ template container BorderPanel(SdkTrays/TextBox)
 	material SdkTrays/TextBox
 	horz_align center
 	uv_coords 0.4 0.4 0.6 0.6
-	
+
 	border_material SdkTrays/TextBox
 	border_size 13 13 13 13
 	border_topleft_uv     0.0 0.0 0.4 0.4
@@ -74,7 +74,7 @@ template container BorderPanel(SdkTrays/TextBox)
 	border_bottomleft_uv  0.0 0.6 0.4 1.0
 	border_bottom_uv      0.4 0.6 0.6 1.0
 	border_bottomright_uv 0.6 0.6 1.0 1.0
-	
+
 	container BorderPanel(TextBoxCaptionBar)
 	{
 		metrics_mode pixels
@@ -83,7 +83,7 @@ template container BorderPanel(SdkTrays/TextBox)
 		top 2
 		left 2
 		uv_coords 0.375 0.375 0.625 0.625
-		
+
 		border_material SdkTrays/MiniTray
 		border_size 12 12 12 12
 		border_topleft_uv     0.000 0.000 0.375 0.375
@@ -125,12 +125,12 @@ template container BorderPanel(SdkTrays/TextBox)
 		horz_align right
 		left -23
 		uv_coords 0.0 0.31 1.0 0.69
-		
+
 		border_material SdkTrays/ScrollTrack
 		border_size 0 0 10 10
 		border_top_uv    0.0 0.0 1.0 0.31
 		border_bottom_uv 0.0 0.69 1.0 1.0
-        
+
 		element Panel(TextBoxScrollHandle)
 		{
 			metrics_mode pixels
@@ -150,7 +150,7 @@ template container BorderPanel(SdkTrays/SelectMenu)
 	horz_align center
 	height 56
 	uv_coords 0.375 0.375 0.625 0.625
-	
+
 	border_material SdkTrays/MiniTray
 	border_size 12 12 12 12
 	border_topleft_uv     0.000 0.000 0.375 0.375
@@ -173,7 +173,7 @@ template container BorderPanel(SdkTrays/SelectMenu)
         space_width 7
         colour 0 0 0
 	}
-	
+
 	container BorderPanel(MenuSmallBox)
 	{
 		metrics_mode pixels
@@ -182,7 +182,7 @@ template container BorderPanel(SdkTrays/SelectMenu)
 		top 24
 		left 5
 		uv_coords 0.4 0.4 0.6 0.6
-		
+
 		border_material SdkTrays/MiniTextBox
 		border_size 13 13 13 13
 		border_topleft_uv     0.0 0.0 0.4 0.4
@@ -205,14 +205,14 @@ template container BorderPanel(SdkTrays/SelectMenu)
 			colour 0 0 0
 		}
 	}
-	
+
 	container BorderPanel(MenuExpandedBox)
 	{
 		metrics_mode pixels
 		material SdkTrays/MiniTray
 		top 28
 		uv_coords 0.375 0.375 0.625 0.625
-		
+
 		border_material SdkTrays/MiniTray
 		border_size 12 12 12 12
 		border_topleft_uv     0.000 0.000 0.375 0.375
@@ -223,7 +223,7 @@ template container BorderPanel(SdkTrays/SelectMenu)
 		border_bottomleft_uv  0.000 0.625 0.375 1.000
 		border_bottom_uv      0.375 0.625 0.625 1.000
 		border_bottomright_uv 0.625 0.625 1.000 1.000
-		
+
 		container BorderPanel(MenuScrollTrack)
 		{
 			metrics_mode pixels
@@ -233,12 +233,12 @@ template container BorderPanel(SdkTrays/SelectMenu)
 			left -23
 			top 10
 			uv_coords 0.0 0.31 1.0 0.69
-			
+
 			border_material SdkTrays/ScrollTrack
 			border_size 0 0 10 10
 			border_top_uv    0.0 0.0 1.0 0.31
 			border_bottom_uv 0.0 0.69 1.0 1.0
-			
+
 
 			element Panel(MenuScrollHandle)
 			{
@@ -260,7 +260,7 @@ template container BorderPanel(SdkTrays/SelectMenuItem)
 	height 30
 	left 5
 	uv_coords 0.4 0.4 0.6 0.6
-	
+
 	border_material SdkTrays/MiniTextBox
 	border_size 13 13 13 13
 	border_topleft_uv     0.0 0.0 0.4 0.4
@@ -292,7 +292,7 @@ template container BorderPanel(SdkTrays/Slider)
 	horz_align center
 	height 53
 	uv_coords 0.375 0.375 0.625 0.625
-	
+
 	border_material SdkTrays/MiniTray
 	border_size 12 12 12 12
 	border_topleft_uv     0.000 0.000 0.375 0.375
@@ -314,7 +314,7 @@ template container BorderPanel(SdkTrays/Slider)
         space_width 7
         colour 0 0 0
 	}
-	
+
 	container BorderPanel(SliderValueBox)
 	{
 		metrics_mode pixels
@@ -323,7 +323,7 @@ template container BorderPanel(SdkTrays/Slider)
 		height 30
 		top 2
 		uv_coords 0.4 0.4 0.6 0.6
-		
+
 		border_material SdkTrays/MiniTextBox
 		border_size 13 13 13 13
 		border_topleft_uv     0.0 0.0 0.4 0.4
@@ -346,7 +346,7 @@ template container BorderPanel(SdkTrays/Slider)
 			colour 0 0 0
 		}
 	}
-		
+
 	container BorderPanel(SliderTrack)
 	{
 		metrics_mode pixels
@@ -356,12 +356,12 @@ template container BorderPanel(SdkTrays/Slider)
 		vert_align bottom
 		top -20
 		uv_coords 0.31 0.0 0.69 1.0
-		
+
 		border_material SdkTrays/SliderTrack
 		border_size 10 10 0 0
 		border_left_uv  0.0 0.0 0.31 1.0
 		border_right_uv 0.69 0.0 1.0 1.0
-		
+
 		element Panel(SliderHandle)
 		{
 			metrics_mode pixels
@@ -381,7 +381,7 @@ template container BorderPanel(SdkTrays/Label)
 	horz_align center
 	height 32
 	uv_coords 0.49 0.000 0.51 1.000
-	
+
 	border_material SdkTrays/Label
 	border_size 16 16 0 0
 	border_left_uv  0.000 0.000 0.49 1.000
@@ -414,7 +414,7 @@ template container BorderPanel(SdkTrays/ParamsPanel)
 	material SdkTrays/TextBox
 	horz_align center
 	uv_coords 0.4 0.4 0.6 0.6
-	
+
 	border_material SdkTrays/TextBox
 	border_size 13 13 13 13
 	border_topleft_uv     0.0 0.0 0.4 0.4
@@ -458,7 +458,7 @@ template container BorderPanel(SdkTrays/CheckBox)
 	horz_align center
 	height 34
 	uv_coords 0.375 0.375 0.625 0.625
-	
+
 	border_material SdkTrays/MiniTray
 	border_size 12 12 12 12
 	border_topleft_uv     0.000 0.000 0.375 0.375
@@ -480,7 +480,7 @@ template container BorderPanel(SdkTrays/CheckBox)
         space_width 7
         colour 0 0 0
 	}
-	
+
 	container BorderPanel(CheckBoxSquare)
 	{
 		metrics_mode pixels
@@ -491,7 +491,7 @@ template container BorderPanel(SdkTrays/CheckBox)
 		left -33
 		top 4
 		uv_coords 0.4 0.4 0.6 0.6
-		
+
 		border_material SdkTrays/MiniTextBox
 		border_size 13 13 13 13
 		border_topleft_uv     0.0 0.0 0.4 0.4
@@ -530,7 +530,7 @@ template container Panel(SdkTrays/Picture)
 {
 	metrics_mode pixels
 	material SdkTrays/Shade
-	
+
 	element BorderPanel(PictureFrame)
 	{
 		metrics_mode pixels
@@ -538,7 +538,7 @@ template container Panel(SdkTrays/Picture)
 		left -8
 		top -8
 		uv_coords 0.49 0.49 0.51 0.51
-		
+
 		border_material SdkTrays/Frame
 		border_size 15 15 15 15
 		border_topleft_uv     0.00 0.00 0.49 0.49
@@ -559,7 +559,7 @@ template container BorderPanel(SdkTrays/ProgressBar)
 	horz_align center
 	height 63
 	uv_coords 0.375 0.375 0.625 0.625
-	
+
 	border_material SdkTrays/MiniTray
 	border_size 12 12 12 12
 	border_topleft_uv     0.000 0.000 0.375 0.375
@@ -581,7 +581,7 @@ template container BorderPanel(SdkTrays/ProgressBar)
         space_width 7
         colour 0 0 0
 	}
-	
+
 	container BorderPanel(ProgressCommentBox)
 	{
 		metrics_mode pixels
@@ -590,7 +590,7 @@ template container BorderPanel(SdkTrays/ProgressBar)
 		height 30
 		top 2
 		uv_coords 0.4 0.4 0.6 0.6
-		
+
 		border_material SdkTrays/MiniTextBox
 		border_size 13 13 13 13
 		border_topleft_uv     0.0 0.0 0.4 0.4
@@ -613,7 +613,7 @@ template container BorderPanel(SdkTrays/ProgressBar)
 			colour 0 0 0
 		}
 	}
-		
+
 	container BorderPanel(ProgressMeter)
 	{
 		metrics_mode pixels
@@ -623,12 +623,12 @@ template container BorderPanel(SdkTrays/ProgressBar)
 		vert_align bottom
 		top -34
 		uv_coords 0.31 0.0 0.69 1.0
-		
+
 		border_material SdkTrays/MiniTextBox
 		border_size 10 10 0 0
 		border_left_uv  0.0 0.0 0.31 1.0
 		border_right_uv 0.69 0.0 1.0 1.0
-		
+
 		element BorderPanel(ProgressFill)
 		{
 			metrics_mode pixels
@@ -638,11 +638,25 @@ template container BorderPanel(SdkTrays/ProgressBar)
 			top 6
 			left 6
 			uv_coords 0.31 0.0 0.69 1.0
-			
+
 			border_material SdkTrays/MiniTextBox/Over
 			border_size 10 10 0 0
 			border_left_uv  0.0 0.0 0.31 1.0
 			border_right_uv 0.69 0.0 1.0 1.0
 		}
 	}
+}
+
+Kek
+{
+	container BorderPanel (wololo) : SdkTrays/ProgressBar
+	{
+		left 0
+		top  0
+		height 1
+		width 1
+
+	}
+
+
 }

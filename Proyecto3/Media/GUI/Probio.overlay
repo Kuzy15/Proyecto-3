@@ -1,57 +1,91 @@
 
 // Graphical User Interface for the PlayScene.
-
-
-
 // The name of the overlay comes first
 KEK
 {
     zorder 200
 
-    container Panel(TimerPanel)
+    container Panel(GUI/TimerPanel)
     {
+
         // Center it horizontally, put it at the top
         left 0.45
         top 0.05
         width 0.1
         height 0.1
-	      material BaseWhite
+	      material GUI/LifeContainer
 
         // Another panel nested in this one
         container TextArea(TimerPanel/TextArea)
         {
-            metrics_mode relative
+            metrics_mode pixels
             //Horizontal allignment can be
             //Left, center or right
             horz_align center
+            alignment center
             left 0
-            top 0
-            width 1
-            height 1
+            top 40
+            width 100
+            height 100
             font_name Caption
-            colour 0 0 0
-            caption AA
-            char_height 0.02
+            colour 0.8 0.8 0
+            caption 56
+            char_height 40
 
          }
     }
 
     container Panel(Player1)
     {
-        top 0.01
-        left 0.01
-        width 0.3
-        height 0.2
-        material BaseWhite
-    }
-    container Panel(Player2)
-    {
-      top 0.01
-      left 0.69
-      width 0.3
-      height 0.2
-      material BaseWhite
-    }
+        metrics_mode pixels
+        top 0
+        left 0
+        width 600
+        height 200
+        material GUI/Base_Player
 
+        container TextArea (Player1/Name)
+        {
+          metrics_mode pixels
+          left 50
+          top 50
+          width 100
+          height 100
+          font_name Caption
+          colour 0 1 0.5
+          caption Player 1 : RA
+          char_height 30
+        }
 
+        element Panel(Player1/LifeBarBackground)
+        {
+          metrics_mode pixels
+          left 50
+          top 100
+          width 450
+          height 50
+          material GUI/LifeContainer
+
+          element Panel (Player1/LifeBar)
+          {
+            metrics_mode pixels
+            left 0
+            top 0
+            width 400
+            height 50
+            material GUI/BasicRed
+            container BorderPanel (Player1/BorderPanel)
+            {
+              metrics_mode pixels
+              top 0
+              left 0
+              width 450
+              height 50
+              border_size 5 5 5 5
+              border_material GUI/PlayerInfo/LifeBorder
+            }
+
+        }
+      }
+    }
 }

@@ -301,10 +301,8 @@ bool BasicScene::run(){
 	//Then we deliver the messages
 	GameScene::dispatch();
 
-	processScnMsgs();
+	processScnMsgs();								
 
-	textArea->setCaption(to_string(++i));
-	panel->setDimensions(1000 * cos(i), 100);
 	//Logic simulation done here
 	bool aux = updateEnts(0.025);
 

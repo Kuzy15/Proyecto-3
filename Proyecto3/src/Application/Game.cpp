@@ -128,7 +128,7 @@ bool Game::initOgre(){
 		return false;
 	}
 
-	pOverSyst = new Ogre::OverlaySystem();
+	pOverSyst = OGRE_NEW Ogre::OverlaySystem();
 	pOverMan = Ogre::OverlayManager::getSingletonPtr();
 
 
