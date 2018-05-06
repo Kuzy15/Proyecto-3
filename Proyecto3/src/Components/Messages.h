@@ -68,6 +68,7 @@ typedef enum MessageType{
 	MSG_MOD_VEL_JUMP,
 	MSG_MOD_FIRERATE,
 	MSG_MOD_INVS,
+	MSG_MOD_VELBULLETS,
 	MSG_PASSMOD_DES,
 	MSG_DAMAGE,
 	MSG_DASH,
@@ -416,6 +417,19 @@ public:
 
 private:
 	float _valueFireRate;
+};
+
+
+//modify vel of bullets
+class MModVelBullets : public Message{
+public:
+	MModVelBullets(std::string emmiter, float _valueVelBullets);
+	~MModVelBullets();
+
+	inline float getVelBulletsValue(){ return _valueVelBullets; };
+
+private:
+	float _valueVelBullets;
 };
 
 

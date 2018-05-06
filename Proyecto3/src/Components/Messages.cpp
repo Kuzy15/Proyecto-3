@@ -180,6 +180,8 @@ MDamage::~MDamage(){}
 //--------------------------------------------------	PASSIVE SKILL MSG		----------------------------------------------------------//
 #pragma region MessagePassiveSkill
 
+	MModInvisibility::MModInvisibility(std::string emmiter) : Message(MSG_MOD_INVS, ENTITY, emmiter){}
+	MModInvisibility::~MModInvisibility(){}
 
 	MModDmg::MModDmg(std::string emmiter, float value) :Message(MSG_MOD_DMG, ENTITY, emmiter), _value(value){}
 	MModDmg::~MModDmg(){}
@@ -192,6 +194,9 @@ MDamage::~MDamage(){}
 
 	MModFireRate::MModFireRate(std::string emmiter, float valueFireRate) : Message(MSG_MOD_FIRERATE, ENTITY, emmiter), _valueFireRate(valueFireRate){}
 	MModFireRate::~MModFireRate(){}
+
+	MModVelBullets::MModVelBullets(std::string emmiter, float valueVelBullets) : Message(MSG_MOD_VELBULLETS, ENTITY, emmiter), _valueVelBullets(valueVelBullets){}
+	MModVelBullets::~MModVelBullets(){}
 
 	MDeactivate::MDeactivate(std::string emmiter) : Message(MSG_PASSMOD_DES, ENTITY, emmiter){}
 	MDeactivate::~MDeactivate(){}

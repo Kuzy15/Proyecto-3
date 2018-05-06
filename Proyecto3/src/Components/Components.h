@@ -445,6 +445,7 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
+	inline void resetVelocity(){ _auxVelocityReset = _velocity; };
 
 private:
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
@@ -452,6 +453,7 @@ private:
 	float _velocity;			//The movement velocity of the bullet
 	//rango de explosión
 	bool _toDelete;
+	float _auxVelocityReset;
 
 };
 
@@ -537,6 +539,7 @@ public:
 
 };
 
+//modify vel of bullets
 class CPSkillVali : public CAbility
 {
 public:

@@ -184,11 +184,15 @@ void CMeshRender::getMessage(Message * m) {
 		break;
 
 	case MSG_PLAYER_JUMP:
-		pOgreEnt->setVisible(false);
+		if (invisActive){
+			pOgreEnt->setVisible(false);
+		}
 		break;
 
 	case MSG_COLLISION_TERRAIN:
-		pOgreEnt->setVisible(true);
+		if (invisActive){
+			pOgreEnt->setVisible(true);
+		}
 		break;
 
 	case MSG_PASSMOD_DES:
@@ -950,7 +954,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 #pragma region Bullet Component
 
 CBullet::CBullet(Entity* father, E_BULLET bT, float damage, float vel) :GameComponent(CMP_BASIC_ATTACK, father), _damage(damage)
-, _velocity(vel), _toDelete(false)
+, _velocity(vel), _toDelete(false), _auxVelocityReset(vel)
 {
 	
 
@@ -969,6 +973,7 @@ void CBullet::getMessage(Message* m){
 	float xDir;
 	float yDir;
 
+	float velBullets;
 	
 	switch (m->getType()){
 
@@ -990,6 +995,16 @@ void CBullet::getMessage(Message* m){
 			pEnt->getScene()->addEntityToDelete(pEnt);
 			_toDelete = true;
 		}
+		break;
+
+	case MSG_MOD_VELBULLETS:
+		velBullets = static_cast<MModVelBullets*>(m)->getVelBulletsValue();
+		_velocity = _velocity + (_velocity * velBullets / 100.0f);
+		//añadir un maximo de vel de las balas si queremos
+		break;
+
+	case MSG_PASSMOD_DES:
+		resetVelocity();
 		break;
 
 	default:
@@ -1028,7 +1043,7 @@ void CArmor::getMessage(Message* m){}
 
 ///invisibility
 CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25){
-	//pEnt->getMessage();
+	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 }
 CPSkillVidar::~CPSkillVidar(){}
 
@@ -1062,9 +1077,9 @@ void CPSkillUll::tick(float delta){}
 void CPSkillUll::getMessage(Message* m){}
 
 
-///modify ********************************
+///modify vel of bullets
 CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75){
-	//pEnt->getMessage();
+	pEnt->getMessage(new MModVelBullets(pEnt->getID(), 10));
 }
 CPSkillVali::~CPSkillVali(){}
 
