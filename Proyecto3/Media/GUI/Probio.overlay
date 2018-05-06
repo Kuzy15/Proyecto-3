@@ -3,7 +3,7 @@
 // The name of the overlay comes first
 KEK
 {
-    zorder 200
+    zorder 400
 
     container Panel(GUI/TimerPanel)
     {

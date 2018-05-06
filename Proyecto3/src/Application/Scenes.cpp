@@ -304,6 +304,15 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	// Show the overlay
 	Ogre::FontManager::getSingleton().getByName("Caption")->load();
 	
+	// Create a panel
+	Ogre::OverlayContainer * panel = static_cast<Ogre::OverlayContainer*>(
+			overlayManager.createOverlayElement("Panel", "PanelName"));
+	panel->setMetricsMode(Ogre::GMM_PIXELS);
+	panel->setPosition(10, 10);
+	panel->setDimensions(100, 100);
+	panel->setMaterialName("BaseWhite"); // Optional background material
+
+	overlay->add2D(panel);
 	//The limit time to choose cards
 	_prepareLimitTime = 30000.0f; //30 seconds
 	_prepareCounter = 0.0f;
@@ -367,7 +376,6 @@ bool GamePlayScene::run(){
 	default:
 		break;
 	}
-	overlay->show();
 
 	//Logic simulation done here
 	bool aux = updateEnts(0.025);
