@@ -1,0 +1,57 @@
+material GUI/Base_Player {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture PlayerGradient.png
+       }
+    }
+  }
+}
+
+material GUI/PlayerInfo/LifeBorder
+{
+  technique
+  {
+    pass
+    {
+       texture_unit
+       {
+          texture tiles.png
+       }
+    }
+  }
+
+}
+
+
+//Material used for the container of the lifeBar
+material GUI/LifeContainer{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture linear_gradient.png
+      }
+    }
+  }
+}
+
+material GUI/BasicRed
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        colour_op_ex source1 src_manual src_current 1 0 0
+      }
+    }
+  }
+}
