@@ -70,6 +70,7 @@ typedef enum MessageType{
 	MSG_MOD_INVS,
 	MSG_MOD_VELBULLETS,
 	MSG_PASSMOD_DES,
+	MSG_RESTORE_LIFE_CARDS,
 	MSG_DAMAGE,
 	MSG_DASH,
 	MSG_DIE,
@@ -476,7 +477,6 @@ public:
 	MModInvisibility(std::string emmiter);
 	~MModInvisibility();
 
-private:
 };
 
 
@@ -503,6 +503,16 @@ public:
 private:
 	b2Vec2* _dashValue;
 	
+};
+
+
+
+//Hera´s Rune
+class MRestoreLifeCards : public Message{
+public:
+	MRestoreLifeCards(std::string emmiter);
+	~MRestoreLifeCards();
+
 };
 
 //--------------------------------------------------	DIE MSG		----------------------------------------------------------//

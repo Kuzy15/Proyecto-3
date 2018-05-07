@@ -1022,7 +1022,8 @@ void CBullet::getMessage(Message* m){
 
 #pragma region Ability Component
 CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask) :GameComponent(c, father), _componentLife(componentLife),
-_componentArmor(componentArmor), _myMask(mask)
+_componentArmor(componentArmor), _myMask(mask), _limitLife(componentLife)
+
 {
 	
 }
@@ -1068,7 +1069,12 @@ CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father,
 CPSkillVidar::~CPSkillVidar(){}
 
 void CPSkillVidar::tick(float delta){}
-void CPSkillVidar::getMessage(Message* m){}
+void CPSkillVidar::getMessage(Message* m){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+	}
+	
+}
 
 
 ///modify dmg of a god
@@ -1077,12 +1083,15 @@ CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father,
 }
 CPSkillHades::~CPSkillHades(){}
 
-void CPSkillHades::tick(float delta){
-	/*if (_componentLife <= 0){
-		pEnt->getMessage(new MDeactivate(pEnt->getID()));//el mensage de daño se encarga asi no se tiene que estar comprobando todo el rato
-	}*/
+void CPSkillHades::tick(float delta){}
+void CPSkillHades::getMessage(Message* m){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+		if (_componentLife > _limitLife){
+			_componentLife = _limitLife;
+		}
+	}
 }
-void CPSkillHades::getMessage(Message* m){}
 
 
 
@@ -1094,7 +1103,14 @@ CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100
 CPSkillUll::~CPSkillUll(){}
 
 void CPSkillUll::tick(float delta){}
-void CPSkillUll::getMessage(Message* m){}
+void CPSkillUll::getMessage(Message* m){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+		if (_componentLife > _limitLife){
+			_componentLife = _limitLife;
+		}
+	}
+}
 
 
 ///modify vel of bullets
@@ -1104,7 +1120,14 @@ CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 5
 CPSkillVali::~CPSkillVali(){}
 
 void CPSkillVali::tick(float delta){}
-void CPSkillVali::getMessage(Message* m){}
+void CPSkillVali::getMessage(Message* m){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+		if (_componentLife > _limitLife){
+			_componentLife = _limitLife;
+		}
+	}
+}
 
 
 ///modify velocity and jump of a god
@@ -1114,7 +1137,14 @@ CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, fathe
 CPSkillHermes::~CPSkillHermes(){}
 
 void CPSkillHermes::tick(float delta){}
-void CPSkillHermes::getMessage(Message* m){}
+void CPSkillHermes::getMessage(Message* m){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+		if (_componentLife > _limitLife){
+			_componentLife = _limitLife;
+		}
+	}
+}
 
 
 ///modify vel of fire rate
@@ -1124,7 +1154,14 @@ CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50,
 CPSkillSyn::~CPSkillSyn(){}
 
 void CPSkillSyn::tick(float delta){}
-void CPSkillSyn::getMessage(Message* m){}
+void CPSkillSyn::getMessage(Message* m){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+		if (_componentLife > _limitLife){
+			_componentLife = _limitLife;
+		}
+	}
+}
 
 #pragma endregion
 
@@ -1263,4 +1300,50 @@ void CKhepriBeetle::getMessage(Message* m)
 	}
 }
 #pragma endregion
+
+
+
+
+#pragma region Hera´s Rune
+//Velocity improvement
+CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100), _playerId(id){
+	_timeCounter = _initTime = 0;
+	_coolDown = 10000.0f;
+	isAvailable = true;
+}
+CHeraRune::~CHeraRune(){}
+
+void CHeraRune::tick(float delta){
+
+	if (!isAvailable){
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _coolDown){
+			isAvailable = true;
+		}
+	}
+}
+
+void CHeraRune::getMessage(Message* m)
+{
+	if (m->getType() == MSG_INPUT_STATE){
+		MInputState* inputM = static_cast<MInputState*>(m);
+		if (inputM->getId() == _playerId && isAvailable){
+			ControllerInputState cState = inputM->getCInputState();
+			if (cState.Right_Shoulder == BTT_PRESSED){
+				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
+				_initTime = SDL_GetTicks();
+				isAvailable = false;
+			}
+		}
+	}
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+		_componentLife += (_componentLife / 2);
+		if (_componentLife > _limitLife){
+			_componentLife = _limitLife;
+		}
+	}
+}
+#pragma endregion
+
+
 
