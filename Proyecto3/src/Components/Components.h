@@ -58,7 +58,8 @@ typedef enum ComponentType {
 	CMP_BULLET,
 	CMP_PASSIVE_SKILL,
 	CMP_SHU_HEADDRESS,
-	CMP_JONSU_MOON
+	CMP_JONSU_MOON,
+	CMP_KHEPRI_BEETLE
 
 
 
@@ -621,6 +622,28 @@ private:
 	float _initTime;
 	float _timeActiveLimit;
 	float _velocityPercentage;
+	bool _isActive;
+	bool isAvailable;
+
+};
+
+//Khepri Beetle
+class CKhepriBeetle : public CAbility
+{
+public:
+	CKhepriBeetle(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	~CKhepriBeetle();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
+	float _timeActiveLimit;
+	float _fireRatePercentage;
 	bool _isActive;
 	bool isAvailable;
 
