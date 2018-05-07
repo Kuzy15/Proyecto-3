@@ -220,6 +220,42 @@ Ogre::Vector3 CMeshRender::getSize(){
 
 /*------------------------- CAMERA COMPONENTS------------------------------------*/
 #pragma endregion
+#pragma region particleRenderComponent
+
+
+CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER , father, scnM) {
+	
+
+	_particleSystem = scnM->createParticleSystem(id, particleSystem);
+	pChild->attachObject(_particleSystem);
+
+	pOgreSceneNode->setPosition(pos);
+	pChild->scale(scale);
+	
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0)));
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
+	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
+
+	_particleSystem->setEmitting(true);
+	
+
+}
+CParticleRender::~CParticleRender() {
+	pChild->detachObject(_particleSystem);
+}
+void CParticleRender::tick(float delta) {
+	
+
+
+}
+void CParticleRender::getMessage(Message * m) {
+	CRender::getMessage(m);
+	
+}
+#pragma endregion
+
+
+/*------------------------- CAMERA COMPONENTS------------------------------------*/
 #pragma region Camera Component
 CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
 	: GameComponent(CMP_CAMERA, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
@@ -261,9 +297,9 @@ void CCamera::getMessage(Message * m) {
 #pragma endregion
 
 #pragma region Action Camera Component 
-CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp):
+CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, float xBoundary, float yBoundary, float minZ, float maxZ):
 	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
-	smooth(40.0), MAXZ(100), MINZ(40) {
+	smooth(40.0), MAXZ(maxZ), MINZ(minZ), BOUNDARY_X(xBoundary), BOUNDARY_Y(yBoundary) {
 	_pj1 = Ogre::Vector3(20, 20, 0);
 	_pj2 = Ogre::Vector3(-20, 20, 0);
 
@@ -283,10 +319,9 @@ CActionCamera::~CActionCamera() {
 }
 
 //Function that calculates if a certain point is out of the defined boundaries for the camera
-bool outOfBoundaries(const Ogre::Vector3 &pos) {
+bool CActionCamera::outOfBoundaries(const Ogre::Vector3 &pos) {
 	//Boundaries in each axis
-	const float BOUNDARY_X = 100;
-	const float BOUNDARY_Y = 100;
+	
 
 	if ((pos.x > BOUNDARY_X || pos.x < -BOUNDARY_X) || (pos.y > BOUNDARY_Y || pos.y < -BOUNDARY_Y))return true;
 	else return false;
@@ -365,7 +400,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_bodyDef.fixedRotation = true;
 	if (myCategory == MASK_BULLET){
 		_bodyDef.bullet = true;
-		_bodyDef.fixedRotation = true;
+		//_bodyDef.fixedRotation = true;
 		_bodyDef.gravityScale = 0.0f;
 	}
 
