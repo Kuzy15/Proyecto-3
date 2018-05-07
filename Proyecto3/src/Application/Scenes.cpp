@@ -522,3 +522,57 @@ void GamePlayScene::playerDied(std::string e){
 
 }
 #pragma endregion
+
+
+#pragma region Main Menu Scene
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) {
+
+	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+}
+
+
+MainMenuScene::~MainMenuScene(){
+}
+
+
+
+
+bool MainMenuScene::run(){
+	//Here we would get the time between frames
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	GameScene::dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+	//Delete entities removed from the scene at the last frame
+	//destroyEntities();
+
+	return aux;
+
+}
+
+void MainMenuScene::dispatch(){
+	GameScene::dispatch();
+
+}
+
+void MainMenuScene::processScnMsgs()
+{
+
+};
+
+
+
+
+#pragma endregion

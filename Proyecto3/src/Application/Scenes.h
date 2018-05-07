@@ -53,6 +53,7 @@ protected:
 	void deleteAllMessages();
 	//Messaging attributes and methods
 	std::list<Entity *> _entities;
+	std::list<Entity*> _menuEntities;
 	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
@@ -174,6 +175,31 @@ private:
 
 };
 
+
+#pragma endregion
+
+
+#pragma region Main Menu Scene
+/*----------------------------- Main Menu SCENE -----------------------------*/
+
+//Basic class to debug and test the ogre implementation
+//and the behaviour of the components
+class MainMenuScene : public GameScene
+{
+public:
+	MainMenuScene(std::string id, Game * game);
+	virtual ~MainMenuScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+	
+
+};
 
 #pragma endregion
 
