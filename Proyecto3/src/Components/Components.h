@@ -60,7 +60,8 @@ typedef enum ComponentType {
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
-	CMP_HERA_RUNE
+	CMP_HERA_RUNE,
+	CMP_PARTICLE_RENDER
 
 
 
@@ -151,6 +152,25 @@ protected:
 	
 };
 
+//--------- PARTICLE RENDER COMPONENT ---------
+class CParticleRender : public CRender
+{
+public:
+
+	CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation);
+	~CParticleRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+private:
+	Ogre::ParticleSystem* _particleSystem;
+
+
+
+};
+
+
 //--------- MESH RENDER COMPONENT ---------
 class CMeshRender: public CRender
 {
@@ -189,6 +209,7 @@ public:
 	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	
 
 protected:
 	std::string _camName;
@@ -206,11 +227,16 @@ protected:
 class CActionCamera: public CCamera
 {
 public:
-	CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp);
+	CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, float xBoundary, float yBoundary, float minZ, float maxZ);
 	~CActionCamera();
 
 	virtual void getMessage(Message * m);
 	virtual void tick(float delta);
+	bool outOfBoundaries(const Ogre::Vector3 &pos);
+
+
+	const float BOUNDARY_X;
+	const float BOUNDARY_Y;
 
 	//Cache positions of the players
 	Ogre::Vector3 _pj1, _pj2;

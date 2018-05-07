@@ -193,7 +193,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 	
 	Entity * cam = new Entity ("Camera1", this);
 	cam->addComponent(
-		new CActionCamera(cam, scnMgr, vp)
+		new CActionCamera(cam, scnMgr, vp,100,100, 40,100)
 	);
 	addEntity(cam);
 
