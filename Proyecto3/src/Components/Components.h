@@ -302,7 +302,9 @@ public:
 	uint16_t getMyMask(){ return _myMask; }
 
 private:
-	
+
+	//void handleBulletHit();
+
 	uint16_t _myMask;
 
 	
@@ -486,15 +488,16 @@ private:
 class CAbility : public GameComponent
 {
 public:
-	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, uint16 mask); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
 	~CAbility();
 
-	
+	virtual void getMessage(Message* m);
 
 protected:
 	float _componentLife;
 	float _componentArmor;
 	float _coolDown;
+	uint16 _myMask;
 	
 };
 

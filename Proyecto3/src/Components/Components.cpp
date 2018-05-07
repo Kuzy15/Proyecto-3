@@ -571,11 +571,14 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 				break;
 		}
 	}
+	else if (m->getType() == MSG_BULLET_HIT){
+		MBulletHit* mBH = static_cast<MBulletHit*>(m);
+		if (mBH->getTargetMask() == MASK_CHEST)
+			pEnt->getMessage(new MDamage(mBH->getDamage(), pEnt->getID()));
+		else
+			pEnt->getMessage(new MDamageArmature(mBH->getDamage(), mBH->getTargetMask(), pEnt->getID()));
+	}
 }
-
-
-
-
 #pragma endregion
 
 //Player Controller Component
@@ -991,7 +994,8 @@ void CBullet::getMessage(Message* m){
 	case MSG_COLLISION:
 		if (!_toDelete){
 			mCollision = static_cast<MCollisionBegin*>(m);
-			mCollision->GetWho()->getMessage(new MDamage(_damage, pEnt->getID()));
+			mCollision->GetWho()->getMessage(new MBulletHit(_damage, mCollision->GetContactMask(), pEnt->getID()));
+			
 			pEnt->getScene()->addEntityToDelete(pEnt);
 			_toDelete = true;
 		}
@@ -1017,13 +1021,29 @@ void CBullet::getMessage(Message* m){
 
 
 #pragma region Ability Component
-CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor) :GameComponent(c, father), _componentLife(componentLife),
-_componentArmor(componentArmor)
+CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask) :GameComponent(c, father), _componentLife(componentLife),
+_componentArmor(componentArmor), _myMask(mask)
 {
 	
 }
 CAbility::~CAbility(){}
 
+void CAbility::getMessage(Message *m){
+
+	/*Comprobar si hay que llamar a esta funcion en cada una de las virtuales de los hijos*/
+
+	switch (m->getType()){
+	case MSG_DAMAGE_ARMATURE:
+		MDamageArmature* mDA = static_cast<MDamageArmature*>(m);
+		if (mDA->getWhere() == _myMask){
+			_componentLife -= mDA->getDamage();
+			//Si se acaba la vida pues quitarlo o lo que sea. Aclarar el significado de armadura
+
+			pEnt->getMessage(new MDamage((mDA->getDamage() * ( 1 - _componentArmor / 100.0f)), pEnt->getID()));
+		}
+		break;
+	}
+}
 #pragma endregion
 
 ////////////iria debajo de la de life por mantener un orden
@@ -1042,7 +1062,7 @@ void CArmor::getMessage(Message* m){}
 
 
 ///invisibility
-CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25){
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25,MASK_LEGS){
 	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 }
 CPSkillVidar::~CPSkillVidar(){}
@@ -1052,7 +1072,7 @@ void CPSkillVidar::getMessage(Message* m){}
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100){
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100, MASK_LEGS){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -1068,7 +1088,7 @@ void CPSkillHades::getMessage(Message* m){}
 
 
 ///modify velocity of a god
-CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100){
+CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, MASK_LEGS){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -1078,7 +1098,7 @@ void CPSkillUll::getMessage(Message* m){}
 
 
 ///modify vel of bullets
-CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75){
+CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75, MASK_LEGS){
 	pEnt->getMessage(new MModVelBullets(pEnt->getID(), 10));
 }
 CPSkillVali::~CPSkillVali(){}
@@ -1088,7 +1108,7 @@ void CPSkillVali::getMessage(Message* m){}
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25){
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25, MASK_LEGS){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1098,7 +1118,7 @@ void CPSkillHermes::getMessage(Message* m){}
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50){
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50, MASK_LEGS){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1110,7 +1130,7 @@ void CPSkillSyn::getMessage(Message* m){}
 
 #pragma region Shu Headdress
 //Dash
-CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100), _playerId(id){
+CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
 	_coolDown = 500.0f; //5 seconds
 	_dashImpulse = 1000.0f;
@@ -1146,7 +1166,7 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 
 #pragma region Jonsu Moon
 //Velocity improvement
-CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100), _playerId(id){
+CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 5000.0f; //5 seconds
 	_coolDown = 10000.0f;
@@ -1194,10 +1214,9 @@ void CJonsuMoon::getMessage(Message* m)
 }
 #pragma endregion
 
-
 #pragma region Khepri Beetle
 //Velocity improvement
-CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100), _playerId(id){
+CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 3000.0f; //3 seconds
 	_coolDown = 10000.0f;

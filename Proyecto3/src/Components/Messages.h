@@ -72,7 +72,9 @@ typedef enum MessageType{
 	MSG_PASSMOD_DES,
 	MSG_DAMAGE,
 	MSG_DASH,
-	MSG_DIE
+	MSG_DIE,
+	MSG_BULLET_HIT,
+	MSG_DAMAGE_ARMATURE
 	
 
 	
@@ -358,14 +360,49 @@ private:
 class MDamage : public Message
 {
 public:
-	MDamage(float damage,std::string emmiter);
+	MDamage(float damage, std::string emmiter);
 	~MDamage();
 
 	inline float getDamage(){ return _damage; };
 
 private:
 	float _damage;
+	
 };
+
+
+class MBulletHit : public Message
+{
+public:
+	MBulletHit(float damage, uint16_t targetMask, std::string emmiter);
+	~MBulletHit();
+
+	inline float getDamage(){ return _damage; };
+	inline uint16_t getTargetMask(){ return _targetMask; }
+
+private:
+	float _damage;
+	uint16_t _targetMask;
+};
+
+
+//--------------------------------------------------	DAMAGE ARMATURE MSG		----------------------------------------------------------//
+
+class MDamageArmature : public Message
+{
+public:
+	MDamageArmature(float damage, uint16_t whereDmg, std::string emmiter);
+	~MDamageArmature();
+
+	inline float getDamage(){ return _damage; };
+	inline uint16_t getWhere(){ return _whereDmg; };
+
+private:
+	float _damage;
+	uint16_t _whereDmg;
+};
+
+
 
 
 
@@ -455,7 +492,7 @@ private:
 
 
 
-//--------------------------------------------------	ACTIVE SKILL MSG		----------------------------------------------------------//
+//--------------------------------------------------	DASH MSG		----------------------------------------------------------//
 //Dash Message
 class MDash : public Message{
 public:

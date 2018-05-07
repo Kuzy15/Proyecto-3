@@ -226,5 +226,22 @@ MDamage::~MDamage(){}
 
 #pragma endregion
 
+	//--------------------------------------------------	DAMAGE ARMATURE MSG		----------------------------------------------------------//
+#pragma region MDamageArmature
+
+	MDamageArmature::MDamageArmature(float damage, uint16_t mask, std::string emmiter) : Message(MSG_DAMAGE_ARMATURE, ENTITY, emmiter), _damage(damage), _whereDmg(mask){}
+	MDamageArmature::~MDamageArmature(){}
+
+#pragma endregion
+
+	//--------------------------------------------------	DAMAGE ARMATURE MSG		----------------------------------------------------------//
+#pragma region MBulletHit
+
+	MBulletHit::MBulletHit(float damage, uint16_t targetMask, std::string emmiter) : Message(MSG_BULLET_HIT, ENTITY, emmiter), _damage(damage), _targetMask(targetMask){}
+	MBulletHit::~MBulletHit(){}
+
+#pragma endregion
+
+
 
 
