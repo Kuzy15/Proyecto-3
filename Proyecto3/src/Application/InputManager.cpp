@@ -90,15 +90,13 @@ void InputManager::handleInput(){
 			break;			
 //Events for Controller recognize: connect and disconnect
 		case SDL_CONTROLLERDEVICEADDED:
-			addJoystick();
+			addJoystick(event.cdevice.which);
 			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 1));
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
-			deleteJoystick(event.cdevice.which);
 			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 0));
+			deleteJoystick(event.cdevice.which);
 			break;
-		
-		
 		default:
 			break;
 		}
@@ -140,8 +138,8 @@ int InputManager::numMessages(){
 }
 
 //Put new Joystick and GameController into the arrays
-void InputManager::addJoystick(){
-	int joyStickId = _currentNPlayers;
+void InputManager::addJoystick(int w){
+	int joyStickId = w;
 	_playersJoystick[joyStickId] = (SDL_JoystickOpen(joyStickId));
 	if (_playersJoystick[joyStickId] == NULL && SDL_IsGameController(joyStickId)){
 		//ERROR MESSAGE

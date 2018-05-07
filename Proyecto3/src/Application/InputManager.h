@@ -19,7 +19,7 @@ class InputManager
 private:
 	InputManager();
 	void putMessage(MInputState* newMessage);						//Push a new message to the local queue
-	void addJoystick();												//Add a new Controller
+	void addJoystick(int w);												//Add a new Controller
 	void deleteJoystick(int w);										//Delete a Controller
 	void updateControllersState(ControllerInputState &cState, int id);
 	
