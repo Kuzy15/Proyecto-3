@@ -1306,7 +1306,7 @@ void CKhepriBeetle::getMessage(Message* m)
 
 #pragma region Hera´s Rune
 //Velocity improvement
-CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100), _playerId(id){
+CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_coolDown = 10000.0f;
 	isAvailable = true;
