@@ -1381,4 +1381,69 @@ void CHeraRune::getMessage(Message* m)
 #pragma endregion
 
 
+#pragma region Heris Mark
+CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD), _playerId(id){
+	_timeCounter = _initTime = 0;	
+	_coolDown = 10000.0f;		
+	isAvailable = true;
+	_availableShots = 10;
+	_maxShots = false;
+}
+CHerisMark::~CHerisMark(){}
+
+void CHerisMark::tick(float delta){
+
+	
+	//When is active and timeActiveLimit completes, deactivate it and start cooldown
+	if (_isActive){
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _timeActiveLimit){
+			pEnt->getMessage(new MModDmg(pEnt->getID(), -20.0f)); // Mensage modificar daño -20%
+			_isActive = false;
+			_initTime = SDL_GetTicks();
+		}
+	}
+	//If is not active and is not available, we count the cooldown. Then turn it to available.
+	else if (!isAvailable){
+
+		_timeCounter = SDL_GetTicks();
+		if ((_timeCounter - _initTime) >= _coolDown){
+			isAvailable = true;
+		}
+
+	}
+
+	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
+	if (_maxShots){
+		_isActive = false;
+		pEnt->getMessage(new MModDmg(pEnt->getID(),-20.0f)); // Mensage modificar daño -20%
+		_initTime = SDL_GetTicks();
+	}
+}
+void CHerisMark::getMessage(Message* m)
+{
+	if (m->getType() == MSG_INPUT_STATE){
+		MInputState* inputM = static_cast<MInputState*>(m);
+		if (inputM->getId() == _playerId && isAvailable){
+			ControllerInputState cState = inputM->getCInputState();
+			if (cState.Right_Shoulder == BTT_PRESSED){
+				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar daño +20%
+				_initTime = SDL_GetTicks();		
+				isAvailable = false;
+			}
+		}
+	}
+	
+	// Check if a shot has been made
+	else if (m->getType() == MSG_PLAYER_SHOT){
+		_availableShots--;
+		if (_availableShots == 0)
+			_maxShots = true;
+		
+	}
+
+}
+#pragma endregion
+
+
 

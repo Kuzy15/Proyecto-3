@@ -61,6 +61,7 @@ typedef enum ComponentType {
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
 	CMP_HERA_RUNE,
+	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER
 
 
@@ -699,6 +700,30 @@ private:
 	float _timeCounter;
 	float _initTime;
 	bool isAvailable;
+
+};
+
+
+// Heris' Mark, plus 20% damage on next 10 attacks
+class CHerisMark: public CAbility
+{
+public:
+	CHerisMark(Entity * father, int id);
+	~CHerisMark();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
+	float _timeActiveLimit;
+	bool _isActive;
+	bool isAvailable;
+	int _availableShots;
+	bool _maxShots;
 
 };
 
