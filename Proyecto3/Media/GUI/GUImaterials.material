@@ -1,3 +1,21 @@
+material Neto
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Star.png
+        rotate_anim 1
+        tex_address_mode clamp
+      }
+    }
+  }
+}
+
+
 material GUI/Base_Player {
   technique
   {
@@ -7,10 +25,27 @@ material GUI/Base_Player {
        texture_unit
        {
           texture PlayerGradient.png
+          tex_address_mode clamp
        }
     }
   }
 }
+material GUI/Base_Player2 {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture PlayerGradient.png
+          tex_address_mode clamp
+          scale -1 1
+       }
+    }
+  }
+}
+
 
 material GUI/PlayerInfo/LifeBorder
 {
