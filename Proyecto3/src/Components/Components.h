@@ -59,7 +59,8 @@ typedef enum ComponentType {
 	CMP_PASSIVE_SKILL,
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
-	CMP_KHEPRI_BEETLE
+	CMP_KHEPRI_BEETLE,
+	CMP_HERA_RUNE
 
 
 
@@ -486,7 +487,7 @@ private:
 class CAbility : public GameComponent
 {
 public:
-	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor); 
 	~CAbility();
 
 	
@@ -495,6 +496,7 @@ protected:
 	float _componentLife;
 	float _componentArmor;
 	float _coolDown;
+	float _limitLife;
 	
 };
 
@@ -502,7 +504,7 @@ protected:
 class CPSkillVidar : public CAbility
 {
 public:
-	CPSkillVidar(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillVidar(Entity * father); 
 	~CPSkillVidar();
 
 	virtual void tick(float delta);
@@ -516,7 +518,7 @@ public:
 class CPSkillHades : public CAbility
 {
 public:
-	CPSkillHades(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHades(Entity * father); 
 	~CPSkillHades();
 
 	virtual void tick(float delta);
@@ -531,7 +533,7 @@ public:
 class CPSkillUll : public CAbility
 {
 public:
-	CPSkillUll(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillUll(Entity * father); 
 	~CPSkillUll();
 
 	virtual void tick(float delta);
@@ -544,7 +546,7 @@ public:
 class CPSkillVali : public CAbility
 {
 public:
-	CPSkillVali(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillVali(Entity * father); 
 	~CPSkillVali();
 
 	virtual void tick(float delta);
@@ -558,7 +560,7 @@ public:
 class CPSkillHermes : public CAbility
 {
 public:
-	CPSkillHermes(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHermes(Entity * father); 
 	~CPSkillHermes();
 
 	virtual void tick(float delta);
@@ -572,7 +574,7 @@ public:
 class CPSkillSyn : public CAbility
 {
 public:
-	CPSkillSyn(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillSyn(Entity * father); 
 	~CPSkillSyn();
 
 	virtual void tick(float delta);
@@ -583,11 +585,11 @@ public:
 
 
 /*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
-//Shu Headdress
+//Shu Headdress, dash
 class CShuHeaddress : public CAbility
 {
 public:
-	CShuHeaddress(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CShuHeaddress(Entity * father, int id); 
 	~CShuHeaddress();
 
 	virtual void tick(float delta);
@@ -605,11 +607,11 @@ private:
 
 };
 
-//Jonsu Moon
+//Jonsu Moon, give mov speed during 5s
 class CJonsuMoon : public CAbility
 {
 public:
-	CJonsuMoon(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CJonsuMoon(Entity * father, int id); 
 	~CJonsuMoon();
 
 	virtual void tick(float delta);
@@ -627,11 +629,11 @@ private:
 
 };
 
-//Khepri Beetle
+//Khepri Beetle, increase fireRate during 3s
 class CKhepriBeetle : public CAbility
 {
 public:
-	CKhepriBeetle(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CKhepriBeetle(Entity * father, int id); 
 	~CKhepriBeetle();
 
 	virtual void tick(float delta);
@@ -645,6 +647,27 @@ private:
 	float _timeActiveLimit;
 	float _fireRatePercentage;
 	bool _isActive;
+	bool isAvailable;
+
+};
+
+
+
+//Hera´s Rune, Restore life of Cards
+class CHeraRune : public CAbility
+{
+public:
+	CHeraRune(Entity * father, int id); 
+	~CHeraRune();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
 	bool isAvailable;
 
 };

@@ -216,6 +216,16 @@ MDamage::~MDamage(){}
 #pragma endregion
 
 
+	//--------------------------------------------------	HERA´S RUNE MSG		----------------------------------------------------------//
+#pragma region Hera´s rune
+	//restore life of cards
+	MRestoreLifeCards::MRestoreLifeCards(std::string emmiter) : Message(MSG_RESTORE_LIFE_CARDS, ENTITY, emmiter){}
+	MRestoreLifeCards::~MRestoreLifeCards(){}
+
+#pragma endregion
+
+
+
 	//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
 #pragma region Die
 
