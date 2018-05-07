@@ -66,6 +66,8 @@ GameScene::~GameScene()
 	
 	destroyBodies();
 
+	scnMgr->removeRenderQueueListener(Game::getInstance()->getOverlaySystem());
+
 
 	/*if (scnMgr != nullptr)
 		pGame->getRoot()->destroySceneManager(scnMgr);*/
@@ -216,7 +218,6 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
-
 }
 
 
@@ -287,7 +288,6 @@ void BasicScene::processScnMsgs()
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
-	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 	//Debug draw
 #ifdef _DEBUG
@@ -295,33 +295,6 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
 #endif
-
-
-	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
-
-	Ogre::OverlayContainer * panel = static_cast<Ogre::OverlayContainer*>(
-		overlayManager.createOverlayElement("Panel", "PanelName"));
-	panel->setMetricsMode(Ogre::GMM_PIXELS);
-	panel->setPosition(10, 10);
-	panel->setDimensions(100, 100);
-	panel->setMaterialName("BaseWhite"); // Optional background material
-
-
-
-	// Create an overlay
-	overlay = overlayManager.getByName("KEK");
-	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
-	
-	// Create a panel
-
-	overlay->add2D(panel);
-
-	overlay->show();
-
-
-
-
 
 	//The limit time to choose cards
 	_prepareLimitTime = 30000.0f; //30 seconds
@@ -347,11 +320,21 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	_paused = false;
 
 	//Set the starter state to SETUP
-	overlay->show();
-
 	_currState = GS_SETUP;
 	_prepareCounter = SDL_GetTicks();
 
+
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+	// Create an overlay
+	overlay = overlayManager.getByName("KEK");
+	// Show the overlay
+	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+
+	// Create a panel
+
+	overlay->show();
 
 }
 GamePlayScene::~GamePlayScene(){
@@ -442,20 +425,6 @@ void GamePlayScene::preparePhase(){
 	float currentTime = SDL_GetTicks();
 	if (currentTime - _prepareCounter > _prepareLimitTime)
 		_currState = GS_BATTLE;
-	
-
-
-
-
-
-
-
-
-
-
-
-		
-
 
 		bool playersAreReady = true;
 		for(int i = 0; i < _nPlayers; i++){
