@@ -28,7 +28,7 @@ InputManager::InputManager()
 InputManager::~InputManager()
 {
 	//Close opened Joysticks
-	for (size_t i = 0; i < _currentNPlayers; i++){
+	for (size_t i = 0; i < MAX_PLAYERS; i++){
 		if (_playersJoystick[i] != NULL) SDL_JoystickClose(_playersJoystick[i]);
 	}
 
@@ -38,7 +38,7 @@ InputManager::~InputManager()
 		
 	}
 
-	for (int i = 0; i < _currentNPlayers; i++){
+	for (int i = 0; i < MAX_PLAYERS; i++){
 
 		delete _inputMsg[i];
 
@@ -73,9 +73,9 @@ void InputManager::handleInput(){
 	/* Other initializtion code goes here */
 
 	//Create main Input message who contains the events and variables to store the values
-	for (int i = 0; i < _currentNPlayers; i++){
-
-		_inputMsg[i] = new MInputState(i,BROADCAST, _emitter);
+	for (int i = 0; i < MAX_PLAYERS; i++){
+		if (_playerController[i] != nullptr)
+			_inputMsg[i] = new MInputState(i,BROADCAST, _emitter);
 
 	}
 
@@ -113,8 +113,8 @@ void InputManager::handleInput(){
 	}
 
 	//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
-	for (int i = 0; i < _currentNPlayers; i++){
-		if (_inputMsg[i] != nullptr) {
+	for (int i = 0; i < MAX_PLAYERS; i++){
+		if (_inputMsg[i] != nullptr && _playerController[i] != nullptr) {
 			updateControllersState(_inputMsg[i]->getCInputState(),i);
 			_myQueue.push_back(_inputMsg[i]);
 		}
@@ -130,8 +130,8 @@ int InputManager::numMessages(){
 
 	int nMessages = 0;
 
-	for (int i = 0; i < _currentNPlayers; i++){
-		if (_inputMsg[i] != nullptr)
+	for (int i = 0; i < MAX_PLAYERS; i++){
+		if (_inputMsg[i] != nullptr && _playerController[i] != nullptr)
 			nMessages += (int)_inputMsg[i]->getNumMessages();
 	}
 	return nMessages;
@@ -140,21 +140,25 @@ int InputManager::numMessages(){
 //Put new Joystick and GameController into the arrays
 void InputManager::addJoystick(int w){
 	int joyStickId = w;
+	std::cout << w << std::endl;
 	_playersJoystick[joyStickId] = (SDL_JoystickOpen(joyStickId));
 	if (_playersJoystick[joyStickId] == NULL && SDL_IsGameController(joyStickId)){
 		//ERROR MESSAGE
 	}
 	_playerController[joyStickId] = (SDL_GameControllerOpen(joyStickId));
-	_currentNPlayers++;
+	
 }
 
 //Delete the disconnected Joystick
 void InputManager::deleteJoystick(int wich){
 	//Close opened Joysticks
+	std::cout << wich << std::endl;
 	if (_playersJoystick[wich] != NULL){
 		SDL_JoystickClose(_playersJoystick[wich]);
+		_playersJoystick[wich] = nullptr;
 		SDL_GameControllerClose(_playerController[wich]);
-		_currentNPlayers--;
+		_playerController[wich] = nullptr;
+		
 	}
 }
 
