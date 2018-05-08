@@ -140,7 +140,6 @@ int InputManager::numMessages(){
 //Put new Joystick and GameController into the arrays
 void InputManager::addJoystick(int w){
 	int joyStickId = w;
-	std::cout << w << std::endl;
 	_playersJoystick[joyStickId] = (SDL_JoystickOpen(joyStickId));
 	if (_playersJoystick[joyStickId] == NULL && SDL_IsGameController(joyStickId)){
 		//ERROR MESSAGE
@@ -152,7 +151,6 @@ void InputManager::addJoystick(int w){
 //Delete the disconnected Joystick
 void InputManager::deleteJoystick(int wich){
 	//Close opened Joysticks
-	std::cout << wich << std::endl;
 	if (_playersJoystick[wich] != NULL){
 		SDL_JoystickClose(_playersJoystick[wich]);
 		_playersJoystick[wich] = nullptr;
@@ -168,25 +166,25 @@ void InputManager::updateControllersState(ControllerInputState &cState, int id){
 	//Axis
 	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX) / PARSE_VALUE;
 	if (cState.Axis_LeftX > -DEAD_ZONE && cState.Axis_LeftX < DEAD_ZONE)
-		cState.Axis_LeftX = 0;
+		cState.Axis_LeftX = 0.0f;
 	cState.Axis_LeftY = -SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY) / PARSE_VALUE;
 	if (cState.Axis_LeftY > -DEAD_ZONE && cState.Axis_LeftY < DEAD_ZONE)
-		cState.Axis_LeftY = 0;
+		cState.Axis_LeftY = 0.0f;
 	cState.Axis_RightX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTX) / PARSE_VALUE;
 	if (cState.Axis_RightX > -DEAD_ZONE && cState.Axis_RightX < DEAD_ZONE)
-		cState.Axis_RightX = 0;
+		cState.Axis_RightX = 0.0f;
 	cState.Axis_RightY = -SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY) / PARSE_VALUE;
 	if (cState.Axis_RightY > -DEAD_ZONE && cState.Axis_RightY < DEAD_ZONE)
-		cState.Axis_RightY = 0;
+		cState.Axis_RightY = 0.0f;
 
 
 	//Triggers
 	cState.Trigger_Left = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERLEFT) / PARSE_VALUE;
 	if (cState.Trigger_Left < DEAD_ZONE)
-		cState.Trigger_Left = 0;
+		cState.Trigger_Left = 0.0f;
 	cState.Trigger_Right = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERRIGHT) / PARSE_VALUE;
 	if (cState.Trigger_Right < DEAD_ZONE)
-		cState.Trigger_Right = 0;
+		cState.Trigger_Right = 0.0f;
 
 	
 	//Main Buttons

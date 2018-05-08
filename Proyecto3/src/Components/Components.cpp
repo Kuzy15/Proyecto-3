@@ -400,7 +400,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_bodyDef.fixedRotation = true;
 	if (myCategory == MASK_BULLET){
 		_bodyDef.bullet = true;
-		//_bodyDef.fixedRotation = true;
+		_bodyDef.fixedRotation = true;
 		_bodyDef.gravityScale = 0.0f;
 	}
 
@@ -635,42 +635,28 @@ void CPlayerController::getMessage(Message* m){
 
 			ControllerInputState cState = inputM->getCInputState();
 
-			if (cState.Button_A == BTT_PRESSED){
+			if (cState.Trigger_Right > TRIGGER_DEADZONE){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 			}
 
-			if (cState.Trigger_Right > 100){
-				float xValue = cState.Axis_RightX;
-				float yValue = cState.Axis_RightY;
-				//Tal vez estas comprobaciones no sean necesarias, testear la sensibilidad de los joysticks al disparar
-				float finalXValue, finalYValue;
-				finalXValue = finalYValue = 0.0f;
-				//Check joystick rotation, to control the bullet spawn
-				if ((xValue > 27.0f || xValue < -27.0f) && (yValue > 27.0f || yValue < -27.0f)){
-					finalXValue = cState.Axis_RightX;
-					finalYValue = cState.Axis_RightY;
-					MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
-					pEnt->getMessage(m);
-				}
-				else{
-					//if
-					//if
-				}
-				
-
-			}
 			
-
-			if (cState.Axis_LeftX > 100){
+			float xValue = cState.Axis_RightX;
+			float yValue = cState.Axis_RightY;
+			//Check joystick rotation, to control the bullet spawn
+			if (!(xValue == 0.0f && yValue == 0.0f )){
+				MPlayerShot* m = new MPlayerShot(xValue, yValue, pEnt->getID());
+				pEnt->getMessage(m);
+			}				
+			if (cState.Axis_LeftX > AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);				
 			}
-			else if (cState.Axis_LeftX < -100){
+			else if (cState.Axis_LeftX < -AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
-			else if (cState.Axis_LeftX <= 100 && cState.Axis_LeftX >= -100){
+			else if (cState.Axis_LeftX <= AXIS_DEADZONE && cState.Axis_LeftX >= -AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(0, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
@@ -813,7 +799,7 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entP
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
-	_radius = 10.0f;
+	_radius = 6.0f;
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){
@@ -901,35 +887,31 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 
 	//Calculate point
 	/*5 - 327*/
-
-	//revisar esto no llega nunca a cero, pasa de -327 a -60 y entre -60 y 60 no detecta
-	//std::cout << vX << std::endl;
-
-
 	//Normalize
 	if (vX == 0){
 		iniPos.x = 0;
 		iniPos.z = 0;		
 		iniPos.y = _radius;
+		angle = 0.0f;
 
-		if (vY < 0)
+		if (vY < 0){
 			iniPos.y =  - _radius;
-
+			angle = 180.0f;		
+		}
 
 	
 	}
-	else if (vY <= 10 && vY >= -10){
+	else if (vY == 0){
 	
 		iniPos.x = _radius;
 		iniPos.y = 0;
-		iniPos.z = 0;
+		iniPos.z = 0; 
+		angle = -90;
 
-
-		if (vX < 0)
+		if (vX < 0){
 			iniPos.x =  - _radius;
-
-	
-	
+			angle = 90;
+		}
 	}
 	else{
 
@@ -983,6 +965,9 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 			cos = -1;
 
 		angle = std::acosf(cos);
+
+		angle = ((angle * 180.0f) / 3.14159265359f) - 90.0f;
+
 	}
 }
 

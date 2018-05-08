@@ -351,6 +351,8 @@ public:
 	inline const int getId(){ return _id; };
 private:
 	int _id;
+	const float TRIGGER_DEADZONE = 100.0f;
+	const float AXIS_DEADZONE = 100.0f;
 };
 
 

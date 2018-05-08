@@ -161,12 +161,13 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bRa->addComponent(new CMeshRender(pos, "balas/EnergyBall.mesh", bRa, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, {0,0,angle}));
+	CMeshRender* cM = new CMeshRender(pos, "balas/EnergyBall.mesh", bRa, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, angle });
+	bRa->addComponent(cM);
 
 
 	//RigidBody
-	float weight = 1.0f;
-	float heigth = 0.5f;
+	float weight = cM->getSize().x;
+	float heigth = cM->getSize().y;
 	bRa->addComponent(new CRigidBody(bRa, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
@@ -184,16 +185,17 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bAhPuch->addComponent(new CMeshRender(pos, "balas/Cerbatana.mesh", bAhPuch, s->getSceneManager(), { 0.25f, 1.0f, 0.25f }, { 0, 0,angle }));
+	CMeshRender* cM = new CMeshRender(pos, "balas/Cerbatana.mesh", bAhPuch, s->getSceneManager(), { 0.25f, 1.0f, 0.25f }, { 0, 0, angle });
+	bAhPuch->addComponent(cM);
 
 
 	//RigidBody
-	float weight = 1.0f;
-	float heigth = 0.5f;
+	float weight = cM->getSize().x;
+	float heigth = cM->getSize().y;
 	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 700.0f));
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 70.0f));
 
 
 	return bAhPuch;
@@ -208,13 +210,14 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bZeus->addComponent(new CMeshRender(pos, "balas/Ray.mesh", bZeus, s->getSceneManager(), { 0.5f, 0.5f, 0.5f }, { 0, 0, angle }));
+	CMeshRender* cM = new CMeshRender(pos, "balas/Ray.mesh", bZeus, s->getSceneManager(), { 0.5f, 0.5f, 0.5f }, { 0, 0, angle });
+	bZeus->addComponent(cM);
 
 
 	//RigidBody
-	float weight = 1.0f;
-	float heigth = 0.5f;
-	bZeus->addComponent(new CRigidBody(bZeus, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
+	float weight = cM->getSize().x;
+	float heigth = cM->getSize().y;
+	bZeus->addComponent(new CRigidBody(bZeus, s->getGame()->getPhysicsWorld(), pos, heigth, weight , RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
 	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 1000.0f));
@@ -233,12 +236,13 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	bAhPuch->addComponent(new CMeshRender(pos, "balas/Arrow.mesh", bAhPuch, s->getSceneManager(), { 1.0f, 0.5f, 1.0f }, { 0, 0, angle }));
+	CMeshRender* cM = new CMeshRender(pos, "balas/Arrow.mesh", bAhPuch, s->getSceneManager(), { 1.0f, 0.5f, 1.0f }, { 0, 0, angle });
+	bAhPuch->addComponent(cM);
 
 
 	//RigidBody
-	float weight = 1.0f;
-	float heigth = 0.5f;
+	float weight = cM->getSize().x;
+	float heigth = cM->getSize().y;
 	bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
