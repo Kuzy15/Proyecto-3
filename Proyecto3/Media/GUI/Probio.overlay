@@ -1,20 +1,43 @@
+template container Panel(GUI/BaseButton)
+{
+  metrics_mode pixels
+    horz_align center
+    vert_align center
+    // Center it horizontally, put it at the top
+    left 0
+    top 0
+    width 200
+    height 100
+    material GUI/Button/Idle
 
+    container TextArea (GUI/BaseButton/Text)
+    {
+      metrics_mode pixels
+      alignment center
+      horz_align center
+      left 0
+      top 25
+      height 50
+      width 100
+      font_name Caption
+      caption BUTTON
+      char_height 40
+      colour 1 1 0
+    }
+}
 // Graphical User Interface for the PlayScene.
 // The name of the overlay comes first
 KEK
 {
     zorder 200
-
     container Panel(GUI/TimerPanel)
     {
-
         // Center it horizontally, put it at the top
         left 0.45
         top 0.05
         width 0.1
         height 0.1
 	      material Neto
-
         // Another panel nested in this one
         container TextArea(TimerPanel/TextArea)
         {
@@ -32,9 +55,8 @@ KEK
             colour_bottom 0.1 0.1 1
             caption 56
             char_height 40
-
-         }
-    }
+          }
+        }
 
     container Panel(Player1)
     {

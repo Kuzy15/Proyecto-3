@@ -328,10 +328,21 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 
 	// Create an overlay
-	overlay = overlayManager.getByName("KEK");
+	try {
+		overlay = overlayManager.getByName("KEK");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
 	// Show the overlay
 	Ogre::FontManager::getSingleton().getByName("Caption")->load();
 
+	Entity * k = new Entity("Holo", this);
+	
+
+	k->addComponent(new CButtonGUI(overlay, k, "GUI/Button/Idle", "GUI/Button/Hover", "GUI/Button/Click", Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
+	addEntity(k);
 	// Create a panel
 
 	overlay->show();

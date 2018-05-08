@@ -16,6 +16,7 @@
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 #include <OgreOverlayManager.h>
+#include <exception>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -195,6 +196,7 @@ bool Game::initOgre(){
 
 	//Now we init every resource previously added
 	try {
+
 		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	}
 	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; }

@@ -8,6 +8,15 @@
 #include "DebugNew.h"
 #include "Scenes.h"
 
+
+#include <OgreOverlay.h>
+#include <OgreOverlayManager.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayContainer.h>
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
+
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
@@ -1242,4 +1251,64 @@ void CKhepriBeetle::getMessage(Message* m)
 	}
 }
 #pragma endregion
+/*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+#pragma region GUI COMPONENTS
+CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, std::string idleMaterial, std::string activeMaterial, std::string onClickMaterial, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father) {
+	pOver = overlay;
+	materials[0] = idleMaterial;
+	materials[1] = activeMaterial;
+	materials[2] = onClickMaterial;
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+	try {
+		Ogre::OverlayElement * a = pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text");
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	i = 0;
+
+}
+CButtonGUI::~CButtonGUI() 
+{
+
+}
+
+void CButtonGUI::tick(float delta) 
+{
+	i++;
+	if (i == 500)  {
+		toggleActive(true);
+	}
+	else if (i == 1000) 
+	{
+		
+		toggleClick(true);
+		i = 0;
+	}
+	else
+	toggleActive(false);
+
+	std::cout << i << std::endl;
+
+}
+void CButtonGUI::getMessage(Message * m)
+{
+	
+}
+void CButtonGUI::toggleClick(bool click) {
+	if (click)
+		pContainer->setMaterialName(materials[2]);
+	else
+		pContainer->setMaterialName(materials[0]);
+}
+void CButtonGUI::toggleActive(bool active) {
+	if (active)pContainer->setMaterialName(materials[1]);
+	else pContainer->setMaterialName(materials[0]);
+}
+
+
+
+#pragma endregion
+
 

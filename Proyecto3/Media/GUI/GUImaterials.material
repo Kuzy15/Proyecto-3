@@ -14,6 +14,50 @@ material Neto
     }
   }
 }
+material GUI/Button/Click
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        colour_op_ex source1 src_manual src_current 0 1 1
+      }
+    }
+  }
+}
+
+material GUI/Button/Hover
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        colour_op_ex source1 src_manual src_current 1 0 0
+      }
+    }
+  }
+}
+material GUI/Button/Idle
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        colour_op_ex source1 src_manual src_current 0.7 0 0
+      }
+    }
+  }
+}
+
+
+
 
 
 material GUI/Base_Player {

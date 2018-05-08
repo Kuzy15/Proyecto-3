@@ -4,6 +4,7 @@
 #define COMPONENTS_H
 
 #include <Ogre.h>
+#include <OgreOverlay.h>
 #include <string>
 #include <list>
 #include <Box2D.h>
@@ -59,7 +60,8 @@ typedef enum ComponentType {
 	CMP_PASSIVE_SKILL,
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
-	CMP_KHEPRI_BEETLE
+	CMP_KHEPRI_BEETLE,
+	CMP_GUI_BUTTON
 
 
 
@@ -648,5 +650,47 @@ private:
 	bool isAvailable;
 
 };
+/*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+class CButtonGUI : public GameComponent
+{
+public:
+	CButtonGUI(Ogre::Overlay * overlay, Entity * father, std::string idleMaterial, std::string activeMaterial, std::string onClickMaterial, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	~CButtonGUI();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
 
+private:
+	void toggleClick(bool click);
+	void toggleActive(bool active);
+	std::string materials[3];
+	Ogre::OverlayContainer * pContainer;
+	Ogre::Overlay * pOver;
+
+	int i;
+};
+
+class PlayerGUI
+{
+public:
+	PlayerGUI(std::string GUIname, std::string characterName);
+	~PlayerGUI();
+	virtual void updateLifebar() = 0;
+
+private:
+	Ogre::OverlayContainer * pHud;
+	Ogre::OverlayContainer * plifeBar;
+
+};
+
+
+class CPlayer1GUI
+{
+public:
+	CPlayer1GUI();
+	~CPlayer1GUI();
+
+private:
+	Ogre::OverlayContainer * pP1HUD;
+
+};
 #endif
