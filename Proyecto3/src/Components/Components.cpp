@@ -747,6 +747,9 @@ void CPlayerMove::getMessage(Message* m)
 		resetVel();
 	}
 
+	if (m->getType() == MSG_ACTIVEMOD_RES){
+		resetVel();
+	}
 
 }
 #pragma endregion
@@ -842,6 +845,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 
 				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle, _damage);
 				pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
+				pEnt->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
 				b->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
 
 			}
@@ -879,6 +883,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 	else if (m->getType() == MSG_MOD_DMG){
 		float dmgValue = static_cast<MModDmg*>(m)->getValue();
 		_damage = _damage + (_damage* dmgValue / 100.0f);
+		std::cout << _damage << "\n";
 	}
 
 	else if (m->getType() == MSG_MOD_FIRERATE){
@@ -891,6 +896,11 @@ void CPlayerBasicAttack::getMessage(Message* m){
 	}
 
 	else if (m->getType() == MSG_PASSMOD_DES){
+		resetDamage();
+		resetFireRate();
+	}
+
+	else if (m->getType() == MSG_ACTIVEMOD_RES){
 		resetDamage();
 		resetFireRate();
 	}
@@ -1254,7 +1264,7 @@ void CJonsuMoon::tick(float delta){
 	if (_isActive){
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _timeActiveLimit){
-			pEnt->getMessage(new MModVel(pEnt->getID(), -_velocityPercentage));
+			pEnt->getMessage(new MReset(pEnt->getID()));
 			_isActive = false;
 			_initTime = SDL_GetTicks();
 		}
@@ -1304,7 +1314,7 @@ void CKhepriBeetle::tick(float delta){
 	if (_isActive){
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _timeActiveLimit){
-			pEnt->getMessage(new MModFireRate(pEnt->getID(), -_fireRatePercentage));
+			pEnt->getMessage(new MReset(pEnt->getID()));
 			_isActive = false;
 			_initTime = SDL_GetTicks();
 		}
@@ -1384,8 +1394,10 @@ void CHeraRune::getMessage(Message* m)
 #pragma region Heris Mark
 CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD), _playerId(id){
 	_timeCounter = _initTime = 0;	
-	_coolDown = 10000.0f;		
+	_coolDown = 10000.0f;
+	_timeActiveLimit = 30000.0f;
 	isAvailable = true;
+	_isActive = false;
 	_availableShots = 10;
 	_maxShots = false;
 }
@@ -1398,7 +1410,8 @@ void CHerisMark::tick(float delta){
 	if (_isActive){
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _timeActiveLimit){
-			pEnt->getMessage(new MModDmg(pEnt->getID(), -20.0f)); // Mensage modificar daño -20%
+			pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
+			_availableShots = 10;
 			_isActive = false;
 			_initTime = SDL_GetTicks();
 		}
@@ -1416,7 +1429,9 @@ void CHerisMark::tick(float delta){
 	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
 	if (_maxShots){
 		_isActive = false;
-		pEnt->getMessage(new MModDmg(pEnt->getID(),-20.0f)); // Mensage modificar daño -20%
+		_availableShots = 10;
+		_maxShots = false;
+		pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
 		_initTime = SDL_GetTicks();
 	}
 }
@@ -1429,16 +1444,20 @@ void CHerisMark::getMessage(Message* m)
 			if (cState.Right_Shoulder == BTT_PRESSED){
 				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar daño +20%
 				_initTime = SDL_GetTicks();		
+				_isActive = true;
 				isAvailable = false;
 			}
 		}
 	}
 	
 	// Check if a shot has been made
-	else if (m->getType() == MSG_PLAYER_SHOT){
+	else if (_isActive && m->getType() == MSG_SHOT){
 		_availableShots--;
-		if (_availableShots == 0)
+		std::cout << _availableShots << "\n";
+		if (_availableShots == 0){
 			_maxShots = true;
+			std::cout << "max" << "\n";
+		}
 		
 	}
 

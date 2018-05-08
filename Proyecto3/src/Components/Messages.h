@@ -70,6 +70,7 @@ typedef enum MessageType{
 	MSG_MOD_INVS,
 	MSG_MOD_VELBULLETS,
 	MSG_PASSMOD_DES,
+	MSG_ACTIVEMOD_RES,
 	MSG_RESTORE_LIFE_CARDS,
 	MSG_DAMAGE,
 	MSG_DASH,
@@ -492,7 +493,7 @@ private:
 
 
 
-//--------------------------------------------------	DASH MSG		----------------------------------------------------------//
+//--------------------------------------------------	ACTIVE MSG		----------------------------------------------------------//
 //Dash Message
 class MDash : public Message{
 public:
@@ -515,6 +516,14 @@ public:
 
 };
 
+//reset mod
+class MReset : public Message{
+public:
+	MReset(std::string emmiter);
+	~MReset();
+
+};
+
 //--------------------------------------------------	DIE MSG		----------------------------------------------------------//
 class MDie : public Message
 {
@@ -527,5 +536,7 @@ public:
 private:
 	//float timeWhenDie
 };
+
+
 
 #endif

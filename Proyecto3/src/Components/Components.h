@@ -445,8 +445,8 @@ public:
 	//Returns the current fire rate of the entity
 	inline float getFireRate(){ return _fireRate; };
 
-	inline void resetDamage(){ _auxDamageReset = _damage; };
-	inline void resetFireRate(){ _auxFireRateReset = _fireRate; };
+	inline void resetDamage(){ _damage = _auxDamageReset; };
+	inline void resetFireRate(){ _fireRate = _auxFireRateReset; };
 
 
 private:
@@ -476,7 +476,7 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-	inline void resetVelocity(){ _auxVelocityReset = _velocity; };
+	inline void resetVelocity(){ _velocity = _auxVelocityReset; };
 
 private:
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated

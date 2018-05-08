@@ -224,6 +224,13 @@ MDamage::~MDamage(){}
 
 #pragma endregion
 
+#pragma region Reset Actives
+
+	MReset::MReset(std::string emmiter) : Message(MSG_ACTIVEMOD_RES, ENTITY, emmiter){}
+	MReset::~MReset(){}
+
+#pragma endregion
+
 
 
 	//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
