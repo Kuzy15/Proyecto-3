@@ -950,14 +950,13 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 
 
 		iniPos = Ogre::Vector3(xFinal, yFinal, 0.0f);
-		Ogre::Vector3 idleVector(0.0f, _radius, 0.0f);
+		Ogre::Vector3 idleVector(_radius, 0.0f, 0.0f);
 
 		float escalarProduct = (iniPos.x * idleVector.x) + (iniPos.y * idleVector.y);
-		float lengthIni = std::sqrt(std::pow(iniPos.x, 2) * std::pow(iniPos.y, 2));
+		float lengthIni = std::sqrt(std::pow(iniPos.x, 2) + std::pow(iniPos.y, 2));
 		float lengthIdle = _radius;
 
 		float cos = escalarProduct / (lengthIdle * lengthIni);
-//		std::cout << cos << std::endl;
 
 		if (cos > 1)
 			cos = 1;
@@ -966,8 +965,25 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 
 		angle = std::acosf(cos);
 
+		std::cout << angle << std::endl;
+
 		angle = ((angle * 180.0f) / 3.14159265359f) - 90.0f;
 
+
+		if (yFinal < 0.0f){
+			if (xFinal < 0.0f){
+				float comp = 90.0f - angle;
+				angle += comp * 2;
+			}
+			else{
+				float comp = 90.0f + angle;
+				comp = -comp;
+				angle += comp * 2;
+			}
+		}
+		
+
+		std::cout << angle << std::endl;
 	}
 }
 
