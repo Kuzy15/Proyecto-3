@@ -224,6 +224,8 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 
 	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 },id + "Smoke" , "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
 
+	// Estela
+	//bZeus->addComponent(new CRibbonTrailRender({ 0, 0, pos.z }, id + "trail", "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
 
 	return bZeus;
 

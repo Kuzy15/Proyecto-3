@@ -218,11 +218,11 @@ Ogre::Vector3 CMeshRender::getSize(){
 }
 
 
-/*------------------------- CAMERA COMPONENTS------------------------------------*/
+/*------------------------- RENDER COMPONENTS------------------------------------*/
 #pragma endregion
 #pragma region particleRenderComponent
 
-
+//PARTICLES
 CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER , father, scnM) {
 	
 
@@ -251,6 +251,34 @@ void CParticleRender::tick(float delta) {
 void CParticleRender::getMessage(Message * m) {
 	CRender::getMessage(m);
 	
+}
+#pragma endregion
+
+
+#pragma region ribbonTrailRenderComponent
+
+// RIBBON TRAIL
+CRibbonTrailRender::CRibbonTrailRender(Ogre::Vector3 pos, std::string id, std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER, father, scnM) {
+
+	trail = scnM->createRibbonTrail("trail");
+	trail->setMaxChainElements(30);
+	trail->setInitialColour(0, 0.0f, 0.0f, 1.0f, 1.0f);
+	trail->setColourChange(0, 0.0f, 0.0f, 0.1f, 0.2f);
+	trail->setInitialWidth(0, 0.3);
+	trail->addNode(pChild);
+	scnM->getRootSceneNode()->attachObject(trail);
+}
+CRibbonTrailRender::~CRibbonTrailRender() {
+	pChild->detachObject(trail);
+}
+void CRibbonTrailRender::tick(float delta) {
+
+
+
+}
+void CRibbonTrailRender::getMessage(Message * m) {
+	CRender::getMessage(m);
+
 }
 #pragma endregion
 

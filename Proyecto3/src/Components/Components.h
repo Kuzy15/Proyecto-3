@@ -171,6 +171,24 @@ private:
 
 };
 
+//--------- RIBBON TRAIL RENDER COMPONENT ---------
+class CRibbonTrailRender : public CRender
+{
+public:
+
+	CRibbonTrailRender(Ogre::Vector3 pos, std::string id, std::string trail, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation);
+	~CRibbonTrailRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+private:
+	Ogre::RibbonTrail * trail;
+
+
+
+};
+
 
 //--------- MESH RENDER COMPONENT ---------
 class CMeshRender: public CRender
