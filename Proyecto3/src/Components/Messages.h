@@ -50,7 +50,7 @@ struct ControllerInputState{
 
 #pragma endregion
 
-typedef enum MessageType{
+typedef enum MessageType {
 
 	MSG_STRING, MSG_INPUT_STATE,
 	MSG_CONTROLLER_STATE, MSG_UPDATE_TRANSFORM,
@@ -72,7 +72,9 @@ typedef enum MessageType{
 	MSG_PASSMOD_DES,
 	MSG_DAMAGE,
 	MSG_DASH,
-	MSG_DIE
+	MSG_DIE,
+	MSG_GUI_BUTTON_ACTIVE,
+	MSG_GUI_BUTTON_PRESSED
 	
 
 	

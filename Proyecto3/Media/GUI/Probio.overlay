@@ -19,9 +19,9 @@ template container Panel(GUI/BaseButton)
       top 25
       height 50
       width 100
-      font_name Caption
+      font_name GUI/ButtonText
       caption BUTTON
-      char_height 40
+      char_height 35
       colour 1 1 0
     }
 }
@@ -170,7 +170,6 @@ KEK
 
         }
       }
-
       }
        //Player2
 }

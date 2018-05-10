@@ -1253,52 +1253,68 @@ void CKhepriBeetle::getMessage(Message* m)
 #pragma endregion
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
 #pragma region GUI COMPONENTS
-CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, std::string idleMaterial, std::string activeMaterial, std::string onClickMaterial, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father) {
+CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father) {
 	pOver = overlay;
-	materials[0] = idleMaterial;
-	materials[1] = activeMaterial;
-	materials[2] = onClickMaterial;
+	materials[0] = "GUI/Button/Idle";
+	materials[1] = "GUI/Button/Active";
+	materials[2] = "GUI/Button/Click";
 
+	_callback = cb;
+
+	_txt = buttonTxt;
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
+
 	try {
-		Ogre::OverlayElement * a = pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text");
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
 	}
 	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
-	i = 0;
 
 }
 CButtonGUI::~CButtonGUI() 
 {
 
 }
+bool CButtonGUI::canClick() {
+
+	float act = SDL_GetTicks();
+
+	if (act - _lastClick > _minClickTime) {
+		_lastClick = act; 
+		return true;
+	}
+	else return false;
+}
+size_t CButtonGUI::getScnId() {
+	return _sceneId;
+}
 
 void CButtonGUI::tick(float delta) 
 {
-	i++;
-	if (i == 500)  {
-		toggleActive(true);
-	}
-	else if (i == 1000) 
-	{
-		
-		toggleClick(true);
-		i = 0;
-	}
-	else
-	toggleActive(false);
-
-	std::cout << i << std::endl;
 
 }
-void CButtonGUI::getMessage(Message * m)
+void CButtonGUI::getMessage(Message * me)
 {
+	if (me->getType() == MSG_INPUT_STATE) {
+		MInputState * m = static_cast<MInputState *>(me);
+		if (m->getCInputState().Button_A == BTT_PRESSED && canClick()) {
+			toggleClick(true);
+			_callback();
+		}
+		else if (m->getCInputState().Button_B == BTT_PRESSED) {
+			toggleActive(true);
+		}
+		else toggleActive(false);
+
+	}
 	
 }
 void CButtonGUI::toggleClick(bool click) {
-	if (click)
+	if (click) {
 		pContainer->setMaterialName(materials[2]);
+	}
 	else
 		pContainer->setMaterialName(materials[0]);
 }

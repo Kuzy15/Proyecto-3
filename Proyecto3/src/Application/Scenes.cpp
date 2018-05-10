@@ -285,6 +285,11 @@ void BasicScene::processScnMsgs()
 
 #pragma endregion
 
+void K() {
+
+	std::cout << "CCALLLBACKK " << std::endl;
+}
+
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
@@ -339,9 +344,9 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::FontManager::getSingleton().getByName("Caption")->load();
 
 	Entity * k = new Entity("Holo", this);
-	
 
-	k->addComponent(new CButtonGUI(overlay, k, "GUI/Button/Idle", "GUI/Button/Hover", "GUI/Button/Click", Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
+
+	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
 	addEntity(k);
 	// Create a panel
 

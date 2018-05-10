@@ -23,21 +23,22 @@ material GUI/Button/Click
       scene_blend alpha_blend
       texture_unit
       {
-        colour_op_ex source1 src_manual src_current 0 1 1
+        texture Button_Click.png
       }
     }
   }
 }
 
-material GUI/Button/Hover
+material GUI/Button/Active
 {
   technique
   {
     pass
     {
+      scene_blend alpha_blend
       texture_unit
       {
-        colour_op_ex source1 src_manual src_current 1 0 0
+        texture Button_Active.png
       }
     }
   }
@@ -48,9 +49,10 @@ material GUI/Button/Idle
   {
     pass
     {
+      scene_blend alpha_blend
       texture_unit
       {
-        colour_op_ex source1 src_manual src_current 0.7 0 0
+        texture Button_Idle.png
       }
     }
   }

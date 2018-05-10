@@ -13,6 +13,9 @@
 class Entity;
 class Message;
 typedef enum E_BULLET;
+typedef void ButtonCallback();
+
+
 
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
@@ -654,19 +657,28 @@ private:
 class CButtonGUI : public GameComponent
 {
 public:
-	CButtonGUI(Ogre::Overlay * overlay, Entity * father, std::string idleMaterial, std::string activeMaterial, std::string onClickMaterial, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	CButtonGUI(Ogre::Overlay * overlay, Entity * father,  ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
 	~CButtonGUI();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	size_t getScnId();
 
 private:
 	void toggleClick(bool click);
 	void toggleActive(bool active);
+	bool canClick();
 	std::string materials[3];
 	Ogre::OverlayContainer * pContainer;
 	Ogre::Overlay * pOver;
 
-	int i;
+	//The id that the button will have in the scene
+	size_t _sceneId;
+	ButtonCallback * _callback;
+	Ogre::String _txt;
+
+
+	float _lastClick;
+	const float _minClickTime = 500;
 };
 
 class PlayerGUI
@@ -675,6 +687,10 @@ public:
 	PlayerGUI(std::string GUIname, std::string characterName);
 	~PlayerGUI();
 	virtual void updateLifebar() = 0;
+	void updatePassive();
+	void updateActive();
+
+
 
 private:
 	Ogre::OverlayContainer * pHud;
