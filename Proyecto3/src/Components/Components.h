@@ -62,7 +62,8 @@ typedef enum ComponentType {
 	CMP_KHEPRI_BEETLE,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
-	CMP_PARTICLE_RENDER
+	CMP_PARTICLE_RENDER,
+	CMP_ANIMATION
 
 
 
@@ -192,6 +193,46 @@ private:
 	
 	
 };
+
+
+
+//--------- ANIMATION COMPONENT ---------
+class CAnimation : public GameComponent
+{
+public:
+
+	CAnimation(Entity * father, Ogre::SceneManager * scnM);
+	~CAnimation();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+private:
+
+
+	bool _air;
+	Ogre::Entity * pOgreEnt;
+	//Animation pointers (Bot and Top)
+	Ogre::AnimationState* idleBot;
+	Ogre::AnimationState* moveBot;
+	Ogre::AnimationState* jumpBot;
+	Ogre::AnimationState* airBot;
+
+	Ogre::AnimationState* idleTop;
+	Ogre::AnimationState* moveTop;
+	Ogre::AnimationState* jumpTop;
+	Ogre::AnimationState* airTop;
+	Ogre::AnimationState* chargeTop;
+	Ogre::AnimationState* shootTop;
+
+	//Current animation pointers
+	
+	Ogre::AnimationState* currentTop;
+	Ogre::AnimationState* currentBot;
+
+};
+
 /*//--------- PLANE RENDER COMPONENT ---------
 class CPlaneRender: public CRender
 {

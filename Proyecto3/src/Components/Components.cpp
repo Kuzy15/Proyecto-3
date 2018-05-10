@@ -145,7 +145,7 @@ void CRender::getMessage(Message *m) {
 //and renders it.
 
 CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_MESH_RENDER, father, scnM) {
-	pOgreEnt = pSceneMgr->createEntity(meshName);
+	pOgreEnt = pSceneMgr->createEntity(father->getID(),meshName);
 	pOgreSceneNode->setPosition(pos);
 	
 	pChild->attachObject(pOgreEnt);
@@ -218,7 +218,102 @@ Ogre::Vector3 CMeshRender::getSize(){
 }
 
 
-/*------------------------- CAMERA COMPONENTS------------------------------------*/
+#pragma endregion
+
+#pragma region Animation Component
+CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameComponent(CMP_ANIMATION, father){
+	pOgreEnt = scnM->getEntity(father->getID());
+
+	idleBot = pOgreEnt->getAnimationState("IdleBot");
+	moveBot = pOgreEnt->getAnimationState("MoveBot");
+	jumpBot = pOgreEnt->getAnimationState("JumpBot");
+	airBot  = pOgreEnt->getAnimationState("AirBot");
+
+	idleTop = pOgreEnt->getAnimationState("IdleTop");
+	moveTop = pOgreEnt->getAnimationState("MoveTop");
+	jumpTop = pOgreEnt->getAnimationState("JumpTop");
+	airTop  = pOgreEnt->getAnimationState("AirTop");
+	chargeTop = pOgreEnt->getAnimationState("ChargeTop");
+	shootTop = pOgreEnt->getAnimationState("ShootTop");
+
+	idleBot->setLoop(true);
+	moveBot->setLoop(true);
+	jumpBot->setLoop(false);
+	airBot->setLoop(true);
+
+	idleTop->setLoop(true);
+	moveTop->setLoop(true);
+	jumpTop->setLoop(false);
+	airTop->setLoop(true);
+	chargeTop->setLoop(false);
+	shootTop->setLoop(false);
+
+	currentBot = idleBot;
+	currentTop = idleTop;
+
+}
+CAnimation::~CAnimation(){
+}
+
+
+void CAnimation::tick(float delta){
+	if (!currentBot->getEnabled())
+		currentBot->setEnabled(true);
+	if (!currentTop->getEnabled())
+		currentTop->setEnabled(true);
+
+	currentBot->setTimePosition(delta);
+	currentTop->setTimePosition(delta);
+}
+void CAnimation::getMessage(Message * m){
+	switch (m->getType())
+	{
+	MSG_PLAYER_MOVE_X:
+		currentBot->setEnabled(false);
+		currentBot = moveBot;
+		if (currentTop != chargeTop && currentTop != shootTop){
+			currentTop->setEnabled(false);
+			currentTop = moveTop;
+				}
+		if (_air){
+			currentBot = airBot;
+			if (currentTop != chargeTop && currentTop != shootTop){
+				currentTop->setEnabled(false);
+				currentTop = airTop;
+			}
+		}
+		break;
+
+	MSG_PLAYER_JUMP:
+
+		currentBot->setEnabled(false);
+		currentBot = jumpBot;
+		if (currentTop != chargeTop && currentTop != shootTop){
+			currentTop->setEnabled(false);
+			currentTop = jumpTop;
+		}
+		_air = true;
+		break;
+
+	MSG_COLLISION_TERRAIN:
+		_air = false;
+		break;
+
+	MSG_PLAYER_SHOT:
+		currentTop->setEnabled(false);
+		currentTop = shootTop;
+		break;
+	default:
+
+		currentBot->setEnabled(false);
+		currentBot = idleBot;
+		currentTop = idleTop;
+		break;
+	}
+}
+
+
+
 #pragma endregion
 #pragma region particleRenderComponent
 
