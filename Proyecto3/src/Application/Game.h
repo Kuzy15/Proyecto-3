@@ -25,15 +25,14 @@ public:
 	Game();
 	~Game();
 	void loop();
+	static Game * getInstance();
+
 	Ogre::RenderWindow * getRenderWindow();
 	Ogre::Root * getRoot();
 	ISoundEngine* getSoundEngine();
-
 	b2World* getPhysicsWorld();
 
-	static Game * getInstance();
-
-	ISoundEngine* _soundEngine;
+	void changeScene(GameScene* newScene);
 
 private:
 
@@ -47,14 +46,13 @@ private:
 	//window
 	Ogre::RenderWindow * pWindow;
 
+	//Sound engine pointer
+	ISoundEngine* _soundEngine;
 
 	//Box2D parameters
 	b2World* world;		//Pointer to the world
 	const b2Vec2 GRAVITY = b2Vec2(0.0,-40.0f);
 	const float FPS_CAP = 1.0f / 60.0f;		//World step time simulation (60 frames per second).
-
-	//Input manager parameter
-	//InputManager iM;
 
 	//Game loop variables
 	float currentTime;

@@ -523,7 +523,6 @@ void GamePlayScene::playerDied(std::string e){
 }
 #pragma endregion
 
-
 #pragma region Main Menu Scene
 //The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
 MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) {
@@ -574,5 +573,151 @@ void MainMenuScene::processScnMsgs()
 
 
 
+
+#pragma endregion
+
+#pragma region Multiplayer Scene 
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+MultiplayerScene::MultiplayerScene(std::string id, Game * game) : GameScene(id, game) {
+
+	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	state = MS_CHAMP_SELECT;
+
+	players = std::vector<Player>(2);
+	players[0].controllerId = 0;
+	players[1].controllerId = 1;
+	
+	
+}
+
+
+MultiplayerScene::~MultiplayerScene(){
+}
+
+
+
+
+bool MultiplayerScene::run(){
+	//Here we would get the time between frames
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	GameScene::dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+	//Delete entities removed from the scene at the last frame
+	//destroyEntities();
+
+	return aux;
+
+}
+
+void MultiplayerScene::dispatch(){
+	GameScene::dispatch();
+
+}
+
+void MultiplayerScene::processScnMsgs()
+{
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		
+		switch(state){
+		case MS_CHAMP_SELECT:
+			godSelect(m);
+			break;
+		case MS_MAP_SELECT:
+			mapSelect(m);
+			break;
+		case MS_LOADING:
+			break;
+		default:
+			break;
+		}
+
+	it++;
+	_sceneMessages.pop_front();
+	}
+
+};
+
+void MultiplayerScene::showChampGui(){};
+void MultiplayerScene::showMapGui(){};
+
+void MultiplayerScene::godSelect(Message* m){};
+void MultiplayerScene::mapSelect(Message* m){};
+
+
+
+
+#pragma endregion
+
+#pragma region Loading Scene 
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+LoadingScene::LoadingScene(std::string id, Game * game, GameScene* nextScene) : GameScene(id, game) {
+
+	//Randomly set an background image
+	_timeLimit = 6.0f; //6 seconds
+	_counter = SDL_GetTicks();
+
+}
+
+
+LoadingScene::~LoadingScene(){
+}
+
+
+
+
+bool LoadingScene::run(){
+	
+	float currentTime = SDL_GetTicks();
+	
+	
+	if (currentTime - _counter > _timeLimit){
+
+	}
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	GameScene::dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+	//Delete entities removed from the scene at the last frame
+	//destroyEntities();
+
+	return aux;
+
+}
+
+void LoadingScene::dispatch(){
+	GameScene::dispatch();
+
+}
+
+void LoadingScene::processScnMsgs()
+{
+
+
+};
 
 #pragma endregion

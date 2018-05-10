@@ -253,10 +253,20 @@ void Game::render() {
 }
 
 //Read the input
-void Game::handleInput(){
-	
-		InputManager::getInstance().handleInput();
+void Game::handleInput(){ InputManager::getInstance().handleInput();}
 
+void Game::changeScene(GameScene* s){
+
+	//Mostrar una imagen de carga
+
+
+
+
+
+
+
+	delete actScene;
+	actScene = s;
 }
 
 #pragma endregion
