@@ -384,7 +384,7 @@ void CActionCamera::tick(float delta) {
 #pragma region RigidBodyComponent
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
-CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
+CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 	
 	//Sets the pos attached to the render.
@@ -400,7 +400,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_bodyDef.fixedRotation = true;
 	if (myCategory == MASK_BULLET){
 		_bodyDef.bullet = true;
-		_bodyDef.fixedRotation = true;
+		//_bodyDef.fixedRotation = true;
 		_bodyDef.gravityScale = 0.0f;
 	}
 
@@ -423,7 +423,11 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 			break;
 	}
 	//Body creation.
-	_body = _myWorld->CreateBody(&_bodyDef);	
+	_body = _myWorld->CreateBody(&_bodyDef);
+
+	float radians = (3.14159265359f * angle) / 180.0f;
+
+	_body->SetTransform(_pos,radians);
 
 	//Set the body data pointer to entity
 	_body->SetUserData(pEnt);	
@@ -638,7 +642,7 @@ void CPlayerController::getMessage(Message* m){
 			if (cState.Trigger_Right > TRIGGER_DEADZONE){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
-				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
+				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
 			}
 
 			
