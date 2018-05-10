@@ -110,7 +110,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//Move
 	float v = 8.0f;
 	Zeus->addComponent(new CPlayerMove(Zeus, v));
-
+	Zeus->addComponent(new CHerisMark(Zeus, controllerId));
 	
 
 	return Zeus;
