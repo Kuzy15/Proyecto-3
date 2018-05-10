@@ -13,6 +13,8 @@
 #include "DebugNew.h"
 #include "EF_Entities.h"
 
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -27,12 +29,21 @@
 Game * Game::_instance = nullptr;
 CollisionManager collisionManager;
 
+using namespace irrklang;
 
 #pragma region Constructor and destructor
 Game::Game(){
 	_instance = this;
 
+	// start the sound engine with default parameters
+	_soundEngine = createIrrKlangDevice();
 
+	if (!_soundEngine){
+#ifdef _DEBUG
+		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+#endif
+		exit(1);
+	}
 	
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
@@ -46,8 +57,8 @@ Game::Game(){
 	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
 #ifdef _DEBUG
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		exit(1);
 #endif
+		exit(1);
 	}
 
 	 currentTime = newTime = frameTime = accumulator = inputTime = 0;
@@ -95,14 +106,16 @@ Game::Game(){
  b2World* Game::getPhysicsWorld(){
 	 return world;
  }
-#pragma endregion
 
-#pragma region getters and setters
+
  Game * Game::getInstance() {
 	 if (_instance == nullptr)_instance =  new Game();
 	return _instance;
  }
 
+ ISoundEngine* Game::getSoundEngine(){
+	 return _soundEngine;
+ }
 #pragma endregion
 
 #pragma region Ogre Game functions

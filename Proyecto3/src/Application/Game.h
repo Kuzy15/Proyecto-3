@@ -6,9 +6,10 @@
 #include <Box2D.h>
 #include <OgreConfigFile.h>
 #include <OgreWindowEventUtilities.h>
+#include "irrKlang.h"
 
 
-
+using namespace irrklang;
 
 class GameScene;
 
@@ -26,12 +27,13 @@ public:
 	void loop();
 	Ogre::RenderWindow * getRenderWindow();
 	Ogre::Root * getRoot();
+	ISoundEngine* getSoundEngine();
 
 	b2World* getPhysicsWorld();
 
 	static Game * getInstance();
 
-
+	ISoundEngine* _soundEngine;
 
 private:
 

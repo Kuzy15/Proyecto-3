@@ -638,6 +638,7 @@ void CPlayerController::getMessage(Message* m){
 			if (cState.Trigger_Right > TRIGGER_DEADZONE){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
 			}
 
 			
