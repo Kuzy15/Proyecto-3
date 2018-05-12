@@ -671,10 +671,14 @@ private:
 	Ogre::OverlayContainer * pContainer;
 	Ogre::Overlay * pOver;
 
+	bool _active;
+	bool _clicked;
+
 	//The id that the button will have in the scene
 	size_t _sceneId;
 	ButtonCallback * _callback;
 	Ogre::String _txt;
+
 
 
 	float _lastClick;

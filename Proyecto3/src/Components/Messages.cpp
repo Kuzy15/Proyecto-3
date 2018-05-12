@@ -226,5 +226,17 @@ MDamage::~MDamage(){}
 
 #pragma endregion
 
+#pragma region Button Active
+	MButtonAct::MButtonAct(std::string emmiter, unsigned int index) :Message(MSG_GUI_BUTTON_ACTIVE, SCENE, emmiter), _activeIndex(index) {}
+	MButtonAct::~MButtonAct() {};
+	unsigned int MButtonAct::getActiveButtonIndex() { return _activeIndex; };
+#pragma endregion
+
+#pragma region Button Click
+	MButtonClick::MButtonClick(std::string emmiter):Message(MSG_GUI_BUTTON_CLICK, SCENE, emmiter) {};
+	MButtonClick::~MButtonClick() {};
+
+#pragma endregion
+
 
 

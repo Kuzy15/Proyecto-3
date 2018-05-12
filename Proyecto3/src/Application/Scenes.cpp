@@ -351,6 +351,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	// Create a panel
 
 	overlay->show();
+	z = 0;
 
 }
 GamePlayScene::~GamePlayScene(){
@@ -401,7 +402,25 @@ bool GamePlayScene::run(){
 	destroyBodies();
 
 	overlay->show();
+
+	//BUTTON TEST DEBUG ----- MUST ERASE
+	z++;
+	std::cout << z << std::endl;
+	if (z % 500 == 0) {
+		getMessage(new MButtonAct("scene", 0));
+	}
+	if (z % 600 == 0) {
+		getMessage(new MButtonClick("scene"));
+	}
+	if (z % 1000 == 0) {
+		getMessage(new MButtonAct("scene", 1));
+	}
 	return aux;
+
+
+
+	
+	
 }
 
 void GamePlayScene::dispatch(){

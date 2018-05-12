@@ -1253,12 +1253,13 @@ void CKhepriBeetle::getMessage(Message* m)
 #pragma endregion
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
 #pragma region GUI COMPONENTS
-CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father) {
+CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father), _clicked(false) {
 	pOver = overlay;
 	materials[0] = "GUI/Button/Idle";
 	materials[1] = "GUI/Button/Active";
 	materials[2] = "GUI/Button/Click";
-
+	
+	_sceneId = sceneId;
 	_callback = cb;
 
 	_txt = buttonTxt;
@@ -1297,18 +1298,25 @@ void CButtonGUI::tick(float delta)
 }
 void CButtonGUI::getMessage(Message * me)
 {
-	if (me->getType() == MSG_INPUT_STATE) {
-		MInputState * m = static_cast<MInputState *>(me);
-		if (m->getCInputState().Button_A == BTT_PRESSED && canClick()) {
-			toggleClick(true);
-			_callback();
+	if (me->getType() == MSG_GUI_BUTTON_ACTIVE) 
+	{
+		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+			_active = true;
+			pContainer->setMaterialName(materials[1]);
 		}
-		else if (m->getCInputState().Button_B == BTT_PRESSED) {
-			toggleActive(true);
+		else if (_active)
+		{
+			_active = false;
+			pContainer->setMaterialName(materials[0]);
+
 		}
-		else toggleActive(false);
+	}
+	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
+		pContainer->setMaterialName(materials[2]);
+		_clicked = true;
 
 	}
+
 	
 }
 void CButtonGUI::toggleClick(bool click) {
@@ -1319,8 +1327,8 @@ void CButtonGUI::toggleClick(bool click) {
 		pContainer->setMaterialName(materials[0]);
 }
 void CButtonGUI::toggleActive(bool active) {
-	if (active)pContainer->setMaterialName(materials[1]);
-	else pContainer->setMaterialName(materials[0]);
+	_active = true;
+	pContainer->setMaterialName(materials[1]);
 }
 
 

@@ -74,7 +74,7 @@ typedef enum MessageType {
 	MSG_DASH,
 	MSG_DIE,
 	MSG_GUI_BUTTON_ACTIVE,
-	MSG_GUI_BUTTON_PRESSED
+	MSG_GUI_BUTTON_CLICK
 	
 
 	
@@ -457,6 +457,7 @@ private:
 
 
 
+
 //--------------------------------------------------	ACTIVE SKILL MSG		----------------------------------------------------------//
 //Dash Message
 class MDash : public Message{
@@ -481,6 +482,27 @@ public:
 
 private:
 	//float timeWhenDie
+};
+
+//--------------------------------------------------	BUTTON ACTIVE MSG		----------------------------------------------------------//
+class MButtonAct: public Message
+{
+public:
+	MButtonAct(std::string emmiter, unsigned int index);
+	~MButtonAct();
+	unsigned int getActiveButtonIndex();
+
+private:
+	unsigned int _activeIndex;
+};
+//--------------------------------------------------	BUTTON CLICK MSG		----------------------------------------------------------//
+class MButtonClick: public Message
+{
+public:
+	MButtonClick(std::string message);
+	~MButtonClick();
+
+private:
 };
 
 #endif
