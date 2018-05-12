@@ -28,7 +28,7 @@ DebugDraw dInstance;
 #pragma region GameScene 
 
 GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
-	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	scnMgr = Game::getInstance()->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 	nMessages = -1;
 }
 GameScene::~GameScene()
@@ -50,7 +50,7 @@ GameScene::~GameScene()
 
 
 	/*if (scnMgr != nullptr)
-		pGame->getRoot()->destroySceneManager(scnMgr);*/
+		Game::getInstance()->getRoot()->destroySceneManager(scnMgr);*/
 	
 }
 
@@ -149,7 +149,7 @@ void GameScene::addBodyToDelete(b2Body* b){
 void GameScene::destroyBodies(){
 
 	for (size_t i = 0; i < _physicBodies.size(); i++){
-		pGame->getPhysicsWorld()->DestroyBody(_physicBodies[i]);
+		Game::getInstance()->getPhysicsWorld()->DestroyBody(_physicBodies[i]);
 	}
 
 	_physicBodies.clear();
@@ -180,7 +180,7 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	//Debug draw
 	dInstance.setSceneManager(scnMgr);
-	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
+	Game::getInstance()->getPhysicsWorld()->SetDebugDraw(&dInstance);
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
@@ -272,12 +272,12 @@ void BasicScene::processScnMsgs()
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
-	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	scnMgr = Game::getInstance()->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 	//Debug draw
 #ifdef _DEBUG
 	dInstance.setSceneManager(scnMgr);
-	pGame->getPhysicsWorld()->SetDebugDraw(&dInstance);
+	Game::getInstance()->getPhysicsWorld()->SetDebugDraw(&dInstance);
 	dInstance.SetFlags(b2Draw::e_shapeBit /*| b2Draw::e_aabbBit*/);
 #endif
 
