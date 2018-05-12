@@ -24,6 +24,7 @@ public:
 	//Entity Management
 	void addEntity(Entity *);
 	void deleteEntity(std::string id);
+	void deleteAllEntities();
 
 	//Comunication methods
 	void getMessage(Message *);
@@ -52,7 +53,7 @@ protected:
 	void clearMessageQueue();
 	void deleteAllMessages();
 	//Messaging attributes and methods
-	std::list<Entity *> _entities;
+	std::map<std::string,Entity *> _entities;
 	std::list<Entity*> _menuEntities;
 	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
@@ -129,6 +130,7 @@ struct BattleState{
 };
 
 struct Player{
+	
 	Entity* entity = nullptr;
 	int controllerId = -1;
 	E_GOD god;

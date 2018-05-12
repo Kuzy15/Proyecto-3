@@ -19,7 +19,7 @@ class GameScene;
 #pragma region Typedef functions
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
-typedef std::vector<Entity*>(*createStageFunc)(GameScene* s);
+typedef std::vector<Entity*>*(*createStageFunc)(GameScene* s);
 
 #pragma endregion
 
@@ -47,7 +47,7 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 #pragma endregion
 
 #pragma region Stages
-std::vector<Entity*> createStageTemple(GameScene* s);
-std::vector<Entity*> createStageIslands(GameScene* s);
+std::vector<Entity*>* createStageTemple(GameScene* s);
+std::vector<Entity*>* createStageIslands(GameScene* s);
 #pragma endregion 
 #endif

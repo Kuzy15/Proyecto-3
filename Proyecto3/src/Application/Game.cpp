@@ -65,18 +65,22 @@ Game::Game(){
 	
 	 initOgre();
 
-	 std::vector<Player> players(2);
-	 players[0].controllerId = 0;
-	 players[0].god = EG_AHPUCH;
+	 std::vector<Player>* players = new std::vector<Player>(2);
 
-	 players[1].controllerId = 1;
-	 players[1].god = EG_RA;
+	 players->at(0).controllerId = 0;
+	 players->at(0).god = EG_AHPUCH;
 
-	 actScene = new GamePlayScene("GamePlayScene", this, players, ES_ISLANDS);
+	 players->at(1).controllerId = 1;
+	 players->at(1).god = EG_RA;
+
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+
+	 delete players;
 	 
 }
  Game::~Game(){
 
+	 //Debe estar en la escena de Mutliplayer cuando esté implementada
 	 
 
 	 if (actScene != nullptr)

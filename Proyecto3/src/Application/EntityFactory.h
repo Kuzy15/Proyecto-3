@@ -17,7 +17,7 @@ public:
 	//Methods for create gods and define their behaviour (Components, etc)
 	Entity* createGod(E_GOD god, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 	Entity* createBullet(E_BULLET bullet, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
-	std::vector<Entity*> createStage(E_STAGE stage, GameScene* s);
+	std::vector<Entity*>* createStage(E_STAGE stage, GameScene* s);
 	inline void newEntity(){ _idCount++ ; }
 
 private:

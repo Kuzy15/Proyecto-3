@@ -73,7 +73,7 @@ Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 in
 	return c(to_string(_idCount), s, iniPos, angle, damage);
 }
 
-std::vector<Entity*> EntityFactory::createStage(E_STAGE cE, GameScene* s){
+std::vector<Entity*>* EntityFactory::createStage(E_STAGE cE, GameScene* s){
 
 
 	createStageFunc c = _createStageFuncs.at(cE);

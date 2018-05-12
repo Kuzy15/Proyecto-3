@@ -36,12 +36,8 @@ GameScene::~GameScene()
 
 	deleteAllMessages();
 
-	list<Entity*>::iterator it = _entities.begin();
-	while (!_entities.empty()){
-		delete _entities.front();
-		_entities.pop_front();
-	}
-	
+	deleteAllEntities();
+
 	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
@@ -57,7 +53,7 @@ GameScene::~GameScene()
 void GameScene::clearDebugDraw(){ dInstance.clear(); }
 bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
-		if(ent != NULL)ent->tick(delta);
+		if(ent.second != NULL)ent.second->tick(delta);
 	}
 	return true;
 } 
@@ -75,7 +71,8 @@ void GameScene::getMessage(Message * m){
 	_messages.push_back(m);
 }
 void GameScene::addEntity(Entity * ent){
-	_entities.push_back(ent);
+	
+	_entities.emplace(std::pair<std::string,Entity*>(ent->getID(),ent));
 }
 void GameScene::dispatch() {
 	/*We only process as many messages as we had at the start of the update.
@@ -94,9 +91,9 @@ void GameScene::dispatch() {
 		{
 			if ((*it)->getDestination() == SCENE)
 				_sceneMessages.push_back((*it));
-			for (Entity * aux : _entities) {
-				if ((*it)->getEmmiter() != aux->getID())
-					aux->getMessage(*it);
+			for (std::map<std::string, Entity*>::iterator itEnt = _entities.begin(); itEnt != _entities.end(); ++itEnt) {
+				if ((*it)->getEmmiter() != (*itEnt).second->getID())
+					(*itEnt).second->getMessage(*it);
 			}
 		}
 	}
@@ -128,17 +125,36 @@ void GameScene::deleteAllMessages(){
 		_sceneMessages.pop_front();
 	}
 }
+
+void GameScene::deleteAllEntities(){
+	Entity* aux;
+	for(std::pair<std::string, Entity*> e : _entities){
+		aux = e.second;
+		delete aux;
+	}
+	_entities.clear();
+
+	for (Entity* e : _menuEntities){
+		aux = e;
+		delete aux;
+	}
+
+}
+
 void GameScene::deleteEntity(std::string id){
-	Entity * aux;
-	bool found = false;
-	for (std::list<Entity *>::iterator it = _entities.begin(); it != _entities.end() && !found;){
-		if ((*it)->getID() == id){
-			aux = *it;
-			it = _entities.erase(it);
-			delete aux;
-			found = false;
+	
+
+	std::map<std::string, Entity*>::iterator it;
+	Entity* aux;
+	it = _entities.find(id);
+	if (it != _entities.end()){
+		aux = (*it).second;
+		size_t error = _entities.erase(id);
+		if (error != 1){
+			//error
 		}
-		else it++;
+		delete aux;
+
 	}
 }
 
@@ -288,6 +304,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	//Load the stage passed by parameter
 	loadStage();
 
+	
+
 	//Store and configure the players structure
 	_players = players;
 	std::vector<Ogre::Vector3> playersPos(2);
@@ -309,7 +327,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	_prepareCounter = SDL_GetTicks();
 }
 GamePlayScene::~GamePlayScene(){
-	
+	_players.clear();
 
 }
 bool GamePlayScene::run(){
@@ -475,13 +493,14 @@ void GamePlayScene::controllerConnected(int id){
 void GamePlayScene::loadStage(){
 
 	//Store the entities in an aux array
-	std::vector<Entity*> stageEntities = EntityFactory::getInstance().createStage(_stage, this);
+	std::vector<Entity*>* stageEntities = EntityFactory::getInstance().createStage(_stage, this);
 
 	//Then push them to the main array of entities
-	for (Entity* e : stageEntities){
+	for (auto e : (*stageEntities)){
 		addEntity(e);
 	}
-	
+	stageEntities->clear();
+	delete stageEntities;
 }
 
 void GamePlayScene::changePhase(GameplayState newState){
