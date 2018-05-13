@@ -423,7 +423,7 @@ std::vector<Entity*> createStageIslands(GameScene* s){
 
 
 	Entity * mountain1 = new Entity("mountain_01", s);
-	mountain1->addComponent(new CMeshRender({ -15, -20, -42 }, "Montana.mesh", mountain1, s->getSceneManager(), { 45.0f, 55.0f, 45.0f }, { 0, 30, 0 }));
+	mountain1->addComponent(new CMeshRender({ -15, -20, -42 }, "Montana.mesh", mountain1, s->getSceneManager(), { 40.0f, 55.0f, 45.0f }, { 0, 30, 0 }));
 	entities.push_back(mountain1);
 
 
@@ -457,11 +457,11 @@ std::vector<Entity*> createStageIslands(GameScene* s){
 	nube7->addComponent(new CMeshRender({ -80, 25, -40 }, "Nube.mesh", nube7, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 }));
 	entities.push_back(nube7);
 
-	Entity * nube11 = new Entity("nube_07", s);
+	Entity * nube11 = new Entity("nube_11", s);
 	nube11->addComponent(new CMeshRender({ -70, 45, -40 }, "Nube.mesh", nube11, s->getSceneManager(), { 2.0f, 2.0f, 2.0f }, { 0, 0, 0 }));
 	entities.push_back(nube11);
 
-	Entity * nube12 = new Entity("nube_07", s);
+	Entity * nube12 = new Entity("nube_12", s);
 	nube12->addComponent(new CMeshRender({ -90, 39, -20 }, "Nube.mesh", nube12, s->getSceneManager(), { 3.0f, 2.0f, 3.0f }, { 0, 0, 0 }));
 	entities.push_back(nube12);
 
@@ -469,21 +469,27 @@ std::vector<Entity*> createStageIslands(GameScene* s){
 	Entity * nube8 = new Entity("nube_08", s);
 	CMeshRender* cN = new CMeshRender({ -80, 35, -40 }, "Nube2.mesh", nube8, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
 	nube8->addComponent(cN);
-	nube8->addComponent(new CRigidBody(nube8, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-50, 25, -40), cN->getSize().y, cN->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	nube8->addComponent(new CRigidBody(nube8, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-50, 25, -40), cN->getSize().y, cN->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities.push_back(nube8);
 
 
 	Entity * nube9 = new Entity("nube_09", s);
 	CMeshRender* cN2 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube9, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
 	nube9->addComponent(cN2);
-	nube9->addComponent(new CRigidBody(nube9, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-20, 35, -40), cN2->getSize().y, cN2->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	nube9->addComponent(new CRigidBody(nube9, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-20, 35, -40), cN2->getSize().y, cN2->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities.push_back(nube9);
 
 	Entity * nube10 = new Entity("nube_10", s);
 	CMeshRender* cN3 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube10, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
 	nube10->addComponent(cN3);
-	nube10->addComponent(new CRigidBody(nube10, s->getGame()->getPhysicsWorld(), Ogre::Vector3(10, 45, -40), cN3->getSize().y, cN3->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
+	nube10->addComponent(new CRigidBody(nube10, s->getGame()->getPhysicsWorld(), Ogre::Vector3(10, 45, -40), cN3->getSize().y, cN3->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities.push_back(nube10);
+
+	Entity * nube13 = new Entity("nube_13", s);
+	CMeshRender* cN4 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube13, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
+	nube13->addComponent(cN4);
+	nube13->addComponent(new CRigidBody(nube13, s->getGame()->getPhysicsWorld(), Ogre::Vector3(60, -25, -40), cN4->getSize().y, cN4->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities.push_back(nube13);
 	
 
 	// ----------------------
