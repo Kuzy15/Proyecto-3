@@ -281,11 +281,16 @@ typedef enum FilterMask {
 	MASK_PLAYER = 0x0001,
 	MASK_STATIC_TERRAIN = 0x0002,
 	MASK_DINAMIC_TERRAIN = 0x0004,
-	MASK_BULLET = 0x0008,
-	MASK_HEAD = 0x0010,
-	MASK_CHEST = 0x0020,
-	MASK_LEGS = 0x0040,
-	MASK_FOOT_SENSOR = 0x0080 ////0000 0000 1000 0000
+	MASK_BULLET_0 = 0x0008,
+	MASK_HEAD_0 = 0x0010,
+	MASK_CHEST_0 = 0x0020,
+	MASK_LEGS_0 = 0x0040,
+	MASK_BULLET_1 = 0x1000,
+	MASK_HEAD_1 = 0x0800,
+	MASK_CHEST_1 = 0x0400,
+	MASK_LEGS_1 = 0x0200,
+	MASK_FOOT_SENSOR = 0x0080, 
+	MASK_DEATHZONE = 0x0100////mil es el ultimo usado, 0x1000
 	
 
 };
@@ -297,7 +302,7 @@ class CRigidBody : public GameComponent
 {
 public:
 
-	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory);
+	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId);
 	virtual ~CRigidBody();
 
 
