@@ -17,8 +17,7 @@ class GameScene;
 
 //Game is a window event listener,
 //Therefore we can react to the window events
-class Game :
-	public Ogre::WindowEventListener
+class Game 
 {
 
 public: 

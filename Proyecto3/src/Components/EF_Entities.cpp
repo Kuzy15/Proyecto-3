@@ -24,6 +24,9 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	Ogre::Vector3 size = cM->getSize();
 	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
 
+	//CameraFollow
+	Ra->addComponent(new CCameraFollow(Ra));
+
 	//PlayerController
 	Ra->addComponent(new CPlayerController(Ra, controllerId));
 	//CollisionHandler
@@ -62,6 +65,9 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	Ogre::Vector3 size = cM->getSize();
 	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
 
+	//CameraFollow
+	AhPuch->addComponent(new CCameraFollow(AhPuch));
+
 	//PlayerController
 	AhPuch->addComponent(new CPlayerController(AhPuch, controllerId));
 	//CollisionHandler
@@ -94,6 +100,9 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	
+	//CameraFollow
+	Zeus->addComponent(new CCameraFollow(Zeus));
 
 	//PlayerController
 	Zeus->addComponent(new CPlayerController(Zeus, controllerId));

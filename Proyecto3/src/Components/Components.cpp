@@ -296,6 +296,8 @@ void CCamera::getMessage(Message * m) {
 }
 #pragma endregion
 
+
+
 #pragma region Action Camera Component 
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, float xBoundary, float yBoundary, float minZ, float maxZ):
 	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
@@ -328,20 +330,20 @@ bool CActionCamera::outOfBoundaries(const Ogre::Vector3 &pos) {
 }
 void CActionCamera::getMessage(Message * m) {
 	
-	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Player_0") {
+	if (m->getType() == MSG_CAMERA_FOLLOW && static_cast<MCameraFollow *>(m)->getEmmiter() == "Player_0") {
 		//We check if the player is inside the boundaries of the camera. If so, we put its camera position to 0.0.0
-		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+		if (outOfBoundaries(static_cast<MCameraFollow *>(m)->GetPos()))
 			_pj1 = Ogre::Vector3::ZERO;
 		//if it has moved from its previous position, we update its position
 		else 
-			_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
+			_pj1 = static_cast<MCameraFollow * >(m)->GetPos();
 
 	}
-	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Player_1") {
-		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+	else if (m->getType() == MSG_CAMERA_FOLLOW && static_cast<MCameraFollow *>(m)->getEmmiter() == "Player_1") {
+		if (outOfBoundaries(static_cast<MCameraFollow *>(m)->GetPos()))
 			_pj2 = Ogre::Vector3::ZERO;
 		else 
-			_pj2 = static_cast<MUpdateTransform * >(m)->GetPos();
+			_pj2 = static_cast<MCameraFollow * >(m)->GetPos();
 	}
 	else return;
 	
@@ -1467,4 +1469,20 @@ void CHerisMark::getMessage(Message* m)
 #pragma endregion
 
 
+#pragma region Camera Follow
+CCameraFollow::CCameraFollow(Entity * father):GameComponent(CMP_CAMERA_FOLLOW,father){}
+CCameraFollow::~CCameraFollow(){}
 
+void CCameraFollow::tick(float delta){
+
+	pEnt->getMessage(new MCameraFollow(_nPos, pEnt->getID()));
+
+}
+void CCameraFollow::getMessage(Message* m){
+		
+	if (m->getType() == MSG_UPDATE_TRANSFORM){
+		_nPos = static_cast<MUpdateTransform*>(m)->GetPos();
+	}
+	
+}
+#pragma endregion

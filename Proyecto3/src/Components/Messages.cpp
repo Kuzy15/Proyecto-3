@@ -42,7 +42,7 @@ std::string MString::getText() {
 
 //Input Message implementation 
 #pragma region InputStateMessage
-MInputState::MInputState(int i, MessageDestination d, std::string emmiter) :Message(MSG_INPUT_STATE, BROADCAST, emmiter), _controllerId(i){
+MInputState::MInputState(int i, std::string emmiter) :Message(MSG_INPUT_STATE, SCENE, emmiter), _controllerId(i){
 
 	
 }
@@ -58,7 +58,7 @@ ControllerInputState& MInputState::getCInputState(){
 #pragma endregion
 
 #pragma region ControllerStateMessage
-MControllerState::MControllerState(MessageDestination d, std::string emmiter, int id, int action) :Message(MSG_CONTROLLER_STATE, SCENE, emmiter){
+MControllerState::MControllerState(std::string emmiter, int id, int action) :Message(MSG_CONTROLLER_STATE, SCENE, emmiter){
 	_controllerId = id;
 	_action = action;
 }
@@ -74,7 +74,7 @@ MControllerState::~MControllerState(){
 
 #pragma region UpdateTransform Message 
 
-MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, float h, float w, std::string emmiter) :Message(MSG_UPDATE_TRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation)
+MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, float h, float w, std::string emmiter) :Message(MSG_UPDATE_TRANSFORM, ENTITY, emmiter), _nPos(newPos), _nRotation(newRotation)
 , _w(w), _h(h){
 
 };
@@ -83,6 +83,19 @@ MUpdateTransform::~MUpdateTransform() {
 }
 Ogre::Vector3 MUpdateTransform::GetPos() { return _nPos; }
 float MUpdateTransform::getRotation() { return _nRotation; }
+
+#pragma endregion
+
+#pragma region Camera Follow Message 
+
+MCameraFollow::MCameraFollow(Ogre::Vector3 newPos, std::string emmiter) :Message(MSG_CAMERA_FOLLOW, SCENE, emmiter), _nPos(newPos){
+
+};
+MCameraFollow::~MCameraFollow() {
+
+}
+Ogre::Vector3 MCameraFollow::GetPos() { return _nPos; }
+
 
 #pragma endregion
 

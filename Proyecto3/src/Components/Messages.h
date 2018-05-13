@@ -76,7 +76,8 @@ typedef enum MessageType{
 	MSG_DASH,
 	MSG_DIE,
 	MSG_BULLET_HIT,
-	MSG_DAMAGE_ARMATURE
+	MSG_DAMAGE_ARMATURE,
+	MSG_CAMERA_FOLLOW
 	
 
 	
@@ -131,7 +132,7 @@ private:
 class MInputState : public Message
 {
 public:
-	MInputState(int i,MessageDestination d, std::string emmiter);
+	MInputState(int i, std::string emmiter);
 	virtual ~MInputState();
 
 	ControllerInputState& getCInputState();
@@ -149,7 +150,7 @@ private:
 class MControllerState : public Message
 {
 public:
-	MControllerState(MessageDestination d, std::string emmiter, int id, int action);
+	MControllerState(std::string emmiter, int id, int action);
 	virtual ~MControllerState();
 
 	inline int getId(){ return _controllerId; };
@@ -178,6 +179,22 @@ private:
 	float _w;
 	float _h;
 };
+
+
+//--------------------------------------------------	CAMERA FOLLOW MSG		----------------------------------------------------------//
+class MCameraFollow : public Message
+{
+public:
+	MCameraFollow(Ogre::Vector3 newPos, std::string emmiter);
+	virtual ~MCameraFollow();
+
+	Ogre::Vector3 GetPos();
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	Ogre::Vector3 _nPos;
+};
+
 
 
 //--------------------------------------------------	INPUT PLAYER MSG	 (ABSTRACT)	----------------------------------------------------------//

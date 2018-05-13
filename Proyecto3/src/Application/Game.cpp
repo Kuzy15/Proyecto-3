@@ -80,21 +80,21 @@ Game::Game(){
 }
  Game::~Game(){
 
-	 //Debe estar en la escena de Mutliplayer cuando esté implementada
+	
 	 
 
 	 if (actScene != nullptr)
 		 delete actScene;
 	 //Remove the game from the window listeners
-	 Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
+	 //Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
 
 	 //Delete the physics world
 	 delete world;
 	 world = nullptr;
 
 	 InputManager::resetInstance();
-	// if (root != nullptr)
-		//delete root;
+	 /*if (root != nullptr)
+		delete root;*/
 
  }
 #pragma endregion
@@ -201,7 +201,7 @@ bool Game::initOgre(){
 
 
 	//We register game as a listener of the window events, to know if it's been closed
-	Ogre::WindowEventUtilities::addWindowEventListener(pWindow, this);
+	//Ogre::WindowEventUtilities::addWindowEventListener(pWindow, this);
 
 
  }

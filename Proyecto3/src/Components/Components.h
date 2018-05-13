@@ -62,7 +62,8 @@ typedef enum ComponentType {
 	CMP_KHEPRI_BEETLE,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
-	CMP_PARTICLE_RENDER
+	CMP_PARTICLE_RENDER,
+	CMP_CAMERA_FOLLOW
 
 
 
@@ -255,7 +256,19 @@ private:
 
 };
 
+/*---------------------------------- CAMERA FOLLOW -----------------------------------*/
+class CCameraFollow : public GameComponent
+{
+public:
+	CCameraFollow(Entity * father);
+	virtual ~CCameraFollow();
 
+	virtual void getMessage(Message * m);
+	virtual void tick(float delta);
+private:
+	Ogre::Vector3 _nPos;
+
+};
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 

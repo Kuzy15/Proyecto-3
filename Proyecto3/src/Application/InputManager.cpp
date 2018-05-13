@@ -75,7 +75,7 @@ void InputManager::handleInput(){
 	//Create main Input message who contains the events and variables to store the values
 	for (int i = 0; i < MAX_PLAYERS; i++){
 		if (_playerController[i] != nullptr)
-			_inputMsg[i] = new MInputState(i,BROADCAST, _emitter);
+			_inputMsg[i] = new MInputState(i, _emitter);
 
 	}
 
@@ -91,10 +91,10 @@ void InputManager::handleInput(){
 //Events for Controller recognize: connect and disconnect
 		case SDL_CONTROLLERDEVICEADDED:
 			addJoystick(event.cdevice.which);
-			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 1));
+			_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 1));
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
-			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 0));
+			_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 0));
 			deleteJoystick(event.cdevice.which);
 			break;
 		default:
