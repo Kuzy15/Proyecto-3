@@ -414,9 +414,41 @@ std::vector<Entity*> createStageIslands(GameScene* s){
 
 
 	Entity * mountain1 = new Entity("mountain_01", s);
-	mountain1->addComponent(new CMeshRender({ 0, -10, -40 }, "Montana.mesh", mountain1, s->getSceneManager(), { 25.0f, 25.0f, 25.0f }, { 0, 30, 0 }));
+	mountain1->addComponent(new CMeshRender({ -5, -15, -42 }, "Montana.mesh", mountain1, s->getSceneManager(), { 40.0f, 40.0f, 40.0f }, { 0, 30, 0 }));
 	entities.push_back(mountain1);
 
+
+	// Nubes
+
+	Entity * nube1 = new Entity("nube_01", s);
+	nube1->addComponent(new CMeshRender({ 0, 40, -40 }, "Nube.mesh", nube1, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 }));
+	entities.push_back(nube1);
+
+	Entity * nube2 = new Entity("nube_02", s);
+	nube2->addComponent(new CMeshRender({ 25, 40, -40 }, "Nube.mesh", nube2, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 30, 0 }));
+	entities.push_back(nube2);
+
+	Entity * nube5 = new Entity("nube_05", s);
+	nube5->addComponent(new CMeshRender({ 25, 40, 0 }, "Nube.mesh", nube5, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 90, 0 }));
+	entities.push_back(nube5);
+
+	Entity * nube3 = new Entity("nube_03", s);
+	nube3->addComponent(new CMeshRender({ -25, 30, -40 }, "Nube.mesh", nube3, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 30, 0 }));
+	entities.push_back(nube3);
+
+	Entity * nube6 = new Entity("nube_06", s);
+	nube6->addComponent(new CMeshRender({ -25, 30, 0 }, "Nube.mesh", nube6, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0,45, 0 }));
+	entities.push_back(nube6);
+
+	Entity * nube4 = new Entity("nube_04", s);
+	nube4->addComponent(new CMeshRender({ -40, 35, -40 }, "Nube.mesh", nube4, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 30, 0 }));
+	entities.push_back(nube4);
+
+	Entity * nube7 = new Entity("nube_07", s);
+	nube7->addComponent(new CMeshRender({ -40, 35, -40 }, "Nube.mesh", nube7, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 30, 0 }));
+	entities.push_back(nube7);
+
+	// ----------------------
 
 	Entity * top = new Entity("ColliderTecho_01", s);
 	top->addComponent(new CRigidBody(top, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-100, 100, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
