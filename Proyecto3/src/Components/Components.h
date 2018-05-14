@@ -807,6 +807,7 @@ enum guiPlayer{
 class CPlayerGUI: public GameComponent
 {
 public:
+	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, std::string characterName);
 	~CPlayerGUI();
 	void updateLifebar(size_t val);
 	void updateActive();
@@ -814,9 +815,9 @@ public:
 	virtual void getMessage(Message * m);
 	void updatePassive();
 
-protected:
-	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, std::string characterName);
+private:
 	Ogre::OverlayContainer * pHud;
+	Ogre::OverlayContainer * pLowerHud;
 	Ogre::OverlayContainer * plifeBar;
 	Ogre::OverlayContainer * pActiveBar;
 	Ogre::Overlay * pOverlay;

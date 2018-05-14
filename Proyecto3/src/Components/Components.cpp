@@ -1705,11 +1705,12 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std
 
 
 	//General container of the whole Player HUD
-	pHud = pOverlay->getChild("GUI/" + player);
+	pHud = pOverlay->getChild(player);
+	pLowerHud = static_cast<Ogre::OverlayContainer *>(pHud->getChild(player + "/ActiveContainer"));
 
 	//Specific reference to the lifebar and active bar, which we'll be using quite often
-	plifeBar = pOverlay->getChild("GUI/" + player + "/LifeBar");
-	pActiveBar = pOverlay->getChild("GUI/" + player + "ActiveContainer/LifeBar");
+	plifeBar = static_cast<Ogre::OverlayContainer*>(pHud->getChild(player + "/LifeBar"));
+	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
 	LIFE_MIN_WIDTH = 15;

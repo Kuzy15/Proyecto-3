@@ -361,15 +361,16 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	// Show the overlay
 	Ogre::FontManager::getSingleton().getByName("Caption")->load();
 
-	Entity * k = new Entity("Holo", this);
+	Entity * k = new Entity("GUI", this);
 
 
 	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
+	k->addComponent(new CPlayerGUI(k, overlay, P1, "RA"));
 	addEntity(k);
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
 
-	std::cout << e->getName() << std::endl;
+	
 	overlay->show();
 
 }
