@@ -8,6 +8,7 @@ class Game;
 class b2Body;
 enum E_GOD;
 enum E_STAGE;
+enum ComponentType;
 
 
 
@@ -142,6 +143,7 @@ struct Player{
 	int controllerId = -1;
 	E_GOD god;
 	int roundsWon = 0;
+	std::vector<ComponentType> abilities;
 };
 
 
@@ -163,6 +165,9 @@ private:
 	void changePhase(GameplayState);
 	//Load the stage
 	void loadStage();
+	//Load the ability cards entities for each player
+	void loadAbilities();
+	//Controller manage methods
 	void controllerDisconected(int id);
 	void controllerConnected(int id);
 
@@ -178,6 +183,7 @@ private:
 	std::vector<Player> _players;	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
 	bool _paused;
+	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
 
 	float _prepareCounter;
 	float _prepareLimitTime;

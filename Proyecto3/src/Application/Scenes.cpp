@@ -34,6 +34,7 @@
 #include "Messages.h"
 #include "Scenes.h"
 #include "DebugDraw.h"
+#include "Components.h"
 //Debug
 #ifdef _DEBUG
 #include <iostream>
@@ -307,6 +308,11 @@ void K() {
 }
 
 #pragma region GamePlayScene
+
+/*------------ Callback functions for card select buttons --------------*/
+
+
+
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
 
@@ -335,6 +341,9 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	int i = 0;
 	for (Player p : _players){
 		p.entity = EntityFactory::getInstance().createGod(p.god, this, playersPos[i],p.controllerId);
+		p.abilities.push_back(CMP_HERA_RUNE);
+		p.abilities.push_back(CMP_PASSIVE_HADES);
+		p.abilities.push_back(CMP_KHEPRI_BEETLE);
 		addEntity(p.entity);
 			i++;
 	}
@@ -364,7 +373,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Entity * k = new Entity("Holo", this);
 
 
-	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
+	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
 	addEntity(k);
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
@@ -578,6 +587,22 @@ void GamePlayScene::playerDied(std::string e){
 	else
 		changePhase(GS_SETUP);
 
+
+}
+
+void GamePlayScene::loadAbilities(){
+
+	Entity* aux;
+	Ogre::Vector2 auxPos(-100.0f,150.0f);
+	int idCounter = 0;
+	for (Player p : _players){
+		for (ComponentType c : p.abilities){
+			aux = new Entity((to_string(p.controllerId) + to_string(c)), this);
+			aux->addComponent(new CNormalButton(overlay, aux, idCounter, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
+
+			idCounter++;
+		}
+	}
 
 }
 #pragma endregion

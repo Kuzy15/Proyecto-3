@@ -1625,26 +1625,11 @@ void CHerisMark::getMessage(Message* m)
 
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
 #pragma region GUI COMPONENTS
-#pragma region Button
-CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father), _clicked(false) {
+#pragma region ButtonGUI
+CButtonGUI::CButtonGUI(ComponentType t,Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(t, father), _clicked(false) {
 	pOver = overlay;
-	materials[0] = "GUI/Button/Idle";
-	materials[1] = "GUI/Button/Active";
-	materials[2] = "GUI/Button/Click";
 	
 	_sceneId = sceneId;
-	_callback = cb;
-
-	_txt = buttonTxt;
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
-	pContainer->setPosition(screenpos.x, screenpos.y);
-	overlay->add2D(pContainer);
-
-	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
-		a->setCaption(_txt);
-	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
 
 }
 CButtonGUI::~CButtonGUI() 
@@ -1671,7 +1656,45 @@ void CButtonGUI::tick(float delta)
 }
 void CButtonGUI::getMessage(Message * me)
 {
-	if (me->getType() == MSG_GUI_BUTTON_ACTIVE) 
+	
+	
+}
+
+#pragma endregion
+
+#pragma region Normal Button
+CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, ButtonCallback callback, std::string buttonTxt) :CButtonGUI(CMP_NORMAL_BUTTON,overlay, father,sceneId,screenpos,pixelSize) {
+	materials[0] = "GUI/Button/Idle";
+	materials[1] = "GUI/Button/Active";
+	materials[2] = "GUI/Button/Click";
+
+	
+	_callback = callback;
+	_txt = buttonTxt;
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+
+	try {
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+
+}
+CNormalButton::~CNormalButton()
+{
+
+
+}
+
+
+void CNormalButton::getMessage(Message * me)
+{
+
+	
+	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
 	{
 		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
 			_active = true;
@@ -1691,10 +1714,64 @@ void CButtonGUI::getMessage(Message * me)
 
 	}
 
-	
+
 }
 
 #pragma endregion
+
+#pragma region Ability Button
+CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, ButtonAbilityCallback* c, int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
+_playerId(playerId), _compType(compType){
+	materials[0] = "GUI/Button/Idle";
+	materials[1] = "GUI/Button/Active";
+	materials[2] = "GUI/Button/Click";
+
+
+	_callback = c;
+	
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+
+}
+CAbilityButton::~CAbilityButton()
+{
+
+
+}
+
+
+void CAbilityButton::getMessage(Message * me)
+{
+
+
+	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
+	{
+		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+			_active = true;
+			pContainer->setMaterialName(materials[1]);
+		}
+		else if (_active)
+		{
+			_active = false;
+			pContainer->setMaterialName(materials[0]);
+
+		}
+	}
+	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
+		pContainer->setMaterialName(materials[2]);
+		_clicked = true;
+		_callback(_playerId,_compType);
+
+	}
+
+
+}
+
+#pragma endregion
+
+
 #pragma region PlayerGUI
 CPlayerGUI::CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName) : pOverlay(ov)
 {
