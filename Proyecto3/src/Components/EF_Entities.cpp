@@ -25,7 +25,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	Ra->addComponent(new CCameraFollow(Ra));
@@ -68,7 +68,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	AhPuch->addComponent(new CCameraFollow(AhPuch));
@@ -104,7 +104,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 	
 	//CameraFollow
 	Zeus->addComponent(new CCameraFollow(Zeus));
@@ -142,7 +142,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	Hachiman->addComponent(new CCameraFollow(Hachiman));

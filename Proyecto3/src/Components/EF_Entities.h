@@ -18,7 +18,7 @@ class GameScene;
 //Typedefs to name functions types for entity creation
 #pragma region Typedef functions
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
-typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage);
+typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD);
 typedef std::vector<Entity*>*(*createStageFunc)(GameScene* s);
 
 
