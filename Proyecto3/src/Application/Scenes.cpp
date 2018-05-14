@@ -334,7 +334,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	// Create an overlay
 	try {
-		overlay = overlayManager.getByName("KEK");
+		overlay = overlayManager.getByName("GUI");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;

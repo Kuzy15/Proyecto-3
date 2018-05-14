@@ -7,8 +7,8 @@ material Neto
       scene_blend alpha_blend
       texture_unit
       {
-        texture Star.png
-        rotate_anim 1
+        texture Chrono.png
+        rotate_anim 0.5
         tex_address_mode clamp
       }
     }
@@ -87,6 +87,38 @@ material GUI/Base_Player2 {
     }
   }
 }
+material GUI/RoundEmpty {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Round_Empty.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+material GUI/RoundFull {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Round_Full.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+
+
 
 
 
@@ -138,6 +170,38 @@ material GUI/Player1/LifeFrame
     }
   }
 }
+material GUI/Player1/ActiveFrame
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Active_Frame_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+material GUI/Player1/ActiveBar
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture ActiveBar_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+
+
 
 //-----------------------------------------------------------------------------
 
