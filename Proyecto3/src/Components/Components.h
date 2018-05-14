@@ -64,7 +64,9 @@ typedef enum ComponentType {
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
-	CMP_GUI_BUTTON
+	CMP_GUI_BUTTON,
+	CMP_GUI_P1GUI,
+	CMP_GUI_P2GUI,
 
 
 
@@ -685,32 +687,33 @@ private:
 	const float _minClickTime = 500;
 };
 
-class PlayerGUI
+class CPlayerGUI
 {
 public:
-	PlayerGUI(std::string GUIname, std::string characterName);
-	~PlayerGUI();
+	~CPlayerGUI();
 	virtual void updateLifebar() = 0;
+	virtual void updateActive() = 0;
 	void updatePassive();
-	void updateActive();
 
-
-
-private:
+protected:
+	CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName);
 	Ogre::OverlayContainer * pHud;
 	Ogre::OverlayContainer * plifeBar;
+	Ogre::Overlay * pOverlay;
 
 };
 
 
-class CPlayer1GUI
+class CPlayer1GUI: public GameComponent, CPlayerGUI
 {
 public:
 	CPlayer1GUI();
 	~CPlayer1GUI();
+	virtual void updateLifebar();
+	virtual void updateActive();
 
 private:
-	Ogre::OverlayContainer * pP1HUD;
+
 
 };
 #endif

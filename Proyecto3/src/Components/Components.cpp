@@ -1253,6 +1253,7 @@ void CKhepriBeetle::getMessage(Message* m)
 #pragma endregion
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
 #pragma region GUI COMPONENTS
+#pragma region Button
 CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father), _clicked(false) {
 	pOver = overlay;
 	materials[0] = "GUI/Button/Idle";
@@ -1330,7 +1331,14 @@ void CButtonGUI::toggleActive(bool active) {
 	_active = true;
 	pContainer->setMaterialName(materials[1]);
 }
+#pragma endregion
+#pragma region PlayerGUI
+CPlayerGUI::CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName) : pOverlay(ov)
+{
+}
 
+
+#pragma endregion
 
 
 #pragma endregion

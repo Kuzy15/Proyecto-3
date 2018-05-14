@@ -58,10 +58,6 @@ material GUI/Button/Idle
   }
 }
 
-
-
-
-
 material GUI/Base_Player {
   technique
   {
@@ -91,6 +87,59 @@ material GUI/Base_Player2 {
     }
   }
 }
+
+
+
+//------------------------- PLAYER 1 MATERIALS ---------------------------------
+material GUI/Player1/LifeBar
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture LifeBar_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+
+  material GUI/Player1/LifeBar_BG
+  {
+    technique
+    {
+      pass
+      {
+        scene_blend alpha_blend
+         texture_unit
+         {
+            texture LifeBar_BG_P1.png
+            tex_address_mode clamp
+          }
+    }
+  }
+
+}
+material GUI/Player1/LifeFrame
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Life_Frame_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 
 material GUI/PlayerInfo/LifeBorder

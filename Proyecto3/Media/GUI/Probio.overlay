@@ -57,7 +57,7 @@ KEK
             char_height 40
           }
         }
-
+//----------------------------- PLAYER 1 GUI --------------------------------------
     container Panel(Player1)
     {
         metrics_mode relative
@@ -67,52 +67,81 @@ KEK
         height 0.2
         material GUI/Base_Player
 
+        container Panel (Player1/Icon)
+        {
+          metrics_mode pixels
+          top 50
+          left 50
+          width 100
+          height 100
+          material GUI/BasicRed
+
+        }
+
         container TextArea (Player1/Name)
         {
           metrics_mode pixels
-          left 50
-          top 50
+          left 175
+          top 35
           width 100
-          height 100
+          height 25
           font_name Caption
           colour 0 1 0.5
-          caption Player 1 : RA
+          caption RA
           char_height 30
         }
 
-        element Panel(Player1/LifeBarBackground)
+        //element Panel(Player1/LifeBarBackground)
+        //{
+          //metrics_mode pixels
+          //left 50
+          //top 100
+          //width 470
+          //height 86
+        //  material GUI/Player1/LifeBar_BG
+      //  }
+        element Panel (Player1/LifeBar)
         {
           metrics_mode pixels
-          left 50
-          top 100
-          width 450
-          height 50
-          material GUI/LifeContainer
+          left 175
+          top 76
+          width 150
+          height 74
+          material GUI/Player1/LifeBar
 
-          element Panel (Player1/LifeBar)
+          container Panel (Player1/LifeBorder)
           {
             metrics_mode pixels
-            left 0
             top 0
-            width 400
+            left 0
+            width 483.5
+            height 75
+           material GUI/Player1/LifeFrame
+          }
+        }
+
+        container Panel(Player1/ActiveContainer)
+        {
+          metrics_mode relative
+          top 0.7
+          left 0
+          width 0.2
+          height 0.3
+          material GUI_BasePlayer
+
+          container Panel(Player1/ActiveConainer/ActiveIcon)
+          {
+            top 0
+            left 50
+            width 50
             height 50
             material GUI/BasicRed
-            rotation 180 0 0 1
-            container BorderPanel (Player1/BorderPanel)
-            {
-              metrics_mode pixels
-              top 0
-              left 0
-              width 450
-              height 50
-              border_size 5 5 5 5
-              border_material GUI/PlayerInfo/LifeBorder
-            }
-
+          }
         }
-      }
-     }
-     //Player1
+
+  }
+
+//----------------------------- PLAYER 2 GUI --------------------------------------
       container Panel(Player2)
       {
         metrics_mode relative

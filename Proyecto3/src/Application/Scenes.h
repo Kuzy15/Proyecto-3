@@ -179,7 +179,7 @@ private:
 	float _prepareCounter;
 	float _prepareLimitTime;
 
-	int z;
+
 };
 
 

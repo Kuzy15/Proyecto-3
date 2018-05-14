@@ -349,9 +349,10 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
 	addEntity(k);
 	// Create a panel
+	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
 
+	std::cout << e->getName() << std::endl;
 	overlay->show();
-	z = 0;
 
 }
 GamePlayScene::~GamePlayScene(){
@@ -403,18 +404,7 @@ bool GamePlayScene::run(){
 
 	overlay->show();
 
-	//BUTTON TEST DEBUG ----- MUST ERASE
-	z++;
-	std::cout << z << std::endl;
-	if (z % 500 == 0) {
-		getMessage(new MButtonAct("scene", 0));
-	}
-	if (z % 600 == 0) {
-		getMessage(new MButtonClick("scene"));
-	}
-	if (z % 1000 == 0) {
-		getMessage(new MButtonAct("scene", 1));
-	}
+
 	return aux;
 
 
