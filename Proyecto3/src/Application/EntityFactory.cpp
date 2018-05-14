@@ -65,12 +65,12 @@ Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos, 
 }
 
 //The create bullet methods return a new bullet
-Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 iniPos, float angle, float damage){
+Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD){
 
 	newEntity();
 
 	creteBulletFunc c = _createBulletFuncs.at(cE);
-	return c(to_string(_idCount), s, iniPos, angle, damage);
+	return c(to_string(_idCount), s, iniPos, angle, damage, iD);
 }
 
 std::vector<Entity*>* EntityFactory::createStage(E_STAGE cE, GameScene* s){

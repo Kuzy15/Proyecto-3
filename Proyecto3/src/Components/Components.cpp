@@ -113,21 +113,33 @@ void CRender::getMessage(Message *m) {
 			
 			//Where our mesh is relative to the parent.
 			//The real pos of the object is the parent pos + this variable, _ogrepos.
-			_ogrepos.x = w / 2;
-			_ogrepos.y = 0;	
-			_ogrepos.z = 0;
-
-			//Move the parent to the collider location of rotation.
-			pOgreSceneNode->setPosition(parentPos);			
-			//Move the child to the real pos of the collider.
-			pChild->setPosition(_ogrepos);
-
-			//Rotate the parent node the same degree as the collider.
 			float angleRad = msg->getRotation();
-
+			
 			if (angleRad != -1){
+				_ogrepos.x = w / 2;
+				_ogrepos.y = 0;	
+				_ogrepos.z = 0;
+
+				//Move the parent to the collider location of rotation.
+				pOgreSceneNode->setPosition(parentPos);			
+				//Move the child to the real pos of the collider.
+				pChild->setPosition(_ogrepos);
+
+				//Rotate the parent node the same degree as the collider.			
 				float grades = (angleRad * 180) / 3.14159265359;
 				pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
+			}
+			else{
+			
+				_ogrepos.x = 0;
+				_ogrepos.y = 0;
+				_ogrepos.z = w / 2;
+
+				//Move the parent to the collider location of rotation.
+				pOgreSceneNode->setPosition(parentPos);
+				//Move the child to the real pos of the collider.
+				pChild->setPosition(_ogrepos);
+			
 			}
 
 		
@@ -218,11 +230,11 @@ Ogre::Vector3 CMeshRender::getSize(){
 }
 
 
-/*------------------------- CAMERA COMPONENTS------------------------------------*/
+/*------------------------- RENDER COMPONENTS------------------------------------*/
 #pragma endregion
 #pragma region particleRenderComponent
 
-
+//PARTICLES
 CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER , father, scnM) {
 	
 
@@ -251,6 +263,34 @@ void CParticleRender::tick(float delta) {
 void CParticleRender::getMessage(Message * m) {
 	CRender::getMessage(m);
 	
+}
+#pragma endregion
+
+
+#pragma region ribbonTrailRenderComponent
+
+// RIBBON TRAIL
+CRibbonTrailRender::CRibbonTrailRender(Ogre::Vector3 pos, std::string id, std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER, father, scnM) {
+
+	trail = scnM->createRibbonTrail("trail");
+	trail->setMaxChainElements(30);
+	trail->setInitialColour(0, 0.0f, 0.0f, 1.0f, 1.0f);
+	trail->setColourChange(0, 0.0f, 0.0f, 0.1f, 0.2f);
+	trail->setInitialWidth(0, 0.3);
+	trail->addNode(pChild);
+	scnM->getRootSceneNode()->attachObject(trail);
+}
+CRibbonTrailRender::~CRibbonTrailRender() {
+	pChild->detachObject(trail);
+}
+void CRibbonTrailRender::tick(float delta) {
+
+
+
+}
+void CRibbonTrailRender::getMessage(Message * m) {
+	CRender::getMessage(m);
+
 }
 #pragma endregion
 
@@ -386,7 +426,7 @@ void CActionCamera::tick(float delta) {
 #pragma region RigidBodyComponent
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
-CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
+CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 	
 	//Sets the pos attached to the render.
@@ -398,11 +438,14 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	//Body definition.
 	_bodyDef.position.Set(_pos.x, _pos.y);
+
+	
+
 	if (myCategory == MASK_PLAYER)
 		_bodyDef.fixedRotation = true;
-	if (myCategory == MASK_BULLET){
+	if (myCategory == MASK_BULLET_0 || myCategory == MASK_BULLET_1){
 		_bodyDef.bullet = true;
-		_bodyDef.fixedRotation = true;
+		//_bodyDef.fixedRotation = true;
 		_bodyDef.gravityScale = 0.0f;
 	}
 
@@ -425,7 +468,11 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 			break;
 	}
 	//Body creation.
-	_body = _myWorld->CreateBody(&_bodyDef);	
+	_body = _myWorld->CreateBody(&_bodyDef);
+
+	float radians = (3.14159265359f * angle) / 180.0f;
+
+	_body->SetTransform(_pos,radians);
 
 	//Set the body data pointer to entity
 	_body->SetUserData(pEnt);	
@@ -437,22 +484,25 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	switch (myCategory)
 	{
-		case MASK_PLAYER:
-			//_fixtureDef.filter.categoryBits = MASK_PLAYER;				
-			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST | MASK_BULLET;
-			
-			break;
 		case MASK_STATIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
+			_fixtureDef.filter.maskBits = MASK_BULLET_0 | MASK_BULLET_1 | MASK_DINAMIC_TERRAIN | MASK_LEGS_0 | MASK_LEGS_1| MASK_HEAD_1 | MASK_HEAD_0 | MASK_CHEST_0 | MASK_CHEST_1 | MASK_FOOT_SENSOR;
 			break;
 		case MASK_DINAMIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
+			_fixtureDef.filter.maskBits = MASK_BULLET_0 | MASK_BULLET_1 | MASK_STATIC_TERRAIN | MASK_LEGS_0 | MASK_LEGS_1 | MASK_HEAD_1 | MASK_HEAD_0 | MASK_CHEST_0 | MASK_CHEST_1 | MASK_FOOT_SENSOR;
 			break;
-		case MASK_BULLET:
-			_fixtureDef.filter.categoryBits = MASK_BULLET;
-			_fixtureDef.filter.maskBits = MASK_LEGS | MASK_CHEST | MASK_HEAD | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
+		case MASK_BULLET_0:
+			_fixtureDef.filter.categoryBits = MASK_BULLET_0;
+			_fixtureDef.filter.maskBits = MASK_LEGS_1 | MASK_CHEST_1 | MASK_HEAD_1 | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN | MASK_DEATHZONE;
+			break;
+		case MASK_BULLET_1:
+			_fixtureDef.filter.categoryBits = MASK_BULLET_1;
+			_fixtureDef.filter.maskBits = MASK_LEGS_0 | MASK_CHEST_0 | MASK_HEAD_0 | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN | MASK_DEATHZONE;
+			break;
+		case MASK_DEATHZONE:
+			_fixtureDef.filter.categoryBits = MASK_DEATHZONE;
+			_fixtureDef.filter.maskBits = MASK_LEGS_0 | MASK_CHEST_0 | MASK_HEAD_0 | MASK_BULLET_0 | MASK_LEGS_1 | MASK_CHEST_1 | MASK_HEAD_1 | MASK_BULLET_1;
 			break;
 		default:
 			break;
@@ -462,6 +512,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	float legsSize = _rbWeight / 1.5f;
 
 	b2PolygonShape _pShape;
+
 	b2CircleShape _cShape;
 
 	//Shape creation.
@@ -486,18 +537,48 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 		_fixtureDef.shape = &_pShape;
-		_fixtureDef.filter.categoryBits = MASK_CHEST;
+		
+		if (controllerId == 1){
+			_fixtureDef.filter.categoryBits = MASK_CHEST_1;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
+		
+		}
+		else{
+		
+			_fixtureDef.filter.categoryBits = MASK_CHEST_0;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1| MASK_BULLET_1;
+		
+		}
 		_body->CreateFixture(&_fixtureDef);		
 		
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
-		_fixtureDef.filter.categoryBits = MASK_HEAD;
+		if (controllerId == 1){
+			_fixtureDef.filter.categoryBits = MASK_HEAD_1;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
+
+		}
+		else{
+
+			_fixtureDef.filter.categoryBits = MASK_HEAD_0;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1 | MASK_BULLET_1;
+
+		}
 		_body->CreateFixture(&_fixtureDef);
 
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
+		if (controllerId == 1){
+			_fixtureDef.filter.categoryBits = MASK_LEGS_1;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
 
-		_fixtureDef.filter.categoryBits = MASK_LEGS;
+		}
+		else{
+
+			_fixtureDef.filter.categoryBits = MASK_LEGS_0;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1 | MASK_BULLET_1;
+
+		}
 		_fixture = _body->CreateFixture(&_fixtureDef);
 
 		//Foot sensor
@@ -604,13 +685,16 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 				if (_myMask == MASK_FOOT_SENSOR)
 					pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
 				break;
+			case MASK_DEATHZONE:
+				pEnt->getMessage(new MDie(pEnt->getID()));
+				break;
 			default:
 				break;
 		}
 	}
 	else if (m->getType() == MSG_BULLET_HIT){
 		MBulletHit* mBH = static_cast<MBulletHit*>(m);
-		if (mBH->getTargetMask() == MASK_CHEST)
+		if (mBH->getTargetMask() == MASK_CHEST_0 || mBH->getTargetMask() == MASK_CHEST_1)
 			pEnt->getMessage(new MDamage(mBH->getDamage(), pEnt->getID()));
 		else
 			pEnt->getMessage(new MDamageArmature(mBH->getDamage(), mBH->getTargetMask(), pEnt->getID()));
@@ -832,7 +916,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 				iniPos.y += _ogrepos.y;
 				iniPos.z = _ogrepos.z;
 
-				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle, _damage);
+				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle, _damage, pEnt->getID());
 				pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 				pEnt->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
 				b->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
@@ -1071,10 +1155,47 @@ void CBullet::getMessage(Message* m){
 
 #pragma region Ability Component
 CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask) :GameComponent(c, father), _componentLife(componentLife),
-_componentArmor(componentArmor), _myMask(mask), _limitLife(componentLife)
+_componentArmor(componentArmor), _limitLife(componentLife)
 
 {
+	if (pEnt->getID() == "Player_0"){
+		switch (mask)
+		{
+		case MASK_LEGS_0:
+			_myMask = MASK_LEGS_0;
+			break;
+		case MASK_HEAD_0:
+			_myMask = MASK_HEAD_0;
+			break;
+		case MASK_CHEST_0:
+			_myMask = MASK_CHEST_0;
+			break;
+		default:
+			break;
+		}
 	
+	}
+	else
+	{
+
+		switch (mask)
+		{
+		case MASK_LEGS_0:
+			_myMask = MASK_LEGS_1;
+			break;
+		case MASK_HEAD_0:
+			_myMask = MASK_HEAD_1;
+			break;
+		case MASK_CHEST_0:
+			_myMask = MASK_CHEST_1;
+			break;
+		default:
+			break;
+		}
+
+
+	}
+
 }
 CAbility::~CAbility(){}
 
@@ -1112,7 +1233,7 @@ void CArmor::getMessage(Message* m){}
 
 
 ///invisibility
-CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25,MASK_LEGS){
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25,MASK_LEGS_0){
 	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 }
 CPSkillVidar::~CPSkillVidar(){}
@@ -1127,7 +1248,7 @@ void CPSkillVidar::getMessage(Message* m){
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100, MASK_LEGS){
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100, MASK_LEGS_0){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -1146,7 +1267,7 @@ void CPSkillHades::getMessage(Message* m){
 
 
 ///modify velocity of a god
-CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, MASK_LEGS){
+CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, MASK_LEGS_0){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -1163,7 +1284,7 @@ void CPSkillUll::getMessage(Message* m){
 
 
 ///modify vel of bullets
-CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75, MASK_LEGS){
+CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelBullets(pEnt->getID(), 10));
 }
 CPSkillVali::~CPSkillVali(){}
@@ -1180,7 +1301,7 @@ void CPSkillVali::getMessage(Message* m){
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25, MASK_LEGS){
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1197,7 +1318,7 @@ void CPSkillHermes::getMessage(Message* m){
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50, MASK_LEGS){
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1216,7 +1337,7 @@ void CPSkillSyn::getMessage(Message* m){
 
 #pragma region Shu Headdress
 //Dash
-CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD), _playerId(id){
+CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
 	_coolDown = 500.0f; //5 seconds
 	_dashImpulse = 1000.0f;
@@ -1252,7 +1373,7 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 
 #pragma region Jonsu Moon
 //Velocity improvement
-CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD), _playerId(id){
+CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 5000.0f; //5 seconds
 	_coolDown = 10000.0f;
@@ -1302,7 +1423,7 @@ void CJonsuMoon::getMessage(Message* m)
 
 #pragma region Khepri Beetle
 //Velocity improvement
-CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD), _playerId(id){
+CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 3000.0f; //3 seconds
 	_coolDown = 10000.0f;
@@ -1355,7 +1476,7 @@ void CKhepriBeetle::getMessage(Message* m)
 
 #pragma region Hera´s Rune
 //Velocity improvement
-CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD), _playerId(id){
+CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_coolDown = 10000.0f;
 	isAvailable = true;
@@ -1396,7 +1517,7 @@ void CHeraRune::getMessage(Message* m)
 
 
 #pragma region Heris Mark
-CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD), _playerId(id){
+CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;	
 	_coolDown = 10000.0f;
 	_timeActiveLimit = 30000.0f;
