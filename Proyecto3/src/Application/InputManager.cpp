@@ -28,7 +28,7 @@ InputManager::InputManager()
 InputManager::~InputManager()
 {
 	//Close opened Joysticks
-	for (size_t i = 0; i < _currentNPlayers; i++){
+	for (size_t i = 0; i < MAX_PLAYERS; i++){
 		if (_playersJoystick[i] != NULL) SDL_JoystickClose(_playersJoystick[i]);
 	}
 
@@ -38,7 +38,7 @@ InputManager::~InputManager()
 		
 	}
 
-	for (int i = 0; i < _currentNPlayers; i++){
+	for (int i = 0; i < MAX_PLAYERS; i++){
 
 		delete _inputMsg[i];
 
@@ -73,9 +73,9 @@ void InputManager::handleInput(){
 	/* Other initializtion code goes here */
 
 	//Create main Input message who contains the events and variables to store the values
-	for (int i = 0; i < _currentNPlayers; i++){
-
-		_inputMsg[i] = new MInputState(i,BROADCAST, _emitter);
+	for (int i = 0; i < MAX_PLAYERS; i++){
+		if (_playerController[i] != nullptr)
+			_inputMsg[i] = new MInputState(i, _emitter);
 
 	}
 
@@ -90,15 +90,13 @@ void InputManager::handleInput(){
 			break;			
 //Events for Controller recognize: connect and disconnect
 		case SDL_CONTROLLERDEVICEADDED:
-			addJoystick();
-			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 1));
+			addJoystick(event.cdevice.which);
+			_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 1));
 			break;
 		case SDL_CONTROLLERDEVICEREMOVED:
+			_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 0));
 			deleteJoystick(event.cdevice.which);
-			_myQueue.push_back(new MControllerState(BROADCAST, _emitter, event.cdevice.which, 0));
 			break;
-		
-		
 		default:
 			break;
 		}
@@ -115,8 +113,8 @@ void InputManager::handleInput(){
 	}
 
 	//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
-	for (int i = 0; i < _currentNPlayers; i++){
-		if (_inputMsg[i] != nullptr) {
+	for (int i = 0; i < MAX_PLAYERS; i++){
+		if (_inputMsg[i] != nullptr && _playerController[i] != nullptr) {
 			updateControllersState(_inputMsg[i]->getCInputState(),i);
 			_myQueue.push_back(_inputMsg[i]);
 		}
@@ -132,22 +130,22 @@ int InputManager::numMessages(){
 
 	int nMessages = 0;
 
-	for (int i = 0; i < _currentNPlayers; i++){
-		if (_inputMsg[i] != nullptr)
+	for (int i = 0; i < MAX_PLAYERS; i++){
+		if (_inputMsg[i] != nullptr && _playerController[i] != nullptr)
 			nMessages += (int)_inputMsg[i]->getNumMessages();
 	}
 	return nMessages;
 }
 
 //Put new Joystick and GameController into the arrays
-void InputManager::addJoystick(){
-	int joyStickId = _currentNPlayers;
+void InputManager::addJoystick(int w){
+	int joyStickId = w;
 	_playersJoystick[joyStickId] = (SDL_JoystickOpen(joyStickId));
 	if (_playersJoystick[joyStickId] == NULL && SDL_IsGameController(joyStickId)){
 		//ERROR MESSAGE
 	}
 	_playerController[joyStickId] = (SDL_GameControllerOpen(joyStickId));
-	_currentNPlayers++;
+	
 }
 
 //Delete the disconnected Joystick
@@ -155,8 +153,10 @@ void InputManager::deleteJoystick(int wich){
 	//Close opened Joysticks
 	if (_playersJoystick[wich] != NULL){
 		SDL_JoystickClose(_playersJoystick[wich]);
+		_playersJoystick[wich] = nullptr;
 		SDL_GameControllerClose(_playerController[wich]);
-		_currentNPlayers--;
+		_playerController[wich] = nullptr;
+		
 	}
 }
 
@@ -166,25 +166,25 @@ void InputManager::updateControllersState(ControllerInputState &cState, int id){
 	//Axis
 	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX) / PARSE_VALUE;
 	if (cState.Axis_LeftX > -DEAD_ZONE && cState.Axis_LeftX < DEAD_ZONE)
-		cState.Axis_LeftX = 0;
+		cState.Axis_LeftX = 0.0f;
 	cState.Axis_LeftY = -SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTY) / PARSE_VALUE;
 	if (cState.Axis_LeftY > -DEAD_ZONE && cState.Axis_LeftY < DEAD_ZONE)
-		cState.Axis_LeftY = 0;
+		cState.Axis_LeftY = 0.0f;
 	cState.Axis_RightX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTX) / PARSE_VALUE;
 	if (cState.Axis_RightX > -DEAD_ZONE && cState.Axis_RightX < DEAD_ZONE)
-		cState.Axis_RightX = 0;
+		cState.Axis_RightX = 0.0f;
 	cState.Axis_RightY = -SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_RIGHTY) / PARSE_VALUE;
 	if (cState.Axis_RightY > -DEAD_ZONE && cState.Axis_RightY < DEAD_ZONE)
-		cState.Axis_RightY = 0;
+		cState.Axis_RightY = 0.0f;
 
 
 	//Triggers
 	cState.Trigger_Left = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERLEFT) / PARSE_VALUE;
 	if (cState.Trigger_Left < DEAD_ZONE)
-		cState.Trigger_Left = 0;
+		cState.Trigger_Left = 0.0f;
 	cState.Trigger_Right = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_TRIGGERRIGHT) / PARSE_VALUE;
 	if (cState.Trigger_Right < DEAD_ZONE)
-		cState.Trigger_Right = 0;
+		cState.Trigger_Right = 0.0f;
 
 	
 	//Main Buttons

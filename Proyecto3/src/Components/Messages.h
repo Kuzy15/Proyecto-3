@@ -70,11 +70,17 @@ typedef enum MessageType {
 	MSG_MOD_INVS,
 	MSG_MOD_VELBULLETS,
 	MSG_PASSMOD_DES,
+	MSG_ACTIVEMOD_RES,
+	MSG_RESTORE_LIFE_CARDS,
 	MSG_DAMAGE,
 	MSG_DASH,
 	MSG_DIE,
 	MSG_GUI_BUTTON_ACTIVE,
-	MSG_GUI_BUTTON_CLICK
+	MSG_GUI_BUTTON_CLICK,
+	MSG_BULLET_HIT,
+	MSG_DAMAGE_ARMATURE,
+	MSG_CAMERA_FOLLOW
+
 	
 
 	
@@ -129,7 +135,7 @@ private:
 class MInputState : public Message
 {
 public:
-	MInputState(int i,MessageDestination d, std::string emmiter);
+	MInputState(int i, std::string emmiter);
 	virtual ~MInputState();
 
 	ControllerInputState& getCInputState();
@@ -147,7 +153,7 @@ private:
 class MControllerState : public Message
 {
 public:
-	MControllerState(MessageDestination d, std::string emmiter, int id, int action);
+	MControllerState(std::string emmiter, int id, int action);
 	virtual ~MControllerState();
 
 	inline int getId(){ return _controllerId; };
@@ -176,6 +182,22 @@ private:
 	float _w;
 	float _h;
 };
+
+
+//--------------------------------------------------	CAMERA FOLLOW MSG		----------------------------------------------------------//
+class MCameraFollow : public Message
+{
+public:
+	MCameraFollow(Ogre::Vector3 newPos, std::string emmiter);
+	virtual ~MCameraFollow();
+
+	Ogre::Vector3 GetPos();
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	Ogre::Vector3 _nPos;
+};
+
 
 
 //--------------------------------------------------	INPUT PLAYER MSG	 (ABSTRACT)	----------------------------------------------------------//
@@ -360,14 +382,49 @@ private:
 class MDamage : public Message
 {
 public:
-	MDamage(float damage,std::string emmiter);
+	MDamage(float damage, std::string emmiter);
 	~MDamage();
 
 	inline float getDamage(){ return _damage; };
 
 private:
 	float _damage;
+	
 };
+
+
+class MBulletHit : public Message
+{
+public:
+	MBulletHit(float damage, uint16_t targetMask, std::string emmiter);
+	~MBulletHit();
+
+	inline float getDamage(){ return _damage; };
+	inline uint16_t getTargetMask(){ return _targetMask; }
+
+private:
+	float _damage;
+	uint16_t _targetMask;
+};
+
+
+//--------------------------------------------------	DAMAGE ARMATURE MSG		----------------------------------------------------------//
+
+class MDamageArmature : public Message
+{
+public:
+	MDamageArmature(float damage, uint16_t whereDmg, std::string emmiter);
+	~MDamageArmature();
+
+	inline float getDamage(){ return _damage; };
+	inline uint16_t getWhere(){ return _whereDmg; };
+
+private:
+	float _damage;
+	uint16_t _whereDmg;
+};
+
+
 
 
 
@@ -441,7 +498,6 @@ public:
 	MModInvisibility(std::string emmiter);
 	~MModInvisibility();
 
-private:
 };
 
 
@@ -458,7 +514,8 @@ private:
 
 
 
-//--------------------------------------------------	ACTIVE SKILL MSG		----------------------------------------------------------//
+//--------------------------------------------------	ACTIVE MSG		----------------------------------------------------------//
+
 //Dash Message
 class MDash : public Message{
 public:
@@ -469,6 +526,24 @@ public:
 private:
 	b2Vec2* _dashValue;
 	
+};
+
+
+
+//Hera´s Rune
+class MRestoreLifeCards : public Message{
+public:
+	MRestoreLifeCards(std::string emmiter);
+	~MRestoreLifeCards();
+
+};
+
+//reset mod
+class MReset : public Message{
+public:
+	MReset(std::string emmiter);
+	~MReset();
+
 };
 
 //--------------------------------------------------	DIE MSG		----------------------------------------------------------//
@@ -504,5 +579,6 @@ public:
 
 private:
 };
+
 
 #endif

@@ -42,7 +42,7 @@ std::string MString::getText() {
 
 //Input Message implementation 
 #pragma region InputStateMessage
-MInputState::MInputState(int i, MessageDestination d, std::string emmiter) :Message(MSG_INPUT_STATE, BROADCAST, emmiter), _controllerId(i){
+MInputState::MInputState(int i, std::string emmiter) :Message(MSG_INPUT_STATE, SCENE, emmiter), _controllerId(i){
 
 	
 }
@@ -58,7 +58,7 @@ ControllerInputState& MInputState::getCInputState(){
 #pragma endregion
 
 #pragma region ControllerStateMessage
-MControllerState::MControllerState(MessageDestination d, std::string emmiter, int id, int action) :Message(MSG_CONTROLLER_STATE, SCENE, emmiter){
+MControllerState::MControllerState(std::string emmiter, int id, int action) :Message(MSG_CONTROLLER_STATE, SCENE, emmiter){
 	_controllerId = id;
 	_action = action;
 }
@@ -74,7 +74,7 @@ MControllerState::~MControllerState(){
 
 #pragma region UpdateTransform Message 
 
-MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, float h, float w, std::string emmiter) :Message(MSG_UPDATE_TRANSFORM, BROADCAST, emmiter), _nPos(newPos), _nRotation(newRotation)
+MUpdateTransform::MUpdateTransform(Ogre::Vector3 newPos, float newRotation, float h, float w, std::string emmiter) :Message(MSG_UPDATE_TRANSFORM, ENTITY, emmiter), _nPos(newPos), _nRotation(newRotation)
 , _w(w), _h(h){
 
 };
@@ -83,6 +83,19 @@ MUpdateTransform::~MUpdateTransform() {
 }
 Ogre::Vector3 MUpdateTransform::GetPos() { return _nPos; }
 float MUpdateTransform::getRotation() { return _nRotation; }
+
+#pragma endregion
+
+#pragma region Camera Follow Message 
+
+MCameraFollow::MCameraFollow(Ogre::Vector3 newPos, std::string emmiter) :Message(MSG_CAMERA_FOLLOW, SCENE, emmiter), _nPos(newPos){
+
+};
+MCameraFollow::~MCameraFollow() {
+
+}
+Ogre::Vector3 MCameraFollow::GetPos() { return _nPos; }
+
 
 #pragma endregion
 
@@ -216,6 +229,23 @@ MDamage::~MDamage(){}
 #pragma endregion
 
 
+	//--------------------------------------------------	HERA´S RUNE MSG		----------------------------------------------------------//
+#pragma region Hera´s rune
+	//restore life of cards
+	MRestoreLifeCards::MRestoreLifeCards(std::string emmiter) : Message(MSG_RESTORE_LIFE_CARDS, ENTITY, emmiter){}
+	MRestoreLifeCards::~MRestoreLifeCards(){}
+
+#pragma endregion
+
+#pragma region Reset Actives
+
+	MReset::MReset(std::string emmiter) : Message(MSG_ACTIVEMOD_RES, ENTITY, emmiter){}
+	MReset::~MReset(){}
+
+#pragma endregion
+
+
+
 	//--------------------------------------------------	DIE MSG		----------------------------------------------------------//
 #pragma region Die
 
@@ -226,6 +256,24 @@ MDamage::~MDamage(){}
 
 #pragma endregion
 
+
+	//--------------------------------------------------	DAMAGE ARMATURE MSG		----------------------------------------------------------//
+#pragma region MDamageArmature
+
+	MDamageArmature::MDamageArmature(float damage, uint16_t mask, std::string emmiter) : Message(MSG_DAMAGE_ARMATURE, ENTITY, emmiter), _damage(damage), _whereDmg(mask){}
+	MDamageArmature::~MDamageArmature(){}
+
+#pragma endregion
+
+	//--------------------------------------------------	DAMAGE ARMATURE MSG		----------------------------------------------------------//
+#pragma region MBulletHit
+
+	MBulletHit::MBulletHit(float damage, uint16_t targetMask, std::string emmiter) : Message(MSG_BULLET_HIT, ENTITY, emmiter), _damage(damage), _targetMask(targetMask){}
+	MBulletHit::~MBulletHit(){}
+
+#pragma endregion
+
+	//-------------------------------------------------- GUI MSGS -----------------------------------------------------------------------------
 #pragma region Button Active
 	MButtonAct::MButtonAct(std::string emmiter, unsigned int index) :Message(MSG_GUI_BUTTON_ACTIVE, SCENE, emmiter), _activeIndex(index) {}
 	MButtonAct::~MButtonAct() {};
@@ -233,10 +281,7 @@ MDamage::~MDamage(){}
 #pragma endregion
 
 #pragma region Button Click
-	MButtonClick::MButtonClick(std::string emmiter):Message(MSG_GUI_BUTTON_CLICK, SCENE, emmiter) {};
+	MButtonClick::MButtonClick(std::string emmiter) :Message(MSG_GUI_BUTTON_CLICK, SCENE, emmiter) {};
 	MButtonClick::~MButtonClick() {};
 
 #pragma endregion
-
-
-

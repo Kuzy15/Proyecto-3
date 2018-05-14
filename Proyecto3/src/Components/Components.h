@@ -67,8 +67,10 @@ typedef enum ComponentType {
 	CMP_GUI_BUTTON,
 	CMP_GUI_P1GUI,
 	CMP_GUI_P2GUI,
-
-
+	CMP_HERA_RUNE,
+	CMP_HERIS_MARK,
+	CMP_PARTICLE_RENDER,
+	CMP_CAMERA_FOLLOW
 
 };
 
@@ -157,6 +159,43 @@ protected:
 	
 };
 
+//--------- PARTICLE RENDER COMPONENT ---------
+class CParticleRender : public CRender
+{
+public:
+
+	CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation);
+	~CParticleRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+private:
+	Ogre::ParticleSystem* _particleSystem;
+
+
+
+};
+
+//--------- RIBBON TRAIL RENDER COMPONENT ---------
+class CRibbonTrailRender : public CRender
+{
+public:
+
+	CRibbonTrailRender(Ogre::Vector3 pos, std::string id, std::string trail, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation);
+	~CRibbonTrailRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+private:
+	Ogre::RibbonTrail * trail;
+
+
+
+};
+
+
 //--------- MESH RENDER COMPONENT ---------
 class CMeshRender: public CRender
 {
@@ -195,6 +234,7 @@ public:
 	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	
 
 protected:
 	std::string _camName;
@@ -212,11 +252,16 @@ protected:
 class CActionCamera: public CCamera
 {
 public:
-	CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp);
+	CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, float xBoundary, float yBoundary, float minZ, float maxZ);
 	~CActionCamera();
 
 	virtual void getMessage(Message * m);
 	virtual void tick(float delta);
+	bool outOfBoundaries(const Ogre::Vector3 &pos);
+
+
+	const float BOUNDARY_X;
+	const float BOUNDARY_Y;
 
 	//Cache positions of the players
 	Ogre::Vector3 _pj1, _pj2;
@@ -234,7 +279,19 @@ private:
 
 };
 
+/*---------------------------------- CAMERA FOLLOW -----------------------------------*/
+class CCameraFollow : public GameComponent
+{
+public:
+	CCameraFollow(Entity * father);
+	virtual ~CCameraFollow();
 
+	virtual void getMessage(Message * m);
+	virtual void tick(float delta);
+private:
+	Ogre::Vector3 _nPos;
+
+};
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 
@@ -242,11 +299,16 @@ typedef enum FilterMask {
 	MASK_PLAYER = 0x0001,
 	MASK_STATIC_TERRAIN = 0x0002,
 	MASK_DINAMIC_TERRAIN = 0x0004,
-	MASK_BULLET = 0x0008,
-	MASK_HEAD = 0x0010,
-	MASK_CHEST = 0x0020,
-	MASK_LEGS = 0x0040,
-	MASK_FOOT_SENSOR = 0x0080 ////0000 0000 1000 0000
+	MASK_BULLET_0 = 0x0008,
+	MASK_HEAD_0 = 0x0010,
+	MASK_CHEST_0 = 0x0020,
+	MASK_LEGS_0 = 0x0040,
+	MASK_BULLET_1 = 0x1000,
+	MASK_HEAD_1 = 0x0800,
+	MASK_CHEST_1 = 0x0400,
+	MASK_LEGS_1 = 0x0200,
+	MASK_FOOT_SENSOR = 0x0080, 
+	MASK_DEATHZONE = 0x0100////mil es el ultimo usado, 0x1000
 	
 
 };
@@ -258,7 +320,7 @@ class CRigidBody : public GameComponent
 {
 public:
 
-	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory);
+	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId);
 	virtual ~CRigidBody();
 
 
@@ -309,7 +371,9 @@ public:
 	uint16_t getMyMask(){ return _myMask; }
 
 private:
-	
+
+	//void handleBulletHit();
+
 	uint16_t _myMask;
 
 	
@@ -329,6 +393,8 @@ public:
 	inline const int getId(){ return _id; };
 private:
 	int _id;
+	const float TRIGGER_DEADZONE = 100.0f;
+	const float AXIS_DEADZONE = 100.0f;
 };
 
 
@@ -422,8 +488,8 @@ public:
 	//Returns the current fire rate of the entity
 	inline float getFireRate(){ return _fireRate; };
 
-	inline void resetDamage(){ _auxDamageReset = _damage; };
-	inline void resetFireRate(){ _auxFireRateReset = _fireRate; };
+	inline void resetDamage(){ _damage = _auxDamageReset; };
+	inline void resetFireRate(){ _fireRate = _auxFireRateReset; };
 
 
 private:
@@ -453,7 +519,7 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-	inline void resetVelocity(){ _auxVelocityReset = _velocity; };
+	inline void resetVelocity(){ _velocity = _auxVelocityReset; };
 
 private:
 	E_BULLET _bulletType;		//The type of bullet who will be instantiated
@@ -493,15 +559,18 @@ private:
 class CAbility : public GameComponent
 {
 public:
-	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, uint16 mask); 
 	~CAbility();
 
-	
+	virtual void getMessage(Message* m);
 
 protected:
 	float _componentLife;
 	float _componentArmor;
 	float _coolDown;
+	uint16 _myMask;
+	float _limitLife;
+
 	
 };
 
@@ -509,7 +578,7 @@ protected:
 class CPSkillVidar : public CAbility
 {
 public:
-	CPSkillVidar(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillVidar(Entity * father); 
 	~CPSkillVidar();
 
 	virtual void tick(float delta);
@@ -523,7 +592,7 @@ public:
 class CPSkillHades : public CAbility
 {
 public:
-	CPSkillHades(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHades(Entity * father); 
 	~CPSkillHades();
 
 	virtual void tick(float delta);
@@ -538,7 +607,7 @@ public:
 class CPSkillUll : public CAbility
 {
 public:
-	CPSkillUll(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillUll(Entity * father); 
 	~CPSkillUll();
 
 	virtual void tick(float delta);
@@ -551,7 +620,7 @@ public:
 class CPSkillVali : public CAbility
 {
 public:
-	CPSkillVali(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillVali(Entity * father); 
 	~CPSkillVali();
 
 	virtual void tick(float delta);
@@ -565,7 +634,7 @@ public:
 class CPSkillHermes : public CAbility
 {
 public:
-	CPSkillHermes(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillHermes(Entity * father); 
 	~CPSkillHermes();
 
 	virtual void tick(float delta);
@@ -579,7 +648,7 @@ public:
 class CPSkillSyn : public CAbility
 {
 public:
-	CPSkillSyn(Entity * father); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CPSkillSyn(Entity * father); 
 	~CPSkillSyn();
 
 	virtual void tick(float delta);
@@ -590,11 +659,11 @@ public:
 
 
 /*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
-//Shu Headdress
+//Shu Headdress, dash
 class CShuHeaddress : public CAbility
 {
 public:
-	CShuHeaddress(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CShuHeaddress(Entity * father, int id); 
 	~CShuHeaddress();
 
 	virtual void tick(float delta);
@@ -612,11 +681,11 @@ private:
 
 };
 
-//Jonsu Moon
+//Jonsu Moon, give mov speed during 5s
 class CJonsuMoon : public CAbility
 {
 public:
-	CJonsuMoon(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CJonsuMoon(Entity * father, int id); 
 	~CJonsuMoon();
 
 	virtual void tick(float delta);
@@ -634,11 +703,11 @@ private:
 
 };
 
-//Khepri Beetle
+//Khepri Beetle, increase fireRate during 3s
 class CKhepriBeetle : public CAbility
 {
 public:
-	CKhepriBeetle(Entity * father, int id); //pasarle vida y armadura por parametros por si se quiere testear, sino se ponen a cholon y ni tan maaaaaal
+	CKhepriBeetle(Entity * father, int id); 
 	~CKhepriBeetle();
 
 	virtual void tick(float delta);
@@ -655,11 +724,57 @@ private:
 	bool isAvailable;
 
 };
+
+//Hera´s Rune, Restore life of Cards
+class CHeraRune : public CAbility
+{
+public:
+	CHeraRune(Entity * father, int id); 
+	~CHeraRune();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
+	bool isAvailable;
+
+
+};
+
+// Heris' Mark, plus 20% damage on next 10 attacks
+class CHerisMark: public CAbility
+{
+public:
+	CHerisMark(Entity * father, int id);
+	~CHerisMark();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+private:
+
+	int _playerId;
+	float _timeCounter;
+	float _initTime;
+	float _timeActiveLimit;
+	bool _isActive;
+	bool isAvailable;
+	int _availableShots;
+	bool _maxShots;
+
+};
+
+
+
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
 class CButtonGUI : public GameComponent
 {
 public:
-	CButtonGUI(Ogre::Overlay * overlay, Entity * father,  ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
 	~CButtonGUI();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
@@ -687,6 +802,7 @@ private:
 	const float _minClickTime = 500;
 };
 
+
 class CPlayerGUI
 {
 public:
@@ -700,9 +816,7 @@ protected:
 	Ogre::OverlayContainer * pHud;
 	Ogre::OverlayContainer * plifeBar;
 	Ogre::Overlay * pOverlay;
-
 };
-
 
 class CPlayer1GUI: public GameComponent, CPlayerGUI
 {
@@ -716,4 +830,5 @@ private:
 
 
 };
+
 #endif

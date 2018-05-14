@@ -25,6 +25,7 @@ void CollisionManager::BeginContact(b2Contact* c){
 	
 	void* bodyUserDataA = c->GetFixtureA()->GetBody()->GetUserData();
 	void* bodyUserDataB = c->GetFixtureB()->GetBody()->GetUserData();
+	
 	//Get the pointer to the first entity in the contact
 	if (bodyUserDataA){
 		MCollisionBegin* m = new MCollisionBegin(c->GetFixtureA()->GetFilterData().categoryBits, c->GetFixtureB()->GetFilterData().categoryBits, static_cast<Entity*>(bodyUserDataB), static_cast<Entity*>(bodyUserDataA)->getID());

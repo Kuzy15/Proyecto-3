@@ -27,6 +27,7 @@ public:
 	//Entity Management
 	void addEntity(Entity *);
 	void deleteEntity(std::string id);
+	void deleteAllEntities();
 
 	//Comunication methods
 	void getMessage(Message *);
@@ -55,7 +56,8 @@ protected:
 	void clearMessageQueue();
 	void deleteAllMessages();
 	//Messaging attributes and methods
-	std::list<Entity *> _entities;
+	std::map<std::string,Entity *> _entities;
+	std::list<Entity*> _menuEntities;
 	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
@@ -135,6 +137,7 @@ struct BattleState{
 };
 
 struct Player{
+	
 	Entity* entity = nullptr;
 	int controllerId = -1;
 	E_GOD god;
@@ -185,4 +188,96 @@ private:
 
 #pragma endregion
 
+
+#pragma region Main Menu Scene
+/*----------------------------- Main Menu SCENE -----------------------------*/
+
+//Basic class to debug and test the ogre implementation
+//and the behaviour of the components
+class MainMenuScene : public GameScene
+{
+public:
+	MainMenuScene(std::string id, Game * game);
+	virtual ~MainMenuScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+	
+
+};
+
+#pragma endregion
+
+#pragma region MultiplayerScene
+
+/*----------------------------- Multiplayer SCENE -----------------------------*/
+
+/*
+This scene subdivides in 2 diferente states:
+1. The "Champ Select", where the players choose the God and the deck.
+2. The "Map Select" state.
+3. The "Loading" .
+*/
+
+//Definition of the 3 possible states.
+typedef enum MultiplayerState{
+	MS_CHAMP_SELECT, MS_MAP_SELECT, MS_LOADING
+};
+
+
+class MultiplayerScene : public GameScene
+{
+public:
+	MultiplayerScene(std::string id, Game * game);
+	virtual ~MultiplayerScene();
+
+	virtual bool run();
+	virtual void dispatch();
+	virtual void processScnMsgs();
+
+private:
+
+	void showChampGui();
+	void showMapGui();
+	void godSelect(Message* m);
+	void mapSelect(Message* m);
+
+	MultiplayerState state;
+	std::vector<Player> players;
+	E_STAGE stage;
+
+};
+
+
+#pragma endregion
+
+#pragma region Loading Scene
+
+/*----------------------------- Loading SCENE -----------------------------*/
+//Scenes that show an loading screen between main scenes.
+
+class LoadingScene : public GameScene
+{
+public:
+	LoadingScene(std::string id, Game * game, GameScene* nextScene);
+	virtual ~LoadingScene();
+
+	virtual bool run();
+	virtual void dispatch();
+	virtual void processScnMsgs();
+
+private:
+	GameScene* _nextScene;
+	float _timeLimit;
+	float _counter;
+
+};
+
+
+#pragma endregion
 #endif

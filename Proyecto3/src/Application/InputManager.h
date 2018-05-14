@@ -8,7 +8,7 @@
 
 //Const values for the deadzones of the controller's joystick
 const float PARSE_VALUE = 100.0f;
-const float DEAD_ZONE = 5.0f;			//Then, the values are in the range [5,327] or [-5,-327]			
+const float DEAD_ZONE = 50.0f;			//Then, the values are in the range [5,327] or [-5,-327]			
 //Max player (no debe estar aquí)
 const int MAX_PLAYERS = 2;									
 
@@ -19,7 +19,7 @@ class InputManager
 private:
 	InputManager();
 	void putMessage(MInputState* newMessage);						//Push a new message to the local queue
-	void addJoystick();												//Add a new Controller
+	void addJoystick(int w);												//Add a new Controller
 	void deleteJoystick(int w);										//Delete a Controller
 	void updateControllersState(ControllerInputState &cState, int id);
 	
