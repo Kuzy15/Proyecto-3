@@ -50,11 +50,11 @@ typedef enum ComponentType {
 	CMP_STRING,
 	CMP_MESSAGE_SEND,
 	CMP_MESH_RENDER,
+	CMP_SKYPLANE_RENDER,
 	CMP_PHYSICS,
 	CMP_PLAYER_CH,
 	CMP_PLAYER_CONTROLLER,
 	CMP_LIFE,
-	//CMP_ARMOR,
 	CMP_MOVEMENT_SPEED,
 	CMP_JUMP,
 	CMP_BASIC_ATTACK,
@@ -191,8 +191,23 @@ public:
 private:
 	Ogre::RibbonTrail * trail;
 
+};
 
 
+//--------- SKYPLANE RENDER COMPONENT ---------
+class CSkyPlaneRender : public CRender
+{
+public:
+
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName);
+	~CSkyPlaneRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+private:
+	
 };
 
 
@@ -216,16 +231,7 @@ private:
 	
 	
 };
-/*//--------- PLANE RENDER COMPONENT ---------
-class CPlaneRender: public CRender
-{
-public:
-	CPlaneRender();
-	~CPlaneRender();
 
-private:
-
-};*/
 //---------   CAMERA COMPONENT   ---------
 class CCamera: public GameComponent
 {
@@ -532,28 +538,6 @@ private:
 };
 
 
-/////////iria debajo del de vida por mantener un orden
-/*-----------------------------	ARMOR COMPONENT	--------------------*/
-//Provides life to an entity
-/*class CArmor : public GameComponent
-{
-public:
-	CArmor(Entity * father, float iniArmor);
-	~CArmor();
-
-	virtual void tick(float delta);
-	virtual void getMessage(Message * m);
-
-	inline void setNewArmor(float BA){ _maxArmor += BA; _currentArmor += BA; };
-
-	//Returns the current armor of the entity
-	inline int getCurrentArmor(){ return _currentArmor; };
-
-private:
-	float _maxArmor;			//Max number for the armor
-	float _currentArmor;		//The current armor of the entity
-};
-*/
 
 /*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
 class CAbility : public GameComponent
