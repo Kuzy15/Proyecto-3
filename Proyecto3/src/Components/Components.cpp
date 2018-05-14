@@ -784,7 +784,7 @@ CLife::~CLife(){}
 
 void CLife::tick(float delta){
 	
-
+	std::cout << _currentLife << std::endl;
 }
 void CLife::getMessage(Message* m){
 
@@ -1231,8 +1231,11 @@ void CAbility::getMessage(Message *m){
 		if (mDA->getWhere() == _myMask){
 			_componentLife -= mDA->getDamage();
 			//Si se acaba la vida pues quitarlo o lo que sea. Aclarar el significado de armadura
-
-			pEnt->getMessage(new MDamage((mDA->getDamage() * ( 1 - _componentArmor / 100.0f)), pEnt->getID()));
+			float dmg = mDA->getDamage();
+			if (_componentLife > 0){
+				dmg = mDA->getDamage() * (1 - _componentArmor / 100.0f);
+			}
+			pEnt->getMessage(new MDamage(dmg, pEnt->getID()));
 		}
 		break;
 	}
@@ -1253,6 +1256,28 @@ void CArmor::getMessage(Message* m){}
 //Passive Skill Component
 #pragma region CPSkill Component
 
+GameComponent* createPassiveAbilityEmpty(Entity* father, int id){ return new CPSkillEmpty(father); }
+CPSkillEmpty::CPSkillEmpty(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 0, 0, MASK_LEGS_0){
+
+}
+CPSkillEmpty::~CPSkillEmpty(){}
+
+void CPSkillEmpty::tick(float delta){}
+void CPSkillEmpty::getMessage(Message* m){
+	
+}
+
+GameComponent* createActiveAbilityEmpty(Entity* father, int id){ return new CASkillEmpty(father); }
+CASkillEmpty::CASkillEmpty(Entity * father) :CAbility(CMP_HERA_RUNE, father, 0, 0, MASK_HEAD_0){
+
+}
+CASkillEmpty::~CASkillEmpty(){}
+
+void CASkillEmpty::tick(float delta){}
+void CASkillEmpty::getMessage(Message* m){
+
+}
+
 
 ///invisibility
 GameComponent* createAbilityVidar(Entity* father, int id){ return new CPSkillVidar(father); }
@@ -1266,7 +1291,7 @@ void CPSkillVidar::getMessage(Message* m){
 	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
 		_componentLife += (_componentLife / 2);
 	}
-	
+	CAbility::getMessage(m);
 }
 
 
@@ -1285,6 +1310,7 @@ void CPSkillHades::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
@@ -1305,6 +1331,7 @@ void CPSkillUll::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
@@ -1323,6 +1350,7 @@ void CPSkillVali::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
@@ -1341,6 +1369,7 @@ void CPSkillHermes::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
@@ -1359,6 +1388,7 @@ void CPSkillSyn::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 #pragma endregion
@@ -1388,6 +1418,7 @@ void CShuHeaddress::getMessage(Message* m)
 			}
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
@@ -1449,6 +1480,7 @@ void CJonsuMoon::getMessage(Message* m)
 			}
 		}
 	}
+	CAbility::getMessage(m);
 }
 #pragma endregion
 
@@ -1500,6 +1532,7 @@ void CKhepriBeetle::getMessage(Message* m)
 			}
 		}
 	}
+	CAbility::getMessage(m);
 }
 #pragma endregion
 
@@ -1544,6 +1577,7 @@ void CHeraRune::getMessage(Message* m)
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 #pragma endregion
 
@@ -1620,6 +1654,7 @@ void CHerisMark::getMessage(Message* m)
 		}
 
 	}
+	CAbility::getMessage(m);
 
 }
 #pragma endregion
