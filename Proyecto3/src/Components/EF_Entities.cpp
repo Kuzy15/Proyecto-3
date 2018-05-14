@@ -25,7 +25,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	Ra->addComponent(new CCameraFollow(Ra));
@@ -68,7 +68,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	AhPuch->addComponent(new CCameraFollow(AhPuch));
@@ -104,7 +104,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 	
 	//CameraFollow
 	Zeus->addComponent(new CCameraFollow(Zeus));
@@ -142,7 +142,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER));
+	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	Hachiman->addComponent(new CCameraFollow(Hachiman));
@@ -298,7 +298,7 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 
 std::vector<Entity*>* createStageTemple(GameScene* s){
 
-	std::vector<Entity*> entities;
+	std::vector<Entity*>* entities = new std::vector<Entity*>();
 
 	s->getSceneManager()->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
@@ -400,7 +400,7 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	entities->push_back(gate1);*/
 
 
-	return &entities;
+	return entities;
 
 }
 
@@ -594,10 +594,10 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	Entity * tree7 = new Entity("Tree_07", s);
 	tree7->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
 	entities->push_back(tree7);
-
+	*/
 	Entity * tree8 = new Entity("Tree_08", s);
 	tree8->addComponent(new CMeshRender({ -77, -12, -10 }, "Arbol2.mesh", tree8, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
-*/
+
 
 	entities->push_back(tree8);
 

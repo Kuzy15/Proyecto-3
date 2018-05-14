@@ -66,7 +66,7 @@ Game::Game(){
 	 initOgre();
 
 
-	 std::vector<Player> players(2);
+	 std::vector<Player>* players = new std::vector<Player>(2);
 
 	 players->at(0).controllerId = 0;
 	 players->at(0).god = EG_HACHIMAN;
