@@ -794,6 +794,7 @@ void CLife::getMessage(Message* m){
 		if (_currentLife <= 0.0f){
 			pEnt->getMessage(new MDie(pEnt->getID()));
 		}
+		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
 		break;
 	default:
 		break;
@@ -1681,9 +1682,52 @@ void CButtonGUI::getMessage(Message * me)
 
 #pragma endregion
 #pragma region PlayerGUI
-CPlayerGUI::CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName) : pOverlay(ov)
+CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std::string characterName) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
 {
+	std::string player;
+	if (plyer == P1)player = "Player1";
+	else player = "Player2";
+
+
+	//General container of the whole Player HUD
+	pHud = pOverlay->getChild("GUI/" + player);
+
+	//Specific reference to the lifebar and active bar, which we'll be using quite often
+	plifeBar = pOverlay->getChild("GUI/" + player + "/LifeBar");
+	pActiveBar = pOverlay->getChild("GUI/" + player + "ActiveContainer/LifeBar");
+
+	LIFE_MAX_WIDTH = plifeBar->getWidth();
+	LIFE_MIN_WIDTH = 15;
+
+
 }
+CPlayerGUI::~CPlayerGUI() {}
+
+void CPlayerGUI::tick(float delta) {
+
+
+}
+void CPlayerGUI::getMessage(Message * m) {
+	if (m->getType() == MSG_LIFE_STATE)
+		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+
+
+}
+void CPlayerGUI::updateLifebar(size_t val) {
+	if (p == P1) {
+		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
+		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
+		plifeBar->setWidth(newVal);
+	}
+	else {
+
+
+
+
+	}
+
+}
+
 
 
 #pragma endregion

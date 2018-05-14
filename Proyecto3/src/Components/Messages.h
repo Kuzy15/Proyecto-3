@@ -79,7 +79,8 @@ typedef enum MessageType {
 	MSG_GUI_BUTTON_CLICK,
 	MSG_BULLET_HIT,
 	MSG_DAMAGE_ARMATURE,
-	MSG_CAMERA_FOLLOW
+	MSG_CAMERA_FOLLOW,
+	MSG_LIFE_STATE,
 
 	
 
@@ -574,11 +575,20 @@ private:
 class MButtonClick: public Message
 {
 public:
-	MButtonClick(std::string message);
+	MButtonClick(std::string emmiter);
 	~MButtonClick();
 
 private:
 };
-
+//--------------------------------------------------	LIFE STATE MSG		----------------------------------------------------------//
+class MLifeState: public Message
+{
+public:
+	MLifeState(std::string emmiter, size_t lifeValue);
+	~MLifeState();
+	size_t getLifeState();
+private:
+	size_t _life;
+};
 
 #endif

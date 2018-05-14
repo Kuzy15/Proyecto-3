@@ -285,3 +285,10 @@ MDamage::~MDamage(){}
 	MButtonClick::~MButtonClick() {};
 
 #pragma endregion
+
+#pragma region Life State
+	MLifeState::MLifeState(std::string emmiter, size_t lifeval) : Message(MSG_LIFE_STATE, SCENE, emmiter), _life(lifeval) {};
+	MLifeState::~MLifeState() {};
+	size_t MLifeState::getLifeState() { return _life; };
+
+#pragma endregion
