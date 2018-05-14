@@ -1724,6 +1724,12 @@ void CPlayerGUI::tick(float delta) {
 
 }
 void CPlayerGUI::getMessage(Message * m) {
+	/*
+		This must be modyfied, as it takes EVERY life state update without knowing if the sender
+		is the player that this part of the HUD tracks.
+		TODO: Change the implementation so it filters the life state messages
+	
+	*/
 	if (m->getType() == MSG_LIFE_STATE)
 		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
 
