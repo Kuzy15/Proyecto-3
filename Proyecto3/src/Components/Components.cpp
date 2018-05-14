@@ -230,8 +230,22 @@ Ogre::Vector3 CMeshRender::getSize(){
 }
 
 
-/*------------------------- RENDER COMPONENTS------------------------------------*/
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+	
+	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
+		materialName, scale, 1, true, bow, 100, 100); 
+	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
+	// bow = 0, xsegments = 1, ysegments = 1
+
+}
+CSkyPlaneRender::~CSkyPlaneRender(){}
+
+
+void CSkyPlaneRender::tick(float delta){}
+void CSkyPlaneRender::getMessage(Message * m){}
+
 #pragma endregion
+/*------------------------- RENDER COMPONENTS------------------------------------*/
 #pragma region particleRenderComponent
 
 //PARTICLES
