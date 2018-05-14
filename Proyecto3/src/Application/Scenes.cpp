@@ -2,6 +2,23 @@
 #include <OgreViewport.h>
 #include <OgreRenderWindow.h>
 #include "DebugNew.h"
+
+//Debug
+#ifdef _DEBUG
+#include <iostream>
+#define new DEBUG_NEW
+#endif
+
+
+#include <OgreOverlay.h>
+#include <OgreOverlayManager.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayContainer.h>
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
+
+
 //Later removable
 #include <OgreCamera.h>
 #include <OgreNode.h>
@@ -17,7 +34,7 @@
 #include "Messages.h"
 #include "Scenes.h"
 #include "DebugDraw.h"
-//Debug 
+//Debug
 #ifdef _DEBUG
 #include <iostream>
 #define new DEBUG_NEW
@@ -25,10 +42,11 @@
 
 DebugDraw dInstance;
 
-#pragma region GameScene 
+#pragma region GameScene
 
 GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),scnMgr(0){
-	scnMgr = Game::getInstance()->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	scnMgr = pGame->getRoot()->createSceneManager(Ogre::ST_GENERIC);
+	scnMgr->addRenderQueueListener(Game::getInstance()->getOverlaySystem());
 	nMessages = -1;
 }
 GameScene::~GameScene()
@@ -41,13 +59,15 @@ GameScene::~GameScene()
 	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
-	
+
 	destroyBodies();
+
+	scnMgr->removeRenderQueueListener(Game::getInstance()->getOverlaySystem());
 
 
 	/*if (scnMgr != nullptr)
 		Game::getInstance()->getRoot()->destroySceneManager(scnMgr);*/
-	
+
 }
 
 void GameScene::clearDebugDraw(){ dInstance.clear(); }
@@ -56,7 +76,7 @@ bool GameScene::updateEnts(float delta){
 		if(ent.second != NULL)ent.second->tick(delta);
 	}
 	return true;
-} 
+}
 
 Ogre::SceneManager * GameScene::getSceneManager(){
 
@@ -71,7 +91,7 @@ void GameScene::getMessage(Message * m){
 	_messages.push_back(m);
 }
 void GameScene::addEntity(Entity * ent){
-	
+
 	_entities.emplace(std::pair<std::string,Entity*>(ent->getID(),ent));
 }
 void GameScene::dispatch() {
@@ -101,7 +121,7 @@ void GameScene::dispatch() {
 //Message disposal to use just before finishing the current scene loop.
 // It uses the variable nMessages, that is set in the dispatch function.
 void GameScene::clearMessageQueue() {
-	
+
 	for (int i = 0; i < nMessages; i++) {
 		Message * aux = _messages.front();
 		delete aux;
@@ -142,7 +162,7 @@ void GameScene::deleteAllEntities(){
 }
 
 void GameScene::deleteEntity(std::string id){
-	
+
 
 	std::map<std::string, Entity*>::iterator it;
 	Entity* aux;
@@ -187,12 +207,11 @@ void GameScene::destroyEntities(){
 
 #pragma region BasicScene
 /*BASIC SCENE TO TEST SCENE IMPLEMENTATION.
-//BUILDS A OGREHEAD BUT DOES NOT INCLUDE IT IN THE 
+//BUILDS A OGREHEAD BUT DOES NOT INCLUDE IT IN THE
 //SCENE ENTITY LIST. IT IS ONLY IN OGRE ENTITIES LIST.
 //ALSO CREATS A BASIC ENTITY WITH A stringComponent attached*/
 BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
-	
-	
+	i = 0;
 
 	//Debug draw
 	dInstance.setSceneManager(scnMgr);
@@ -203,10 +222,10 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	light = scnMgr->createLight("MainLight");
 	light->setPosition(20, 80, 50);
-	
+
 
 	//SCENE DEBUG
-	
+
 	Entity * cam = new Entity ("Camera1", this);
 	cam->addComponent(
 		new CActionCamera(cam, scnMgr, vp,100,100, 40,100)
@@ -215,15 +234,12 @@ BasicScene::BasicScene(std::string id, Game * game): GameScene(id, game) {
 
 	Ogre::Vector3 v(1.0f, 1.0f, 1.0f);
 
-
-
-
 }
 
 
 BasicScene::~BasicScene(){
-	
-	
+
+
 
 	//delete light;
 
@@ -253,7 +269,7 @@ bool BasicScene::run(){
 
 	//Delete box2d bodies of the removed entities
 	destroyBodies();
-	
+
 
 	return aux;
 
@@ -277,7 +293,7 @@ void BasicScene::processScnMsgs()
 		it++;
 		_sceneMessages.pop_front();
 	}
-	
+
 };
 
 
@@ -285,10 +301,14 @@ void BasicScene::processScnMsgs()
 
 #pragma endregion
 
+void K() {
+
+	std::cout << "CCALLLBACKK " << std::endl;
+}
+
 #pragma region GamePlayScene
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
-	scnMgr = Game::getInstance()->getRoot()->createSceneManager(Ogre::ST_GENERIC);
 
 	//Debug draw
 #ifdef _DEBUG
@@ -304,14 +324,14 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	//Load the stage passed by parameter
 	loadStage();
 
-	
+
 
 	//Store and configure the players structure
 	_players = players;
 	std::vector<Ogre::Vector3> playersPos(2);
 	playersPos[0] = Ogre::Vector3(20.0f, 0.0f, 0.0f);
 	playersPos[1] = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
-	
+
 	int i = 0;
 	for (Player p : _players){
 		p.entity = EntityFactory::getInstance().createGod(p.god, this, playersPos[i],p.controllerId);
@@ -325,13 +345,40 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	//Set the starter state to SETUP
 	_currState = GS_SETUP;
 	_prepareCounter = SDL_GetTicks();
+
+
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("GUI");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+
+	Entity * k = new Entity("Holo", this);
+
+
+	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
+	addEntity(k);
+	// Create a panel
+	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
+
+	std::cout << e->getName() << std::endl;
+	overlay->show();
+
 }
 GamePlayScene::~GamePlayScene(){
 	_players.clear();
 
 }
 bool GamePlayScene::run(){
-	
+
 
 	//Take messages from input
 	InputManager::getInstance().getMessages(_messages);
@@ -355,7 +402,7 @@ bool GamePlayScene::run(){
 	case GS_END:
 		endPhase();
 	case GS_STOPPED:
-		
+
 		break;
 	default:
 		break;
@@ -373,8 +420,15 @@ bool GamePlayScene::run(){
 	//Delete box2d bodies of the removed entities
 	destroyBodies();
 
-	
+	overlay->show();
+
+
 	return aux;
+
+
+
+
+
 }
 
 void GamePlayScene::dispatch(){
@@ -409,31 +463,17 @@ void GamePlayScene::processScnMsgs(){
 }
 
 void GamePlayScene::preparePhase(){
-	
+
 
 	float currentTime = SDL_GetTicks();
 	if (currentTime - _prepareCounter > _prepareLimitTime)
 		_currState = GS_BATTLE;
-	
-
-
-
-
-
-
-
-
-
-
-
-		
-
 
 		bool playersAreReady = true;
 		for(int i = 0; i < _nPlayers; i++){
 			playersAreReady = playersAreReady & _pReady[i];
 		}
-		
+
 		if (playersAreReady){
 			_currState = GS_BATTLE;
 		}
@@ -537,7 +577,7 @@ void GamePlayScene::playerDied(std::string e){
 	}
 	else
 		changePhase(GS_SETUP);
-	
+
 
 }
 #pragma endregion
@@ -595,7 +635,7 @@ void MainMenuScene::processScnMsgs()
 
 #pragma endregion
 
-#pragma region Multiplayer Scene 
+#pragma region Multiplayer Scene
 //The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
 MultiplayerScene::MultiplayerScene(std::string id, Game * game) : GameScene(id, game) {
 
@@ -606,8 +646,8 @@ MultiplayerScene::MultiplayerScene(std::string id, Game * game) : GameScene(id, 
 	players = std::vector<Player>(2);
 	players[0].controllerId = 0;
 	players[1].controllerId = 1;
-	
-	
+
+
 }
 
 
@@ -651,7 +691,7 @@ void MultiplayerScene::processScnMsgs()
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
 		Message* m = (*it);
-		
+
 		switch(state){
 		case MS_CHAMP_SELECT:
 			godSelect(m);
@@ -682,7 +722,7 @@ void MultiplayerScene::mapSelect(Message* m){};
 
 #pragma endregion
 
-#pragma region Loading Scene 
+#pragma region Loading Scene
 //The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
 LoadingScene::LoadingScene(std::string id, Game * game, GameScene* nextScene) : GameScene(id, game) {
 
@@ -700,10 +740,10 @@ LoadingScene::~LoadingScene(){
 
 
 bool LoadingScene::run(){
-	
+
 	float currentTime = SDL_GetTicks();
-	
-	
+
+
 	if (currentTime - _counter > _timeLimit){
 
 	}

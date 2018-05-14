@@ -1,11 +1,14 @@
 #ifndef SCENES_H
 #define SCENES_H
+#include <OgreTextAreaOverlayElement.h>
+
 class Entity;
 class Message;
 class Game;
 class b2Body;
 enum E_GOD;
 enum E_STAGE;
+
 
 
 
@@ -63,11 +66,12 @@ protected:
 	//Basic Ogre atributes common to every scene
 	Ogre::SceneManager * scnMgr;
 	Ogre::Viewport * vp;
+	Ogre::Overlay* overlay;
+
 
 	//List of bodies to destruct at the end of the frame.
 	void destroyBodies();
 	void destroyEntities();
-
 
 };
 
@@ -92,6 +96,9 @@ public:
 
 private:
 	Ogre::Light * light;
+	int i;
+	Ogre::TextAreaOverlayElement* textArea;
+	Ogre::OverlayContainer* panel;
 	
 };
 
@@ -174,6 +181,7 @@ private:
 
 	float _prepareCounter;
 	float _prepareLimitTime;
+
 
 };
 

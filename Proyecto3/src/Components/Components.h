@@ -4,6 +4,7 @@
 #define COMPONENTS_H
 
 #include <Ogre.h>
+#include <OgreOverlay.h>
 #include <string>
 #include <list>
 #include <Box2D.h>
@@ -12,6 +13,9 @@
 class Entity;
 class Message;
 typedef enum E_BULLET;
+typedef void ButtonCallback();
+
+
 
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
@@ -46,11 +50,11 @@ typedef enum ComponentType {
 	CMP_STRING,
 	CMP_MESSAGE_SEND,
 	CMP_MESH_RENDER,
+	CMP_SKYPLANE_RENDER,
 	CMP_PHYSICS,
 	CMP_PLAYER_CH,
 	CMP_PLAYER_CONTROLLER,
 	CMP_LIFE,
-	//CMP_ARMOR,
 	CMP_MOVEMENT_SPEED,
 	CMP_JUMP,
 	CMP_BASIC_ATTACK,
@@ -65,12 +69,13 @@ typedef enum ComponentType {
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
+	CMP_GUI_BUTTON,
+	CMP_GUI_P1GUI,
+	CMP_GUI_P2GUI,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
 	CMP_CAMERA_FOLLOW
-
-
 
 };
 
@@ -191,8 +196,23 @@ public:
 private:
 	Ogre::RibbonTrail * trail;
 
+};
 
 
+//--------- SKYPLANE RENDER COMPONENT ---------
+class CSkyPlaneRender : public CRender
+{
+public:
+
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName);
+	~CSkyPlaneRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+private:
+	
 };
 
 
@@ -216,16 +236,7 @@ private:
 	
 	
 };
-/*//--------- PLANE RENDER COMPONENT ---------
-class CPlaneRender: public CRender
-{
-public:
-	CPlaneRender();
-	~CPlaneRender();
 
-private:
-
-};*/
 //---------   CAMERA COMPONENT   ---------
 class CCamera: public GameComponent
 {
@@ -532,28 +543,6 @@ private:
 };
 
 
-/////////iria debajo del de vida por mantener un orden
-/*-----------------------------	ARMOR COMPONENT	--------------------*/
-//Provides life to an entity
-/*class CArmor : public GameComponent
-{
-public:
-	CArmor(Entity * father, float iniArmor);
-	~CArmor();
-
-	virtual void tick(float delta);
-	virtual void getMessage(Message * m);
-
-	inline void setNewArmor(float BA){ _maxArmor += BA; _currentArmor += BA; };
-
-	//Returns the current armor of the entity
-	inline int getCurrentArmor(){ return _currentArmor; };
-
-private:
-	float _maxArmor;			//Max number for the armor
-	float _currentArmor;		//The current armor of the entity
-};
-*/
 
 /*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
 class CAbility : public GameComponent
@@ -734,8 +723,6 @@ private:
 
 };
 
-
-
 //Hera´s Rune, Restore life of Cards
 GameComponent* createAbilityHeraRune(Entity* father, int id);
 class CHeraRune : public CAbility
@@ -754,8 +741,8 @@ private:
 	float _initTime;
 	bool isAvailable;
 
-};
 
+};
 
 // Heris' Mark, plus 20% damage on next 10 attacks
 GameComponent* createAbilityHerisMark(Entity* father, int id);
@@ -778,6 +765,69 @@ private:
 	bool isAvailable;
 	int _availableShots;
 	bool _maxShots;
+
+};
+
+
+
+/*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+class CButtonGUI : public GameComponent
+{
+public:
+	CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	~CButtonGUI();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	size_t getScnId();
+
+private:
+	void toggleClick(bool click);
+	void toggleActive(bool active);
+	bool canClick();
+	std::string materials[3];
+	Ogre::OverlayContainer * pContainer;
+	Ogre::Overlay * pOver;
+
+	bool _active;
+	bool _clicked;
+
+	//The id that the button will have in the scene
+	size_t _sceneId;
+	ButtonCallback * _callback;
+	Ogre::String _txt;
+
+
+
+	float _lastClick;
+	const float _minClickTime = 500;
+};
+
+
+class CPlayerGUI
+{
+public:
+	~CPlayerGUI();
+	virtual void updateLifebar() = 0;
+	virtual void updateActive() = 0;
+	void updatePassive();
+
+protected:
+	CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName);
+	Ogre::OverlayContainer * pHud;
+	Ogre::OverlayContainer * plifeBar;
+	Ogre::Overlay * pOverlay;
+};
+
+class CPlayer1GUI: public GameComponent, CPlayerGUI
+{
+public:
+	CPlayer1GUI();
+	~CPlayer1GUI();
+	virtual void updateLifebar();
+	virtual void updateActive();
+
+private:
+
 
 };
 

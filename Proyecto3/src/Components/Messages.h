@@ -50,7 +50,7 @@ struct ControllerInputState{
 
 #pragma endregion
 
-typedef enum MessageType{
+typedef enum MessageType {
 
 	MSG_STRING, MSG_INPUT_STATE,
 	MSG_CONTROLLER_STATE, MSG_UPDATE_TRANSFORM,
@@ -75,9 +75,12 @@ typedef enum MessageType{
 	MSG_DAMAGE,
 	MSG_DASH,
 	MSG_DIE,
+	MSG_GUI_BUTTON_ACTIVE,
+	MSG_GUI_BUTTON_CLICK,
 	MSG_BULLET_HIT,
 	MSG_DAMAGE_ARMATURE,
 	MSG_CAMERA_FOLLOW
+
 	
 
 	
@@ -510,7 +513,9 @@ private:
 
 
 
+
 //--------------------------------------------------	ACTIVE MSG		----------------------------------------------------------//
+
 //Dash Message
 class MDash : public Message{
 public:
@@ -554,6 +559,26 @@ private:
 	//float timeWhenDie
 };
 
+//--------------------------------------------------	BUTTON ACTIVE MSG		----------------------------------------------------------//
+class MButtonAct: public Message
+{
+public:
+	MButtonAct(std::string emmiter, unsigned int index);
+	~MButtonAct();
+	unsigned int getActiveButtonIndex();
+
+private:
+	unsigned int _activeIndex;
+};
+//--------------------------------------------------	BUTTON CLICK MSG		----------------------------------------------------------//
+class MButtonClick: public Message
+{
+public:
+	MButtonClick(std::string message);
+	~MButtonClick();
+
+private:
+};
 
 
 #endif

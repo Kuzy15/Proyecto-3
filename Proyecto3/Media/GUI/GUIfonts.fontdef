@@ -1,0 +1,7 @@
+GUI/ButtonText
+{
+	type 		truetype
+	source 		Old_News.ttf
+	size 		40
+	resolution 	96
+}

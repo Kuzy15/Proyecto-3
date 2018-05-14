@@ -425,6 +425,12 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	e1->addComponent(cM);
 	entities->push_back(e1);
 
+
+	Entity *sky = new Entity("sky", s);
+	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "mandelbrotSP"));
+	entities->push_back(sky);
+
+
 	Entity * Suelo = new Entity("ColliderSuelo_01", s);
 
 	Suelo->addComponent(new CRigidBody(Suelo, s->getGame()->getPhysicsWorld(), Ogre::Vector3(7 - cM->getSize().x / 2, -5, 0), 3, cM->getSize().x - 15, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
@@ -444,7 +450,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 
 
 	Entity * isla3 = new Entity("Suelo_03", s);
-	CMeshRender* cM3 = new CMeshRender({ -100, 0, 0 }, "IslaSecundaria1.mesh", isla3, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 70, 0 });
+	CMeshRender* cM3 = new CMeshRender({ -100, 0, 0 }, "IslaSecundaria1.mesh", isla3, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 0, 0 });
 	isla3->addComponent(cM3);
 	entities->push_back(isla3);
 
@@ -596,7 +602,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	tree7->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
 	entities->push_back(tree7);
 	*/
-	Entity * tree8 = new Entity("Tree_08", s);
+	/*Entity * tree8 = new Entity("Tree_08", s);
 	tree8->addComponent(new CMeshRender({ -77, -12, -10 }, "Arbol2.mesh", tree8, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
 
 

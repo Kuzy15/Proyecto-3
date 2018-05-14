@@ -8,6 +8,15 @@
 #include "DebugNew.h"
 #include "Scenes.h"
 
+
+#include <OgreOverlay.h>
+#include <OgreOverlayManager.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayContainer.h>
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
+
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
@@ -230,8 +239,22 @@ Ogre::Vector3 CMeshRender::getSize(){
 }
 
 
-/*------------------------- RENDER COMPONENTS------------------------------------*/
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+	
+	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
+		materialName, scale, 1, true, bow, 100, 100); 
+	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
+	// bow = 0, xsegments = 1, ysegments = 1
+
+}
+CSkyPlaneRender::~CSkyPlaneRender(){}
+
+
+void CSkyPlaneRender::tick(float delta){}
+void CSkyPlaneRender::getMessage(Message * m){}
+
 #pragma endregion
+/*------------------------- RENDER COMPONENTS------------------------------------*/
 #pragma region particleRenderComponent
 
 //PARTICLES
@@ -848,14 +871,12 @@ void CPlayerJump::getMessage(Message* m)
 
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
-
 		_timeCounter = SDL_GetTicks();
 		if (_nJumps < _maxJumps && ((_timeCounter - _lastTimeJump) > _jumpRate)){
 			//std::cout << _nJumps << std::endl;
 			_nJumps++;
 			pEnt->getMessage(new MRigidbodyJump(_jumpForce, pEnt->getID()));
 			_lastTimeJump = SDL_GetTicks();
-
 		}
 		break;
 	case MSG_COLLISION_TERRAIN:
@@ -1482,8 +1503,6 @@ void CKhepriBeetle::getMessage(Message* m)
 #pragma endregion
 
 
-
-
 #pragma region Hera´s Rune
 //Velocity improvement
 
@@ -1493,13 +1512,13 @@ CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 5
 	_coolDown = 10000.0f;
 	isAvailable = true;
 }
-CHeraRune::~CHeraRune(){}
+CHeraRune::~CHeraRune() {}
 
-void CHeraRune::tick(float delta){
+void CHeraRune::tick(float delta) {
 
-	if (!isAvailable){
+	if (!isAvailable) {
 		_timeCounter = SDL_GetTicks();
-		if ((_timeCounter - _initTime) >= _coolDown){
+		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
 	}
@@ -1507,20 +1526,20 @@ void CHeraRune::tick(float delta){
 
 void CHeraRune::getMessage(Message* m)
 {
-	if (m->getType() == MSG_INPUT_STATE){
+	if (m->getType() == MSG_INPUT_STATE) {
 		MInputState* inputM = static_cast<MInputState*>(m);
-		if (inputM->getId() == _playerId && isAvailable){
+		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Right_Shoulder == BTT_PRESSED) {
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
 			}
 		}
 	}
-	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS) {
 		_componentLife += (_componentLife / 2);
-		if (_componentLife > _limitLife){
+		if (_componentLife > _limitLife) {
 			_componentLife = _limitLife;
 		}
 	}
@@ -1529,6 +1548,7 @@ void CHeraRune::getMessage(Message* m)
 
 
 #pragma region Heris Mark
+
 GameComponent* createAbilityHerisMark(Entity* father, int id){ return new CHerisMark(father, id); }
 
 CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0), _playerId(id){
@@ -1540,15 +1560,15 @@ CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father
 	_availableShots = 10;
 	_maxShots = false;
 }
-CHerisMark::~CHerisMark(){}
+CHerisMark::~CHerisMark() {}
 
-void CHerisMark::tick(float delta){
+void CHerisMark::tick(float delta) {
 
-	
+
 	//When is active and timeActiveLimit completes, deactivate it and start cooldown
-	if (_isActive){
+	if (_isActive) {
 		_timeCounter = SDL_GetTicks();
-		if ((_timeCounter - _initTime) >= _timeActiveLimit){
+		if ((_timeCounter - _initTime) >= _timeActiveLimit) {
 			pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
 			_availableShots = 10;
 			_isActive = false;
@@ -1556,17 +1576,17 @@ void CHerisMark::tick(float delta){
 		}
 	}
 	//If is not active and is not available, we count the cooldown. Then turn it to available.
-	else if (!isAvailable){
+	else if (!isAvailable) {
 
 		_timeCounter = SDL_GetTicks();
-		if ((_timeCounter - _initTime) >= _coolDown){
+		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
 
 	}
 
 	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
-	if (_maxShots){
+	if (_maxShots) {
 		_isActive = false;
 		_availableShots = 10;
 		_maxShots = false;
@@ -1576,32 +1596,118 @@ void CHerisMark::tick(float delta){
 }
 void CHerisMark::getMessage(Message* m)
 {
-	if (m->getType() == MSG_INPUT_STATE){
+	if (m->getType() == MSG_INPUT_STATE) {
 		MInputState* inputM = static_cast<MInputState*>(m);
-		if (inputM->getId() == _playerId && isAvailable){
+		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Right_Shoulder == BTT_PRESSED) {
 				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar daño +20%
-				_initTime = SDL_GetTicks();		
+				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
 			}
 		}
 	}
-	
+
 	// Check if a shot has been made
-	else if (_isActive && m->getType() == MSG_SHOT){
+	else if (_isActive && m->getType() == MSG_SHOT) {
 		_availableShots--;
 		std::cout << _availableShots << "\n";
-		if (_availableShots == 0){
+		if (_availableShots == 0) {
 			_maxShots = true;
 			std::cout << "max" << "\n";
 		}
-		
+
 	}
 
 }
 #pragma endregion
+
+/*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+#pragma region GUI COMPONENTS
+#pragma region Button
+CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father), _clicked(false) {
+	pOver = overlay;
+	materials[0] = "GUI/Button/Idle";
+	materials[1] = "GUI/Button/Active";
+	materials[2] = "GUI/Button/Click";
+	
+	_sceneId = sceneId;
+	_callback = cb;
+
+	_txt = buttonTxt;
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+
+	try {
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+
+}
+CButtonGUI::~CButtonGUI() 
+{
+
+}
+bool CButtonGUI::canClick() {
+
+	float act = SDL_GetTicks();
+
+	if (act - _lastClick > _minClickTime) {
+		_lastClick = act; 
+		return true;
+	}
+	else return false;
+}
+size_t CButtonGUI::getScnId() {
+	return _sceneId;
+}
+
+void CButtonGUI::tick(float delta) 
+{
+
+}
+void CButtonGUI::getMessage(Message * me)
+{
+	if (me->getType() == MSG_GUI_BUTTON_ACTIVE) 
+	{
+		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+			_active = true;
+			pContainer->setMaterialName(materials[1]);
+		}
+		else if (_active)
+		{
+			_active = false;
+			pContainer->setMaterialName(materials[0]);
+
+		}
+	}
+	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
+		pContainer->setMaterialName(materials[2]);
+		_clicked = true;
+		_callback();
+
+	}
+
+	
+}
+
+#pragma endregion
+#pragma region PlayerGUI
+CPlayerGUI::CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName) : pOverlay(ov)
+{
+}
+
+
+#pragma endregion
+
+
+#pragma endregion
+
+
+
 
 
 #pragma region Camera Follow

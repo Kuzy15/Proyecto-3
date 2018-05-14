@@ -7,9 +7,10 @@
 #include <OgreConfigFile.h>
 #include <OgreWindowEventUtilities.h>
 #include "irrKlang.h"
-
+#include <OgreOverlaySystem.h>
 
 using namespace irrklang;
+
 
 class GameScene;
 
@@ -17,10 +18,10 @@ class GameScene;
 
 //Game is a window event listener,
 //Therefore we can react to the window events
-class Game 
+class Game
 {
 
-public: 
+public:
 	Game();
 	~Game();
 	void loop();
@@ -31,7 +32,12 @@ public:
 	ISoundEngine* getSoundEngine();
 	b2World* getPhysicsWorld();
 
-	void changeScene(GameScene* newScene);
+	Ogre::OverlaySystem * getOverlaySystem();
+	void Game::changeScene(GameScene* s);
+	void setOverlaySystem(Ogre::OverlaySystem *);
+
+
+
 
 private:
 
@@ -44,6 +50,9 @@ private:
 	Ogre::ConfigFile cf;
 	//window
 	Ogre::RenderWindow * pWindow;
+
+	Ogre::OverlaySystem * pOverSyst;
+	Ogre::OverlayManager * pOverMan;
 
 	//Sound engine pointer
 	ISoundEngine* _soundEngine;
@@ -59,7 +68,7 @@ private:
 	float frameTime;
 	float accumulator;
 	float inputTime;
-	
+
 
 
 	//This will be removed. Just to test
