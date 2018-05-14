@@ -1255,7 +1255,8 @@ void CArmor::getMessage(Message* m){}
 
 
 ///invisibility
-CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25,MASK_LEGS_0){
+GameComponent* createAbilityVidar(Entity* father, int id){ return new CPSkillVidar(father); }
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0){
 	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 }
 CPSkillVidar::~CPSkillVidar(){}
@@ -1270,7 +1271,8 @@ void CPSkillVidar::getMessage(Message* m){
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100, MASK_LEGS_0){
+GameComponent* createAbilityHades(Entity* father, int id){ return new CPSkillHades(father); }
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_HADES, father, 25, 100, MASK_LEGS_0){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -1289,7 +1291,8 @@ void CPSkillHades::getMessage(Message* m){
 
 
 ///modify velocity of a god
-CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, MASK_LEGS_0){
+GameComponent* createAbilityUll(Entity* father, int id){ return new CPSkillUll(father); }
+CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_ULL, father, 100, 100, MASK_LEGS_0){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -1306,7 +1309,8 @@ void CPSkillUll::getMessage(Message* m){
 
 
 ///modify vel of bullets
-CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75, MASK_LEGS_0){
+GameComponent* createAbilityVali(Entity* father, int id){ return new CPSkillVali(father); }
+CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_VALI, father, 50, 75, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelBullets(pEnt->getID(), 10));
 }
 CPSkillVali::~CPSkillVali(){}
@@ -1323,7 +1327,8 @@ void CPSkillVali::getMessage(Message* m){
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25, MASK_LEGS_0){
+GameComponent* createAbilityHermes(Entity* father, int id){ return new CPSkillHermes(father); }
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_HERMES, father, 50, 25, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1340,7 +1345,8 @@ void CPSkillHermes::getMessage(Message* m){
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50, MASK_LEGS_0){
+GameComponent* createAbilitySyn(Entity* father, int id){ return new CPSkillSyn(father); }
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SYN, father, 50, 50, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1359,6 +1365,7 @@ void CPSkillSyn::getMessage(Message* m){
 
 #pragma region Shu Headdress
 //Dash
+GameComponent* createAbilityShuHeaddress(Entity* father, int id){ return new CShuHeaddress(father,id); }
 CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
 	_coolDown = 500.0f; //5 seconds
@@ -1395,6 +1402,8 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 
 #pragma region Jonsu Moon
 //Velocity improvement
+GameComponent* createAbilityJonsuMoon(Entity* father, int id){ return new CJonsuMoon(father, id); }
+
 CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 5000.0f; //5 seconds
@@ -1445,6 +1454,7 @@ void CJonsuMoon::getMessage(Message* m)
 
 #pragma region Khepri Beetle
 //Velocity improvement
+GameComponent* createAbilityKhepriBeetle(Entity* father, int id){ return new CKhepriBeetle(father, id); }
 CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 3000.0f; //3 seconds
@@ -1496,7 +1506,9 @@ void CKhepriBeetle::getMessage(Message* m)
 
 #pragma region Hera´s Rune
 //Velocity improvement
-CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD_0), _playerId(id) {
+
+GameComponent* createAbilityHeraRune(Entity* father, int id){ return new CHeraRune(father, id); }
+CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_coolDown = 10000.0f;
 	isAvailable = true;
@@ -1537,8 +1549,11 @@ void CHeraRune::getMessage(Message* m)
 
 
 #pragma region Heris Mark
-CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0), _playerId(id) {
-	_timeCounter = _initTime = 0;
+
+GameComponent* createAbilityHerisMark(Entity* father, int id){ return new CHerisMark(father, id); }
+
+CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0), _playerId(id){
+	_timeCounter = _initTime = 0;	
 	_coolDown = 10000.0f;
 	_timeActiveLimit = 30000.0f;
 	isAvailable = true;
