@@ -13,6 +13,7 @@
 
 class Entity;
 class GameScene;
+class GameComponent;
 
 
 //Typedefs to name functions types for entity creation
@@ -20,6 +21,7 @@ class GameScene;
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD);
 typedef std::vector<Entity*>*(*createStageFunc)(GameScene* s);
+typedef GameComponent*(*createAbilityFunc)(Entity* father, int id);
 
 
 #pragma endregion
@@ -51,4 +53,8 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 std::vector<Entity*>* createStageTemple(GameScene* s);
 std::vector<Entity*>* createStageIslands(GameScene* s);
 #pragma endregion 
+
+#pragma region Abilities
+GameComponent* createAbility(Entity* father, int id);
+#pragma endregion
 #endif

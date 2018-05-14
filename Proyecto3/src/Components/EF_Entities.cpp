@@ -4,6 +4,7 @@
 #include "Scenes.h"
 #include "Game.h"
 #include "DebugNew.h"
+#include "EntityFactory.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -51,7 +52,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CPSkillUll(Ra,0));
 	//Ra->addComponent(new CPSkillVidar(Ra));
 	//Ra->addComponent(new CShuHeaddress(Ra, controllerId));
-	Ra->addComponent(new CHeraRune(Ra, controllerId));
+	Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
 	
 
 	return Ra;

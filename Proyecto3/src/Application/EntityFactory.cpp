@@ -1,6 +1,6 @@
 #include "EntityFactory.h"
 #include "DebugNew.h"
-
+#include <iostream>
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -28,6 +28,19 @@ EntityFactory::EntityFactory()
 	//Stages
 	_createStageFuncs.emplace(ES_TEMPLE, &createStageTemple);
 	_createStageFuncs.emplace(ES_ISLANDS, &createStageIslands);
+
+	//Abilities
+	_createAbilityFuncs.emplace(CMP_PASSIVE_VIDAR, &createAbilityVidar);
+	_createAbilityFuncs.emplace(CMP_PASSIVE_HADES, &createAbilityHades);
+	_createAbilityFuncs.emplace(CMP_PASSIVE_ULL, &createAbilityUll);
+	_createAbilityFuncs.emplace(CMP_PASSIVE_VALI, &createAbilityVali);
+	_createAbilityFuncs.emplace(CMP_PASSIVE_HERMES, &createAbilityHermes);
+	_createAbilityFuncs.emplace(CMP_PASSIVE_SYN, &createAbilitySyn);
+	_createAbilityFuncs.emplace(CMP_HERA_RUNE, &createAbilityHeraRune);
+	_createAbilityFuncs.emplace(CMP_SHU_HEADDRESS, &createAbilityShuHeaddress);
+	_createAbilityFuncs.emplace(CMP_JONSU_MOON, &createAbilityJonsuMoon);
+	_createAbilityFuncs.emplace(CMP_KHEPRI_BEETLE, &createAbilityKhepriBeetle);
+	_createAbilityFuncs.emplace(CMP_HERIS_MARK, &createAbilityHerisMark);
 }
 
 
@@ -59,8 +72,14 @@ Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos, 
 	
 	newEntity();
 
+	
 	createGodFunc c = _createGodFuncs.at(cE);
-	return c(to_string(_idCount), s, iniPos, controllerId);
+	if (c != nullptr)
+		return c(to_string(_idCount), s, iniPos, controllerId);
+
+#ifdef _DEBUG
+	std::cout << "No existe esa funcion de creacion" << std::endl;
+#endif
 	
 }
 
@@ -68,14 +87,35 @@ Entity* EntityFactory::createGod(E_GOD cE,  GameScene* s, Ogre::Vector3 iniPos, 
 Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD){
 
 	newEntity();
-
 	creteBulletFunc c = _createBulletFuncs.at(cE);
-	return c(to_string(_idCount), s, iniPos, angle, damage, iD);
+	if (c != nullptr)
+		return c(to_string(_idCount), s, iniPos, angle, damage, iD);
+
+#ifdef _DEBUG
+	std::cout << "No existe esa funcion de creacion" << std::endl;
+#endif
 }
 
 std::vector<Entity*>* EntityFactory::createStage(E_STAGE cE, GameScene* s){
 
 
 	createStageFunc c = _createStageFuncs.at(cE);
-	return c(s);
+	if (c != nullptr)
+		return c(s);
+#ifdef _DEBUG
+	std::cout << "No existe esa funcion de creacion" << std::endl;
+#endif
 }
+
+GameComponent* EntityFactory::createAbility(ComponentType cE, Entity* father, int id){
+
+	createAbilityFunc c = _createAbilityFuncs.at(cE);
+	if (c != nullptr)
+		return c(father, id);
+
+#ifdef _DEBUG
+	std::cout << "No existe esa funcion de creacion" << std::endl;
+#endif
+
+
+};

@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "EF_Entities.h"
+#include "Components.h"
 
 using namespace std;
 
@@ -18,7 +19,10 @@ public:
 	Entity* createGod(E_GOD god, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 
 	Entity* createBullet(E_BULLET bullet, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD);
+
 	std::vector<Entity*>* createStage(E_STAGE stage, GameScene* s);
+
+	GameComponent* createAbility(ComponentType ability, Entity* father, int id);
 
 	inline void newEntity(){ _idCount++ ; }
 
@@ -29,6 +33,7 @@ private:
 	map<E_GOD, createGodFunc> _createGodFuncs;
 	map<E_BULLET, creteBulletFunc> _createBulletFuncs;
 	map<E_STAGE, createStageFunc> _createStageFuncs;
+	map<ComponentType, createAbilityFunc> _createAbilityFuncs;
 
 
 	static EntityFactory* _instance;	//The unique instance of the class

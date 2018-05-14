@@ -56,7 +56,12 @@ typedef enum ComponentType {
 	CMP_BASIC_ATTACK,
 	CMP_CAMERA,
 	CMP_BULLET,
-	CMP_PASSIVE_SKILL,
+	CMP_PASSIVE_VIDAR,
+	CMP_PASSIVE_HADES,
+	CMP_PASSIVE_ULL,
+	CMP_PASSIVE_VALI,
+	CMP_PASSIVE_HERMES,
+	CMP_PASSIVE_SYN,
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
@@ -570,6 +575,7 @@ protected:
 };
 
 //invisibility
+GameComponent* createAbilityVidar(Entity* father, int id);
 class CPSkillVidar : public CAbility
 {
 public:
@@ -584,6 +590,7 @@ public:
 
 
 //Increase damage of a god
+GameComponent* createAbilityHades(Entity* father, int id);
 class CPSkillHades : public CAbility
 {
 public:
@@ -599,6 +606,7 @@ public:
 
 
 //Modify velocity of a god
+GameComponent* createAbilityUll(Entity* father, int id);
 class CPSkillUll : public CAbility
 {
 public:
@@ -612,6 +620,7 @@ public:
 };
 
 //modify vel of bullets
+GameComponent* createAbilityVali(Entity* father, int id);
 class CPSkillVali : public CAbility
 {
 public:
@@ -626,6 +635,7 @@ public:
 
 
 //Modify velocity and jump of a god
+GameComponent* createAbilityHermes(Entity* father, int id);
 class CPSkillHermes : public CAbility
 {
 public:
@@ -640,6 +650,7 @@ public:
 
 
 //Modify vel of fire rate
+GameComponent* createAbilitySyn(Entity* father, int id);
 class CPSkillSyn : public CAbility
 {
 public:
@@ -655,6 +666,7 @@ public:
 
 /*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
 //Shu Headdress, dash
+GameComponent* createAbilityShuHeaddress(Entity* father, int id);
 class CShuHeaddress : public CAbility
 {
 public:
@@ -677,6 +689,7 @@ private:
 };
 
 //Jonsu Moon, give mov speed during 5s
+GameComponent* createAbilityJonsuMoon(Entity* father, int id);
 class CJonsuMoon : public CAbility
 {
 public:
@@ -699,6 +712,7 @@ private:
 };
 
 //Khepri Beetle, increase fireRate during 3s
+GameComponent* createAbilityKhepriBeetle(Entity* father, int id);
 class CKhepriBeetle : public CAbility
 {
 public:
@@ -723,6 +737,7 @@ private:
 
 
 //Hera´s Rune, Restore life of Cards
+GameComponent* createAbilityHeraRune(Entity* father, int id);
 class CHeraRune : public CAbility
 {
 public:
@@ -743,6 +758,7 @@ private:
 
 
 // Heris' Mark, plus 20% damage on next 10 attacks
+GameComponent* createAbilityHerisMark(Entity* father, int id);
 class CHerisMark: public CAbility
 {
 public:
