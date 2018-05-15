@@ -1,3 +1,63 @@
+material Neto
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Chrono.png
+        rotate_anim 0.5
+        tex_address_mode clamp
+      }
+    }
+  }
+}
+material GUI/Button/Click
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Button_Click.png
+      }
+    }
+  }
+}
+
+material GUI/Button/Active
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Button_Active.png
+      }
+    }
+  }
+}
+material GUI/Button/Idle
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Button_Idle.png
+      }
+    }
+  }
+}
+
 material GUI/Base_Player {
   technique
   {
@@ -7,10 +67,144 @@ material GUI/Base_Player {
        texture_unit
        {
           texture PlayerGradient.png
+          tex_address_mode clamp
        }
     }
   }
 }
+material GUI/Base_Player2 {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture PlayerGradient.png
+          tex_address_mode clamp
+          scale -1 1
+       }
+    }
+  }
+}
+material GUI/RoundEmpty {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Round_Empty.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+material GUI/RoundFull {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Round_Full.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+
+
+
+
+
+//------------------------- PLAYER 1 MATERIALS ---------------------------------
+material GUI/Player1/LifeBar
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture LifeBar_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+
+  material GUI/Player1/LifeBar_BG
+  {
+    technique
+    {
+      pass
+      {
+        scene_blend alpha_blend
+         texture_unit
+         {
+            texture LifeBar_BG_P1.png
+            tex_address_mode clamp
+          }
+    }
+  }
+
+}
+material GUI/Player1/LifeFrame
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Life_Frame_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+material GUI/Player1/ActiveFrame
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Active_Frame_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+material GUI/Player1/ActiveBar
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture ActiveBar_P1.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
+
+
+
+//-----------------------------------------------------------------------------
+
 
 material GUI/PlayerInfo/LifeBorder
 {

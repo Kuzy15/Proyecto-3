@@ -4,6 +4,7 @@
 #define COMPONENTS_H
 
 #include <Ogre.h>
+#include <OgreOverlay.h>
 #include <string>
 #include <list>
 #include <Box2D.h>
@@ -12,6 +13,9 @@
 class Entity;
 class Message;
 typedef enum E_BULLET;
+typedef void ButtonCallback();
+
+
 
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
@@ -46,27 +50,32 @@ typedef enum ComponentType {
 	CMP_STRING,
 	CMP_MESSAGE_SEND,
 	CMP_MESH_RENDER,
+	CMP_SKYPLANE_RENDER,
 	CMP_PHYSICS,
 	CMP_PLAYER_CH,
 	CMP_PLAYER_CONTROLLER,
 	CMP_LIFE,
-	//CMP_ARMOR,
 	CMP_MOVEMENT_SPEED,
 	CMP_JUMP,
 	CMP_BASIC_ATTACK,
 	CMP_CAMERA,
 	CMP_BULLET,
-	CMP_PASSIVE_SKILL,
+	CMP_PASSIVE_VIDAR,
+	CMP_PASSIVE_HADES,
+	CMP_PASSIVE_ULL,
+	CMP_PASSIVE_VALI,
+	CMP_PASSIVE_HERMES,
+	CMP_PASSIVE_SYN,
 	CMP_SHU_HEADDRESS,
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
+	CMP_GUI_BUTTON,
+	CMP_GUI_PLAYERGUI,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
-	CMP_ANIMATION
-
-
-
+	CMP_ANIMATION,
+	CMP_CAMERA_FOLLOW
 };
 
 //Basic gameComponent class from which every other component will inherit.
@@ -151,6 +160,7 @@ protected:
 	Ogre::Vector3 _ogrepos;
 	Ogre::Quaternion _ogrequat;
 	Ogre::SceneNode* pChild;
+	float lastDir;
 	
 };
 
@@ -170,6 +180,39 @@ private:
 
 
 
+};
+
+//--------- RIBBON TRAIL RENDER COMPONENT ---------
+class CRibbonTrailRender : public CRender
+{
+public:
+
+	CRibbonTrailRender(Ogre::Vector3 pos, std::string id, std::string trail, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation);
+	~CRibbonTrailRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+private:
+	Ogre::RibbonTrail * trail;
+
+};
+
+
+//--------- SKYPLANE RENDER COMPONENT ---------
+class CSkyPlaneRender : public CRender
+{
+public:
+
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName);
+	~CSkyPlaneRender();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+private:
+	
 };
 
 
@@ -195,7 +238,6 @@ private:
 };
 
 
-
 //--------- ANIMATION COMPONENT ---------
 class CAnimation : public GameComponent
 {
@@ -210,7 +252,7 @@ public:
 	
 private:
 
-	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT);
+	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop);
 	bool _air;
 	Ogre::Entity * pOgreEnt;
 	//Animation pointers (Bot and Top)
@@ -236,16 +278,6 @@ private:
 
 };
 
-/*//--------- PLANE RENDER COMPONENT ---------
-class CPlaneRender: public CRender
-{
-public:
-	CPlaneRender();
-	~CPlaneRender();
-
-private:
-
-};*/
 //---------   CAMERA COMPONENT   ---------
 class CCamera: public GameComponent
 {
@@ -299,7 +331,19 @@ private:
 
 };
 
+/*---------------------------------- CAMERA FOLLOW -----------------------------------*/
+class CCameraFollow : public GameComponent
+{
+public:
+	CCameraFollow(Entity * father);
+	virtual ~CCameraFollow();
 
+	virtual void getMessage(Message * m);
+	virtual void tick(float delta);
+private:
+	Ogre::Vector3 _nPos;
+
+};
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 
@@ -307,11 +351,16 @@ typedef enum FilterMask {
 	MASK_PLAYER = 0x0001,
 	MASK_STATIC_TERRAIN = 0x0002,
 	MASK_DINAMIC_TERRAIN = 0x0004,
-	MASK_BULLET = 0x0008,
-	MASK_HEAD = 0x0010,
-	MASK_CHEST = 0x0020,
-	MASK_LEGS = 0x0040,
-	MASK_FOOT_SENSOR = 0x0080 ////0000 0000 1000 0000
+	MASK_BULLET_0 = 0x0008,
+	MASK_HEAD_0 = 0x0010,
+	MASK_CHEST_0 = 0x0020,
+	MASK_LEGS_0 = 0x0040,
+	MASK_BULLET_1 = 0x1000,
+	MASK_HEAD_1 = 0x0800,
+	MASK_CHEST_1 = 0x0400,
+	MASK_LEGS_1 = 0x0200,
+	MASK_FOOT_SENSOR = 0x0080, 
+	MASK_DEATHZONE = 0x0100////mil es el ultimo usado, 0x1000
 	
 
 };
@@ -323,7 +372,7 @@ class CRigidBody : public GameComponent
 {
 public:
 
-	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory);
+	CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId);
 	virtual ~CRigidBody();
 
 
@@ -396,6 +445,8 @@ public:
 	inline const int getId(){ return _id; };
 private:
 	int _id;
+	const float TRIGGER_DEADZONE = 100.0f;
+	const float AXIS_DEADZONE = 100.0f;
 };
 
 
@@ -533,28 +584,6 @@ private:
 };
 
 
-/////////iria debajo del de vida por mantener un orden
-/*-----------------------------	ARMOR COMPONENT	--------------------*/
-//Provides life to an entity
-/*class CArmor : public GameComponent
-{
-public:
-	CArmor(Entity * father, float iniArmor);
-	~CArmor();
-
-	virtual void tick(float delta);
-	virtual void getMessage(Message * m);
-
-	inline void setNewArmor(float BA){ _maxArmor += BA; _currentArmor += BA; };
-
-	//Returns the current armor of the entity
-	inline int getCurrentArmor(){ return _currentArmor; };
-
-private:
-	float _maxArmor;			//Max number for the armor
-	float _currentArmor;		//The current armor of the entity
-};
-*/
 
 /*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
 class CAbility : public GameComponent
@@ -575,7 +604,35 @@ protected:
 	
 };
 
+GameComponent* createPassiveAbilityEmpty(Entity* father, int id);
+class CPSkillEmpty : public CAbility
+{
+public:
+	CPSkillEmpty(Entity * father);
+	~CPSkillEmpty();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+GameComponent* createActiveAbilityEmpty(Entity* father, int id);
+class CASkillEmpty : public CAbility
+{
+public:
+	CASkillEmpty(Entity * father);
+	~CASkillEmpty();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
 //invisibility
+GameComponent* createAbilityVidar(Entity* father, int id);
 class CPSkillVidar : public CAbility
 {
 public:
@@ -590,6 +647,7 @@ public:
 
 
 //Increase damage of a god
+GameComponent* createAbilityHades(Entity* father, int id);
 class CPSkillHades : public CAbility
 {
 public:
@@ -605,6 +663,7 @@ public:
 
 
 //Modify velocity of a god
+GameComponent* createAbilityUll(Entity* father, int id);
 class CPSkillUll : public CAbility
 {
 public:
@@ -618,6 +677,7 @@ public:
 };
 
 //modify vel of bullets
+GameComponent* createAbilityVali(Entity* father, int id);
 class CPSkillVali : public CAbility
 {
 public:
@@ -632,6 +692,7 @@ public:
 
 
 //Modify velocity and jump of a god
+GameComponent* createAbilityHermes(Entity* father, int id);
 class CPSkillHermes : public CAbility
 {
 public:
@@ -646,6 +707,7 @@ public:
 
 
 //Modify vel of fire rate
+GameComponent* createAbilitySyn(Entity* father, int id);
 class CPSkillSyn : public CAbility
 {
 public:
@@ -661,6 +723,7 @@ public:
 
 /*-----------------------------	ACTIVE ABILITIES COMPONENTS	--------------------*/
 //Shu Headdress, dash
+GameComponent* createAbilityShuHeaddress(Entity* father, int id);
 class CShuHeaddress : public CAbility
 {
 public:
@@ -683,6 +746,7 @@ private:
 };
 
 //Jonsu Moon, give mov speed during 5s
+GameComponent* createAbilityJonsuMoon(Entity* father, int id);
 class CJonsuMoon : public CAbility
 {
 public:
@@ -705,6 +769,7 @@ private:
 };
 
 //Khepri Beetle, increase fireRate during 3s
+GameComponent* createAbilityKhepriBeetle(Entity* father, int id);
 class CKhepriBeetle : public CAbility
 {
 public:
@@ -726,9 +791,8 @@ private:
 
 };
 
-
-
 //Hera´s Rune, Restore life of Cards
+GameComponent* createAbilityHeraRune(Entity* father, int id);
 class CHeraRune : public CAbility
 {
 public:
@@ -745,10 +809,11 @@ private:
 	float _initTime;
 	bool isAvailable;
 
+
 };
 
-
 // Heris' Mark, plus 20% damage on next 10 attacks
+GameComponent* createAbilityHerisMark(Entity* father, int id);
 class CHerisMark: public CAbility
 {
 public:
@@ -769,6 +834,64 @@ private:
 	int _availableShots;
 	bool _maxShots;
 
+};
+
+
+
+/*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+class CButtonGUI : public GameComponent
+{
+public:
+	CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	~CButtonGUI();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	size_t getScnId();
+
+private:
+	void toggleClick(bool click);
+	void toggleActive(bool active);
+	bool canClick();
+	std::string materials[3];
+	Ogre::OverlayContainer * pContainer;
+	Ogre::Overlay * pOver;
+
+	bool _active;
+	bool _clicked;
+
+	//The id that the button will have in the scene
+	size_t _sceneId;
+	ButtonCallback * _callback;
+	Ogre::String _txt;
+
+
+
+	float _lastClick;
+	const float _minClickTime = 500;
+};
+
+enum guiPlayer{
+	P1 = 0, P2 = 1
+};
+class CPlayerGUI: public GameComponent
+{
+public:
+	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, std::string characterName);
+	~CPlayerGUI();
+	void updateLifebar(size_t val);
+	void updateActive();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	void updatePassive();
+
+private:
+	Ogre::OverlayContainer * pHud;
+	Ogre::OverlayContainer * pLowerHud;
+	Ogre::OverlayContainer * plifeBar;
+	Ogre::OverlayContainer * pActiveBar;
+	Ogre::Overlay * pOverlay;
+	size_t LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
+	guiPlayer p;
 };
 
 #endif

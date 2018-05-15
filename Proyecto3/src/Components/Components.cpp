@@ -8,6 +8,15 @@
 #include "DebugNew.h"
 #include "Scenes.h"
 
+
+#include <OgreOverlay.h>
+#include <OgreOverlayManager.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayContainer.h>
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
+
 //Debug 
 #ifdef _DEBUG
 #include <iostream>
@@ -89,6 +98,7 @@ CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
 {
 	pOgreSceneNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
 	pChild = pOgreSceneNode->createChildSceneNode();
+	lastDir = 3.0f;
 	
 }
 CRender::~CRender(){
@@ -113,21 +123,34 @@ void CRender::getMessage(Message *m) {
 			
 			//Where our mesh is relative to the parent.
 			//The real pos of the object is the parent pos + this variable, _ogrepos.
-			_ogrepos.x = w / 2;
-			_ogrepos.y = 0;	
-			_ogrepos.z = 0;
-
-			//Move the parent to the collider location of rotation.
-			pOgreSceneNode->setPosition(parentPos);			
-			//Move the child to the real pos of the collider.
-			pChild->setPosition(_ogrepos);
-
-			//Rotate the parent node the same degree as the collider.
 			float angleRad = msg->getRotation();
-
+			
 			if (angleRad != -1){
+				_ogrepos.x = w / 2;
+				_ogrepos.y = 0;	
+				_ogrepos.z = 0;
+
+				//Move the parent to the collider location of rotation.
+				pOgreSceneNode->setPosition(parentPos);			
+				//Move the child to the real pos of the collider.
+				pChild->setPosition(_ogrepos);
+
+				//Rotate the parent node the same degree as the collider.			
 				float grades = (angleRad * 180) / 3.14159265359;
 				pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
+			}
+			else{
+			
+				_ogrepos.x = w / 2;
+				_ogrepos.y = 0;
+				_ogrepos.z = 0;			
+
+				//Move the parent to the collider location of rotation.
+				pOgreSceneNode->setPosition(parentPos);
+				//Move the child to the real pos of the collider.
+				pChild->setPosition(_ogrepos);
+
+			
 			}
 
 		
@@ -176,6 +199,9 @@ void CMeshRender::tick(float delta) {
 }
 void CMeshRender::getMessage(Message * m) {
 	CRender::getMessage(m);
+	float angle;
+	float dir;
+	MPlayerShot* mPShot;
 	//TO DO: IMPLEMENT MESSAGE RECEIVEING TO MOVE.
 	switch (m->getType())
 	{
@@ -194,7 +220,25 @@ void CMeshRender::getMessage(Message * m) {
 			pOgreEnt->setVisible(true);
 		}
 		break;
+	case MSG_PLAYER_SHOT:
 
+		angle = pChild->getOrientation().getYaw().valueDegrees();
+
+		dir = static_cast<MPlayerShot*>(m)->getXValue();
+		if (dir != 0){
+			if (dir < 0){
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+			}
+			else{
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
+
+			}
+		}
+
+
+		break;
 	case MSG_PASSMOD_DES:
 		invisActive = false;
 		break;
@@ -249,7 +293,9 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameCompone
 	shootTop->setLoop(false);
 
 	currentBot = idleBot;
+	currentBot->setEnabled(true);
 	currentTop = idleTop;
+	currentTop->setEnabled(true);
 	nextBot = nullptr;
 	nextTop = nullptr;
 
@@ -279,30 +325,35 @@ void CAnimation::tick(float delta){
 	if (currentBot->getLength() == currentBot->getTimePosition()){
 		currentBot = idleBot;
 	}
-	std::cout << currentBot->getAnimationName() << std::endl;
+	//std::cout << currentBot->getAnimationName() << std::endl;
+	//std::cout << currentTop->getAnimationName() << std::endl;
 
-	if (nextBot != nullptr){
+	/*if (nextBot != nullptr){
 		currentBot = nextBot;
 		nextBot = nullptr;
 	}
-
-	if (!currentBot->getEnabled())
-		currentBot->setEnabled(true);
-	if (!currentTop->getEnabled())
-		currentTop->setEnabled(true);
+	*/
+	
 
 
 
-	currentBot->addTime(delta);
-	currentTop->addTime(delta);
+	currentBot->addTime(delta*2);
+	currentTop->addTime(delta*2);
 }
 void CAnimation::getMessage(Message * m){
+	MPlayerMoveX* mMoveX;
 	switch (m->getType())
 	{
 	case MSG_PLAYER_MOVE_X:
-		changeAnim(moveBot, moveTop);
-		if (_air)
-			changeAnim(airBot, airTop);
+		mMoveX = static_cast<MPlayerMoveX*>(m);
+		if (mMoveX->GetValue() != 0){
+			changeAnim(moveBot, moveTop, true);
+			/*if (_air)
+				changeAnim(airBot, airTop);		*/
+		}
+		else{
+			changeAnim(idleBot, idleTop, true);
+		}
 		break;
 
 	case MSG_PLAYER_JUMP:
@@ -332,34 +383,49 @@ void CAnimation::getMessage(Message * m){
 		break;
 	}
 }
+void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop){
 
-void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT){
-
-	if (nextB != nullptr){
-		if (nextB != currentBot)
-		{
-			if (nextB != jumpBot)
-				nextB->setLoop(true);
-			currentBot->setLoop(false);
-			nextBot = nextB;
-		}
+	if (nextB != currentBot){
+		currentBot->setEnabled(false);
+		nextB->setTimePosition(0);
+		nextB->setEnabled(true);
+		nextB->setLoop(loop);
+		currentBot = nextB;
 	}
-	if (nextT != nullptr){
-		if (nextT != currentTop)
-		{
-			if (nextT != shootTop)
-				nextT->setLoop(true);
-			currentTop->setLoop(false);
-			nextTop = nextT;
-		}
+	
+	if (nextT != currentTop){
+		currentTop->setEnabled(false);
+		nextT->setTimePosition(0);
+		nextT->setEnabled(true);
+		nextT->setLoop(loop);
+		currentTop = nextT;	
 	}
 }
+#pragma endregion
+
+
+
+#pragma region Skyplane Render Component
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+	
+	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
+		materialName, scale, 1, true, bow, 100, 100); 
+	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
+	// bow = 0, xsegments = 1, ysegments = 1
+
+}
+CSkyPlaneRender::~CSkyPlaneRender(){}
+
+
+void CSkyPlaneRender::tick(float delta){}
+void CSkyPlaneRender::getMessage(Message * m){}
 
 
 #pragma endregion
+/*------------------------- RENDER COMPONENTS------------------------------------*/
 #pragma region particleRenderComponent
 
-
+//PARTICLES
 CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER , father, scnM) {
 	
 
@@ -388,6 +454,34 @@ void CParticleRender::tick(float delta) {
 void CParticleRender::getMessage(Message * m) {
 	CRender::getMessage(m);
 	
+}
+#pragma endregion
+
+
+#pragma region ribbonTrailRenderComponent
+
+// RIBBON TRAIL
+CRibbonTrailRender::CRibbonTrailRender(Ogre::Vector3 pos, std::string id, std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER, father, scnM) {
+
+	trail = scnM->createRibbonTrail("trail");
+	trail->setMaxChainElements(30);
+	trail->setInitialColour(0, 0.0f, 0.0f, 1.0f, 1.0f);
+	trail->setColourChange(0, 0.0f, 0.0f, 0.1f, 0.2f);
+	trail->setInitialWidth(0, 0.3);
+	trail->addNode(pChild);
+	scnM->getRootSceneNode()->attachObject(trail);
+}
+CRibbonTrailRender::~CRibbonTrailRender() {
+	pChild->detachObject(trail);
+}
+void CRibbonTrailRender::tick(float delta) {
+
+
+
+}
+void CRibbonTrailRender::getMessage(Message * m) {
+	CRender::getMessage(m);
+
 }
 #pragma endregion
 
@@ -433,6 +527,8 @@ void CCamera::getMessage(Message * m) {
 }
 #pragma endregion
 
+
+
 #pragma region Action Camera Component 
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, float xBoundary, float yBoundary, float minZ, float maxZ):
 	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
@@ -465,20 +561,20 @@ bool CActionCamera::outOfBoundaries(const Ogre::Vector3 &pos) {
 }
 void CActionCamera::getMessage(Message * m) {
 	
-	if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Player_0") {
+	if (m->getType() == MSG_CAMERA_FOLLOW && static_cast<MCameraFollow *>(m)->getEmmiter() == "Player_0") {
 		//We check if the player is inside the boundaries of the camera. If so, we put its camera position to 0.0.0
-		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+		if (outOfBoundaries(static_cast<MCameraFollow *>(m)->GetPos()))
 			_pj1 = Ogre::Vector3::ZERO;
 		//if it has moved from its previous position, we update its position
 		else 
-			_pj1 = static_cast<MUpdateTransform * >(m)->GetPos();
+			_pj1 = static_cast<MCameraFollow * >(m)->GetPos();
 
 	}
-	else if (m->getType() == MSG_UPDATE_TRANSFORM && static_cast<MUpdateTransform *>(m)->getEmmiter() == "Player_1") {
-		if (outOfBoundaries(static_cast<MUpdateTransform *>(m)->GetPos()))
+	else if (m->getType() == MSG_CAMERA_FOLLOW && static_cast<MCameraFollow *>(m)->getEmmiter() == "Player_1") {
+		if (outOfBoundaries(static_cast<MCameraFollow *>(m)->GetPos()))
 			_pj2 = Ogre::Vector3::ZERO;
 		else 
-			_pj2 = static_cast<MUpdateTransform * >(m)->GetPos();
+			_pj2 = static_cast<MCameraFollow * >(m)->GetPos();
 	}
 	else return;
 	
@@ -521,7 +617,7 @@ void CActionCamera::tick(float delta) {
 #pragma region RigidBodyComponent
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
-CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, RigidBodyType rbType, ShapeType shType, FilterMask myCategory)
+CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 	
 	//Sets the pos attached to the render.
@@ -533,9 +629,12 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	//Body definition.
 	_bodyDef.position.Set(_pos.x, _pos.y);
+
+	
+
 	if (myCategory == MASK_PLAYER)
 		_bodyDef.fixedRotation = true;
-	if (myCategory == MASK_BULLET){
+	if (myCategory == MASK_BULLET_0 || myCategory == MASK_BULLET_1){
 		_bodyDef.bullet = true;
 		//_bodyDef.fixedRotation = true;
 		_bodyDef.gravityScale = 0.0f;
@@ -560,7 +659,11 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 			break;
 	}
 	//Body creation.
-	_body = _myWorld->CreateBody(&_bodyDef);	
+	_body = _myWorld->CreateBody(&_bodyDef);
+
+	float radians = (3.14159265359f * angle) / 180.0f;
+
+	_body->SetTransform(_pos,radians);
 
 	//Set the body data pointer to entity
 	_body->SetUserData(pEnt);	
@@ -572,22 +675,25 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	switch (myCategory)
 	{
-		case MASK_PLAYER:
-			//_fixtureDef.filter.categoryBits = MASK_PLAYER;				
-			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DINAMIC_TERRAIN | MASK_CHEST | MASK_BULLET;
-			
-			break;
 		case MASK_STATIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_STATIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_DINAMIC_TERRAIN | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
+			_fixtureDef.filter.maskBits = MASK_BULLET_0 | MASK_BULLET_1 | MASK_DINAMIC_TERRAIN | MASK_LEGS_0 | MASK_LEGS_1| MASK_HEAD_1 | MASK_HEAD_0 | MASK_CHEST_0 | MASK_CHEST_1 | MASK_FOOT_SENSOR;
 			break;
 		case MASK_DINAMIC_TERRAIN:
 			_fixtureDef.filter.categoryBits = MASK_DINAMIC_TERRAIN;
-			_fixtureDef.filter.maskBits = MASK_BULLET | MASK_LEGS | MASK_HEAD | MASK_FOOT_SENSOR;
+			_fixtureDef.filter.maskBits = MASK_BULLET_0 | MASK_BULLET_1 | MASK_STATIC_TERRAIN | MASK_LEGS_0 | MASK_LEGS_1 | MASK_HEAD_1 | MASK_HEAD_0 | MASK_CHEST_0 | MASK_CHEST_1 | MASK_FOOT_SENSOR;
 			break;
-		case MASK_BULLET:
-			_fixtureDef.filter.categoryBits = MASK_BULLET;
-			_fixtureDef.filter.maskBits = MASK_LEGS | MASK_CHEST | MASK_HEAD | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
+		case MASK_BULLET_0:
+			_fixtureDef.filter.categoryBits = MASK_BULLET_0;
+			_fixtureDef.filter.maskBits = MASK_LEGS_1 | MASK_CHEST_1 | MASK_HEAD_1 | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN | MASK_DEATHZONE;
+			break;
+		case MASK_BULLET_1:
+			_fixtureDef.filter.categoryBits = MASK_BULLET_1;
+			_fixtureDef.filter.maskBits = MASK_LEGS_0 | MASK_CHEST_0 | MASK_HEAD_0 | MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN | MASK_DEATHZONE;
+			break;
+		case MASK_DEATHZONE:
+			_fixtureDef.filter.categoryBits = MASK_DEATHZONE;
+			_fixtureDef.filter.maskBits = MASK_LEGS_0 | MASK_CHEST_0 | MASK_HEAD_0 | MASK_BULLET_0 | MASK_LEGS_1 | MASK_CHEST_1 | MASK_HEAD_1 | MASK_BULLET_1;
 			break;
 		default:
 			break;
@@ -597,6 +703,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	float legsSize = _rbWeight / 1.5f;
 
 	b2PolygonShape _pShape;
+
 	b2CircleShape _cShape;
 
 	//Shape creation.
@@ -621,18 +728,48 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 		_fixtureDef.shape = &_pShape;
-		_fixtureDef.filter.categoryBits = MASK_CHEST;
+		
+		if (controllerId == 1){
+			_fixtureDef.filter.categoryBits = MASK_CHEST_1;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
+		
+		}
+		else{
+		
+			_fixtureDef.filter.categoryBits = MASK_CHEST_0;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1| MASK_BULLET_1;
+		
+		}
 		_body->CreateFixture(&_fixtureDef);		
 		
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
-		_fixtureDef.filter.categoryBits = MASK_HEAD;
+		if (controllerId == 1){
+			_fixtureDef.filter.categoryBits = MASK_HEAD_1;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
+
+		}
+		else{
+
+			_fixtureDef.filter.categoryBits = MASK_HEAD_0;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1 | MASK_BULLET_1;
+
+		}
 		_body->CreateFixture(&_fixtureDef);
 
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 - playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
+		if (controllerId == 1){
+			_fixtureDef.filter.categoryBits = MASK_LEGS_1;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
 
-		_fixtureDef.filter.categoryBits = MASK_LEGS;
+		}
+		else{
+
+			_fixtureDef.filter.categoryBits = MASK_LEGS_0;
+			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1 | MASK_BULLET_1;
+
+		}
 		_fixture = _body->CreateFixture(&_fixtureDef);
 
 		//Foot sensor
@@ -739,13 +876,16 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 				if (_myMask == MASK_FOOT_SENSOR)
 					pEnt->getMessage(new MCollisionTerrain(pEnt->getID()));
 				break;
+			case MASK_DEATHZONE:
+				pEnt->getMessage(new MDie(pEnt->getID()));
+				break;
 			default:
 				break;
 		}
 	}
 	else if (m->getType() == MSG_BULLET_HIT){
 		MBulletHit* mBH = static_cast<MBulletHit*>(m);
-		if (mBH->getTargetMask() == MASK_CHEST)
+		if (mBH->getTargetMask() == MASK_CHEST_0 || mBH->getTargetMask() == MASK_CHEST_1)
 			pEnt->getMessage(new MDamage(mBH->getDamage(), pEnt->getID()));
 		else
 			pEnt->getMessage(new MDamageArmature(mBH->getDamage(), mBH->getTargetMask(), pEnt->getID()));
@@ -772,42 +912,29 @@ void CPlayerController::getMessage(Message* m){
 
 			ControllerInputState cState = inputM->getCInputState();
 
-			if (cState.Button_A == BTT_PRESSED){
+			if (cState.Trigger_Right > TRIGGER_DEADZONE){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
+				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
 			}
 
-			if (cState.Trigger_Right > 100){
-				float xValue = cState.Axis_RightX;
-				float yValue = cState.Axis_RightY;
-				//Tal vez estas comprobaciones no sean necesarias, testear la sensibilidad de los joysticks al disparar
-				float finalXValue, finalYValue;
-				finalXValue = finalYValue = 0.0f;
-				//Check joystick rotation, to control the bullet spawn
-				if ((xValue > 27.0f || xValue < -27.0f) && (yValue > 27.0f || yValue < -27.0f)){
-					finalXValue = cState.Axis_RightX;
-					finalYValue = cState.Axis_RightY;
-					MPlayerShot* m = new MPlayerShot(finalXValue, finalYValue, pEnt->getID());
-					pEnt->getMessage(m);
-				}
-				else{
-					//if
-					//if
-				}
-				
-
-			}
 			
-
-			if (cState.Axis_LeftX > 100){
+			float xValue = cState.Axis_RightX;
+			float yValue = cState.Axis_RightY;
+			//Check joystick rotation, to control the bullet spawn
+			if (!(xValue == 0.0f && yValue == 0.0f )){
+				MPlayerShot* m = new MPlayerShot(xValue, yValue, pEnt->getID());
+				pEnt->getMessage(m);
+			}				
+			if (cState.Axis_LeftX > AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);				
 			}
-			else if (cState.Axis_LeftX < -100){
+			else if (cState.Axis_LeftX < -AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
-			else if (cState.Axis_LeftX <= 100 && cState.Axis_LeftX >= -100){
+			else if (cState.Axis_LeftX <= AXIS_DEADZONE && cState.Axis_LeftX >= -AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(0, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
@@ -825,7 +952,7 @@ CLife::~CLife(){}
 
 void CLife::tick(float delta){
 	
-
+	//std::cout << _currentLife << std::endl;
 }
 void CLife::getMessage(Message* m){
 
@@ -835,6 +962,7 @@ void CLife::getMessage(Message* m){
 		if (_currentLife <= 0.0f){
 			pEnt->getMessage(new MDie(pEnt->getID()));
 		}
+		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
 		break;
 	default:
 		break;
@@ -912,14 +1040,12 @@ void CPlayerJump::getMessage(Message* m)
 
 	switch (m->getType()){
 	case MSG_PLAYER_JUMP:
-
 		_timeCounter = SDL_GetTicks();
 		if (_nJumps < _maxJumps && ((_timeCounter - _lastTimeJump) > _jumpRate)){
 			//std::cout << _nJumps << std::endl;
 			_nJumps++;
 			pEnt->getMessage(new MRigidbodyJump(_jumpForce, pEnt->getID()));
 			_lastTimeJump = SDL_GetTicks();
-
 		}
 		break;
 	case MSG_COLLISION_TERRAIN:
@@ -953,7 +1079,7 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entP
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
-	_radius = 10.0f;
+	_radius = 6.0f;
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){
@@ -980,7 +1106,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 				iniPos.y += _ogrepos.y;
 				iniPos.z = _ogrepos.z;
 
-				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle, _damage);
+				Entity* b = EntityFactory::getInstance().createBullet(_bulletType, pEnt->getScene(), iniPos, angle, _damage, pEnt->getID());
 				pEnt->getMessage(new MAddEntity(pEnt->getID(), b));
 				pEnt->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
 				b->getMessage(new MShot(dir.x, dir.y, pEnt->getID()));
@@ -1020,7 +1146,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 	else if (m->getType() == MSG_MOD_DMG){
 		float dmgValue = static_cast<MModDmg*>(m)->getValue();
 		_damage = _damage + (_damage* dmgValue / 100.0f);
-		std::cout << _damage << "\n";
+		//std::cout << _damage << "\n";
 	}
 
 	else if (m->getType() == MSG_MOD_FIRERATE){
@@ -1048,35 +1174,31 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 
 	//Calculate point
 	/*5 - 327*/
-
-	//revisar esto no llega nunca a cero, pasa de -327 a -60 y entre -60 y 60 no detecta
-	//std::cout << vX << std::endl;
-
-
 	//Normalize
 	if (vX == 0){
 		iniPos.x = 0;
 		iniPos.z = 0;		
 		iniPos.y = _radius;
+		angle = 0.0f;
 
-		if (vY < 0)
+		if (vY < 0){
 			iniPos.y =  - _radius;
-
+			angle = 180.0f;		
+		}
 
 	
 	}
-	else if (vY <= 10 && vY >= -10){
+	else if (vY == 0){
 	
 		iniPos.x = _radius;
 		iniPos.y = 0;
-		iniPos.z = 0;
+		iniPos.z = 0; 
+		angle = -90;
 
-
-		if (vX < 0)
+		if (vX < 0){
 			iniPos.x =  - _radius;
-
-	
-	
+			angle = 90;
+		}
 	}
 	else{
 
@@ -1115,14 +1237,13 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 
 
 		iniPos = Ogre::Vector3(xFinal, yFinal, 0.0f);
-		Ogre::Vector3 idleVector(0.0f, _radius, 0.0f);
+		Ogre::Vector3 idleVector(_radius, 0.0f, 0.0f);
 
 		float escalarProduct = (iniPos.x * idleVector.x) + (iniPos.y * idleVector.y);
-		float lengthIni = std::sqrt(std::pow(iniPos.x, 2) * std::pow(iniPos.y, 2));
+		float lengthIni = std::sqrt(std::pow(iniPos.x, 2) + std::pow(iniPos.y, 2));
 		float lengthIdle = _radius;
 
 		float cos = escalarProduct / (lengthIdle * lengthIni);
-//		std::cout << cos << std::endl;
 
 		if (cos > 1)
 			cos = 1;
@@ -1130,6 +1251,25 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 			cos = -1;
 
 		angle = std::acosf(cos);
+
+		
+		angle = ((angle * 180.0f) / 3.14159265359f) - 90.0f;
+
+
+		if (yFinal < 0.0f){
+			if (xFinal < 0.0f){
+				float comp = 90.0f - angle;
+				angle += comp * 2;
+			}
+			else{
+				float comp = 90.0f + angle;
+				comp = -comp;
+				angle += comp * 2;
+			}
+		}
+		
+
+		
 	}
 }
 
@@ -1204,10 +1344,47 @@ void CBullet::getMessage(Message* m){
 
 #pragma region Ability Component
 CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask) :GameComponent(c, father), _componentLife(componentLife),
-_componentArmor(componentArmor), _myMask(mask), _limitLife(componentLife)
+_componentArmor(componentArmor), _limitLife(componentLife)
 
 {
+	if (pEnt->getID() == "Player_0"){
+		switch (mask)
+		{
+		case MASK_LEGS_0:
+			_myMask = MASK_LEGS_0;
+			break;
+		case MASK_HEAD_0:
+			_myMask = MASK_HEAD_0;
+			break;
+		case MASK_CHEST_0:
+			_myMask = MASK_CHEST_0;
+			break;
+		default:
+			break;
+		}
 	
+	}
+	else
+	{
+
+		switch (mask)
+		{
+		case MASK_LEGS_0:
+			_myMask = MASK_LEGS_1;
+			break;
+		case MASK_HEAD_0:
+			_myMask = MASK_HEAD_1;
+			break;
+		case MASK_CHEST_0:
+			_myMask = MASK_CHEST_1;
+			break;
+		default:
+			break;
+		}
+
+
+	}
+
 }
 CAbility::~CAbility(){}
 
@@ -1221,8 +1398,11 @@ void CAbility::getMessage(Message *m){
 		if (mDA->getWhere() == _myMask){
 			_componentLife -= mDA->getDamage();
 			//Si se acaba la vida pues quitarlo o lo que sea. Aclarar el significado de armadura
-
-			pEnt->getMessage(new MDamage((mDA->getDamage() * ( 1 - _componentArmor / 100.0f)), pEnt->getID()));
+			float dmg = mDA->getDamage();
+			if (_componentLife > 0){
+				dmg = mDA->getDamage() * (1 - _componentArmor / 100.0f);
+			}
+			pEnt->getMessage(new MDamage(dmg, pEnt->getID()));
 		}
 		break;
 	}
@@ -1243,9 +1423,32 @@ void CArmor::getMessage(Message* m){}
 //Passive Skill Component
 #pragma region CPSkill Component
 
+GameComponent* createPassiveAbilityEmpty(Entity* father, int id){ return new CPSkillEmpty(father); }
+CPSkillEmpty::CPSkillEmpty(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 0, 0, MASK_LEGS_0){
+
+}
+CPSkillEmpty::~CPSkillEmpty(){}
+
+void CPSkillEmpty::tick(float delta){}
+void CPSkillEmpty::getMessage(Message* m){
+	
+}
+
+GameComponent* createActiveAbilityEmpty(Entity* father, int id){ return new CASkillEmpty(father); }
+CASkillEmpty::CASkillEmpty(Entity * father) :CAbility(CMP_HERA_RUNE, father, 0, 0, MASK_HEAD_0){
+
+}
+CASkillEmpty::~CASkillEmpty(){}
+
+void CASkillEmpty::tick(float delta){}
+void CASkillEmpty::getMessage(Message* m){
+
+}
+
 
 ///invisibility
-CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 25,MASK_LEGS){
+GameComponent* createAbilityVidar(Entity* father, int id){ return new CPSkillVidar(father); }
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0){
 	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 }
 CPSkillVidar::~CPSkillVidar(){}
@@ -1255,12 +1458,13 @@ void CPSkillVidar::getMessage(Message* m){
 	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
 		_componentLife += (_componentLife / 2);
 	}
-	
+	CAbility::getMessage(m);
 }
 
 
 ///modify dmg of a god
-CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 25, 100, MASK_LEGS){
+GameComponent* createAbilityHades(Entity* father, int id){ return new CPSkillHades(father); }
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_HADES, father, 25, 100, MASK_LEGS_0){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -1273,13 +1477,15 @@ void CPSkillHades::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
 
 
 ///modify velocity of a god
-CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 100, 100, MASK_LEGS){
+GameComponent* createAbilityUll(Entity* father, int id){ return new CPSkillUll(father); }
+CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_ULL, father, 100, 100, MASK_LEGS_0){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -1292,11 +1498,13 @@ void CPSkillUll::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
 ///modify vel of bullets
-CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 75, MASK_LEGS){
+GameComponent* createAbilityVali(Entity* father, int id){ return new CPSkillVali(father); }
+CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_VALI, father, 50, 75, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelBullets(pEnt->getID(), 10));
 }
 CPSkillVali::~CPSkillVali(){}
@@ -1309,11 +1517,13 @@ void CPSkillVali::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
 ///modify velocity and jump of a god
-CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 25, MASK_LEGS){
+GameComponent* createAbilityHermes(Entity* father, int id){ return new CPSkillHermes(father); }
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_HERMES, father, 50, 25, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1326,11 +1536,13 @@ void CPSkillHermes::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 
 ///modify vel of fire rate
-CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SKILL, father, 50, 50, MASK_LEGS){
+GameComponent* createAbilitySyn(Entity* father, int id){ return new CPSkillSyn(father); }
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SYN, father, 50, 50, MASK_LEGS_0){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1343,13 +1555,15 @@ void CPSkillSyn::getMessage(Message* m){
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 #pragma endregion
 
 #pragma region Shu Headdress
 //Dash
-CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD), _playerId(id){
+GameComponent* createAbilityShuHeaddress(Entity* father, int id){ return new CShuHeaddress(father,id); }
+CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
 	_coolDown = 500.0f; //5 seconds
 	_dashImpulse = 1000.0f;
@@ -1371,6 +1585,7 @@ void CShuHeaddress::getMessage(Message* m)
 			}
 		}
 	}
+	CAbility::getMessage(m);
 }
 
 b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
@@ -1385,7 +1600,9 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 
 #pragma region Jonsu Moon
 //Velocity improvement
-CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD), _playerId(id){
+GameComponent* createAbilityJonsuMoon(Entity* father, int id){ return new CJonsuMoon(father, id); }
+
+CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 5000.0f; //5 seconds
 	_coolDown = 10000.0f;
@@ -1430,12 +1647,14 @@ void CJonsuMoon::getMessage(Message* m)
 			}
 		}
 	}
+	CAbility::getMessage(m);
 }
 #pragma endregion
 
 #pragma region Khepri Beetle
 //Velocity improvement
-CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD), _playerId(id){
+GameComponent* createAbilityKhepriBeetle(Entity* father, int id){ return new CKhepriBeetle(father, id); }
+CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 3000.0f; //3 seconds
 	_coolDown = 10000.0f;
@@ -1480,26 +1699,27 @@ void CKhepriBeetle::getMessage(Message* m)
 			}
 		}
 	}
+	CAbility::getMessage(m);
 }
 #pragma endregion
 
 
-
-
 #pragma region Hera´s Rune
 //Velocity improvement
-CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD), _playerId(id){
+
+GameComponent* createAbilityHeraRune(Entity* father, int id){ return new CHeraRune(father, id); }
+CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_coolDown = 10000.0f;
 	isAvailable = true;
 }
-CHeraRune::~CHeraRune(){}
+CHeraRune::~CHeraRune() {}
 
-void CHeraRune::tick(float delta){
+void CHeraRune::tick(float delta) {
 
-	if (!isAvailable){
+	if (!isAvailable) {
 		_timeCounter = SDL_GetTicks();
-		if ((_timeCounter - _initTime) >= _coolDown){
+		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
 	}
@@ -1507,29 +1727,33 @@ void CHeraRune::tick(float delta){
 
 void CHeraRune::getMessage(Message* m)
 {
-	if (m->getType() == MSG_INPUT_STATE){
+	if (m->getType() == MSG_INPUT_STATE) {
 		MInputState* inputM = static_cast<MInputState*>(m);
-		if (inputM->getId() == _playerId && isAvailable){
+		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Right_Shoulder == BTT_PRESSED) {
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
 			}
 		}
 	}
-	if (m->getType() == MSG_RESTORE_LIFE_CARDS){
+	if (m->getType() == MSG_RESTORE_LIFE_CARDS) {
 		_componentLife += (_componentLife / 2);
-		if (_componentLife > _limitLife){
+		if (_componentLife > _limitLife) {
 			_componentLife = _limitLife;
 		}
 	}
+	CAbility::getMessage(m);
 }
 #pragma endregion
 
 
 #pragma region Heris Mark
-CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD), _playerId(id){
+
+GameComponent* createAbilityHerisMark(Entity* father, int id){ return new CHerisMark(father, id); }
+
+CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0), _playerId(id){
 	_timeCounter = _initTime = 0;	
 	_coolDown = 10000.0f;
 	_timeActiveLimit = 30000.0f;
@@ -1538,15 +1762,15 @@ CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father
 	_availableShots = 10;
 	_maxShots = false;
 }
-CHerisMark::~CHerisMark(){}
+CHerisMark::~CHerisMark() {}
 
-void CHerisMark::tick(float delta){
+void CHerisMark::tick(float delta) {
 
-	
+
 	//When is active and timeActiveLimit completes, deactivate it and start cooldown
-	if (_isActive){
+	if (_isActive) {
 		_timeCounter = SDL_GetTicks();
-		if ((_timeCounter - _initTime) >= _timeActiveLimit){
+		if ((_timeCounter - _initTime) >= _timeActiveLimit) {
 			pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
 			_availableShots = 10;
 			_isActive = false;
@@ -1554,17 +1778,17 @@ void CHerisMark::tick(float delta){
 		}
 	}
 	//If is not active and is not available, we count the cooldown. Then turn it to available.
-	else if (!isAvailable){
+	else if (!isAvailable) {
 
 		_timeCounter = SDL_GetTicks();
-		if ((_timeCounter - _initTime) >= _coolDown){
+		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
 
 	}
 
 	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
-	if (_maxShots){
+	if (_maxShots) {
 		_isActive = false;
 		_availableShots = 10;
 		_maxShots = false;
@@ -1574,32 +1798,179 @@ void CHerisMark::tick(float delta){
 }
 void CHerisMark::getMessage(Message* m)
 {
-	if (m->getType() == MSG_INPUT_STATE){
+	if (m->getType() == MSG_INPUT_STATE) {
 		MInputState* inputM = static_cast<MInputState*>(m);
-		if (inputM->getId() == _playerId && isAvailable){
+		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Right_Shoulder == BTT_PRESSED) {
 				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar daño +20%
-				_initTime = SDL_GetTicks();		
+				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
 			}
 		}
 	}
-	
+
 	// Check if a shot has been made
-	else if (_isActive && m->getType() == MSG_SHOT){
+	else if (_isActive && m->getType() == MSG_SHOT) {
 		_availableShots--;
-		std::cout << _availableShots << "\n";
-		if (_availableShots == 0){
+		//std::cout << _availableShots << "\n";
+		if (_availableShots == 0) {
 			_maxShots = true;
-			std::cout << "max" << "\n";
+			//std::cout << "max" << "\n";
 		}
-		
+
 	}
+	CAbility::getMessage(m);
 
 }
 #pragma endregion
 
+/*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+#pragma region GUI COMPONENTS
+#pragma region Button
+CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback cb, std::string buttonTxt, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(CMP_GUI_BUTTON, father), _clicked(false) {
+	pOver = overlay;
+	materials[0] = "GUI/Button/Idle";
+	materials[1] = "GUI/Button/Active";
+	materials[2] = "GUI/Button/Click";
+	
+	_sceneId = sceneId;
+	_callback = cb;
+
+	_txt = buttonTxt;
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+
+	try {
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+
+}
+CButtonGUI::~CButtonGUI() 
+{
+
+}
+bool CButtonGUI::canClick() {
+
+	float act = SDL_GetTicks();
+
+	if (act - _lastClick > _minClickTime) {
+		_lastClick = act; 
+		return true;
+	}
+	else return false;
+}
+size_t CButtonGUI::getScnId() {
+	return _sceneId;
+}
+
+void CButtonGUI::tick(float delta) 
+{
+
+}
+void CButtonGUI::getMessage(Message * me)
+{
+	if (me->getType() == MSG_GUI_BUTTON_ACTIVE) 
+	{
+		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+			_active = true;
+			pContainer->setMaterialName(materials[1]);
+		}
+		else if (_active)
+		{
+			_active = false;
+			pContainer->setMaterialName(materials[0]);
+
+		}
+	}
+	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
+		pContainer->setMaterialName(materials[2]);
+		_clicked = true;
+		_callback();
+
+	}
+
+	
+}
+
+#pragma endregion
+#pragma region PlayerGUI
+CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std::string characterName) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
+{
+	std::string player;
+	if (plyer == P1)player = "Player1";
+	else player = "Player2";
 
 
+	//General container of the whole Player HUD
+	pHud = pOverlay->getChild(player);
+	pLowerHud = static_cast<Ogre::OverlayContainer *>(pHud->getChild(player + "/ActiveContainer"));
+
+	//Specific reference to the lifebar and active bar, which we'll be using quite often
+	plifeBar = static_cast<Ogre::OverlayContainer*>(pHud->getChild(player + "/LifeBar"));
+	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
+
+	LIFE_MAX_WIDTH = plifeBar->getWidth();
+	LIFE_MIN_WIDTH = 15;
+
+
+}
+CPlayerGUI::~CPlayerGUI() {}
+
+void CPlayerGUI::tick(float delta) {
+
+
+}
+void CPlayerGUI::getMessage(Message * m) {
+	if (m->getType() == MSG_LIFE_STATE)
+		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+
+
+}
+void CPlayerGUI::updateLifebar(size_t val) {
+	if (p == P1) {
+		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
+		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
+		plifeBar->setWidth(newVal);
+	}
+	else {
+
+
+
+
+	}
+
+}
+
+
+
+#pragma endregion
+
+
+#pragma endregion
+
+
+
+
+
+#pragma region Camera Follow
+CCameraFollow::CCameraFollow(Entity * father):GameComponent(CMP_CAMERA_FOLLOW,father){}
+CCameraFollow::~CCameraFollow(){}
+
+void CCameraFollow::tick(float delta){
+
+	pEnt->getMessage(new MCameraFollow(_nPos, pEnt->getID()));
+
+}
+void CCameraFollow::getMessage(Message* m){
+		
+	if (m->getType() == MSG_UPDATE_TRANSFORM){
+		_nPos = static_cast<MUpdateTransform*>(m)->GetPos();
+	}
+	
+}
+#pragma endregion

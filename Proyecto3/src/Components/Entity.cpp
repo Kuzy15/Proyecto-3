@@ -27,7 +27,7 @@ Entity::~Entity()
 		
 		aux = *it;
 		try{
-
+			
 			it = components.erase(it);
 		}
 		catch (std::exception &e){
@@ -105,10 +105,11 @@ void Entity::dispatch(){
 		
 	for (int i = 0; i < N; i++) {
 		//First we distribute the message across all the components.
-		for (auto a : components)
-			//If the message is not of type scene (that means that it is either ENTITY or BROADCAST)
+		for (auto a : components){
+			//If the message is not of type scene (that means that it is ENTITY )
 			//Or the message is of type SCENE but we did not send it. This means we received it from outside.
-			if(msgs.front()->getDestination() != SCENE || msgs.front()->getEmmiter() != getID())a->getMessage(msgs.front());
+			if (msgs.front()->getDestination() == ENTITY || msgs.front()->getEmmiter() != getID())a->getMessage(msgs.front());
+		}
 
 		//Then, if the message was sent only for the entity, we delete it 
 		if (msgs.front()->getDestination() == ENTITY) {
@@ -116,7 +117,7 @@ void Entity::dispatch(){
 			msgs.pop();
 			delete aux;
 		}
-		//if the message was received/sent from outside (BROADCAST, SCENE)
+		//if the message was received/sent from outside (SCENE)
 		else {
 			//If the message was sent by this entity, we forward it to the Scene
 			if (msgs.front()->getEmmiter() == getID()) 

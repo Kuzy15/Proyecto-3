@@ -13,13 +13,18 @@
 #include "DebugNew.h"
 #include "EF_Entities.h"
 
+#include <OgreFontManager.h>
+#include <OgreOverlaySystem.h>
+#include <OgreOverlayManager.h>
+#include <exception>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
 
-//Debug 
+//Debug
 #ifdef _DEBUG
 #include <iostream>
 #endif
@@ -27,59 +32,72 @@
 Game * Game::_instance = nullptr;
 CollisionManager collisionManager;
 
+using namespace irrklang;
 
 #pragma region Constructor and destructor
 Game::Game(){
 	_instance = this;
 
+	// start the sound engine with default parameters
+	_soundEngine = createIrrKlangDevice();
 
-	
+	if (!_soundEngine){
+#ifdef _DEBUG
+		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+#endif
+		exit(1);
+	}
+
 	//Init Box2D physics environment
 	world = new b2World(GRAVITY);
 	//world->SetAllowSleeping(false);
 	world->SetContactListener(&collisionManager);
-	
-	
-	
+
+
+
 
 	//Inicialization of SDL. Only starts JOYSTICK functionality.
 	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
 #ifdef _DEBUG
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		exit(1);
 #endif
+		exit(1);
 	}
 
 	 currentTime = newTime = frameTime = accumulator = inputTime = 0;
-	
+
 	 initOgre();
 
-	 std::vector<Player> players(2);
-	 players[0].controllerId = 0;
-	 players[0].god = EG_RA;
+	 std::vector<Player>* players = new std::vector<Player>(2);
 
-	 players[1].controllerId = 1;
-	 players[1].god = EG_AHPUCH;
+	 players->at(0).controllerId = 0;
+	 players->at(0).god = EG_RA;
 
-	 actScene = new GamePlayScene("GamePlayScene", this, players, ES_ISLANDS);
-	 
+	 players->at(1).controllerId = 1;
+	 players->at(1).god = EG_HACHIMAN;
+
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_TEMPLE);
+
+	 delete players;
+
 }
  Game::~Game(){
 
-	 
+
+
 
 	 if (actScene != nullptr)
 		 delete actScene;
 	 //Remove the game from the window listeners
-	 Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
+	 //Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
 
 	 //Delete the physics world
 	 delete world;
 	 world = nullptr;
 
 	 InputManager::resetInstance();
-	// if (root != nullptr)
-		//delete root;
+	 /*if (root != nullptr)
+		delete root;*/
 
  }
 #pragma endregion
@@ -95,14 +113,21 @@ Game::Game(){
  b2World* Game::getPhysicsWorld(){
 	 return world;
  }
+ Ogre::OverlaySystem * Game::getOverlaySystem() {
+	 return pOverSyst;
+ };
+
 #pragma endregion
 
-#pragma region getters and setters
+
  Game * Game::getInstance() {
 	 if (_instance == nullptr)_instance =  new Game();
 	return _instance;
  }
 
+ ISoundEngine* Game::getSoundEngine(){
+	 return _soundEngine;
+ }
 #pragma endregion
 
 #pragma region Ogre Game functions
@@ -119,8 +144,8 @@ bool Game::initOgre(){
 #endif
 	try{
 		root = new Ogre::Root(plugCfgLoc);
-		
-		
+
+
 	}
 	catch (std::exception e){
 #ifdef _DEBUG
@@ -129,8 +154,13 @@ bool Game::initOgre(){
 #endif
 		return false;
 	}
+
+	pOverSyst = OGRE_NEW Ogre::OverlaySystem();
+	pOverMan = Ogre::OverlayManager::getSingletonPtr();
+
+
 	//------------------------------------------------------------------------------------------------------
-	//Setting UP Resources 
+	//Setting UP Resources
 
 	//Parsing the config file into the system.
 	cf.load(resCfgLoc);
@@ -158,7 +188,7 @@ bool Game::initOgre(){
 			//We add it as a location to the Resource Group Manager
 			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
 
-		
+
 		}
 	}
 	//If there is no previous Ogre.cfg, this displays the config dialog
@@ -171,6 +201,8 @@ bool Game::initOgre(){
 
 
 
+
+
 	//------------------------------------------------------------------------------------------------------
 	//Resources Init
 
@@ -179,12 +211,17 @@ bool Game::initOgre(){
 	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
 	//Now we init every resource previously added
-	Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	try {
+
+		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; }
+
 
 
 
 	//We register game as a listener of the window events, to know if it's been closed
-	Ogre::WindowEventUtilities::addWindowEventListener(pWindow, this);
+	//Ogre::WindowEventUtilities::addWindowEventListener(pWindow, this);
 
 
  }
@@ -208,12 +245,12 @@ void Game::loop() {
 		//Refresh loop parameters
 		newTime = (SDL_GetTicks() / 1000.0);
 		frameTime = newTime - currentTime;
-		currentTime = newTime;		
+		currentTime = newTime;
 		accumulator += frameTime;
 
 		//Loop for game logic and physic step (60 times per second)
 		while (accumulator >= FPS_CAP){
-			
+
 			handleInput();
 			world->Step(FPS_CAP, 10, 2);
 			actScene->run();
@@ -228,22 +265,32 @@ void Game::loop() {
 
 }
 
-//Método que renderiza
+//Mï¿½todo que renderiza
 void Game::render() {
 
 	Ogre::WindowEventUtilities::messagePump();
 	if (pWindow->isClosed())
 		return;
 	if (!root->renderOneFrame())return;
-	
+
 
 }
 
 //Read the input
-void Game::handleInput(){
-	
-		InputManager::getInstance().handleInput();
+void Game::handleInput(){ InputManager::getInstance().handleInput();}
 
+void Game::changeScene(GameScene* s){
+
+	//Mostrar una imagen de carga
+
+
+
+
+
+
+
+	delete actScene;
+	actScene = s;
 }
 
 #pragma endregion

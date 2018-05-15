@@ -50,7 +50,7 @@ struct ControllerInputState{
 
 #pragma endregion
 
-typedef enum MessageType{
+typedef enum MessageType {
 
 	MSG_STRING, MSG_INPUT_STATE,
 	MSG_CONTROLLER_STATE, MSG_UPDATE_TRANSFORM,
@@ -75,8 +75,13 @@ typedef enum MessageType{
 	MSG_DAMAGE,
 	MSG_DASH,
 	MSG_DIE,
+	MSG_GUI_BUTTON_ACTIVE,
+	MSG_GUI_BUTTON_CLICK,
 	MSG_BULLET_HIT,
-	MSG_DAMAGE_ARMATURE
+	MSG_DAMAGE_ARMATURE,
+	MSG_CAMERA_FOLLOW,
+	MSG_LIFE_STATE,
+
 	
 
 	
@@ -131,7 +136,7 @@ private:
 class MInputState : public Message
 {
 public:
-	MInputState(int i,MessageDestination d, std::string emmiter);
+	MInputState(int i, std::string emmiter);
 	virtual ~MInputState();
 
 	ControllerInputState& getCInputState();
@@ -149,7 +154,7 @@ private:
 class MControllerState : public Message
 {
 public:
-	MControllerState(MessageDestination d, std::string emmiter, int id, int action);
+	MControllerState(std::string emmiter, int id, int action);
 	virtual ~MControllerState();
 
 	inline int getId(){ return _controllerId; };
@@ -178,6 +183,22 @@ private:
 	float _w;
 	float _h;
 };
+
+
+//--------------------------------------------------	CAMERA FOLLOW MSG		----------------------------------------------------------//
+class MCameraFollow : public Message
+{
+public:
+	MCameraFollow(Ogre::Vector3 newPos, std::string emmiter);
+	virtual ~MCameraFollow();
+
+	Ogre::Vector3 GetPos();
+
+private:
+	//Private fields for the new position and quaternion of the entity
+	Ogre::Vector3 _nPos;
+};
+
 
 
 //--------------------------------------------------	INPUT PLAYER MSG	 (ABSTRACT)	----------------------------------------------------------//
@@ -493,7 +514,9 @@ private:
 
 
 
+
 //--------------------------------------------------	ACTIVE MSG		----------------------------------------------------------//
+
 //Dash Message
 class MDash : public Message{
 public:
@@ -537,6 +560,35 @@ private:
 	//float timeWhenDie
 };
 
+//--------------------------------------------------	BUTTON ACTIVE MSG		----------------------------------------------------------//
+class MButtonAct: public Message
+{
+public:
+	MButtonAct(std::string emmiter, unsigned int index);
+	~MButtonAct();
+	unsigned int getActiveButtonIndex();
 
+private:
+	unsigned int _activeIndex;
+};
+//--------------------------------------------------	BUTTON CLICK MSG		----------------------------------------------------------//
+class MButtonClick: public Message
+{
+public:
+	MButtonClick(std::string emmiter);
+	~MButtonClick();
+
+private:
+};
+//--------------------------------------------------	LIFE STATE MSG		----------------------------------------------------------//
+class MLifeState: public Message
+{
+public:
+	MLifeState(std::string emmiter, size_t lifeValue);
+	~MLifeState();
+	size_t getLifeState();
+private:
+	size_t _life;
+};
 
 #endif
