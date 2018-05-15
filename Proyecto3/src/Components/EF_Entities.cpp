@@ -53,6 +53,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CPSkillVidar(Ra));
 	//Ra->addComponent(new CShuHeaddress(Ra, controllerId));
 	Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
+	Ra->addComponent(new CParticleRender({ 0, 0, 0 }, id + "sandRa", "sandRa", Ra, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
 	
 
 	return Ra;
@@ -88,6 +89,10 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	AhPuch->addComponent(new CPlayerJump(AhPuch, JUMPFORCE));
 	//Move
 	AhPuch->addComponent(new CPlayerMove(AhPuch, VELOCITY));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "poisonAhPuch", "poisonAhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB1AhPuch", "pB1AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB2AhPuch", "pB2AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	//AhPuch->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "pB3AhPuch", "pB3AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
 
 
 	return AhPuch;
@@ -125,7 +130,8 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//Move
 	Zeus->addComponent(new CPlayerMove(Zeus, VELOCITY));
 	Zeus->addComponent(new CHerisMark(Zeus, controllerId));
-	
+	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "auraZeus", "auraZeus", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+
 
 	return Zeus;
 }
@@ -194,6 +200,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 
 	//Bullet
 	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 400.0f));
+	bRa->addComponent(new CParticleRender({ 0, 1000, 0 }, id + "ballRa", "ballRa", bRa, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
 
 
 	return bRa;
@@ -223,7 +230,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 
 	//Bullet
 	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 700.0f));
-
+	bAhPuch->addComponent(new CParticleRender({ 0, 1000, 0 }, id + "pCer1AhPuch", "pCer1AhPuch", bAhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
 
 	return bAhPuch;
 
@@ -253,9 +260,11 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 
 
 	//Bullet
-	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 1000.0f));
+	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 10.0f));
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus1", "LightningZeus1", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus2", "LightningZeus2", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus3", "LightningZeus3", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
 
-	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 },id + "Smoke" , "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
 
 	// Estela
 	//bZeus->addComponent(new CRibbonTrailRender({ 0, 0, pos.z }, id + "trail", "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
@@ -267,12 +276,12 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 
 Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD){
 
-	Entity * bAhPuch = new Entity(id, s);
+	Entity * bHachiman = new Entity(id, s);
 	//Mesh Render
 
 	Ogre::Vector3 pos = iniPos;
-	CMeshRender* cM = new CMeshRender(pos, "balas/Arrow.mesh", bAhPuch, s->getSceneManager(), { 0.7f, 0.4f, 1.0f }, { 0, 0, 0 });
-	bAhPuch->addComponent(cM);
+	CMeshRender* cM = new CMeshRender(pos, "balas/Arrow.mesh", bHachiman, s->getSceneManager(), { 0.7f, 0.4f, 1.0f }, { 0, 0, 0 });
+	bHachiman->addComponent(cM);
 
 
 	//RigidBody
@@ -280,15 +289,15 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 	float heigth = cM->getSize().y;
 
 	if (iD == "Player_0")
-		bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, angle, RB_DYNAMIC, SH_POLYGON, MASK_BULLET_0, -1));
+		bHachiman->addComponent(new CRigidBody(bHachiman, s->getGame()->getPhysicsWorld(), pos, heigth, weight, angle, RB_DYNAMIC, SH_POLYGON, MASK_BULLET_0, -1));
 	else
-		bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, angle, RB_DYNAMIC, SH_POLYGON, MASK_BULLET_1,-1));
+		bHachiman->addComponent(new CRigidBody(bHachiman, s->getGame()->getPhysicsWorld(), pos, heigth, weight, angle, RB_DYNAMIC, SH_POLYGON, MASK_BULLET_1, -1));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_HACHIMAN, damage, 700.0f));
+	bHachiman->addComponent(new CBullet(bHachiman, EB_HACHIMAN, damage, 700.0f));
 
 
-	return bAhPuch;
+	return bHachiman;
 
 
 }
@@ -341,7 +350,7 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	entities->push_back(rightEdge);
 
 	Entity * temple = new Entity("Templo_01", s);
-	temple->addComponent(new CMeshRender({ -30, -2, -20 }, "templo.mesh", temple, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
+	temple->addComponent(new CMeshRender({ -30, -2, -30 }, "templo.mesh", temple, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
 	entities->push_back(temple);
 
 	Entity * portonCollider = new Entity("ColliderPorton_01", s);
@@ -355,19 +364,19 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	entities->push_back(tree1);
 
 	Entity * tree2 = new Entity("Tree_02", s);
-	tree2->addComponent(new CMeshRender({ -60, -12, -20 }, "Arbol3.mesh", tree2, s->getSceneManager(), { 4.0f, 4.0f, 4.0f }, { 0, 30, 0 }));
+	tree2->addComponent(new CMeshRender({ -60, -12, -20 }, "ArbolRosa2.mesh", tree2, s->getSceneManager(), { 4.0f, 4.0f, 4.0f }, { 90, 0, 0 }));
 	entities->push_back(tree2);
 	
 	Entity * tree3 = new Entity("Tree_03", s);
-	tree3->addComponent(new CMeshRender({ -10, -12, -40 }, "Arbol1.mesh", tree3, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 60, 0 }));
+	tree3->addComponent(new CMeshRender({ -10, -12, -40 }, "Arbol2.mesh", tree3, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 60, 0 }));
 	entities->push_back(tree3);
 
 	Entity * tree4 = new Entity("Tree_04", s);
-	tree4->addComponent(new CMeshRender({ 5, -12, -20 }, "Arbol3.mesh", tree4, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 180, 0 }));
+	tree4->addComponent(new CMeshRender({ 5, -12, -20 }, "Arbol1.mesh", tree4, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 180, 0 }));
 	entities->push_back(tree4);
 
 	Entity * tree5 = new Entity("Tree_05", s);
-	tree5->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree5, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
+	tree5->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree5, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 0, 0 }));
 	entities->push_back(tree5);
 
 	Entity * tree6 = new Entity("Tree_06", s);
@@ -375,12 +384,36 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	entities->push_back(tree6);
 
 	Entity * tree7 = new Entity("Tree_07", s);
-	tree7->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
+	tree7->addComponent(new CMeshRender({ 35, -15, -30 }, "Arbol2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
 	entities->push_back(tree7);
 
 	Entity * tree8 = new Entity("Tree_08", s);
-	tree8->addComponent(new CMeshRender({ -77, -12, -10 }, "Arbol2.mesh", tree8, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
+	tree8->addComponent(new CMeshRender({ 20, -14, -20 }, "ArbolRosa2.mesh", tree8, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 90, 0, 0 }));
 	entities->push_back(tree8);
+
+	Entity * tree9 = new Entity("Tree_09", s);
+	tree9->addComponent(new CMeshRender({ -55, -12, -10 }, "Arbol2.mesh", tree9, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
+	entities->push_back(tree9);
+
+	Entity * tree10 = new Entity("Tree_10", s);
+	tree10->addComponent(new CMeshRender({ -68, -5, -10 }, "ArbolRosa1.mesh", tree10, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 90, 0, 0 }));
+	entities->push_back(tree10);
+
+	Entity * tree11 = new Entity("Tree_11", s);
+	tree11->addComponent(new CMeshRender({ -15, -12, -10 }, "Arbol1.mesh", tree11, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
+	entities->push_back(tree11);
+
+	Entity * tree12 = new Entity("Tree_12", s);
+	tree12->addComponent(new CMeshRender({ 28, -12, -15 }, "Arbol1.mesh", tree12, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 180, 0 }));
+	entities->push_back(tree12);
+
+	Entity * tree13 = new Entity("Tree_13", s);
+	tree13->addComponent(new CMeshRender({ -40, -7, -20 }, "ArbolRosa1.mesh", tree13, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 90, 0, 0 }));
+	entities->push_back(tree13);
+
+	Entity * tree14 = new Entity("Tree_14", s);
+	tree14->addComponent(new CMeshRender({ 40, -1, -10 }, "ArbolRosa1.mesh", tree14, s->getSceneManager(), { 6.0f, 6.0f, 6.0f }, { 90, 0, 0 }));
+	entities->push_back(tree14);
 
 
 
@@ -420,15 +453,14 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150,150,60,150));
 	entities->push_back(cam);
 
+	/*Entity *sky = new Entity("sky", s);
+	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "mandelbrotSP"));
+	entities->push_back(sky);*/
+
 	Entity * e1 = new Entity("Suelo_01", s);
 	CMeshRender* cM = new CMeshRender({ 0, -3, -30 }, "IslaPrincipal.mesh", e1, s->getSceneManager(), { 50.0f, 30.0f, 50.0f }, { 0, 0, 0 });
 	e1->addComponent(cM);
 	entities->push_back(e1);
-
-
-	Entity *sky = new Entity("sky", s);
-	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "mandelbrotSP"));
-	entities->push_back(sky);
 
 
 	Entity * Suelo = new Entity("ColliderSuelo_01", s);
@@ -517,28 +549,28 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 
 
 	Entity * nube8 = new Entity("nube_08", s);
-	CMeshRender* cN = new CMeshRender({ -80, 35, -40 }, "Nube2.mesh", nube8, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
+	CMeshRender* cN = new CMeshRender({ -80, 35, -40 }, "Nube2.mesh", nube8, s->getSceneManager(), { 3.0f, 2.0f, 3.0f }, { 0, 0, 0 });
 	nube8->addComponent(cN);
-	nube8->addComponent(new CRigidBody(nube8, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-50, 25, -40), cN->getSize().y, cN->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	nube8->addComponent(new CRigidBody(nube8, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-50, 25, -40), cN->getSize().y - 0.5f, cN->getSize().x - 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities->push_back(nube8);
 
 
 	Entity * nube9 = new Entity("nube_09", s);
-	CMeshRender* cN2 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube9, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
+	CMeshRender* cN2 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube9, s->getSceneManager(), { 3.0f, 2.0f, 3.0f }, { 0, 0, 0 });
 	nube9->addComponent(cN2);
-	nube9->addComponent(new CRigidBody(nube9, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-20, 35, -40), cN2->getSize().y, cN2->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	nube9->addComponent(new CRigidBody(nube9, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-20, 35, -40), cN2->getSize().y - 0.5f, cN2->getSize().x - 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities->push_back(nube9);
 
 	Entity * nube10 = new Entity("nube_10", s);
-	CMeshRender* cN3 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube10, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
+	CMeshRender* cN3 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube10, s->getSceneManager(), { 3.0f, 2.0f, 3.0f }, { 0, 0, 0 });
 	nube10->addComponent(cN3);
-	nube10->addComponent(new CRigidBody(nube10, s->getGame()->getPhysicsWorld(), Ogre::Vector3(10, 45, -40), cN3->getSize().y, cN3->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	nube10->addComponent(new CRigidBody(nube10, s->getGame()->getPhysicsWorld(), Ogre::Vector3(10, 45, -40), cN3->getSize().y - 0.5f, cN3->getSize().x - 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities->push_back(nube10);
 
 	Entity * nube13 = new Entity("nube_13", s);
-	CMeshRender* cN4 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube13, s->getSceneManager(), { 5.0f, 2.0f, 5.0f }, { 0, 0, 0 });
+	CMeshRender* cN4 = new CMeshRender({ 0, 45, -40 }, "Nube2.mesh", nube13, s->getSceneManager(), { 3.0f, 2.0f, 3.0f }, { 0, 0, 0 });
 	nube13->addComponent(cN4);
-	nube13->addComponent(new CRigidBody(nube13, s->getGame()->getPhysicsWorld(), Ogre::Vector3(60, -25, -40), cN4->getSize().y, cN4->getSize().x, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	nube13->addComponent(new CRigidBody(nube13, s->getGame()->getPhysicsWorld(), Ogre::Vector3(60, -25, -40), cN4->getSize().y - 0.5f, cN4->getSize().x - 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities->push_back(nube13);
 	
 
@@ -561,75 +593,36 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	deathZone->addComponent(new CRigidBody(deathZone, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, -50, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_DEATHZONE, -1));
 	entities->push_back(deathZone);
 
-
-	/*Entity * porton = new Entity("Porton_01", s);
-	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
-	entities->push_back(porton);
-
-	Entity * temple = new Entity("Templo_01", s);
-	temple->addComponent(new CMeshRender({ -30, -2, -20 }, "templo.mesh", temple, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	entities->push_back(temple);
-
-	Entity * portonCollider = new Entity("ColliderPorton_01", s);
-	portonCollider->addComponent(new CRigidBody(portonCollider, Game::getInstance()->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN));
-	entities->push_back(portonCollider);
-#pragma region Trees
+	//trees
 	Entity * tree1 = new Entity("Tree_01", s);
-	tree1->addComponent(new CMeshRender({ -50, -12, -30 }, "Arbol1.mesh", tree1, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 0, 0 }));
+	tree1->addComponent(new CMeshRender({ -35, 5, -30 }, "ArbolVerde1.mesh", tree1, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 90, 0, 0 }));
 	entities->push_back(tree1);
 
 	Entity * tree2 = new Entity("Tree_02", s);
-	tree2->addComponent(new CMeshRender({ -60, -12, -20 }, "Arbol3.mesh", tree2, s->getSceneManager(), { 4.0f, 4.0f, 4.0f }, { 0, 30, 0 }));
+	tree2->addComponent(new CMeshRender({ -15, -3, -45 }, "Arbol1.mesh", tree2, s->getSceneManager(), { 4.0f, 4.0f, 4.0f }, { 0, 30, 0 }));
 	entities->push_back(tree2);
 
 	Entity * tree3 = new Entity("Tree_03", s);
-	tree3->addComponent(new CMeshRender({ -10, -12, -40 }, "Arbol1.mesh", tree3, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 60, 0 }));
+	tree3->addComponent(new CMeshRender({ 42, -3, -30 }, "Arbol2.mesh", tree3, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 60, 0 }));
 	entities->push_back(tree3);
 
 	Entity * tree4 = new Entity("Tree_04", s);
-	tree4->addComponent(new CMeshRender({ 5, -12, -20 }, "Arbol3.mesh", tree4, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 0, 180, 0 }));
+	tree4->addComponent(new CMeshRender({ 10, 4, -10 }, "ArbolVerde2.mesh", tree4, s->getSceneManager(), { 3.0f, 4.0f, 3.0f }, { 90, 0, 0 }));
 	entities->push_back(tree4);
 
 	Entity * tree5 = new Entity("Tree_05", s);
-	tree5->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree5, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
+	tree5->addComponent(new CMeshRender({ -25, -3, -40 }, "Arbol2.mesh", tree5, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 90, 0 }));
 	entities->push_back(tree5);
 
 	Entity * tree6 = new Entity("Tree_06", s);
-	tree5->addComponent(new CMeshRender({ -77, -12, -10 }, "Arbol2.mesh", tree6, s->getSceneManager(), { 4.0f, 4.0f, 4.0f }, { 0, 300, 0 }));
+	tree5->addComponent(new CMeshRender({ -98, 9, -7 }, "ArbolVerde2.mesh", tree6, s->getSceneManager(), { 4.0f, 4.0f, 4.0f }, { 90, 0, 0 }));
 	entities->push_back(tree6);
 
 	Entity * tree7 = new Entity("Tree_07", s);
-	tree7->addComponent(new CMeshRender({ -70, -12, -30 }, "Arbol2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 90, 0 }));
+	tree7->addComponent(new CMeshRender({ 50, 45, -7 }, "ArbolVerde2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 90, 0, 0 }));
 	entities->push_back(tree7);
-	*/
-	/*Entity * tree8 = new Entity("Tree_08", s);
-	tree8->addComponent(new CMeshRender({ -77, -12, -10 }, "Arbol2.mesh", tree8, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
-
-
-	entities->push_back(tree8);
-
-
-
-
-
-#pragma endregion*/
-
-	/*Entity * rock1 = new Entity("Rock_01", s);
-	rock1->addComponent(new CMeshRender({ 0, -10, -25 }, "Rock.mesh", rock1, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 0, 300, 0 }));
-	entities->push_back(rock1);
-
-	Entity * rock2 = new Entity("Rock_02", s);
-	rock2->addComponent(new CMeshRender({ 50, -10, -15 }, "Rock.mesh", rock2, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
-	entities->push_back(rock2);*/
-
-
-	/*Entity * gate1 = new Entity("Gate_01", s);
-	gate1->addComponent(new CMeshRender({ -100, -10, -10 }, "Gate.mesh", gate1, s->getSceneManager(), { 5.0f, 5.0f, 5.0f }, { 90, 180, 0 }));
-	entities->push_back(gate1);*/
-
+	
 
 	return entities;
 
 }
-
-#pragma endregion

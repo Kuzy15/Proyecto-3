@@ -645,7 +645,9 @@ void CRigidBody::tick(float delta) {
 
 	}
 
-	
+	if (pEnt->getID() == "Player_0")
+
+	std::cout << _body->GetPosition().x * PPM << std::endl;
 
 
 }
@@ -784,7 +786,7 @@ CLife::~CLife(){}
 
 void CLife::tick(float delta){
 	
-	std::cout << _currentLife << std::endl;
+	//std::cout << _currentLife << std::endl;
 }
 void CLife::getMessage(Message* m){
 
