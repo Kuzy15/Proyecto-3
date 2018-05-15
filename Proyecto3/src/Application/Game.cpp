@@ -56,7 +56,7 @@ Game::Game(){
 
 	 std::vector<Player> players(2);
 	 players[0].controllerId = 0;
-	 players[0].god = EG_ZEUS;
+	 players[0].god = EG_RA;
 
 	 players[1].controllerId = 1;
 	 players[1].god = EG_AHPUCH;

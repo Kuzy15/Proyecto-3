@@ -46,6 +46,8 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CShuHeaddress(Ra, controllerId));
 	Ra->addComponent(new CHeraRune(Ra, controllerId));
 	
+	//Animation
+	Ra->addComponent(new CAnimation(Ra, s->getSceneManager()));
 
 	return Ra;
 }

@@ -210,7 +210,7 @@ public:
 	
 private:
 
-
+	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT);
 	bool _air;
 	Ogre::Entity * pOgreEnt;
 	//Animation pointers (Bot and Top)
@@ -221,7 +221,7 @@ private:
 
 	Ogre::AnimationState* idleTop;
 	Ogre::AnimationState* moveTop;
-	Ogre::AnimationState* jumpTop;
+	//Ogre::AnimationState* jumpTop;
 	Ogre::AnimationState* airTop;
 	Ogre::AnimationState* chargeTop;
 	Ogre::AnimationState* shootTop;
@@ -230,6 +230,9 @@ private:
 	
 	Ogre::AnimationState* currentTop;
 	Ogre::AnimationState* currentBot;
+
+	Ogre::AnimationState* nextTop;
+	Ogre::AnimationState* nextBot;
 
 };
 

@@ -224,17 +224,17 @@ Ogre::Vector3 CMeshRender::getSize(){
 CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameComponent(CMP_ANIMATION, father){
 	pOgreEnt = scnM->getEntity(father->getID());
 
-	idleBot = pOgreEnt->getAnimationState("IdleBot");
-	moveBot = pOgreEnt->getAnimationState("MoveBot");
-	jumpBot = pOgreEnt->getAnimationState("JumpBot");
-	airBot  = pOgreEnt->getAnimationState("AirBot");
+	idleBot = pOgreEnt->getAnimationState("Idle Bot");
+	moveBot = pOgreEnt->getAnimationState("Move Bot");
+	jumpBot = pOgreEnt->getAnimationState("jumpBot");
+	airBot  = pOgreEnt->getAnimationState("airBot");
 
-	idleTop = pOgreEnt->getAnimationState("IdleTop");
-	moveTop = pOgreEnt->getAnimationState("MoveTop");
-	jumpTop = pOgreEnt->getAnimationState("JumpTop");
-	airTop  = pOgreEnt->getAnimationState("AirTop");
-	chargeTop = pOgreEnt->getAnimationState("ChargeTop");
-	shootTop = pOgreEnt->getAnimationState("ShootTop");
+	idleTop = pOgreEnt->getAnimationState("Idle Top");
+	moveTop = pOgreEnt->getAnimationState("Move Top");
+	//jumpTop = pOgreEnt->getAnimationState("Jump Top");
+	airTop  = pOgreEnt->getAnimationState("airTop");
+	chargeTop = pOgreEnt->getAnimationState("chargeTop");
+	shootTop = pOgreEnt->getAnimationState("shootTop");
 
 	idleBot->setLoop(true);
 	moveBot->setLoop(true);
@@ -243,13 +243,16 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameCompone
 
 	idleTop->setLoop(true);
 	moveTop->setLoop(true);
-	jumpTop->setLoop(false);
+	//jumpTop->setLoop(false);
 	airTop->setLoop(true);
 	chargeTop->setLoop(false);
 	shootTop->setLoop(false);
 
 	currentBot = idleBot;
 	currentTop = idleTop;
+	nextBot = idleBot;
+	nextTop = idleTop;
+
 
 }
 CAnimation::~CAnimation(){
@@ -257,61 +260,78 @@ CAnimation::~CAnimation(){
 
 
 void CAnimation::tick(float delta){
+	if (currentBot != nextBot &&
+		currentBot->getLength() == currentBot->getTimePosition()){
+		currentBot->setEnabled(false);
+		currentBot = nextBot;
+	}
+	if (currentTop != nextTop &&
+		currentTop->getLength() == currentTop->getTimePosition()){
+		currentTop->setEnabled(false);
+		currentTop = nextTop;
+	}
 	if (!currentBot->getEnabled())
 		currentBot->setEnabled(true);
 	if (!currentTop->getEnabled())
 		currentTop->setEnabled(true);
 
-	currentBot->setTimePosition(delta);
-	currentTop->setTimePosition(delta);
+	currentBot->addTime(delta);
+	currentTop->addTime(delta);
 }
 void CAnimation::getMessage(Message * m){
 	switch (m->getType())
 	{
-	MSG_PLAYER_MOVE_X:
-		currentBot->setEnabled(false);
-		currentBot = moveBot;
-		if (currentTop != chargeTop && currentTop != shootTop){
-			currentTop->setEnabled(false);
-			currentTop = moveTop;
-				}
-		if (_air){
-			currentBot = airBot;
-			if (currentTop != chargeTop && currentTop != shootTop){
-				currentTop->setEnabled(false);
-				currentTop = airTop;
-			}
-		}
+	case MSG_PLAYER_MOVE_X:
+		changeAnim(moveBot, moveTop);
+		if (_air)
+			changeAnim(airBot, airTop);
 		break;
 
-	MSG_PLAYER_JUMP:
-
-		currentBot->setEnabled(false);
-		currentBot = jumpBot;
-		if (currentTop != chargeTop && currentTop != shootTop){
-			currentTop->setEnabled(false);
-			currentTop = jumpTop;
-		}
-		_air = true;
+	case MSG_PLAYER_JUMP:
+		if (currentBot != jumpBot)
+		 currentBot->setEnabled(false);
+		 currentBot = jumpBot;
+		 _air = true;
 		break;
 
-	MSG_COLLISION_TERRAIN:
+	case MSG_COLLISION_TERRAIN:
 		_air = false;
 		break;
 
-	MSG_PLAYER_SHOT:
+	case MSG_PLAYER_SHOT:
+		if (currentTop != shootTop)
 		currentTop->setEnabled(false);
 		currentTop = shootTop;
+		nextTop = shootTop;
 		break;
 	default:
 
-		currentBot->setEnabled(false);
-		currentBot = idleBot;
-		currentTop = idleTop;
+		//currentBot->setEnabled(false);
+		//currentBot = idleBot;
+		//currentTop = idleTop;
 		break;
 	}
 }
 
+void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT){
+
+	if (nextB != nullptr)
+		if (nextB != currentBot)
+		{
+			if (nextB != jumpBot)
+				nextB->setLoop(true);
+			currentBot->setLoop(false);
+			nextBot = nextB;
+		}
+	if (nextT != nullptr)
+		if (nextT != currentTop)
+		{
+			if (nextT != shootTop)
+				nextT->setLoop(true);
+			currentTop->setLoop(false);
+			nextTop = nextT;
+		}
+}
 
 
 #pragma endregion
