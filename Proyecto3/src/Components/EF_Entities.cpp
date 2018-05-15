@@ -219,7 +219,7 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 	bZeus->addComponent(new CRigidBody(bZeus, s->getGame()->getPhysicsWorld(), pos, heigth, weight, RB_DYNAMIC, SH_POLYGON, MASK_BULLET));
 
 	//Bullet
-	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 1000.0f));
+	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 100.0f));
 
 	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 },id + "Smoke" , "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
 

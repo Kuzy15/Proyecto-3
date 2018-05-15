@@ -250,8 +250,8 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameCompone
 
 	currentBot = idleBot;
 	currentTop = idleTop;
-	nextBot = idleBot;
-	nextTop = idleTop;
+	nextBot = nullptr;
+	nextTop = nullptr;
 
 
 }
@@ -260,7 +260,7 @@ CAnimation::~CAnimation(){
 
 
 void CAnimation::tick(float delta){
-	if (currentBot != nextBot &&
+	/*if (currentBot != nextBot &&
 		currentBot->getLength() == currentBot->getTimePosition()){
 		currentBot->setEnabled(false);
 		currentBot = nextBot;
@@ -269,11 +269,29 @@ void CAnimation::tick(float delta){
 		currentTop->getLength() == currentTop->getTimePosition()){
 		currentTop->setEnabled(false);
 		currentTop = nextTop;
+	}*/
+
+	//Se acabo la animacion.
+	if (currentTop->getLength() == currentTop->getTimePosition()){
+		currentTop = idleTop;
 	}
+
+	if (currentBot->getLength() == currentBot->getTimePosition()){
+		currentBot = idleBot;
+	}
+	std::cout << currentBot->getAnimationName() << std::endl;
+
+	if (nextBot != nullptr){
+		currentBot = nextBot;
+		nextBot = nullptr;
+	}
+
 	if (!currentBot->getEnabled())
 		currentBot->setEnabled(true);
 	if (!currentTop->getEnabled())
 		currentTop->setEnabled(true);
+
+
 
 	currentBot->addTime(delta);
 	currentTop->addTime(delta);
@@ -288,9 +306,9 @@ void CAnimation::getMessage(Message * m){
 		break;
 
 	case MSG_PLAYER_JUMP:
-		if (currentBot != jumpBot)
-		 currentBot->setEnabled(false);
-		 currentBot = jumpBot;
+		if (currentBot != jumpBot){
+			 currentBot = jumpBot;		
+		}
 		 _air = true;
 		break;
 
@@ -299,10 +317,12 @@ void CAnimation::getMessage(Message * m){
 		break;
 
 	case MSG_PLAYER_SHOT:
-		if (currentTop != shootTop)
-		currentTop->setEnabled(false);
-		currentTop = shootTop;
-		nextTop = shootTop;
+		if (currentTop != shootTop){
+			currentTop->setEnabled(false);
+			currentTop = shootTop;
+			nextTop = shootTop;
+		}
+		
 		break;
 	default:
 
@@ -315,7 +335,7 @@ void CAnimation::getMessage(Message * m){
 
 void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT){
 
-	if (nextB != nullptr)
+	if (nextB != nullptr){
 		if (nextB != currentBot)
 		{
 			if (nextB != jumpBot)
@@ -323,7 +343,8 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 			currentBot->setLoop(false);
 			nextBot = nextB;
 		}
-	if (nextT != nullptr)
+	}
+	if (nextT != nullptr){
 		if (nextT != currentTop)
 		{
 			if (nextT != shootTop)
@@ -331,6 +352,7 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 			currentTop->setLoop(false);
 			nextTop = nextT;
 		}
+	}
 }
 
 
