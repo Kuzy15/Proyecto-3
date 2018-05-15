@@ -125,7 +125,7 @@ GUI
           metrics_mode pixels
           left 175
           top 75
-          width 158
+          width 500
           height 75
           material GUI/Player1/LifeBar
 
@@ -172,7 +172,7 @@ GUI
             height 50
             material GUI/RoundEmpty
           }
-          container Panel (Player1/ActiveConainer/ActiveBar)
+          container Panel (Player1/ActiveContainer/ActiveBar)
           {
             metrics_mode pixels
             top 50

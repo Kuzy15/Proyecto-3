@@ -71,8 +71,7 @@ typedef enum ComponentType {
 	CMP_JONSU_MOON,
 	CMP_KHEPRI_BEETLE,
 	CMP_GUI_BUTTON,
-	CMP_GUI_P1GUI,
-	CMP_GUI_P2GUI,
+	CMP_GUI_PLAYERGUI,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
@@ -567,6 +566,33 @@ protected:
 	
 };
 
+GameComponent* createPassiveAbilityEmpty(Entity* father, int id);
+class CPSkillEmpty : public CAbility
+{
+public:
+	CPSkillEmpty(Entity * father);
+	~CPSkillEmpty();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+GameComponent* createActiveAbilityEmpty(Entity* father, int id);
+class CASkillEmpty : public CAbility
+{
+public:
+	CASkillEmpty(Entity * father);
+	~CASkillEmpty();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
 //invisibility
 GameComponent* createAbilityVidar(Entity* father, int id);
 class CPSkillVidar : public CAbility
@@ -822,6 +848,7 @@ private:
 };
 
 
+
 class CAbilityButton : public CButtonGUI
 {
 public:
@@ -837,32 +864,29 @@ private:
 	
 };
 
-class CPlayerGUI
+
+enum guiPlayer{
+	P1 = 0, P2 = 1
+};
+class CPlayerGUI: public GameComponent
 {
 public:
+	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, std::string characterName);
 	~CPlayerGUI();
-	virtual void updateLifebar() = 0;
-	virtual void updateActive() = 0;
+	void updateLifebar(size_t val);
+	void updateActive();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
 	void updatePassive();
 
-protected:
-	CPlayerGUI(Ogre::Overlay * ov, std::string GUIname, std::string characterName);
-	Ogre::OverlayContainer * pHud;
-	Ogre::OverlayContainer * plifeBar;
-	Ogre::Overlay * pOverlay;
-};
-
-class CPlayer1GUI: public GameComponent, CPlayerGUI
-{
-public:
-	CPlayer1GUI();
-	~CPlayer1GUI();
-	virtual void updateLifebar();
-	virtual void updateActive();
-
 private:
-
-
+	Ogre::OverlayContainer * pHud;
+	Ogre::OverlayContainer * pLowerHud;
+	Ogre::OverlayContainer * plifeBar;
+	Ogre::OverlayContainer * pActiveBar;
+	Ogre::Overlay * pOverlay;
+	size_t LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
+	guiPlayer p;
 };
 
 #endif
