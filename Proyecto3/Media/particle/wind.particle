@@ -14,13 +14,12 @@ particle_system wind
 	// Area emitter
 	emitter Point
 	{
-		position 0 1 0
-		angle 35
-		emission_rate 300
-		time_to_live 0.3
+		position 0 2 0
+		angle 30
+		emission_rate 400
+		time_to_live 0.25
 		direction 0 0 0
-		velocity_min 2
-		velocity_max 5    	
+		
 	}
 
 	affector ColourImage
