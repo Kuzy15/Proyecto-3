@@ -77,7 +77,9 @@ Game::Game(){
 	 players->at(1).controllerId = 1;
 	 players->at(1).god = EG_RA;
 
-	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_TEMPLE);
+	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_TEMPLE);
+
+	 actScene = new MainMenuScene("MainMenuScene", this);
 
 	 delete players;
 

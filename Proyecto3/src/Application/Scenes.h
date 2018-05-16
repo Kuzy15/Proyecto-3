@@ -9,7 +9,7 @@ class b2Body;
 enum E_GOD;
 enum E_STAGE;
 enum ComponentType;
-
+struct ControllerInputState;
 
 
 
@@ -58,7 +58,7 @@ protected:
 	void deleteAllMessages();
 	//Messaging attributes and methods
 	std::map<std::string,Entity *> _entities;
-	std::list<Entity*> _menuEntities;
+	std::map<int,Entity*> _menuEntities;
 	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
@@ -213,6 +213,10 @@ public:
 
 
 private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
 	
 
 };

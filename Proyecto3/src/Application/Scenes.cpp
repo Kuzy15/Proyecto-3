@@ -71,7 +71,7 @@ GameScene::~GameScene()
 
 }
 
-void GameScene::clearDebugDraw(){ dInstance.clear(); }
+void GameScene::clearDebugDraw(){dInstance.clear(); }
 bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
 		if(ent.second != NULL)ent.second->tick(delta);
@@ -155,9 +155,10 @@ void GameScene::deleteAllEntities(){
 	}
 	_entities.clear();
 
-	for (Entity* e : _menuEntities){
-		aux = e;
-		delete aux;
+	for (auto e : _menuEntities){
+		aux = e.second;
+		if (aux != nullptr)
+			delete aux;
 	}
 
 }
@@ -617,6 +618,30 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
+	selectedButton = 0;
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("GUI");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+
+	Entity * k = new Entity("GUI", this);
+	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, k));
+
+	overlay->show();
+
+	//Set the first button selected
+	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+
 }
 
 
@@ -632,7 +657,7 @@ bool MainMenuScene::run(){
 	//Take messages from input
 	InputManager::getInstance().getMessages(_messages);
 	//Then we deliver the messages
-	GameScene::dispatch();
+	dispatch();
 
 	processScnMsgs();
 
@@ -642,8 +667,6 @@ bool MainMenuScene::run(){
 	//Clear dispatched messages
 	clearMessageQueue();
 
-	//Delete entities removed from the scene at the last frame
-	//destroyEntities();
 
 	return aux;
 
@@ -651,14 +674,56 @@ bool MainMenuScene::run(){
 
 void MainMenuScene::dispatch(){
 	GameScene::dispatch();
+	
 
 }
 
 void MainMenuScene::processScnMsgs()
 {
+	MInputState* input;
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		switch (m->getType())
+		{
+		case MSG_INPUT_STATE:
+			input = static_cast<MInputState*>(*it);
+			processInput(input->getCInputState());
+			break;
+		default:
+			break;
+		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
+
+	
 
 };
 
+void MainMenuScene::processInput(ControllerInputState c){
+
+	int totalButtons = _menuEntities.size();
+
+	if (c.DPad_Down == BTT_PRESSED){
+		selectedButton++;
+		if (selectedButton >= totalButtons)
+			selectedButton = 0;
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+	else if (c.DPad_Up == BTT_PRESSED){
+		selectedButton--;
+		if (selectedButton < 0)
+			selectedButton = (totalButtons - 1);
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+
+	if (c.Button_A == BTT_PRESSED){
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+	}
+}
 
 
 
