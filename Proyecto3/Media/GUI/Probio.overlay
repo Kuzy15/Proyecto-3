@@ -35,15 +35,6 @@ template element Panel (GUI/Round)
   height 40
   material GUI/RoundEmpty
 }
-template element Panel (GUI/RoundFull)
-{
-  metrics_mode pixels
-  left 0
-  top 0
-  width 40
-  height 40
-  material GUI/RoundFull
-}
 
 // Graphical User Interface for the PlayScene.
 // The name of the overlay comes first
@@ -138,7 +129,7 @@ GUI
            material GUI/Player1/LifeFrame
           }
 
-        container Panel (Player1/Round1) : GUI/RoundFull
+        container Panel (Player1/Round1) : GUI/Round
         {
           top 170
           left 570
@@ -237,9 +228,9 @@ GUI
         {
           metrics_mode pixels
           horz_align right
-          left -205
+          left -675
           top 75
-          width 30
+          width 500
           height 75
           material GUI/Player2/LifeBar
         }
@@ -255,7 +246,7 @@ GUI
         }
 
 
-        container Panel (Player2/Round1) : GUI/RoundFull
+        container Panel (Player2/Round1) : GUI/Round
         {
           metrics_mode pixels
           horz_align right
@@ -273,7 +264,7 @@ GUI
 
 
         //Active Hability
-        container Panel (Player2ActiveContainer)
+        container Panel (Player2/ActiveContainer)
         {
           metrics_mode relative
           horz_align right
@@ -298,8 +289,8 @@ GUI
             metrics_mode pixels
             horz_align right
             top 50
-            left -225
-            width 100
+            left -275
+            width 150
             height 50
             material GUI/Player2/ActiveBar
           }

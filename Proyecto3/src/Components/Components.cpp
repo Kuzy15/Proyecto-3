@@ -779,11 +779,11 @@ void CPlayerController::getMessage(Message* m){
 
 //Life Component
 #pragma region Life Component
-CLife::CLife(Entity* father, float iniLife):GameComponent(CMP_LIFE,father), _maxLife(iniLife), _currentLife(iniLife){}
+CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {}
 CLife::~CLife(){}
 
 void CLife::tick(float delta){
-	
+
 
 }
 void CLife::getMessage(Message* m){
@@ -1713,7 +1713,8 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
-	LIFE_MIN_WIDTH = 15;
+	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();
+	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 15;
 
 
 }
@@ -1736,18 +1737,17 @@ void CPlayerGUI::getMessage(Message * m) {
 
 }
 void CPlayerGUI::updateLifebar(size_t val) {
-	if (p == P1) {
+
 		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
 		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
+		if(p == P1)
 		plifeBar->setWidth(newVal);
-	}
-	else {
-
-
-
-
-	}
-
+		else {
+			Ogre::Real newX = plifeBar->getLeft();
+			newX = (newX + plifeBar->getWidth()) - newVal;
+			plifeBar->setLeft(newX);
+			plifeBar->setWidth(newVal);
+		}
 }
 
 
