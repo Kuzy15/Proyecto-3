@@ -792,10 +792,10 @@ void CLife::getMessage(Message* m){
 	switch (m->getType()){
 	case MSG_DAMAGE:
 		_currentLife -= static_cast<MDamage*>(m)->getDamage();
+		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
 		if (_currentLife <= 0.0f){
 			pEnt->getMessage(new MDie(pEnt->getID()));
 		}
-		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
 		break;
 	default:
 		break;
