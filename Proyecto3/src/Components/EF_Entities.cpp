@@ -53,7 +53,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CPSkillVidar(Ra));
 	//Ra->addComponent(new CShuHeaddress(Ra, controllerId));
 	Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
-	Ra->addComponent(new CParticleRender({ 0, 0, 0 }, id + "sandRa", "sandRa", Ra, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
+	Ra->addComponent(new CParticleRender({ 0, 0, 0 }, id + "sandRa", "sandRa", Ra, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	
 
 	return Ra;
@@ -167,6 +167,10 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	Hachiman->addComponent(new CPlayerJump(Hachiman, JUMPFORCE));
 	//Move
 	Hachiman->addComponent(new CPlayerMove(Hachiman, VELOCITY));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanI", "windHachimanI", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanC", "windHachimanC", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanD", "windHachimanD", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+
 
 
 	return Hachiman;
