@@ -359,7 +359,11 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		cout << std::endl;
 	}
 	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
+
+	//Ogre::FontManager * a;
+	//a = Ogre::FontManager::getSingletonPtr();
+	//a->reloadAll();
 
 	Entity * k = new Entity("GUI", this);
 

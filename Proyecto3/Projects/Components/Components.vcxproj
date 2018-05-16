@@ -126,7 +126,7 @@
       <AdditionalDependencies>OgreMain.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\Ogre\Build\lib\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OgreOverlay.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>

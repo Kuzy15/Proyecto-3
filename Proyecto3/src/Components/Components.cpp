@@ -784,8 +784,11 @@ CLife::~CLife(){}
 
 void CLife::tick(float delta){
 
-	
+#ifdef DEBUG
+
 	std::cout << _currentLife << std::endl;
+#endif //  DEBUG
+
 }
 void CLife::getMessage(Message* m){
 
@@ -979,7 +982,11 @@ void CPlayerBasicAttack::getMessage(Message* m){
 	else if (m->getType() == MSG_MOD_DMG){
 		float dmgValue = static_cast<MModDmg*>(m)->getValue();
 		_damage = _damage + (_damage* dmgValue / 100.0f);
+#ifdef DEBUG
 		std::cout << _damage << "\n";
+
+#endif // DEBUG
+
 	}
 
 	else if (m->getType() == MSG_MOD_FIRERATE){
@@ -1084,8 +1091,11 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 			cos = -1;
 
 		angle = std::acosf(cos);
+#ifdef DEBUG
 
 		std::cout << angle << std::endl;
+#endif // DEBUG
+
 
 		angle = ((angle * 180.0f) / 3.14159265359f) - 90.0f;
 
@@ -1101,9 +1111,9 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 				angle += comp * 2;
 			}
 		}
-		
-
+#ifdef DEBUG
 		std::cout << angle << std::endl;
+#endif // DEBUG
 	}
 }
 
@@ -1648,10 +1658,16 @@ void CHerisMark::getMessage(Message* m)
 	// Check if a shot has been made
 	else if (_isActive && m->getType() == MSG_SHOT) {
 		_availableShots--;
+#ifdef DEBUG
 		std::cout << _availableShots << "\n";
+#endif // DEBUG
+
 		if (_availableShots == 0) {
 			_maxShots = true;
+#ifdef DEBUG
 			std::cout << "max" << "\n";
+#endif // DEBUG
+
 		}
 
 	}
@@ -1681,7 +1697,14 @@ CButtonGUI::CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback 
 		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
 		a->setCaption(_txt);
 	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	catch (Ogre::Exception e) {
+#ifdef DEBUG
+
+		std::cout << e.what() << std::endl; 
+#endif // DEBUG
+
+	
+	};
 
 }
 CButtonGUI::~CButtonGUI() 
@@ -1767,7 +1790,7 @@ void CPlayerGUI::getMessage(Message * m) {
 		TODO: Change the implementation so it filters the life state messages
 	
 	*/
-	if (m->getType() == MSG_LIFE_STATE && ((m->getEmmiter() == "Player_1" && p == P1) || (m->getEmmiter() == "Player_0" && p == P2)))
+	if (m->getType() == MSG_LIFE_STATE &&((m->getEmmiter() == "Player_1" && p == P1)||(m->getEmmiter() == "Player_0" && p == P2)))
 		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
 
 
