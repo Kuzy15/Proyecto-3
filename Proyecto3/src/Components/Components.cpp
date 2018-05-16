@@ -145,6 +145,23 @@ void CRender::getMessage(Message *m) {
 				_ogrepos.y = 0;
 				_ogrepos.z = 0;			
 
+				/*float actualX = pOgreSceneNode->getPosition().x;
+				float dir = parentPos.x - actualX;
+				float angle = pChild->getOrientation().getYaw().valueDegrees();
+
+				if (dir != 0){
+					if (dir < 0){
+						pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+						pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+					}
+					else{
+						pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+						pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
+
+					}
+				}*/
+
+
 				//Move the parent to the collider location of rotation.
 				pOgreSceneNode->setPosition(parentPos);
 				//Move the child to the real pos of the collider.
@@ -221,23 +238,11 @@ void CMeshRender::getMessage(Message * m) {
 		}
 		break;
 	case MSG_PLAYER_SHOT:
-
-		angle = pChild->getOrientation().getYaw().valueDegrees();
-
-		dir = static_cast<MPlayerShot*>(m)->getXValue();
-		if (dir != 0){
-			if (dir < 0){
-				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
-				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
-			}
-			else{
-				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
-				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
-
-			}
-		}
+		
 
 
+
+		
 		break;
 	case MSG_PASSMOD_DES:
 		invisActive = false;
@@ -265,21 +270,26 @@ Ogre::Vector3 CMeshRender::getSize(){
 #pragma endregion
 
 #pragma region Animation Component
-CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameComponent(CMP_ANIMATION, father){
+CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNode* child) : GameComponent(CMP_ANIMATION, father){
 	pOgreEnt = scnM->getEntity(father->getID());
+	pChild = child;
+	isShooting = false;
+	Ogre::Skeleton* sk = pOgreEnt->getSkeleton();
 
-	idleBot = pOgreEnt->getAnimationState("Idle Bot");
-	moveBot = pOgreEnt->getAnimationState("Move Bot");
+	idleBot = pOgreEnt->getAnimationState("idleBot");
+	moveBot = pOgreEnt->getAnimationState("moveBot");
 	jumpBot = pOgreEnt->getAnimationState("jumpBot");
 	airBot  = pOgreEnt->getAnimationState("airBot");
 
-	idleTop = pOgreEnt->getAnimationState("Idle Top");
-	moveTop = pOgreEnt->getAnimationState("Move Top");
+	idleTop = pOgreEnt->getAnimationState("idleTop");
+	moveTop = pOgreEnt->getAnimationState("moveTop");
 	//jumpTop = pOgreEnt->getAnimationState("Jump Top");
 	airTop  = pOgreEnt->getAnimationState("airTop");
-	chargeTop = pOgreEnt->getAnimationState("chargeTop");
+	//chargeTop = pOgreEnt->getAnimationState("chargeTop");
 	shootTop = pOgreEnt->getAnimationState("shootTop");
+	start = pOgreEnt->getAnimationState("start");
 
+	start->setLoop(false);
 	idleBot->setLoop(true);
 	moveBot->setLoop(true);
 	jumpBot->setLoop(false);
@@ -289,16 +299,16 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM) : GameCompone
 	moveTop->setLoop(true);
 	//jumpTop->setLoop(false);
 	airTop->setLoop(true);
-	chargeTop->setLoop(false);
+	//chargeTop->setLoop(false);
 	shootTop->setLoop(false);
 
 	currentBot = idleBot;
 	currentBot->setEnabled(true);
-	currentTop = idleTop;
+	currentTop = start;
 	currentTop->setEnabled(true);
 	nextBot = nullptr;
 	nextTop = nullptr;
-
+	starting = true;
 
 }
 CAnimation::~CAnimation(){
@@ -306,25 +316,7 @@ CAnimation::~CAnimation(){
 
 
 void CAnimation::tick(float delta){
-	/*if (currentBot != nextBot &&
-		currentBot->getLength() == currentBot->getTimePosition()){
-		currentBot->setEnabled(false);
-		currentBot = nextBot;
-	}
-	if (currentTop != nextTop &&
-		currentTop->getLength() == currentTop->getTimePosition()){
-		currentTop->setEnabled(false);
-		currentTop = nextTop;
-	}*/
 
-	//Se acabo la animacion.
-	if (currentTop->getLength() == currentTop->getTimePosition()){
-		currentTop = idleTop;
-	}
-
-	if (currentBot->getLength() == currentBot->getTimePosition()){
-		currentBot = idleBot;
-	}
 	//std::cout << currentBot->getAnimationName() << std::endl;
 	//std::cout << currentTop->getAnimationName() << std::endl;
 
@@ -334,32 +326,76 @@ void CAnimation::tick(float delta){
 	}
 	*/
 	
+	if (currentTop->getLength() == currentTop->getTimePosition()){
+		currentTop->setEnabled(false);
+		nextTop->setTimePosition(0);
+		nextTop->setEnabled(true);
+		currentTop = nextTop;
+		isShooting = false;
+		starting = false;
+	}
+
+	if (currentBot->getLength() == currentBot->getTimePosition()){
+		currentBot->setEnabled(false);
+		nextBot->setTimePosition(0);
+		nextBot->setEnabled(true);
+		currentBot = nextBot;
+
+	}
 
 
+	if (starting){
+		currentTop->addTime(delta);
+	}
+	else{
+		currentTop->addTime(delta * 3);
+		currentBot->addTime(delta*3);
+	}
 
-	currentBot->addTime(delta*2);
-	currentTop->addTime(delta*2);
 }
 void CAnimation::getMessage(Message * m){
 	MPlayerMoveX* mMoveX;
+	float angle;
+	float dir;
 	switch (m->getType())
 	{
 	case MSG_PLAYER_MOVE_X:
 		mMoveX = static_cast<MPlayerMoveX*>(m);
-		if (mMoveX->GetValue() != 0){
-			changeAnim(moveBot, moveTop, true);
-			/*if (_air)
-				changeAnim(airBot, airTop);		*/
+
+		
+		if (!isShooting){
+			dir = mMoveX->GetValue();
+			angle = pChild->getOrientation().getYaw().valueDegrees();
+
+			if (dir != 0){
+				if (dir < 0){
+					pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+					pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+				}
+				else{
+					pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+					pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
+
+				}
+			}		
 		}
-		else{
-			changeAnim(idleBot, idleTop, true);
+		
+
+
+		if (mMoveX->GetValue() != 0){
+			if (_air)
+				changeAnim(airBot, airTop,false,false);
+			else
+				changeAnim(moveBot, moveTop, true,false);
+				
+		}
+		else{			
+			changeAnim(idleBot, idleTop, true,false);
 		}
 		break;
 
-	case MSG_PLAYER_JUMP:
-		if (currentBot != jumpBot){
-			 currentBot = jumpBot;		
-		}
+	case MSG_RIGIDBODY_JUMP:
+		changeAnim(jumpBot, airTop, false,false);
 		 _air = true;
 		break;
 
@@ -367,39 +403,85 @@ void CAnimation::getMessage(Message * m){
 		_air = false;
 		break;
 
-	case MSG_PLAYER_SHOT:
-		if (currentTop != shootTop){
-			currentTop->setEnabled(false);
-			currentTop = shootTop;
-			nextTop = shootTop;
-		}
+	case MSG_SHOT:
 		
+		isShooting = true;
+		angle = pChild->getOrientation().getYaw().valueDegrees();
+
+		dir = static_cast<MPlayerShot*>(m)->getXValue();
+		if (dir != 0){
+			if (dir < 0){
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+			}
+			else{
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-angle), Ogre::Vector3(0, 1, 0)));
+				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
+
+			}
+		}		
+		changeAnim(currentBot, shootTop, false,true);
+
 		break;
 	default:
-
-		//currentBot->setEnabled(false);
-		//currentBot = idleBot;
-		//currentTop = idleTop;
 		break;
 	}
 }
-void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop){
+void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop, bool shoot){
 
-	if (nextB != currentBot){
-		currentBot->setEnabled(false);
-		nextB->setTimePosition(0);
-		nextB->setEnabled(true);
-		nextB->setLoop(loop);
-		currentBot = nextB;
+	if (nextT != nullptr){
+		if (currentTop->getLoop()){
+			if (nextT != currentTop){
+				currentTop->setEnabled(false);
+				nextT->setTimePosition(0);
+				nextT->setEnabled(true);
+				nextT->setLoop(loop);
+				currentTop = nextT;
+			}
+		}
+		else{
+
+			if (shoot){
+				if (nextT != currentTop){
+					currentTop->setEnabled(false);
+					nextT->setTimePosition(0);
+					nextT->setEnabled(true);
+					nextT->setLoop(loop);
+					currentTop = nextT;
+				}
+			}
+			else{
+				nextTop = nextT;
+				nextTop->setLoop(loop);
+				
+			}
+
+		}
+	}
+
+	if (nextB != nullptr){
+
+		if (currentBot->getLoop()){
+			if (nextB != currentBot){
+				currentBot->setEnabled(false);
+				nextB->setTimePosition(0);
+				nextB->setEnabled(true);
+				nextB->setLoop(loop);
+				currentBot = nextB;
+			}
+		}
+		else{
+
+			nextBot = nextB;
+			nextBot->setLoop(loop);
+
+		}
 	}
 	
-	if (nextT != currentTop){
-		currentTop->setEnabled(false);
-		nextT->setTimePosition(0);
-		nextT->setEnabled(true);
-		nextT->setLoop(loop);
-		currentTop = nextT;	
-	}
+
+	
+	
+	
 }
 #pragma endregion
 

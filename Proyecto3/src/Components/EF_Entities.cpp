@@ -26,7 +26,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x / 2.0f, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	Ra->addComponent(new CCameraFollow(Ra));
@@ -55,7 +55,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
 	
 	//Animation
-	Ra->addComponent(new CAnimation(Ra, s->getSceneManager()));
+	Ra->addComponent(new CAnimation(Ra, s->getSceneManager(), cM->getChildNode()));
 
 	return Ra;
 }
@@ -71,7 +71,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x / 2.0f, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER, controllerId));
 
 	//CameraFollow
 	AhPuch->addComponent(new CCameraFollow(AhPuch));
@@ -90,6 +90,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	AhPuch->addComponent(new CPlayerJump(AhPuch, JUMPFORCE));
 	//Move
 	AhPuch->addComponent(new CPlayerMove(AhPuch, VELOCITY));
+	AhPuch->addComponent(new CAnimation(AhPuch, s->getSceneManager(), cM->getChildNode()));
 
 
 	return AhPuch;
@@ -101,13 +102,13 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	Entity* Zeus = new Entity("Player_" + std::to_string(controllerId), s);
 
 	//Mesh Render
-	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "Zeus/Zeus.mesh", Zeus, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0});
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "Zeus.mesh", Zeus, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0});
 	Zeus->addComponent(cM);
 
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x/2.0f,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 	
 	//CameraFollow
 	Zeus->addComponent(new CCameraFollow(Zeus));
@@ -127,6 +128,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//Move
 	Zeus->addComponent(new CPlayerMove(Zeus, VELOCITY));
 	Zeus->addComponent(new CHerisMark(Zeus, controllerId));
+	Zeus->addComponent(new CAnimation(Zeus, s->getSceneManager(), cM->getChildNode()));
 	
 
 	return Zeus;
@@ -145,7 +147,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x / 2.0f, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER, controllerId));
 
 	//CameraFollow
 	Hachiman->addComponent(new CCameraFollow(Hachiman));
@@ -255,7 +257,7 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 
 
 	//Bullet
-	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 100.0f));
+	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 1000.0f));
 
 	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 },id + "Smoke" , "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
 

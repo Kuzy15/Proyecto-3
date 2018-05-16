@@ -228,6 +228,7 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
+	Ogre::SceneNode* getChildNode(){ return pChild; }
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -243,7 +244,7 @@ class CAnimation : public GameComponent
 {
 public:
 
-	CAnimation(Entity * father, Ogre::SceneManager * scnM);
+	CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNode* child);
 	~CAnimation();
 
 
@@ -252,9 +253,12 @@ public:
 	
 private:
 
-	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop);
+	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop, bool shoot);
 	bool _air;
+	bool isShooting;
+	bool starting;
 	Ogre::Entity * pOgreEnt;
+	Ogre::SceneNode* pChild;
 	//Animation pointers (Bot and Top)
 	Ogre::AnimationState* idleBot;
 	Ogre::AnimationState* moveBot;
@@ -268,6 +272,7 @@ private:
 	Ogre::AnimationState* chargeTop;
 	Ogre::AnimationState* shootTop;
 
+	Ogre::AnimationState* start;
 	//Current animation pointers
 	
 	Ogre::AnimationState* currentTop;
