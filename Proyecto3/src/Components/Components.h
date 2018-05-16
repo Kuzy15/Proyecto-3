@@ -80,7 +80,7 @@ typedef enum ComponentType {
 
 };
 
-typedef void(ButtonAbilityCallback)(int playerId, ComponentType c);
+typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
 
 //Basic gameComponent class from which every other component will inherit.
 class GameComponent
@@ -852,13 +852,12 @@ private:
 class CAbilityButton : public CButtonGUI
 {
 public:
-	CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, ButtonAbilityCallback* c, int playerId, ComponentType compType);
+	CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, ComponentType compType);
 	~CAbilityButton();
 
 	virtual void getMessage(Message * m);
 	
 private:
-	ButtonAbilityCallback * _callback;
 	int _playerId;
 	ComponentType _compType;
 	

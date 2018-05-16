@@ -308,6 +308,7 @@ void K() {
 	std::cout << "CCALLLBACKK " << std::endl;
 }
 
+
 #pragma region GamePlayScene
 
 /*------------ Callback functions for card select buttons --------------*/
@@ -451,6 +452,9 @@ void GamePlayScene::dispatch(){
 
 void GamePlayScene::processScnMsgs(){
 
+
+	MAbilitySet* mAbility;
+
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
 		Message* m = (*it);
@@ -465,6 +469,10 @@ void GamePlayScene::processScnMsgs(){
 			if (m->getEmmiter().compare(0, 6, std::string("Player")) == 0){
 				playerDied(m->getEmmiter());
 			}
+			break;
+		case MSG_ABILITY_SETTER:
+			mAbility = static_cast<MAbilitySet*>(m);
+			addAbilityComponent(mAbility->getId(), mAbility->getComponentType(), mAbility->getType());
 			break;
 		default:
 			break;
@@ -601,15 +609,42 @@ void GamePlayScene::loadAbilities(){
 	Ogre::Vector2 auxPos(-100.0f,150.0f);
 	int idCounter = 0;
 	for (Player p : _players){
+		//There, we should choose 3 random abilities to show
 		for (ComponentType c : p.abilities){
 			aux = new Entity((to_string(p.controllerId) + to_string(c)), this);
-			aux->addComponent(new CNormalButton(overlay, aux, idCounter, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
-
+			aux->addComponent(new CAbilityButton(overlay, aux, idCounter, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), p.controllerId, c));
 			idCounter++;
 		}
 	}
 
 }
+
+void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId, int type){
+
+	GameComponent* c = EntityFactory::getInstance().createAbility(compId, _players[playerId].entity, playerId);
+	Player p = _players[playerId];
+#ifdef _DEBUG
+	if (c == nullptr)
+		std::cout << "No existe esa habilidad" << std::endl;
+#endif
+	//if is active or passive
+	if (type == 0){
+		if (p.currentActive != compId /*cambiar por default*/){
+			p.entity->deleteComponent(p.currentActive);
+			p.entity->addComponent(c);
+		}
+		else { delete c; }
+	}
+	else{
+		if (p.currentPassive != compId /*cambiar por default*/){
+			p.entity->deleteComponent(p.currentPassive);
+			p.entity->addComponent(c);
+		}
+		else { delete c; }
+	}
+
+}
+
 #pragma endregion
 
 #pragma region Main Menu Scene

@@ -144,6 +144,8 @@ struct Player{
 	E_GOD god;
 	int roundsWon = 0;
 	std::vector<ComponentType> abilities;
+	ComponentType currentActive; // = default
+	ComponentType currentPassive;
 };
 
 
@@ -167,6 +169,7 @@ private:
 	void loadStage();
 	//Load the ability cards entities for each player
 	void loadAbilities();
+	void addAbilityComponent(int playerId, ComponentType id, int type); //Type values (0 = Active), (1 = Passive)
 	//Controller manage methods
 	void controllerDisconected(int id);
 	void controllerConnected(int id);

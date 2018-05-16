@@ -79,7 +79,7 @@ Game::Game(){
 
 	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_TEMPLE);
 
-	 actScene = new MainMenuScene("MainMenuScene", this);
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players),ES_ISLANDS);
 
 	 delete players;
 

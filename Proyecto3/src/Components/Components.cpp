@@ -1756,14 +1756,14 @@ void CNormalButton::getMessage(Message * me)
 #pragma endregion
 
 #pragma region Ability Button
-CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, ButtonAbilityCallback* c, int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
+CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize,  int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
 _playerId(playerId), _compType(compType){
 	materials[0] = "GUI/Button/Idle";
 	materials[1] = "GUI/Button/Active";
 	materials[2] = "GUI/Button/Click";
 
 
-	_callback = c;
+	
 	
 
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
@@ -1798,7 +1798,8 @@ void CAbilityButton::getMessage(Message * me)
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
 		_clicked = true;
-		_callback(_playerId,_compType);
+		
+		pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(),_playerId,_compType,0));
 
 	}
 
