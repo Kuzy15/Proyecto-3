@@ -47,7 +47,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Move
 
 	Ra->addComponent(new CPlayerMove(Ra, VELOCITY));
-	Ra->addComponent(new CPSkillHades(Ra));
+
 	//Ra->addComponent(new CPSkillHermes(Ra, 10.0f, 10.0f));
 	//Ra->addComponent(new CPSkillUll(Ra,0));
 	//Ra->addComponent(new CPSkillVidar(Ra));
@@ -285,7 +285,7 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 		bAhPuch->addComponent(new CRigidBody(bAhPuch, s->getGame()->getPhysicsWorld(), pos, heigth, weight, angle, RB_DYNAMIC, SH_POLYGON, MASK_BULLET_1,-1));
 
 	//Bullet
-	bAhPuch->addComponent(new CBullet(bAhPuch, EB_HACHIMAN, damage, 70.0f));
+	bAhPuch->addComponent(new CBullet(bAhPuch, EB_HACHIMAN, damage, 700.0f));
 
 
 	return bAhPuch;

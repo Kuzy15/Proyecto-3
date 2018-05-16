@@ -562,6 +562,33 @@ protected:
 	
 };
 
+GameComponent* createPassiveAbilityEmpty(Entity* father, int id);
+class CPSkillEmpty : public CAbility
+{
+public:
+	CPSkillEmpty(Entity * father);
+	~CPSkillEmpty();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+GameComponent* createActiveAbilityEmpty(Entity* father, int id);
+class CASkillEmpty : public CAbility
+{
+public:
+	CASkillEmpty(Entity * father);
+	~CASkillEmpty();
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+
+
+};
+
+
 //invisibility
 GameComponent* createAbilityVidar(Entity* father, int id);
 class CPSkillVidar : public CAbility
