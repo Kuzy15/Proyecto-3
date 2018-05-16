@@ -93,8 +93,15 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB1AhPuch", "pB1AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB2AhPuch", "pB2AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	//AhPuch->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "pB3AhPuch", "pB3AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
+	
 
-
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus1", "LZeus1", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus2", "LZeus2", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus3", "LZeus3", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus4", "LZeus4", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus5", "LZeus5", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus6", "LZeus6", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	
 	return AhPuch;
 }
 
@@ -166,12 +173,21 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//Jump
 	Hachiman->addComponent(new CPlayerJump(Hachiman, JUMPFORCE));
 	//Move
-	Hachiman->addComponent(new CPlayerMove(Hachiman, VELOCITY));
+	/*Hachiman->addComponent(new CPlayerMove(Hachiman, VELOCITY));
 	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanI", "windHachimanI", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanC", "windHachimanC", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanD", "windHachimanD", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 
+	*/
 
+
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus1", "LZeus1", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus2", "LZeus2", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus3", "LZeus3", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus4", "LZeus4", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus5", "LZeus5", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus6", "LZeus6", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
+	
 
 	return Hachiman;
 }
