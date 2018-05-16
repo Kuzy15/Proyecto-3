@@ -14,6 +14,8 @@ material Neto
     }
   }
 }
+//------------------------- BUTTON MATERIALS ---------------------------------
+
 material GUI/Button/Click
 {
   technique
@@ -58,35 +60,8 @@ material GUI/Button/Idle
   }
 }
 
-material GUI/Base_Player {
-  technique
-  {
-    pass
-    {
-      scene_blend alpha_blend
-       texture_unit
-       {
-          texture PlayerGradient.png
-          tex_address_mode clamp
-       }
-    }
-  }
-}
-material GUI/Base_Player2 {
-  technique
-  {
-    pass
-    {
-      scene_blend alpha_blend
-       texture_unit
-       {
-          texture PlayerGradient.png
-          tex_address_mode clamp
-          scale -1 1
-       }
-    }
-  }
-}
+
+
 material GUI/RoundEmpty {
   technique
   {
@@ -123,6 +98,20 @@ material GUI/RoundFull {
 
 
 //------------------------- PLAYER 1 MATERIALS ---------------------------------
+material GUI/Base_Player {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture PlayerGradient.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
 material GUI/Player1/LifeBar
 {
   technique
@@ -200,41 +189,106 @@ material GUI/Player1/ActiveBar
     }
   }
 }
-
-
-
-//-----------------------------------------------------------------------------
-
-
-material GUI/PlayerInfo/LifeBorder
+//------------------------- PLAYER 2 MATERIALS ---------------------------------
+material GUI/Base_Player2 {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture PlayerGradient.png
+          tex_address_mode clamp
+          scale -1 1
+       }
+    }
+  }
+}
+material GUI/Player2/LifeBar
 {
   technique
   {
     pass
     {
+      scene_blend alpha_blend
        texture_unit
        {
-          texture tiles.png
+          texture LifeBar_P1.png
+          tex_address_mode clamp
+          scale -1 1
        }
+    }
+  }
+}
+
+  material GUI/Player2/LifeBar_BG
+  {
+    technique
+    {
+      pass
+      {
+        scene_blend alpha_blend
+         texture_unit
+         {
+            texture LifeBar_BG_P1.png
+            tex_address_mode clamp
+            scale -1 1
+          }
     }
   }
 
 }
-
-
-//Material used for the container of the lifeBar
-material GUI/LifeContainer{
+material GUI/Player2/LifeFrame
+{
   technique
   {
     pass
     {
-      texture_unit
-      {
-        texture linear_gradient.png
-      }
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Life_Frame_P1.png
+          tex_address_mode clamp
+          scale -1 1
+       }
     }
   }
 }
+material GUI/Player2/ActiveFrame
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Active_Frame_P1.png
+          tex_address_mode clamp
+          scale -1 1
+       }
+    }
+  }
+}
+material GUI/Player2/ActiveBar
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture ActiveBar_P1.png
+          tex_address_mode clamp
+          scale -1 1
+       }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 material GUI/BasicRed
 {
