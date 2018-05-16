@@ -1,4 +1,4 @@
-material Neto
+material GUI/Chrono
 {
   technique
   {
@@ -8,7 +8,6 @@ material Neto
       texture_unit
       {
         texture Chrono.png
-        rotate_anim 0.5
         tex_address_mode clamp
       }
     }
@@ -121,7 +120,7 @@ material GUI/Player1/LifeBar
       scene_blend alpha_blend
        texture_unit
        {
-          texture LifeBar_P1.png
+          texture LifeBar.png
           tex_address_mode clamp
        }
     }
@@ -137,7 +136,7 @@ material GUI/Player1/LifeBar
         scene_blend alpha_blend
          texture_unit
          {
-            texture LifeBar_BG_P1.png
+            texture LifeBar_BG.png
             tex_address_mode clamp
           }
     }
@@ -153,7 +152,7 @@ material GUI/Player1/LifeFrame
       scene_blend alpha_blend
        texture_unit
        {
-          texture Life_Frame_P1.png
+          texture Life_Frame.png
           tex_address_mode clamp
        }
     }
@@ -168,7 +167,7 @@ material GUI/Player1/ActiveFrame
       scene_blend alpha_blend
        texture_unit
        {
-          texture Active_Frame_P1.png
+          texture Active_Frame.png
           tex_address_mode clamp
        }
     }
@@ -183,7 +182,7 @@ material GUI/Player1/ActiveBar
       scene_blend alpha_blend
        texture_unit
        {
-          texture ActiveBar_P1.png
+          texture ActiveBar.png
           tex_address_mode clamp
        }
     }
@@ -214,7 +213,7 @@ material GUI/Player2/LifeBar
       scene_blend alpha_blend
        texture_unit
        {
-          texture LifeBar_P1.png
+          texture LifeBar.png
           tex_address_mode clamp
           scale -1 1
        }
@@ -231,7 +230,7 @@ material GUI/Player2/LifeBar
         scene_blend alpha_blend
          texture_unit
          {
-            texture LifeBar_BG_P1.png
+            texture LifeBar_BG.png
             tex_address_mode clamp
             scale -1 1
           }
@@ -248,7 +247,7 @@ material GUI/Player2/LifeFrame
       scene_blend alpha_blend
        texture_unit
        {
-          texture Life_Frame_P1.png
+          texture Life_Frame.png
           tex_address_mode clamp
           scale -1 1
        }
@@ -264,7 +263,7 @@ material GUI/Player2/ActiveFrame
       scene_blend alpha_blend
        texture_unit
        {
-          texture Active_Frame_P1.png
+          texture Active_Frame.png
           tex_address_mode clamp
           scale -1 1
        }
@@ -280,7 +279,7 @@ material GUI/Player2/ActiveBar
       scene_blend alpha_blend
        texture_unit
        {
-          texture ActiveBar_P1.png
+          texture ActiveBar.png
           tex_address_mode clamp
           scale -1 1
        }

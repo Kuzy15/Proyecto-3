@@ -784,6 +784,7 @@ CLife::~CLife(){}
 
 void CLife::tick(float delta){
 
+	
 
 }
 void CLife::getMessage(Message* m){
@@ -1731,7 +1732,7 @@ void CPlayerGUI::getMessage(Message * m) {
 		TODO: Change the implementation so it filters the life state messages
 	
 	*/
-	if (m->getType() == MSG_LIFE_STATE)
+	if (m->getType() == MSG_LIFE_STATE && ((m->getEmmiter() == "Player_1" && p == P1) || (m->getEmmiter() == "Player_0" && p == P2)))
 		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
 
 
