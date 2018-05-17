@@ -2085,26 +2085,36 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_G
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
 	
 	std::string charName;
+	std::string iconMatName = "GUI/Icons/" ;
 
 
 	switch (character) {
 	case EG_RA:
 		charName = "Ra";
+		if (p == P1)iconMatName += "Ra_P1";
+		else iconMatName += "Ra_P2";
 		break;
 	case EG_AHPUCH:
 		charName = "Ahpuch";
+		if (p == P1)iconMatName += "AhPuch_P1";
+		else iconMatName += "AhPuch_P2";
 		break;
 	case EG_HACHIMAN:
 		charName = "Hachiman";
+		if (p == P1)iconMatName += "Hachiman_P1";
+		else iconMatName += "Hachiman_P2";
 		break;
 	case EG_ZEUS:
 		charName = "Zeus";
+		if (p == P1)iconMatName += "Zeus_P1";
+		else iconMatName += "Zeus_P2";
 		break;
 	}
 
 
-
+//	std::cout << iconMatName << std::endl;
 	pHud->getChild(player + "/Name")->setCaption(charName);
+	pHud->getChild(player + "/Icon")->setMaterialName(iconMatName);
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
 	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();

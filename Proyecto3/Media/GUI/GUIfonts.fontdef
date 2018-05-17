@@ -17,5 +17,5 @@ GUI/PlayerText
 type truetype
 source Samoerai.ttf
 size 30
-resolution 	75
+resolution 	96
 }
