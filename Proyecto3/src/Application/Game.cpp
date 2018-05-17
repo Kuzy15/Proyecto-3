@@ -71,13 +71,13 @@ Game::Game(){
 	 std::vector<Player>* players = new std::vector<Player>(2);
 
 	 players->at(0).controllerId = 0;
-	 players->at(0).god = EG_ZEUS;
+	 players->at(0).god = EG_RA;
 
 	 players->at(1).controllerId = 1;
-	 players->at(1).god = EG_HACHIMAN;
+	 players->at(1).god = EG_AHPUCH;
 
 
-	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_TEMPLE);
 
 
 	 delete players;

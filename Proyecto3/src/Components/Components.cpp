@@ -1515,7 +1515,7 @@ void CArmor::getMessage(Message* m){}
 #pragma region CPSkill Component
 
 GameComponent* createPassiveAbilityEmpty(Entity* father, int id){ return new CPSkillEmpty(father); }
-CPSkillEmpty::CPSkillEmpty(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 0, 0, MASK_LEGS_0){
+CPSkillEmpty::CPSkillEmpty(Entity * father) :CAbility(CMP_PASSIVE_DEFAULT, father, 0, 0, MASK_LEGS_0){
 
 }
 CPSkillEmpty::~CPSkillEmpty(){}
@@ -1526,7 +1526,7 @@ void CPSkillEmpty::getMessage(Message* m){
 }
 
 GameComponent* createActiveAbilityEmpty(Entity* father, int id){ return new CASkillEmpty(father); }
-CASkillEmpty::CASkillEmpty(Entity * father) :CAbility(CMP_HERA_RUNE, father, 0, 0, MASK_HEAD_0){
+CASkillEmpty::CASkillEmpty(Entity * father) :CAbility(CMP_ACTIVE_DEFAULT, father, 0, 0, MASK_HEAD_0){
 
 }
 CASkillEmpty::~CASkillEmpty(){}
@@ -2024,7 +2024,7 @@ _playerId(playerId), _compType(compType){
 	
 	
 
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
