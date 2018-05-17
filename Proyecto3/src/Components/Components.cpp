@@ -189,10 +189,6 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-	//std::cout << pOgreSceneNode->getPosition().x << std::endl;
-	
-	
-	
 	
 }
 void CMeshRender::getMessage(Message * m) {
