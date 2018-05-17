@@ -370,7 +370,11 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		cout << std::endl;
 	}
 	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
+
+	//Ogre::FontManager * a;
+	//a = Ogre::FontManager::getSingletonPtr();
+	//a->reloadAll();
 
 	Entity * k = new Entity("GUI", this);
 
@@ -379,6 +383,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
 
 	k->addComponent(new CPlayerGUI(k, overlay, P1, "RA"));
+	k->addComponent(new CPlayerGUI(k, overlay, P2, "HACHISMAN"));
 
 	addEntity(k);
 	// Create a panel

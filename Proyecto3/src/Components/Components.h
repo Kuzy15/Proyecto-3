@@ -885,6 +885,7 @@ private:
 	Ogre::OverlayContainer * pActiveBar;
 	Ogre::Overlay * pOverlay;
 	size_t LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
+	size_t ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
 	guiPlayer p;
 };
 

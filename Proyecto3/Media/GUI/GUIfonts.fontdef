@@ -5,3 +5,10 @@ GUI/ButtonText
 	size 		40
 	resolution 	96
 }
+GUI/TimeText
+{
+	type 		truetype
+	source 		Blackwood_Castle.ttf
+	size 		40
+	resolution 	96
+}

@@ -218,7 +218,13 @@ bool Game::initOgre(){
 
 		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; }
+	catch (Ogre::Exception e) { 
+	#ifdef DEBUG
+		std::cout << e.what() << std::endl; 
+	#endif // DEBUG
+	}
+
+
 
 
 
@@ -261,9 +267,16 @@ void Game::loop() {
 			frames++;
 		}
 		//std::cout << frames << std::endl;
+#ifdef DEBUG
 		world->DrawDebugData();
+#endif // DEBUG
+
 		render();
+
+#ifdef DEBUG
 		actScene->clearDebugDraw();
+#endif // DEBUG
+
 	}
 
 }

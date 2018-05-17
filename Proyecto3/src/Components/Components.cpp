@@ -779,22 +779,26 @@ void CPlayerController::getMessage(Message* m){
 
 //Life Component
 #pragma region Life Component
-CLife::CLife(Entity* father, float iniLife):GameComponent(CMP_LIFE,father), _maxLife(iniLife), _currentLife(iniLife){}
+CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {}
 CLife::~CLife(){}
 
 void CLife::tick(float delta){
-	
+
+#ifdef DEBUG
+
 	std::cout << _currentLife << std::endl;
+#endif //  DEBUG
+
 }
 void CLife::getMessage(Message* m){
 
 	switch (m->getType()){
 	case MSG_DAMAGE:
 		_currentLife -= static_cast<MDamage*>(m)->getDamage();
+		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
 		if (_currentLife <= 0.0f){
 			pEnt->getMessage(new MDie(pEnt->getID()));
 		}
-		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
 		break;
 	default:
 		break;
@@ -978,7 +982,11 @@ void CPlayerBasicAttack::getMessage(Message* m){
 	else if (m->getType() == MSG_MOD_DMG){
 		float dmgValue = static_cast<MModDmg*>(m)->getValue();
 		_damage = _damage + (_damage* dmgValue / 100.0f);
+#ifdef DEBUG
 		std::cout << _damage << "\n";
+
+#endif // DEBUG
+
 	}
 
 	else if (m->getType() == MSG_MOD_FIRERATE){
@@ -1083,8 +1091,11 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 			cos = -1;
 
 		angle = std::acosf(cos);
+#ifdef DEBUG
 
 		std::cout << angle << std::endl;
+#endif // DEBUG
+
 
 		angle = ((angle * 180.0f) / 3.14159265359f) - 90.0f;
 
@@ -1100,9 +1111,9 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 				angle += comp * 2;
 			}
 		}
-		
-
+#ifdef DEBUG
 		std::cout << angle << std::endl;
+#endif // DEBUG
 	}
 }
 
@@ -1647,10 +1658,16 @@ void CHerisMark::getMessage(Message* m)
 	// Check if a shot has been made
 	else if (_isActive && m->getType() == MSG_SHOT) {
 		_availableShots--;
+#ifdef DEBUG
 		std::cout << _availableShots << "\n";
+#endif // DEBUG
+
 		if (_availableShots == 0) {
 			_maxShots = true;
+#ifdef DEBUG
 			std::cout << "max" << "\n";
+#endif // DEBUG
+
 		}
 
 	}
@@ -1666,6 +1683,7 @@ CButtonGUI::CButtonGUI(ComponentType t,Ogre::Overlay * overlay, Entity * father,
 	pOver = overlay;
 	
 	_sceneId = sceneId;
+
 
 }
 CButtonGUI::~CButtonGUI() 
@@ -1826,7 +1844,8 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
-	LIFE_MIN_WIDTH = 15;
+	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();
+	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 15;
 
 
 }
@@ -1837,24 +1856,29 @@ void CPlayerGUI::tick(float delta) {
 
 }
 void CPlayerGUI::getMessage(Message * m) {
-	if (m->getType() == MSG_LIFE_STATE)
+	/*
+		This must be modyfied, as it takes EVERY life state update without knowing if the sender
+		is the player that this part of the HUD tracks.
+		TODO: Change the implementation so it filters the life state messages
+	
+	*/
+	if (m->getType() == MSG_LIFE_STATE &&((m->getEmmiter() == "Player_1" && p == P1)||(m->getEmmiter() == "Player_0" && p == P2)))
 		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
 
 
 }
 void CPlayerGUI::updateLifebar(size_t val) {
-	if (p == P1) {
+
 		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
 		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
+		if(p == P1)
 		plifeBar->setWidth(newVal);
-	}
-	else {
-
-
-
-
-	}
-
+		else {
+			Ogre::Real newX = plifeBar->getLeft();
+			newX = (newX + plifeBar->getWidth()) - newVal;
+			plifeBar->setLeft(newX);
+			plifeBar->setWidth(newVal);
+		}
 }
 
 
