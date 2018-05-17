@@ -36,8 +36,22 @@ template element Panel (GUI/Round)
   material GUI/RoundEmpty
 }
 
+Background
+{
+	zorder 200
+	container Panel (Wololo)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/BasicRed
+	}
+
+}
+
+
 // Graphical User Interface for the PlayScene.
-// The name of the overlay comes first
 GUI
 {
     zorder 200
@@ -101,15 +115,6 @@ GUI
           char_height 30
         }
 
-        //element Panel(Player1/LifeBarBackground)
-        //{
-          //metrics_mode pixels
-          //left 50
-          //top 100
-          //width 470
-          //height 86
-        //  material GUI/Player1/LifeBar_BG
-      //  }
         container Panel (Player1/LifeBar)
         {
           metrics_mode pixels

@@ -174,6 +174,10 @@ private:
 	void controllerDisconected(int id);
 	void controllerConnected(int id);
 
+	//ProcessMessages
+	void processMsgSetup(Message* m);
+	void processMsgBattle(Message* m);
+	void processMsgEnd(Message* m);
 	void playerDied(std::string playerDead);
 
 	Ogre::Light * light;
@@ -187,6 +191,8 @@ private:
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
 	bool _paused;
 	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
+
+	Ogre::Overlay* bgCards;
 
 	float _prepareCounter;
 	float _prepareLimitTime;

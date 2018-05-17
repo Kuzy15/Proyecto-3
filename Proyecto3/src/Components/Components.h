@@ -14,6 +14,7 @@ class Entity;
 class Message;
 typedef enum E_BULLET;
 typedef void ButtonCallback();
+typedef enum E_GOD;
 
 
 
@@ -75,8 +76,11 @@ typedef enum ComponentType {
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
+	CMP_ANIMATION,
 	CMP_CAMERA_FOLLOW,
-	CMP_NORMAL_BUTTON
+	CMP_NORMAL_BUTTON,
+	CMP_ACTIVE_DEFAULT,
+	CMP_PASSIVE_DEFAULT
 
 };
 
@@ -164,6 +168,7 @@ protected:
 	Ogre::Vector3 _ogrepos;
 	Ogre::Quaternion _ogrequat;
 	Ogre::SceneNode* pChild;
+	float lastDir;
 	
 };
 
@@ -231,6 +236,7 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
+	Ogre::SceneNode* getChildNode(){ return pChild; }
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -238,6 +244,51 @@ private:
 
 	
 	
+};
+
+
+//--------- ANIMATION COMPONENT ---------
+class CAnimation : public GameComponent
+{
+public:
+
+	CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNode* child);
+	~CAnimation();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+private:
+
+	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop, bool shoot);
+	bool _air;
+	bool isShooting;
+	bool starting;
+	Ogre::Entity * pOgreEnt;
+	Ogre::SceneNode* pChild;
+	//Animation pointers (Bot and Top)
+	Ogre::AnimationState* idleBot;
+	Ogre::AnimationState* moveBot;
+	Ogre::AnimationState* jumpBot;
+	Ogre::AnimationState* airBot;
+
+	Ogre::AnimationState* idleTop;
+	Ogre::AnimationState* moveTop;
+	//Ogre::AnimationState* jumpTop;
+	Ogre::AnimationState* airTop;
+	Ogre::AnimationState* chargeTop;
+	Ogre::AnimationState* shootTop;
+
+	Ogre::AnimationState* start;
+	//Current animation pointers
+	
+	Ogre::AnimationState* currentTop;
+	Ogre::AnimationState* currentBot;
+
+	Ogre::AnimationState* nextTop;
+	Ogre::AnimationState* nextBot;
+
 };
 
 //---------   CAMERA COMPONENT   ---------
@@ -867,10 +918,12 @@ private:
 enum guiPlayer{
 	P1 = 0, P2 = 1
 };
+
+
 class CPlayerGUI: public GameComponent
 {
 public:
-	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, std::string characterName);
+	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, E_GOD character);
 	~CPlayerGUI();
 	void updateLifebar(size_t val);
 	void updateActive();

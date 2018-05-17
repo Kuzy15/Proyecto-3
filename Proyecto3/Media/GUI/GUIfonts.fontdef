@@ -12,3 +12,10 @@ GUI/TimeText
 	size 		40
 	resolution 	96
 }
+GUI/PlayerText
+{
+type truetype
+source Samoerai.ttf
+size 30
+resolution 	75
+}
