@@ -14,7 +14,7 @@
 
 
 #pragma region Constructors and Destructors
-Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc)
+Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc), _active(true)
 {
 
 }
@@ -37,6 +37,7 @@ Entity::~Entity()
 		
 	}
 	
+
 	while (!msgs.empty()){
 		Message * aux = msgs.front();
 		msgs.pop();
@@ -44,6 +45,8 @@ Entity::~Entity()
 	}
 
 }
+
+
 #pragma endregion
 
 #pragma region Component Interaction
@@ -128,17 +131,34 @@ void Entity::dispatch(){
 	}
 }
 
+void Entity::deleteAllMsgs(){
+
+	while (!msgs.empty()){
+		Message * aux = msgs.front();
+		if (aux->getDestination() == ENTITY)
+			delete aux;
+		msgs.pop();
+	}
+
+}
 #pragma endregion
 
 #pragma region Tick
 void Entity::tick(float delta){
-	//Deliver every message in queue
-	dispatch();
 
-	//Update every component in the entity
-	for (auto comp : components)
-		comp->tick(delta);
+	if (_active){
 
+		//Deliver every message in queue
+		dispatch();
+
+		//Update every component in the entity
+		for (auto comp : components)
+			comp->tick(delta);
+	}
+	else
+		deleteAllMsgs();
+	
+	
 }
 
 #pragma endregion

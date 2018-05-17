@@ -144,8 +144,10 @@ struct Player{
 	E_GOD god;
 	int roundsWon = 0;
 	std::vector<ComponentType> abilities;
-	ComponentType currentActive; // = default
+	ComponentType currentActive; 
 	ComponentType currentPassive;
+	bool passiveSelected = false;
+	bool activeSelected = false;
 };
 
 
@@ -169,7 +171,7 @@ private:
 	void loadStage();
 	//Load the ability cards entities for each player
 	void loadAbilities();
-	void addAbilityComponent(int playerId, ComponentType id, int type); //Type values (0 = Active), (1 = Passive)
+	void addAbilityComponent(int playerId, ComponentType id); //Type values (0 = Active), (1 = Passive)
 	//Controller manage methods
 	void controllerDisconected(int id);
 	void controllerConnected(int id);
@@ -188,9 +190,11 @@ private:
 	const int TOTAL_ROUNDS = 3;
 	int _nPlayers;				//Number of players
 	std::vector<Player> _players;	//Array of pointer to the players Entities
-	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
+	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
 	bool _paused;
 	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
+	int player1Index;
+	int player2Index;
 
 	Ogre::Overlay* bgCards;
 

@@ -33,6 +33,8 @@ private:
 	
 	const std::string _emitter = "InputManager";
 
+	ControllerInputState lastState;
+
 public:
 	~InputManager();
 

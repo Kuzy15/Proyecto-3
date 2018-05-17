@@ -351,6 +351,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
 		addEntity(_players[i].entity);
+		_players[i].entity->setActive(false);
 
 	}
 
@@ -387,8 +388,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
 
 
-	overlay->show();
-	//bgCards->show();
+	//overlay->show();
+	bgCards->show();
 
 
 
@@ -398,8 +399,13 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	loadAbilities();
 
-	getMessage(new MButtonAct(id, 0));
-	getMessage(new MButtonAct(id, 3));
+	player1Index = 0;
+	player2Index = 3;
+
+	_nPlayers = MAX_PLAYERS;
+
+	getMessage(new MButtonAct(id, player1Index));
+	getMessage(new MButtonAct(id, player2Index));
 
 }
 GamePlayScene::~GamePlayScene(){
@@ -461,43 +467,7 @@ void GamePlayScene::dispatch(){
 
 
 
-	nMessages = _messages.size();
-	std::list<Message *>::iterator it = _messages.begin();
-
-
-
-
-	switch (_currState){
-	case GS_SETUP:
-		for (int i = 0; i < nMessages && it != _messages.end(); i++, it++) {
-			//If the message destination is only the scene, we only push it to the local queue.
-			if ((*it)->getDestination() == SCENE_ONLY)
-			{
-				_sceneMessages.push_back((*it));
-			}
-			//If the message have more receivers than the scene, push them to the entities.
-			else
-			{
-				if ((*it)->getDestination() == SCENE)
-					_sceneMessages.push_back((*it));
-				for (std::list<Entity*>::iterator itEnt = _cardGUIEntities.begin(); itEnt != _cardGUIEntities.end(); ++itEnt) {
-					if ((*it)->getEmmiter() != (*itEnt)->getID())
-						(*itEnt)->getMessage(*it);
-				}
-			}
-		}
-		break;
-	case GS_BATTLE:
-		GameScene::dispatch();
-		break;
-	case GS_END:
-
-		break;
-	default:
-		break;
-	}
-
-
+	GameScene::dispatch();
 
 
 }
@@ -650,32 +620,34 @@ void GamePlayScene::playerDied(std::string e){
 void GamePlayScene::loadAbilities(){
 
 	Entity* aux;
-	Ogre::Vector2 auxPos(-100.0f,150.0f);
+	Ogre::Vector2 auxPos(-200.0f,0.0f);
 	int idCounter = 0;
 	for (Player p : _players){
 		//There, we should choose 3 random abilities to show
 		for (ComponentType c : p.abilities){
 			aux = new Entity((to_string(p.controllerId) + to_string(c)), this);
 			aux->addComponent(new CAbilityButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0), p.controllerId, c));
-			auxPos.x += 20.0f;
+			auxPos.x += 50.0f;
 			//limpiarlas luego
 			_cardGUIEntities.emplace_back(aux);
+			addEntity(aux);
 			idCounter++;
 
 		}
-		auxPos.y += 30.0f;
+		auxPos.y += 100.0f;
 	}
 
 }
 
-void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId, int type){
+void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId){
 
 	GameComponent* c = EntityFactory::getInstance().createAbility(compId, _players[playerId].entity, playerId);
+	#ifdef _DEBUG
+		if (c == nullptr)
+			std::cout << "No existe esa habilidad" << std::endl;
+	#endif
+	int type = static_cast<CAbility*>(c)->getType();
 	Player p = _players[playerId];
-#ifdef _DEBUG
-	if (c == nullptr)
-		std::cout << "No existe esa habilidad" << std::endl;
-#endif
 	//if is active or passive
 	if (type == 0){
 		if (p.currentActive != compId ){
@@ -683,6 +655,7 @@ void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId, int 
 			p.entity->addComponent(c);
 		}
 		else { delete c; }
+		p.activeSelected = true;
 	}
 	else{
 		if (p.currentPassive != compId /*cambiar por default*/){
@@ -690,24 +663,54 @@ void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId, int 
 			p.entity->addComponent(c);
 		}
 		else { delete c; }
+		p.passiveSelected = true;
 	}
 
+	if (p.activeSelected && p.passiveSelected) _pReady[playerId] = true;
 }
 
 
 
 void GamePlayScene::processMsgSetup(Message* m){
 
+	MAbilitySet* mAbility;
 	MInputState* mInput;
 
 	switch (m->getType()){
 	case MSG_INPUT_STATE:
 		mInput = static_cast<MInputState*>(m);
-		if (mInput->getCInputState().Button_A == BTT_PRESSED)
-			getMessage(new MButtonClick(_id));
-
+		if (mInput->getId() == 0){
+			if (mInput->getCInputState().Button_A == BTT_RELEASED)
+				getMessage(new MButtonClick(_id, player1Index));
+			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+				player1Index++;
+				if (player1Index > 2) player1Index = 0;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+			else if (mInput->getCInputState().DPad_Up == BTT_PRESSED){
+				player1Index--;
+				if (player1Index < 0) player1Index = 2;
+			}
+		}
+		else if (mInput->getId() == 1){
+			if (mInput->getCInputState().Button_A == BTT_PRESSED)
+				getMessage(new MButtonClick(_id, player2Index));
+			else if (mInput->getCInputState().DPad_Down == BTT_PRESSED){
+				player2Index++;
+				if (player2Index > 5) player2Index = 3;
+			}
+			else if (mInput->getCInputState().DPad_Up == BTT_PRESSED){
+				player2Index--;
+				if (player2Index < 3) player2Index = 5;
+			}
+		}
 		break;
-
+	case MSG_ABILITY_SETTER:
+		mAbility = static_cast<MAbilitySet*>(m);
+		addAbilityComponent(mAbility->getId(), mAbility->getComponentType());
+		break;
+	default:
+		break;
 	}
 
 
@@ -715,7 +718,7 @@ void GamePlayScene::processMsgSetup(Message* m){
 
 void GamePlayScene::processMsgBattle(Message* m){
 
-	MAbilitySet* mAbility;
+	
 
 	switch (m->getType())
 	{
@@ -728,10 +731,6 @@ void GamePlayScene::processMsgBattle(Message* m){
 		if (m->getEmmiter().compare(0, 6, std::string("Player")) == 0){
 			playerDied(m->getEmmiter());
 		}
-		break;
-	case MSG_ABILITY_SETTER:
-		mAbility = static_cast<MAbilitySet*>(m);
-		addAbilityComponent(mAbility->getId(), mAbility->getComponentType(), mAbility->getType());
 		break;
 	default:
 		break;
@@ -843,13 +842,13 @@ void MainMenuScene::processInput(ControllerInputState c){
 
 	int totalButtons = _menuEntities.size();
 
-	if (c.DPad_Down == BTT_PRESSED){
+	if (c.DPad_Down == BTT_RELEASED){
 		selectedButton++;
 		if (selectedButton >= totalButtons)
 			selectedButton = 0;
 		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
 	}
-	else if (c.DPad_Up == BTT_PRESSED){
+	else if (c.DPad_Up == BTT_RELEASED){
 		selectedButton--;
 		if (selectedButton < 0)
 			selectedButton = (totalButtons - 1);
@@ -857,7 +856,7 @@ void MainMenuScene::processInput(ControllerInputState c){
 	}
 
 	if (c.Button_A == BTT_PRESSED){
-		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
 	}
 }
 
