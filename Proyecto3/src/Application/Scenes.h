@@ -8,7 +8,8 @@ class Game;
 class b2Body;
 enum E_GOD;
 enum E_STAGE;
-
+enum ComponentType;
+struct ControllerInputState;
 
 
 
@@ -57,7 +58,7 @@ protected:
 	void deleteAllMessages();
 	//Messaging attributes and methods
 	std::map<std::string,Entity *> _entities;
-	std::list<Entity*> _menuEntities;
+	std::map<int,Entity*> _menuEntities;
 	std::vector<Entity *> _entitiesToDelete;
 	std::list<Message *> _messages;
 	std::list<Message *> _sceneMessages;
@@ -142,6 +143,9 @@ struct Player{
 	int controllerId = -1;
 	E_GOD god;
 	int roundsWon = 0;
+	std::vector<ComponentType> abilities;
+	ComponentType currentActive; // = default
+	ComponentType currentPassive;
 };
 
 
@@ -163,6 +167,10 @@ private:
 	void changePhase(GameplayState);
 	//Load the stage
 	void loadStage();
+	//Load the ability cards entities for each player
+	void loadAbilities();
+	void addAbilityComponent(int playerId, ComponentType id, int type); //Type values (0 = Active), (1 = Passive)
+	//Controller manage methods
 	void controllerDisconected(int id);
 	void controllerConnected(int id);
 
@@ -178,6 +186,7 @@ private:
 	std::vector<Player> _players;	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
 	bool _paused;
+	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
 
 	float _prepareCounter;
 	float _prepareLimitTime;
@@ -207,6 +216,10 @@ public:
 
 
 private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
 	
 
 };

@@ -17,6 +17,7 @@ typedef void ButtonCallback();
 
 
 
+
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
 const float MAX_SPEED = 13.0f;
@@ -74,9 +75,12 @@ typedef enum ComponentType {
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
-	CMP_CAMERA_FOLLOW
+	CMP_CAMERA_FOLLOW,
+	CMP_NORMAL_BUTTON
 
 };
+
+typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
 
 //Basic gameComponent class from which every other component will inherit.
 class GameComponent
@@ -797,16 +801,18 @@ private:
 
 
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+
+
 class CButtonGUI : public GameComponent
 {
 public:
-	CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	CButtonGUI(ComponentType t,Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
 	~CButtonGUI();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	size_t getScnId();
 
-private:
+protected:
 	void toggleClick(bool click);
 	void toggleActive(bool active);
 	bool canClick();
@@ -819,14 +825,44 @@ private:
 
 	//The id that the button will have in the scene
 	size_t _sceneId;
+	
+	float _lastClick;
+	const float _minClickTime = 500;
+};
+
+
+class CNormalButton : public CButtonGUI
+{
+public:
+	CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, ButtonCallback callback, std::string buttonTxt);
+	~CNormalButton();
+	
+	virtual void getMessage(Message * m);
+	
+
+private:	
 	ButtonCallback * _callback;
 	Ogre::String _txt;
 
 
-
-	float _lastClick;
-	const float _minClickTime = 500;
 };
+
+
+
+class CAbilityButton : public CButtonGUI
+{
+public:
+	CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, ComponentType compType);
+	~CAbilityButton();
+
+	virtual void getMessage(Message * m);
+	
+private:
+	int _playerId;
+	ComponentType _compType;
+	
+};
+
 
 enum guiPlayer{
 	P1 = 0, P2 = 1
@@ -849,6 +885,7 @@ private:
 	Ogre::OverlayContainer * pActiveBar;
 	Ogre::Overlay * pOverlay;
 	size_t LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
+	size_t ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
 	guiPlayer p;
 };
 

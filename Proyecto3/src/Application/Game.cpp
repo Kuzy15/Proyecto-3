@@ -77,7 +77,9 @@ Game::Game(){
 	 players->at(1).controllerId = 1;
 	 players->at(1).god = EG_RA;
 
+
 	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+
 
 	 delete players;
 
@@ -216,7 +218,13 @@ bool Game::initOgre(){
 
 		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; }
+	catch (Ogre::Exception e) { 
+	#ifdef DEBUG
+		std::cout << e.what() << std::endl; 
+	#endif // DEBUG
+	}
+
+
 
 
 
@@ -259,9 +267,16 @@ void Game::loop() {
 			frames++;
 		}
 		//std::cout << frames << std::endl;
+#ifdef DEBUG
 		world->DrawDebugData();
+#endif // DEBUG
+
 		render();
+
+#ifdef DEBUG
 		actScene->clearDebugDraw();
+#endif // DEBUG
+
 	}
 
 }

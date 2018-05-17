@@ -19,6 +19,8 @@ EntityFactory::EntityFactory()
 	_createGodFuncs.emplace(EG_ZEUS, &createGodZeus);
 	_createGodFuncs.emplace(EG_HACHIMAN, &createGodHachiman);
 
+	
+
 	//Bullets
 	_createBulletFuncs.emplace(EB_RA, &createBulletRa);
 	_createBulletFuncs.emplace(EB_AHPUCH, &createBulletAhPuch);

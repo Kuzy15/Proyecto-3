@@ -9,10 +9,13 @@
 class Entity;
 class GameComponent;
 class b2Vec2;
+enum ComponentType;
 
 #pragma region CInputState
 
-typedef enum ButtonState{
+
+
+enum ButtonState{
 	BTT_PRESSED = 1, BTT_NONE = 0
 };
 
@@ -81,6 +84,7 @@ typedef enum MessageType {
 	MSG_DAMAGE_ARMATURE,
 	MSG_CAMERA_FOLLOW,
 	MSG_LIFE_STATE,
+	MSG_ABILITY_SETTER
 
 	
 
@@ -591,4 +595,19 @@ private:
 	size_t _life;
 };
 
+
+//--------------------------------------------------	ABILITY SETTER MSG		----------------------------------------------------------//
+class MAbilitySet : public Message
+{
+public:
+	MAbilitySet(std::string emmiter, int playerId, ComponentType compId, int type);
+	~MAbilitySet();
+	inline int getId(){ return _playerId; };
+	inline ComponentType getComponentType(){ return _c; };
+	inline int getType(){ return _type; };
+private:
+	int _playerId;
+	ComponentType _c;
+	int _type;
+};
 #endif
