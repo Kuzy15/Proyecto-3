@@ -34,6 +34,7 @@
 #include "Messages.h"
 #include "Scenes.h"
 #include "DebugDraw.h"
+#include "Components.h"
 //Debug
 #ifdef _DEBUG
 #include <iostream>
@@ -70,7 +71,7 @@ GameScene::~GameScene()
 
 }
 
-void GameScene::clearDebugDraw(){ dInstance.clear(); }
+void GameScene::clearDebugDraw(){dInstance.clear(); }
 bool GameScene::updateEnts(float delta){
 	for (auto ent : _entities){
 		if(ent.second != NULL)ent.second->tick(delta);
@@ -154,9 +155,10 @@ void GameScene::deleteAllEntities(){
 	}
 	_entities.clear();
 
-	for (Entity* e : _menuEntities){
-		aux = e;
-		delete aux;
+	for (auto e : _menuEntities){
+		aux = e.second;
+		if (aux != nullptr)
+			delete aux;
 	}
 
 }
@@ -306,7 +308,13 @@ void K() {
 	std::cout << "CCALLLBACKK " << std::endl;
 }
 
+
 #pragma region GamePlayScene
+
+/*------------ Callback functions for card select buttons --------------*/
+
+
+
 //Scene that runs and manage the battle phase of the game.
 GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> players, E_STAGE stage) : GameScene(id, game), _stage(stage) {
 
@@ -335,6 +343,9 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	int i = 0;
 	for (Player p : _players){
 		p.entity = EntityFactory::getInstance().createGod(p.god, this, playersPos[i],p.controllerId);
+		p.abilities.push_back(CMP_HERA_RUNE);
+		p.abilities.push_back(CMP_PASSIVE_HADES);
+		p.abilities.push_back(CMP_KHEPRI_BEETLE);
 		addEntity(p.entity);
 			i++;
 	}
@@ -359,13 +370,21 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		cout << std::endl;
 	}
 	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
+
+	//Ogre::FontManager * a;
+	//a = Ogre::FontManager::getSingletonPtr();
+	//a->reloadAll();
 
 	Entity * k = new Entity("GUI", this);
 
 
-	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
+
+	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
+
 	k->addComponent(new CPlayerGUI(k, overlay, P1, "RA"));
+	k->addComponent(new CPlayerGUI(k, overlay, P2, "HACHISMAN"));
+
 	addEntity(k);
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
@@ -438,6 +457,9 @@ void GamePlayScene::dispatch(){
 
 void GamePlayScene::processScnMsgs(){
 
+
+	MAbilitySet* mAbility;
+
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
 		Message* m = (*it);
@@ -452,6 +474,10 @@ void GamePlayScene::processScnMsgs(){
 			if (m->getEmmiter().compare(0, 6, std::string("Player")) == 0){
 				playerDied(m->getEmmiter());
 			}
+			break;
+		case MSG_ABILITY_SETTER:
+			mAbility = static_cast<MAbilitySet*>(m);
+			addAbilityComponent(mAbility->getId(), mAbility->getComponentType(), mAbility->getType());
 			break;
 		default:
 			break;
@@ -581,6 +607,49 @@ void GamePlayScene::playerDied(std::string e){
 
 
 }
+
+void GamePlayScene::loadAbilities(){
+
+	Entity* aux;
+	Ogre::Vector2 auxPos(-100.0f,150.0f);
+	int idCounter = 0;
+	for (Player p : _players){
+		//There, we should choose 3 random abilities to show
+		for (ComponentType c : p.abilities){
+			aux = new Entity((to_string(p.controllerId) + to_string(c)), this);
+			aux->addComponent(new CAbilityButton(overlay, aux, idCounter, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), p.controllerId, c));
+			idCounter++;
+		}
+	}
+
+}
+
+void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId, int type){
+
+	GameComponent* c = EntityFactory::getInstance().createAbility(compId, _players[playerId].entity, playerId);
+	Player p = _players[playerId];
+#ifdef _DEBUG
+	if (c == nullptr)
+		std::cout << "No existe esa habilidad" << std::endl;
+#endif
+	//if is active or passive
+	if (type == 0){
+		if (p.currentActive != compId /*cambiar por default*/){
+			p.entity->deleteComponent(p.currentActive);
+			p.entity->addComponent(c);
+		}
+		else { delete c; }
+	}
+	else{
+		if (p.currentPassive != compId /*cambiar por default*/){
+			p.entity->deleteComponent(p.currentPassive);
+			p.entity->addComponent(c);
+		}
+		else { delete c; }
+	}
+
+}
+
 #pragma endregion
 
 #pragma region Main Menu Scene
@@ -588,6 +657,30 @@ void GamePlayScene::playerDied(std::string e){
 MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) {
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	selectedButton = 0;
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("GUI");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+
+	Entity * k = new Entity("GUI", this);
+	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, k));
+
+	overlay->show();
+
+	//Set the first button selected
+	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
 
 }
 
@@ -604,7 +697,7 @@ bool MainMenuScene::run(){
 	//Take messages from input
 	InputManager::getInstance().getMessages(_messages);
 	//Then we deliver the messages
-	GameScene::dispatch();
+	dispatch();
 
 	processScnMsgs();
 
@@ -614,8 +707,6 @@ bool MainMenuScene::run(){
 	//Clear dispatched messages
 	clearMessageQueue();
 
-	//Delete entities removed from the scene at the last frame
-	//destroyEntities();
 
 	return aux;
 
@@ -623,14 +714,56 @@ bool MainMenuScene::run(){
 
 void MainMenuScene::dispatch(){
 	GameScene::dispatch();
+	
 
 }
 
 void MainMenuScene::processScnMsgs()
 {
+	MInputState* input;
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		switch (m->getType())
+		{
+		case MSG_INPUT_STATE:
+			input = static_cast<MInputState*>(*it);
+			processInput(input->getCInputState());
+			break;
+		default:
+			break;
+		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
+
+	
 
 };
 
+void MainMenuScene::processInput(ControllerInputState c){
+
+	int totalButtons = _menuEntities.size();
+
+	if (c.DPad_Down == BTT_PRESSED){
+		selectedButton++;
+		if (selectedButton >= totalButtons)
+			selectedButton = 0;
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+	else if (c.DPad_Up == BTT_PRESSED){
+		selectedButton--;
+		if (selectedButton < 0)
+			selectedButton = (totalButtons - 1);
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+
+	if (c.Button_A == BTT_PRESSED){
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+	}
+}
 
 
 
