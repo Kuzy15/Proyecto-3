@@ -360,6 +360,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	}
 	// Show the overlay
 	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
+	Ogre::FontManager::getSingleton().getByName("GUI/PlayerText")->load();
 
 	//Ogre::FontManager * a;
 	//a = Ogre::FontManager::getSingletonPtr();
@@ -369,8 +370,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 
 	k->addComponent(new CButtonGUI(overlay,k, K,"Placeholder", 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0)));
-	k->addComponent(new CPlayerGUI(k, overlay, P1, "RA"));
-	k->addComponent(new CPlayerGUI(k, overlay, P2, "HACHISMAN"));
+	k->addComponent(new CPlayerGUI(k, overlay, P1, EG_RA));
+	k->addComponent(new CPlayerGUI(k, overlay, P2, EG_AHPUCH));
 	addEntity(k);
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");

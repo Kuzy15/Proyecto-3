@@ -1756,9 +1756,10 @@ void CButtonGUI::getMessage(Message * me)
 
 #pragma endregion
 #pragma region PlayerGUI
-CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std::string characterName) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
+CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_GOD character) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
 {
 	std::string player;
+	
 	if (plyer == P1)player = "Player1";
 	else player = "Player2";
 
@@ -1770,6 +1771,28 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, std
 	//Specific reference to the lifebar and active bar, which we'll be using quite often
 	plifeBar = static_cast<Ogre::OverlayContainer*>(pHud->getChild(player + "/LifeBar"));
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
+	
+	std::string charName;
+
+
+	switch (character) {
+	case EG_RA:
+		charName = "Ra";
+		break;
+	case EG_AHPUCH:
+		charName = "Ahpuch";
+		break;
+	case EG_HACHIMAN:
+		charName = "Hachiman";
+		break;
+	case EG_ZEUS:
+		charName = "Zeus";
+		break;
+	}
+
+
+
+	pHud->getChild(player + "/Name")->setCaption(charName);
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
 	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();

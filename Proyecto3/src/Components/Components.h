@@ -14,6 +14,7 @@ class Entity;
 class Message;
 typedef enum E_BULLET;
 typedef void ButtonCallback();
+typedef enum E_GOD;
 
 
 
@@ -831,10 +832,12 @@ private:
 enum guiPlayer{
 	P1 = 0, P2 = 1
 };
+
+
 class CPlayerGUI: public GameComponent
 {
 public:
-	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, std::string characterName);
+	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, E_GOD character);
 	~CPlayerGUI();
 	void updateLifebar(size_t val);
 	void updateActive();
