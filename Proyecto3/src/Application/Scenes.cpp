@@ -380,15 +380,15 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Entity * k = new Entity("GUI", this);
 
 
-
+	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
 	k->addComponent(new CPlayerGUI(k, overlay, P1, EG_RA));
 	k->addComponent(new CPlayerGUI(k, overlay, P2, EG_AHPUCH));	addEntity(k);
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
 
 
-	overlay->hide();
-	bgCards->show();
+	overlay->show();
+	//bgCards->show();
 
 
 

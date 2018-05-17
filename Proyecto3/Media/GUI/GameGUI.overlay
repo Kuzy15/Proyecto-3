@@ -26,18 +26,6 @@ template container Panel(GUI/BaseButton)
     }
 }
 
-template container TextArea (GUI/PlayerName)
-{
-  metrics_mode pixels
-  left 0
-  top 0
-  width 200
-  height 50
-  font_name GUI/PlayerText
-  colour 1 1 1
-  char_height 30
-}
-
 template element Panel (GUI/Round)
 {
   metrics_mode pixels
@@ -45,7 +33,6 @@ template element Panel (GUI/Round)
   top 0
   width 40
   height 40
-
   material GUI/RoundEmpty
 }
 
@@ -64,7 +51,7 @@ Background
 }
 
 
-// The name of the overlay comes first
+// Graphical User Interface for the PlayScene.
 GUI
 {
     zorder 200
@@ -115,11 +102,19 @@ GUI
 
         }
 
-        container TextArea (Player1/Name): GUI/PlayerName
+        container TextArea (Player1/Name)
         {
+          metrics_mode pixels
           left 175
           top 35
+          width 100
+          height 25
+          font_name GUI/TimeText
+          colour 0 1 0.5
+          caption RA
+          char_height 30
         }
+
         container Panel (Player1/LifeBar)
         {
           metrics_mode pixels
@@ -216,14 +211,20 @@ GUI
           material GUI/RoundEmpty
 
         }
-        container TextArea (Player2/Name): GUI/PlayerName
+        container TextArea (Player2/Name)
         {
+          metrics_mode pixels
           horz_align right
           alignment right
 
           left -175
           top 35
+          width 100
+          height 25
+          font_name GUI/TimeText
+          colour 0 1 0.5
           caption Hachisman
+          char_height 30
         }
 
 
