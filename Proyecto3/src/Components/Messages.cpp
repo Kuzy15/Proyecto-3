@@ -292,3 +292,9 @@ MDamage::~MDamage(){}
 	size_t MLifeState::getLifeState() { return _life; };
 
 #pragma endregion
+
+#pragma region Ability Set
+	MAbilitySet::MAbilitySet(std::string emmiter, int playerId, ComponentType compId, int type) : Message(MSG_ABILITY_SETTER, SCENE_ONLY, emmiter), _playerId(playerId),_c(compId), _type(type) {};
+	MAbilitySet::~MAbilitySet() {};
+
+#pragma endregion

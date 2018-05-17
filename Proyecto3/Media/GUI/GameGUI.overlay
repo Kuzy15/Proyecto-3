@@ -49,7 +49,21 @@ template element Panel (GUI/Round)
   material GUI/RoundEmpty
 }
 
-// Graphical User Interface for the PlayScene.
+Background
+{
+	zorder 200
+	container Panel (Wololo)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/BasicRed
+	}
+
+}
+
+
 // The name of the overlay comes first
 GUI
 {

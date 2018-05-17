@@ -20,7 +20,7 @@ Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc)
 }
 Entity::~Entity()
 {
-	dispatch();
+	//dispatch();
 
 	GameComponent* aux;
 	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end();){

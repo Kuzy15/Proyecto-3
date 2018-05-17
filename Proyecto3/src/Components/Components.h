@@ -18,6 +18,7 @@ typedef enum E_GOD;
 
 
 
+
 /*---------------------------- CONSTANTS DEFINITION ----------------------*/
 //Limits for the components variables 
 const float MAX_SPEED = 13.0f;
@@ -75,9 +76,15 @@ typedef enum ComponentType {
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
-	CMP_CAMERA_FOLLOW
+	CMP_ANIMATION,
+	CMP_CAMERA_FOLLOW,
+	CMP_NORMAL_BUTTON,
+	CMP_ACTIVE_DEFAULT,
+	CMP_PASSIVE_DEFAULT
 
 };
+
+typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
 
 //Basic gameComponent class from which every other component will inherit.
 class GameComponent
@@ -161,6 +168,7 @@ protected:
 	Ogre::Vector3 _ogrepos;
 	Ogre::Quaternion _ogrequat;
 	Ogre::SceneNode* pChild;
+	float lastDir;
 	
 };
 
@@ -228,6 +236,7 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
+	Ogre::SceneNode* getChildNode(){ return pChild; }
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -235,6 +244,51 @@ private:
 
 	
 	
+};
+
+
+//--------- ANIMATION COMPONENT ---------
+class CAnimation : public GameComponent
+{
+public:
+
+	CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNode* child);
+	~CAnimation();
+
+
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
+	
+private:
+
+	void changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* nextT, bool loop, bool shoot);
+	bool _air;
+	bool isShooting;
+	bool starting;
+	Ogre::Entity * pOgreEnt;
+	Ogre::SceneNode* pChild;
+	//Animation pointers (Bot and Top)
+	Ogre::AnimationState* idleBot;
+	Ogre::AnimationState* moveBot;
+	Ogre::AnimationState* jumpBot;
+	Ogre::AnimationState* airBot;
+
+	Ogre::AnimationState* idleTop;
+	Ogre::AnimationState* moveTop;
+	//Ogre::AnimationState* jumpTop;
+	Ogre::AnimationState* airTop;
+	Ogre::AnimationState* chargeTop;
+	Ogre::AnimationState* shootTop;
+
+	Ogre::AnimationState* start;
+	//Current animation pointers
+	
+	Ogre::AnimationState* currentTop;
+	Ogre::AnimationState* currentBot;
+
+	Ogre::AnimationState* nextTop;
+	Ogre::AnimationState* nextBot;
+
 };
 
 //---------   CAMERA COMPONENT   ---------
@@ -798,16 +852,18 @@ private:
 
 
 /*-------------------------------------------------------GUI COMPONENTS---------------------------------------------------------------------------*/
+
+
 class CButtonGUI : public GameComponent
 {
 public:
-	CButtonGUI(Ogre::Overlay * overlay, Entity * father, ButtonCallback callback, std::string buttonTxt, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
+	CButtonGUI(ComponentType t,Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize);
 	~CButtonGUI();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	size_t getScnId();
 
-private:
+protected:
 	void toggleClick(bool click);
 	void toggleActive(bool active);
 	bool canClick();
@@ -820,14 +876,44 @@ private:
 
 	//The id that the button will have in the scene
 	size_t _sceneId;
+	
+	float _lastClick;
+	const float _minClickTime = 500;
+};
+
+
+class CNormalButton : public CButtonGUI
+{
+public:
+	CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, ButtonCallback callback, std::string buttonTxt);
+	~CNormalButton();
+	
+	virtual void getMessage(Message * m);
+	
+
+private:	
 	ButtonCallback * _callback;
 	Ogre::String _txt;
 
 
-
-	float _lastClick;
-	const float _minClickTime = 500;
 };
+
+
+
+class CAbilityButton : public CButtonGUI
+{
+public:
+	CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, ComponentType compType);
+	~CAbilityButton();
+
+	virtual void getMessage(Message * m);
+	
+private:
+	int _playerId;
+	ComponentType _compType;
+	
+};
+
 
 enum guiPlayer{
 	P1 = 0, P2 = 1
