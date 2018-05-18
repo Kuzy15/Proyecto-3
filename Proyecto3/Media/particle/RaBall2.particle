@@ -1,0 +1,45 @@
+particle_system RaBall2
+{
+	material Sun.000
+	particle_width 61.8699989318848
+	particle_height 57.7999992370605
+	quota 17
+	cull_each false
+	sorted false
+	local_space false
+	iteration_interval 0.0
+	nonvisible_update_timeout 0.0
+	billboard_type point
+	billboard_origin center
+	billboard_rotation_type texcoord
+	point_rendering false
+	accurate_facing false
+
+	emitter Point
+	{
+		position 0.0 0.0 -0.0299999993294477
+		direction 0.0 0.0 0.0
+		angle 18
+		emission_rate 27.37
+		velocity_min 1
+		velocity_max 70.17
+		time_to_live_min 5
+		time_to_live_max 5
+		duration_min 2
+		duration_max 2
+		repeat_delay_min 1
+		repeat_delay_max 1
+		colour_range_start 1 1 1 1
+		colour_range_end 1 1 1 1
+	}
+
+	affector ColourImage
+	{
+		image Blind.png
+	}
+
+	affector Scaler
+	{
+		rate 10
+	}
+}

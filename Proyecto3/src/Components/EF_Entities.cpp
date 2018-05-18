@@ -227,7 +227,7 @@ Entity* createBulletRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, float
 
 	//Bullet
 	bRa->addComponent(new CBullet(bRa, EB_RA, damage, 400.0f));
-	bRa->addComponent(new CParticleRender({ 0, 1000, 0 }, id + "ballRa", "ballRa", bRa, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
+	bRa->addComponent(new CParticleRender({ 0, 1000, 0 }, id + "RaBall2", "RaBall2", bRa, s->getSceneManager(), { Ogre::Real(0.1f), Ogre::Real(0.1f), Ogre::Real(0.1f) }, { 0, 0, 0 }));
 
 
 	return bRa;
@@ -288,10 +288,8 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 
 	//Bullet
 	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 10.0f));
-	//bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus1", "LightningZeus1", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
-	//bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus2", "LightningZeus2", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
-	//bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus3", "LightningZeus3", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
-
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "Ray", "Ray", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	
 
 	// Estela
 	//bZeus->addComponent(new CRibbonTrailRender({ 0, 0, pos.z }, id + "trail", "Smoke", bZeus, s->getSceneManager(), { Ogre::Real(0.01f), Ogre::Real(0.01f), Ogre::Real(0.01f) }, { 0, 0, angle }));
