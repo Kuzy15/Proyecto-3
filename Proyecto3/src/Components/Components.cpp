@@ -992,7 +992,7 @@ void CPlayerController::getMessage(Message* m){
 
 			ControllerInputState cState = inputM->getCInputState();
 
-			if (cState.Trigger_Right > TRIGGER_DEADZONE){
+			if (cState.Right_Shoulder == BTT_RELEASED){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
@@ -1665,7 +1665,7 @@ void CShuHeaddress::getMessage(Message* m)
 		if (inputM->getId() == _playerId){
 			_timeCounter = SDL_GetTicks();
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _coolDown){
+			if (cState.Left_Shoulder == BTT_RELEASED && (_timeCounter - _lastTimeDash) > _coolDown){
 				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,cState.Axis_LeftY);
 				pEnt->getMessage(new MDash(pEnt->getID(), impulse));
 				_lastTimeDash = SDL_GetTicks();
@@ -1726,7 +1726,7 @@ void CJonsuMoon::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable){
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED ){
+			if (cState.Left_Shoulder == BTT_RELEASED ){
 				pEnt->getMessage(new MModVel(pEnt->getID(), _velocityPercentage));
 				_initTime = SDL_GetTicks();
 				_isActive = true;
@@ -1778,7 +1778,7 @@ void CKhepriBeetle::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable){
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Left_Shoulder == BTT_RELEASED){
 				pEnt->getMessage(new MModFireRate(pEnt->getID(), _fireRatePercentage));
 				_initTime = SDL_GetTicks();
 				_isActive = true;
@@ -1818,7 +1818,7 @@ void CHeraRune::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED) {
+			if (cState.Left_Shoulder == BTT_RELEASED) {
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
@@ -1889,7 +1889,7 @@ void CHerisMark::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED) {
+			if (cState.Left_Shoulder == BTT_RELEASED) {
 				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar daño +20%
 				_initTime = SDL_GetTicks();
 				_isActive = true;

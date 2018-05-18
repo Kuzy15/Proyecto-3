@@ -167,6 +167,7 @@ private:
 	void battlePhase();
 	void endPhase();
 	void changePhase(GameplayState);
+	void resetPlayers();
 	//Load the stage
 	void loadStage();
 	//Load the ability cards entities for each player
@@ -195,6 +196,10 @@ private:
 	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
 	int player1Index;
 	int player2Index;
+
+	
+	Ogre::Vector3 _posP1; 
+	Ogre::Vector3 _posP2; 
 
 	Ogre::Overlay* bgCards;
 

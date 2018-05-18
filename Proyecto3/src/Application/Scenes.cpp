@@ -336,19 +336,22 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//Store and configure the players structure
 	_players = players;
-	std::vector<Ogre::Vector3> playersPos(2);
-	playersPos[0] = Ogre::Vector3(-30.0f, 0.0f, 0.0f);
-	playersPos[1] = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
+	_posP1 = Ogre::Vector3(-30.0f, 0.0f, 0.0f);
+	_posP2 = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
+
+	std::vector<Ogre::Vector3> playerPos;
+	playerPos.push_back(_posP1);
+	playerPos.push_back(_posP2);
 
 	int i = 0;
 	//for (Player p : _players){
 	for (int i = 0;  i < _players.size(); i++){
 
-		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god, this, playersPos[i], _players[i].controllerId);
+		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god, this, playerPos[i], _players[i].controllerId);
 		_players[i].abilities.push_back(CMP_HERA_RUNE);
 		_players[i].abilities.push_back(CMP_PASSIVE_HADES);
 		_players[i].abilities.push_back(CMP_KHEPRI_BEETLE);
-		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
+		_players[i].currentActive = CMP_SHU_HEADDRESS;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
 		addEntity(_players[i].entity);
 		_players[i].entity->setActive(false);
@@ -357,9 +360,6 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//Not paused at start
 	_paused = false;
-
-
-
 
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
@@ -387,25 +387,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
 
+	changePhase(GS_SETUP);
 
-	//overlay->show();
-	bgCards->show();
-
-
-
-	//Set the starter state to SETUP
-	_currState = GS_SETUP;
-	_prepareCounter = SDL_GetTicks();
-
-	loadAbilities();
-
-	player1Index = 0;
-	player2Index = 3;
-
-	_nPlayers = MAX_PLAYERS;
-
-	getMessage(new MButtonAct(id, player1Index));
-	getMessage(new MButtonAct(id, player2Index));
 
 }
 GamePlayScene::~GamePlayScene(){
@@ -428,8 +411,7 @@ bool GamePlayScene::run(){
 	{
 		//In this state, we should set up the players God (mesh renderer, habilities, etc) and playing cards
 	case GS_SETUP:
-		//loadOut();
-
+		preparePhase();
 		break;
 		//This state should control the gameplay state (Time, rounds, the end, etc)
 	case GS_BATTLE:
@@ -465,10 +447,7 @@ bool GamePlayScene::run(){
 
 void GamePlayScene::dispatch(){
 
-
-
 	GameScene::dispatch();
-
 
 }
 
@@ -503,16 +482,16 @@ void GamePlayScene::preparePhase(){
 
 	float currentTime = SDL_GetTicks();
 	if (currentTime - _prepareCounter > _prepareLimitTime)
-		_currState = GS_BATTLE;
+		changePhase(GS_BATTLE);
 
-		bool playersAreReady = true;
-		for(int i = 0; i < _nPlayers; i++){
-			playersAreReady = playersAreReady & _pReady[i];
-		}
+	bool playersAreReady = true;
+	for(int i = 0; i < _nPlayers; i++){
+		playersAreReady = playersAreReady & _pReady[i];
+	}
 
-		if (playersAreReady){
-			_currState = GS_BATTLE;
-		}
+	if (playersAreReady){
+		changePhase(GS_BATTLE);
+	}
 }
 
 void GamePlayScene::battlePhase(){
@@ -583,10 +562,38 @@ void GamePlayScene::changePhase(GameplayState newState){
 
 	switch (newState){
 	case GS_SETUP:
+		overlay->hide();
+		bgCards->show();
+		//Set the starter state to SETUP
+		_prepareCounter = SDL_GetTicks();
+
+
+		player1Index = 0;
+		player2Index = 3;
+
+		_nPlayers = MAX_PLAYERS;
+
+		loadAbilities();
+
+		getMessage(new MButtonAct(_id, player1Index));
+		getMessage(new MButtonAct(_id, player2Index));
+
+		_currState = GS_SETUP;
 			break;
 	case GS_BATTLE:
+		for (Entity* e : _cardGUIEntities){
+			deleteEntity(e->getID());
+		}
+		_cardGUIEntities.clear();
+		for (Player p : _players){
+			p.entity->setActive(true);
+		}
+		bgCards->hide();
+		overlay->show();
+		_currState = GS_BATTLE;
 		break;
 	case GS_END:
+		
 		break;
 	}
 
@@ -607,12 +614,46 @@ void GamePlayScene::playerDied(std::string e){
 	_players[playerWonId].roundsWon++;
 	_battleState.roundsCompleted++;
 
+	
+
+
+
 	//If the rounds elapsed are 3, we finish the game. Else, continue.
 	if (_battleState.roundsCompleted == MAX_ROUNDS){
 		changePhase(GS_END);
 	}
-	else
+	else{
+		resetPlayers();
 		changePhase(GS_SETUP);
+	}
+
+
+}
+
+void GamePlayScene::resetPlayers(){
+
+
+	std::vector<Ogre::Vector3> playerPos;
+	playerPos.push_back(_posP1);
+	playerPos.push_back(_posP2);
+
+	int i = 0;
+
+	for (Player p : _players){
+		deleteEntity(p.entity->getID());
+		p.activeSelected = false;
+		p.passiveSelected = false;
+		p.currentActive = CMP_ACTIVE_DEFAULT;
+		p.currentPassive = CMP_PASSIVE_DEFAULT;
+		p.entity = EntityFactory::getInstance().createGod(p.god,this,playerPos[i],p.controllerId);
+		i++;
+	}
+}
+
+
+void start_c(){
+	/**/
+
 
 
 }
@@ -636,6 +677,11 @@ void GamePlayScene::loadAbilities(){
 		}
 		auxPos.y += 100.0f;
 	}
+
+	auxPos = Ogre::Vector2(0.0f, 700.0f);
+
+	aux = new Entity("Start_Button", this);
+	aux->addComponent(new CNormalButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0),start_c,"Start"));
 
 }
 
