@@ -301,14 +301,17 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNo
 	airTop->setLoop(true);
 	//chargeTop->setLoop(false);
 	shootTop->setLoop(false);
+	//Initial rotation
+	pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+
 
 	currentBot = idleBot;
 	currentBot->setEnabled(true);
-	currentTop = start;
+	currentTop = idleTop;
 	currentTop->setEnabled(true);
 	nextBot = nullptr;
 	nextTop = nullptr;
-	starting = true;
+	starting = false;
 
 }
 CAnimation::~CAnimation(){
@@ -328,18 +331,22 @@ void CAnimation::tick(float delta){
 	
 	if (currentTop->getLength() == currentTop->getTimePosition()){
 		currentTop->setEnabled(false);
-		nextTop->setTimePosition(0);
-		nextTop->setEnabled(true);
-		currentTop = nextTop;
+		if (nextTop != nullptr){
+			nextTop->setTimePosition(0);
+			nextTop->setEnabled(true);
+			currentTop = nextTop;		
+		}
 		isShooting = false;
 		starting = false;
 	}
 
 	if (currentBot->getLength() == currentBot->getTimePosition()){
 		currentBot->setEnabled(false);
-		nextBot->setTimePosition(0);
-		nextBot->setEnabled(true);
-		currentBot = nextBot;
+		if (nextBot != nullptr){
+			nextBot->setTimePosition(0);
+			nextBot->setEnabled(true);
+			currentBot = nextBot;		
+		}
 
 	}
 

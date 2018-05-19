@@ -12,6 +12,8 @@
 
 const float JUMPFORCE = 90.0f;
 const float VELOCITY = 8.0f;
+const float HEIGHT = 6.0f;
+const float WIDTH = 2.5f;
 //-------------------------------------------    GODS    -------------------------------------------//
 #pragma region Gods
 //Ra
@@ -26,7 +28,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x / 2.0f, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Ra->addComponent(new CRigidBody(Ra, Game::getInstance()->getPhysicsWorld(), iniPos, HEIGHT, WIDTH, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 
 	//CameraFollow
 	Ra->addComponent(new CCameraFollow(Ra));
@@ -52,11 +54,11 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//Ra->addComponent(new CPSkillUll(Ra,0));
 	//Ra->addComponent(new CPSkillVidar(Ra));
 	//Ra->addComponent(new CShuHeaddress(Ra, controllerId));
-	Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
+	//Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
 	Ra->addComponent(new CParticleRender({ 0, 0, 0 }, id + "sandRa", "sandRa", Ra, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	
 	//Animation
-	//Ra->addComponent(new CAnimation(Ra, s->getSceneManager(), cM->getChildNode()));
+	Ra->addComponent(new CAnimation(Ra, s->getSceneManager(), cM->getChildNode()));
 
 	return Ra;
 }
@@ -72,7 +74,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x / 2.0f, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER, controllerId));
+	AhPuch->addComponent(new CRigidBody(AhPuch, Game::getInstance()->getPhysicsWorld(), iniPos, HEIGHT, WIDTH, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER, controllerId));
 
 	//CameraFollow
 	AhPuch->addComponent(new CCameraFollow(AhPuch));
@@ -92,7 +94,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	//Move
 	AhPuch->addComponent(new CPlayerMove(AhPuch, VELOCITY));
 
-	//AhPuch->addComponent(new CAnimation(AhPuch, s->getSceneManager(), cM->getChildNode()));
+	AhPuch->addComponent(new CAnimation(AhPuch, s->getSceneManager(), cM->getChildNode()));
 
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "poisonAhPuch", "poisonAhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB1AhPuch", "pB1AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
@@ -118,7 +120,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x/2.0f,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
+	Zeus->addComponent(new CRigidBody(Zeus, Game::getInstance()->getPhysicsWorld(), iniPos, HEIGHT, WIDTH,0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER,controllerId));
 	
 	//CameraFollow
 	Zeus->addComponent(new CCameraFollow(Zeus));
@@ -137,7 +139,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	Zeus->addComponent(new CPlayerJump(Zeus, JUMPFORCE));
 	//Move
 	Zeus->addComponent(new CPlayerMove(Zeus, VELOCITY));
-	Zeus->addComponent(new CHerisMark(Zeus, controllerId));
+	//Zeus->addComponent(new CHerisMark(Zeus, controllerId));
 
 	Zeus->addComponent(new CAnimation(Zeus, s->getSceneManager(), cM->getChildNode()));
 	
@@ -167,7 +169,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//RigidBody
 	Ogre::Vector3 size = cM->getSize();
 
-	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, size.y, size.x / 2.0f, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER, controllerId));
+	Hachiman->addComponent(new CRigidBody(Hachiman, Game::getInstance()->getPhysicsWorld(), iniPos, HEIGHT, WIDTH, 0.0f, RB_DYNAMIC, SH_PLAYER, MASK_PLAYER, controllerId));
 
 	//CameraFollow
 	Hachiman->addComponent(new CCameraFollow(Hachiman));
@@ -186,7 +188,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//Move
 	Hachiman->addComponent(new CPlayerMove(Hachiman, VELOCITY));
 
-	//Hachiman->addComponent(new CAnimation(AhPuch, s->getSceneManager(), cM->getChildNode()));
+	Hachiman->addComponent(new CAnimation(Hachiman, s->getSceneManager(), cM->getChildNode()));
 
 
 	Hachiman->addComponent(new CParticleRender({ 0, 0, 0 }, id + "windHachimanI", "windHachimanI", Hachiman, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
@@ -369,24 +371,26 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	entities->push_back(top);
 
 	Entity * porton = new Entity("Porton_01", s);
-	porton->addComponent(new CMeshRender({ 0, -10, -10 }, "porton.mesh", porton, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
+	porton->addComponent(new CMeshRender({ 0, -10, -25 }, "porton.mesh", porton, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 50, 180 }));
 	entities->push_back(porton);
 
+	/*Entity * portonCollider = new Entity("ColliderPorton_01", s);
+	portonCollider->addComponent(new CRigidBody(portonCollider, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(portonCollider);*/
+
 	Entity * rightEdge = new Entity("ColliderLimite_Dcho", s);
-
-	rightEdge->addComponent(new CRigidBody(rightEdge, s->getGame()->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 50, 2, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
-
+	rightEdge->addComponent(new CRigidBody(rightEdge, s->getGame()->getPhysicsWorld(), Ogre::Vector3(55, -15, 0), 200, 2, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities->push_back(rightEdge);
+
+	Entity * leftEdge = new Entity("ColliderLimite_Izqdo", s);
+	leftEdge->addComponent(new CRigidBody(leftEdge, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-100, -15, 0), 200, 2, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(leftEdge);
 
 	Entity * temple = new Entity("Templo_01", s);
 	temple->addComponent(new CMeshRender({ -30, -2, -30 }, "templo.mesh", temple, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 0, 300, 0 }));
 	entities->push_back(temple);
 
-	Entity * portonCollider = new Entity("ColliderPorton_01", s);
-
-	portonCollider->addComponent(new CRigidBody(portonCollider, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-2, 2, 0), 2, 15, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
-
-	entities->push_back(portonCollider);
+	
 #pragma region Trees
 	Entity * tree1 = new Entity("Tree_01", s);
 	tree1->addComponent(new CMeshRender({ -50, -12, -30 }, "Arbol1.mesh", tree1, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 0, 0, 0 }));
