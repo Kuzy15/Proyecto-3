@@ -1500,6 +1500,12 @@ void CAbility::getMessage(Message *m){
 			if (_componentLife > 0){
 				dmg = mDA->getDamage() * (1 - _componentArmor / 100.0f);
 			}
+			else{
+				if (_myMask == MASK_HEAD_0 || _myMask == MASK_HEAD_1)
+					pEnt->getMessage(new MActiveDead(pEnt->getID()));
+				else
+					pEnt->getMessage(new MPassiveDead(pEnt->getID()));
+			}
 			pEnt->getMessage(new MDamage(dmg, pEnt->getID()));
 		}
 		break;
@@ -1668,7 +1674,12 @@ CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRES
 }
 CShuHeaddress::~CShuHeaddress(){}
 
-void CShuHeaddress::tick(float delta){}
+void CShuHeaddress::tick(float delta){
+
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _lastTimeDash));
+
+
+}
 void CShuHeaddress::getMessage(Message* m)
 {
 	if (m->getType() == MSG_INPUT_STATE){
@@ -1730,6 +1741,7 @@ void CJonsuMoon::tick(float delta){
 		}
 		
 	}
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
 }
 void CJonsuMoon::getMessage(Message* m)
 {
@@ -1782,6 +1794,8 @@ void CKhepriBeetle::tick(float delta){
 		}
 
 	}
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+
 }
 void CKhepriBeetle::getMessage(Message* m)
 {
@@ -1821,6 +1835,9 @@ void CHeraRune::tick(float delta) {
 			isAvailable = true;
 		}
 	}
+
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+
 }
 
 void CHeraRune::getMessage(Message* m)
@@ -1893,6 +1910,13 @@ void CHerisMark::tick(float delta) {
 		pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
 		_initTime = SDL_GetTicks();
 	}
+
+
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+
+
+
+
 }
 void CHerisMark::getMessage(Message* m)
 {

@@ -84,7 +84,12 @@ typedef enum MessageType {
 	MSG_DAMAGE_ARMATURE,
 	MSG_CAMERA_FOLLOW,
 	MSG_LIFE_STATE,
-	MSG_ABILITY_SETTER
+	MSG_ABILITY_SETTER,
+	MSG_UPDATE_SCENETIMER,
+	MSG_UPDATE_ACTIVETIMER,
+	MSG_PASSIVE_DEAD,
+	MSG_ACTIVE_DEAD,
+	MSG_ROUND_FINISHED
 
 	
 
@@ -610,4 +615,67 @@ private:
 	ComponentType _c;
 	int _type;
 };
+
+//--------------------------------------------------	SCENE TIMER UPDATE MSG		----------------------------------------------------------//
+class MUpdateSceneTimer : public Message
+{
+public:
+	MUpdateSceneTimer(std::string emmiter, size_t value);
+	~MUpdateSceneTimer();
+	float getSceneTimer();
+private:
+	float _value;
+};
+
+
+//--------------------------------------------------	ACTIVE TIMER UPDATE MSG		----------------------------------------------------------//
+class MUpdateActiveTimer : public Message
+{
+public:
+	MUpdateActiveTimer(std::string emmiter, size_t value);
+	~MUpdateActiveTimer();
+	float getActiveTimer();
+private:
+	float _value;
+};
+
+
+//--------------------------------------------------	PASSIVE DEAD MSG		----------------------------------------------------------//
+class MPassiveDead : public Message
+{
+public:
+	MPassiveDead(std::string emmiter);
+	~MPassiveDead();
+
+};
+
+//--------------------------------------------------	ACTIVE DEAD MSG		----------------------------------------------------------//
+class MActiveDead : public Message
+{
+public:
+	MActiveDead(std::string emmiter);
+	~MActiveDead();
+
+};
+
+
+//--------------------------------------------------	ROUND FINISHED MSG		----------------------------------------------------------//
+class MRoundFinished : public Message
+{
+public:
+	MRoundFinished(std::string emmiter, std::string winnerId);
+	~MRoundFinished();
+	std::string getWinnerId();
+private:
+	std::string _winnerId;
+};
+
+
+
+
+
+
+
+
+
 #endif
