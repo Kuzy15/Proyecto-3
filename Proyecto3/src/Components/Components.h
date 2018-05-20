@@ -212,7 +212,7 @@ class CSkyPlaneRender : public CRender
 {
 public:
 
-	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName);
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos);
 	~CSkyPlaneRender();
 
 

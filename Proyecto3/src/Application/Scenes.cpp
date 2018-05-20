@@ -774,15 +774,19 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	Ogre::Viewport* vp = nullptr;
 	Entity *cam = new Entity("camMenuIni",this); 
-	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+
+	Entity * background = new Entity("fightButton", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {70,0,0}));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, background));
 
 	Entity * fightButton = new Entity("fightButton", this);
 	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
 
 	Entity * exitButton = new Entity("exitButton", this);
-	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(-0, 200), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, exitButton));
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
 
 	overlay->show();
 
