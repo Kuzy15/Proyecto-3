@@ -303,9 +303,8 @@ void BasicScene::processScnMsgs()
 
 #pragma endregion
 
-void K() {
-
-	std::cout << "CCALLLBACKK " << std::endl;
+void exitCallBack() {
+	Game::getInstance()->exitGame();
 }
 
 
@@ -378,17 +377,17 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::FontManager::getSingleton().getByName("GUI/PlayerText")->load();
 
 
-	Entity * k = new Entity("GUI", this);
+	/*Entity * k = new Entity("GUI", this);
 
 
 	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
 	k->addComponent(new CPlayerGUI(k, overlay, P1, EG_RA));
-	k->addComponent(new CPlayerGUI(k, overlay, P2, EG_AHPUCH));	addEntity(k);
+	k->addComponent(new CPlayerGUI(k, overlay, P2, EG_AHPUCH));	addEntity(k);*/
 	// Create a panel
 	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
 
 
-	overlay->show();
+	//overlay->show();
 	//bgCards->show();
 
 
@@ -764,18 +763,26 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	// Create an overlay
 	try {
-		overlay = overlayManager.getByName("GUI");
+		overlay = overlayManager.getByName("MENU");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
 		cout << std::endl;
 	}
 	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
 
-	Entity * k = new Entity("GUI", this);
-	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, k));
+	Ogre::Viewport* vp = nullptr;
+	Entity *cam = new Entity("camMenuIni",this); 
+	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+
+	Entity * fightButton = new Entity("fightButton", this);
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
+
+	Entity * exitButton = new Entity("exitButton", this);
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(-0, 200), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, exitButton));
 
 	overlay->show();
 

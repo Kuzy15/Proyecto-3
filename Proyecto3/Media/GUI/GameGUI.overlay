@@ -50,7 +50,10 @@ Background
 
 }
 
-
+MENU
+{
+	zorder 200
+}
 // Graphical User Interface for the PlayScene.
 GUI
 {
