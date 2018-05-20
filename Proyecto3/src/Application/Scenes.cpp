@@ -350,6 +350,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		_players[i].abilities.push_back(CMP_KHEPRI_BEETLE);
 		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
+		_players[i].entity->setActive(true);
 		addEntity(_players[i].entity);
 
 	}
@@ -393,10 +394,10 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 
 	//Set the starter state to SETUP
-	_currState = GS_SETUP;
+	_currState = GS_BATTLE;
 	_prepareCounter = SDL_GetTicks();
 
-	loadAbilities();
+	//loadAbilities();
 
 	getMessage(new MButtonAct(id, 0));
 	getMessage(new MButtonAct(id, 3));
@@ -571,7 +572,7 @@ void GamePlayScene::battlePhase(){
 		//If time is greater than limit, stop battle
 		if (_battleState.timeElapsed > TIME_LIMIT){
 			_battleState.battleEnded = true;
-			_currState = GS_END;
+			//_currState = GS_END;
 		}
 
 
