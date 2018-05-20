@@ -301,14 +301,17 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNo
 	airTop->setLoop(true);
 	//chargeTop->setLoop(false);
 	shootTop->setLoop(false);
+	//Initial rotation
+	pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+
 
 	currentBot = idleBot;
 	currentBot->setEnabled(true);
-	currentTop = start;
+	currentTop = idleTop;
 	currentTop->setEnabled(true);
 	nextBot = nullptr;
 	nextTop = nullptr;
-	starting = true;
+	starting = false;
 
 }
 CAnimation::~CAnimation(){
@@ -328,18 +331,22 @@ void CAnimation::tick(float delta){
 	
 	if (currentTop->getLength() == currentTop->getTimePosition()){
 		currentTop->setEnabled(false);
-		nextTop->setTimePosition(0);
-		nextTop->setEnabled(true);
-		currentTop = nextTop;
+		if (nextTop != nullptr){
+			nextTop->setTimePosition(0);
+			nextTop->setEnabled(true);
+			currentTop = nextTop;		
+		}
 		isShooting = false;
 		starting = false;
 	}
 
 	if (currentBot->getLength() == currentBot->getTimePosition()){
 		currentBot->setEnabled(false);
-		nextBot->setTimePosition(0);
-		nextBot->setEnabled(true);
-		currentBot = nextBot;
+		if (nextBot != nullptr){
+			nextBot->setTimePosition(0);
+			nextBot->setEnabled(true);
+			currentBot = nextBot;		
+		}
 
 	}
 
@@ -1493,6 +1500,12 @@ void CAbility::getMessage(Message *m){
 			if (_componentLife > 0){
 				dmg = mDA->getDamage() * (1 - _componentArmor / 100.0f);
 			}
+			else{
+				if (_myMask == MASK_HEAD_0 || _myMask == MASK_HEAD_1)
+					pEnt->getMessage(new MActiveDead(pEnt->getID()));
+				else
+					pEnt->getMessage(new MPassiveDead(pEnt->getID()));
+			}
 			pEnt->getMessage(new MDamage(dmg, pEnt->getID()));
 		}
 		break;
@@ -1661,7 +1674,12 @@ CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRES
 }
 CShuHeaddress::~CShuHeaddress(){}
 
-void CShuHeaddress::tick(float delta){}
+void CShuHeaddress::tick(float delta){
+
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _lastTimeDash));
+
+
+}
 void CShuHeaddress::getMessage(Message* m)
 {
 	if (m->getType() == MSG_INPUT_STATE){
@@ -1723,6 +1741,7 @@ void CJonsuMoon::tick(float delta){
 		}
 		
 	}
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
 }
 void CJonsuMoon::getMessage(Message* m)
 {
@@ -1775,6 +1794,8 @@ void CKhepriBeetle::tick(float delta){
 		}
 
 	}
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+
 }
 void CKhepriBeetle::getMessage(Message* m)
 {
@@ -1814,6 +1835,9 @@ void CHeraRune::tick(float delta) {
 			isAvailable = true;
 		}
 	}
+
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+
 }
 
 void CHeraRune::getMessage(Message* m)
@@ -1886,6 +1910,13 @@ void CHerisMark::tick(float delta) {
 		pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
 		_initTime = SDL_GetTicks();
 	}
+
+
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+
+
+
+
 }
 void CHerisMark::getMessage(Message* m)
 {

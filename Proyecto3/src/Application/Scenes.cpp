@@ -565,6 +565,8 @@ void GamePlayScene::battlePhase(){
 
 		//Update time elapsed
 		_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
+		getMessage(new MUpdateSceneTimer(_id,_battleState.timeElapsed));
+
 
 		//If time is greater than limit, stop battle
 		if (_battleState.timeElapsed > TIME_LIMIT){
@@ -628,13 +630,14 @@ void GamePlayScene::playerDied(std::string e){
 	int playerDeadId = std::stoi( e.substr(7, 8));
 	int playerWonId;
 	if (playerDeadId == 0){
-		playerWonId = 1;
+		playerWonId = 1;		
 	}
-	else
+	else{
 		playerWonId = 0;
-
+	}
 	//Increase runds completed
 	_players[playerWonId].roundsWon++;
+	getMessage(new MRoundFinished(_id,_players[playerWonId].entity->getID()));
 	_battleState.roundsCompleted++;
 
 	//If the rounds elapsed are 3, we finish the game. Else, continue.
