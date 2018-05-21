@@ -1678,7 +1678,7 @@ CShuHeaddress::~CShuHeaddress(){}
 
 void CShuHeaddress::tick(float delta){
 
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - (SDL_GetTicks() - _lastTimeDash)));
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _lastTimeDash) * 100) / _coolDown));
 
 
 }
@@ -1743,7 +1743,7 @@ void CJonsuMoon::tick(float delta){
 		}
 		
 	}
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - (SDL_GetTicks() - _initTime)));
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100) / _coolDown));
 }
 void CJonsuMoon::getMessage(Message* m)
 {
@@ -1796,7 +1796,7 @@ void CKhepriBeetle::tick(float delta){
 		}
 
 	}
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - (SDL_GetTicks() - _initTime)));
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100) / _coolDown));
 
 }
 void CKhepriBeetle::getMessage(Message* m)
@@ -1838,7 +1838,7 @@ void CHeraRune::tick(float delta) {
 		}
 	}
 
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - (SDL_GetTicks() - _initTime)));
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100) / _coolDown));
 
 }
 
@@ -1913,8 +1913,7 @@ void CHerisMark::tick(float delta) {
 		_initTime = SDL_GetTicks();
 	}
 
-
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - (SDL_GetTicks() - _initTime)));
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100 )/ _coolDown));
 
 
 

@@ -307,7 +307,7 @@ MDamage::~MDamage(){}
 #pragma endregion
 
 #pragma region Update Active Timer 
-	MUpdateActiveTimer::MUpdateActiveTimer(std::string emmiter, size_t value) : Message(MSG_UPDATE_ACTIVETIMER, SCENE_ONLY, emmiter), _value(value) {};
+	MUpdateActiveTimer::MUpdateActiveTimer(std::string emmiter, float value) : Message(MSG_UPDATE_ACTIVETIMER, SCENE_ONLY, emmiter), _value(value) {};
 	MUpdateActiveTimer::~MUpdateActiveTimer() {};
 	float MUpdateActiveTimer::getActiveTimer() { return _value; };
 

@@ -632,7 +632,7 @@ private:
 class MUpdateActiveTimer : public Message
 {
 public:
-	MUpdateActiveTimer(std::string emmiter, size_t value);
+	MUpdateActiveTimer(std::string emmiter, float value);
 	~MUpdateActiveTimer();
 	float getActiveTimer();
 private:
