@@ -480,6 +480,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 
 	Ogre::Light* light = s->getSceneManager()->createLight("MainLight");
 	light->setPosition(20, 30, 50);
+	light->setCastShadows(true);
 
 	Ogre::Viewport* vp = nullptr;
 	Entity * cam = new Entity("Camera1", s);

@@ -119,12 +119,10 @@ GUI
         {
           left 0.013
         }
-
         container TextArea (Player1/Name) : GUI/PlayerName
         {
           left 0.104
         }
-
         container Panel (Player1/LifeBar)
         {
           metrics_mode relative
@@ -152,7 +150,6 @@ GUI
         {
           left 0.32
         }
-
 //Active hability
         container Panel (Player1/ActiveContainer)
         {
@@ -216,7 +213,6 @@ GUI
           left -0.104
 
         }
-
         container Panel (Player2/LifeBar)
         {
           horz_align right
@@ -226,7 +222,7 @@ GUI
           height 0.08
           material GUI/Player2/LifeBar
         }
-        container Panel (Player2/LifeBorder)
+        container Panel (Player2/ALifeBorder)
         {
           horz_align right
           left -0.374
@@ -235,8 +231,6 @@ GUI
           height 0.08
           material GUI/Player2/LifeFrame
         }
-
-
         container Panel (Player2/Round1) : GUI/Round
         {
           horz_align right
@@ -247,10 +241,6 @@ GUI
           horz_align right
           left -0.341
         }
-
-
-
-        //Active Hability
         container Panel (Player2/ActiveContainer)
         {
           metrics_mode relative
@@ -290,6 +280,4 @@ GUI
           }
         }
     }
-         //Player2
 }
-//Kek

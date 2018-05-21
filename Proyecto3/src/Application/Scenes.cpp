@@ -365,8 +365,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	// Create an overlay
 	try {
-		bgCards = overlayManager.getByName("Background");
 		overlay = overlayManager.getByName("GUI");
+		bgCards = overlayManager.getByName("Background");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -389,7 +389,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 
 	overlay->show();
-//	bgCards->show();
+	//bgCards->show();
 
 
 
