@@ -902,9 +902,8 @@ void CRigidBody::tick(float delta) {
 
 	}
 
-	if (pEnt->getID() == "Player_0")
-
-	std::cout << _body->GetPosition().x * PPM << std::endl;
+	//if (pEnt->getID() == "Player_0";
+	//std::cout << _body->GetPosition().x * PPM << std::endl;
 
 
 }
@@ -2185,11 +2184,28 @@ void CPlayerGUI::updateLifebar(size_t val) {
 		}
 }
 
-
-
 #pragma endregion
 
+#pragma region CGUITimer
 
+CGUITimer::CGUITimer(Entity* father, Ogre::Overlay * overlay):GameComponent(CMP_GUI_TIMER, father)
+{
+	pTimer = overlay->getChild("GUI/TimerPanel");
+}
+
+CGUITimer::~CGUITimer()
+{
+}
+void CGUITimer::tick(float delta)
+{
+
+}
+void CGUITimer::getMessage(Message * m)
+{
+	if (m->getType() == MSG_UPDATE_SCENETIMER)
+		pTimer->getChild("TimerPanel/TextArea")->setCaption(to_string(floor(static_cast<MUpdateSceneTimer *>(m)->getSceneTimer())));
+
+}
 #pragma endregion
 
 

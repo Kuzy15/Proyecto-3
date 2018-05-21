@@ -73,6 +73,7 @@ typedef enum ComponentType {
 	CMP_KHEPRI_BEETLE,
 	CMP_GUI_BUTTON,
 	CMP_GUI_PLAYERGUI,
+	CMP_GUI_TIMER,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
@@ -880,8 +881,18 @@ protected:
 	float _lastClick;
 	const float _minClickTime = 500;
 };
+class CGUITimer: public GameComponent
+{
+public:
+	CGUITimer(Entity * father, Ogre::Overlay * overlay);
+	~CGUITimer();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
 
+private:
+	Ogre::OverlayContainer * pTimer;
 
+};
 class CNormalButton : public CButtonGUI
 {
 public:
