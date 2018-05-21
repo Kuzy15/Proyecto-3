@@ -2105,7 +2105,7 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_G
 	
 	if (plyer == P1)player = "Player1";
 	else player = "Player2";
-
+	roundsWon = 0;
 
 	//General container of the whole Player HUD
 	pHud = pOverlay->getChild(player);
@@ -2170,9 +2170,18 @@ void CPlayerGUI::getMessage(Message * m) {
 		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
 			updateActive(static_cast<MUpdateActiveTimer *>(m)->getActiveTimer());
 		break;
+	case MSG_ROUND_FINISHED:
+		string aux = static_cast<MRoundFinished *>(m)->getWinnerId();
+		if (aux == "Player_0" && p == P1 || aux == "Player_1" && p == P2) {
+			if (roundsWon == 0) {
+				pHud->getChild("Player1/Round1")->setMaterialName("GUI/RoundFull");
+			}
+			else if (roundsWon == 1)
+			{
+				pHud->getChild("Player1/Round2")->setMaterialName("GUI/RoundFull");
+			}
+		}
 	}
-	
-
 }
 
 void CPlayerGUI::updateActive(size_t val)

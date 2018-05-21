@@ -951,6 +951,7 @@ private:
 	Ogre::Overlay * pOverlay;
 	float LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
 	float ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
+	size_t roundsWon;
 	guiPlayer p;
 };
 
