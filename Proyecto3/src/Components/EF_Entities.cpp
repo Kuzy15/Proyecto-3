@@ -163,7 +163,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	Entity* Hachiman = new Entity("Player_" + std::to_string(controllerId), s);
 
 	//Mesh Render
-	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "AhPuch.mesh", Hachiman, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 });
+	CMeshRender* cM = new CMeshRender({ 2, 2, 0 }, "Hachiman.mesh", Hachiman, s->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 });
 	Hachiman->addComponent(cM);
 
 	//RigidBody
@@ -259,7 +259,7 @@ Entity* createBulletAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, f
 
 	//Bullet
 	bAhPuch->addComponent(new CBullet(bAhPuch, EB_AHPUCH, damage, 700.0f));
-	bAhPuch->addComponent(new CParticleRender({ 0, 1000, 0 }, id + "pCer1AhPuch", "pCer1AhPuch", bAhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	//bAhPuch->addComponent(new CParticleRender({ 0, 1000, 0 }, id + "pCer1AhPuch", "pCer1AhPuch", bAhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
 
 	return bAhPuch;
 
@@ -289,10 +289,10 @@ Entity* createBulletZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, flo
 
 
 	//Bullet
-	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 10.0f));
-	//bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus1", "LightningZeus1", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
-	//bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus2", "LightningZeus2", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
-	//bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus3", "LightningZeus3", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	bZeus->addComponent(new CBullet(bZeus, EB_ZEUS, damage, 1000.0f));
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus1", "LightningZeus1", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus2", "LightningZeus2", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
+	bZeus->addComponent(new CParticleRender({ 0, 0, -1000 }, id + "LightningZeus3", "LightningZeus3", bZeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, angle }));
 
 
 	// Estela

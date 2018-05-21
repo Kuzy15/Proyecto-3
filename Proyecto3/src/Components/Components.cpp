@@ -495,12 +495,14 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 
 
 #pragma region Skyplane Render Component
-CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 	
 	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
 		materialName, scale, 1, true, bow, 100, 100); 
 	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
 	// bow = 0, xsegments = 1, ysegments = 1
+
+	pOgreSceneNode->setPosition(pos);
 
 }
 CSkyPlaneRender::~CSkyPlaneRender(){}
@@ -1996,12 +1998,12 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	_callback = callback;
 	_txt = buttonTxt;
 
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
 	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text" + father->getID()));
 		a->setCaption(_txt);
 	}
 	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };

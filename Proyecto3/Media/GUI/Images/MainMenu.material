@@ -1,4 +1,4 @@
-material LZeus4
+material MainMenu
 {
 	technique
 	{
@@ -8,10 +8,10 @@ material LZeus4
 			scene_blend alpha_blend
 			depth_write off
 			diffuse vertexcolour
-
+			
 			texture_unit
 			{
-				texture lightning4.png
+				texture MainMenu.png
 				tex_address_mode clamp
 			}
 		}

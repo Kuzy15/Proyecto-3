@@ -59,7 +59,7 @@ template container Panel (GUI/Icon)
 
 Background
 {
-	zorder 200
+	zorder 50
 	container Panel (Wololo)
 	{
 	top 0
@@ -71,7 +71,10 @@ Background
 
 }
 
-
+MENU
+{
+	zorder 100
+}
 // Graphical User Interface for the PlayScene.
 GUI
 {
