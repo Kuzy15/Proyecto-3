@@ -8,6 +8,7 @@
 #include <string>
 #include <list>
 #include <Box2D.h>
+#include <OgreTextAreaOverlayElement.h>
 
 
 class Entity;
@@ -937,7 +938,7 @@ public:
 	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, E_GOD character);
 	~CPlayerGUI();
 	void updateLifebar(size_t val);
-	void updateActive();
+	void updateActive(size_t val);
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	void updatePassive();
@@ -948,8 +949,8 @@ private:
 	Ogre::OverlayContainer * plifeBar;
 	Ogre::OverlayContainer * pActiveBar;
 	Ogre::Overlay * pOverlay;
-	size_t LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
-	size_t ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
+	float LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
+	float ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
 	guiPlayer p;
 };
 

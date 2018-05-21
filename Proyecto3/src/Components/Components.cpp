@@ -13,7 +13,6 @@
 #include <OgreOverlayManager.h>
 #include <OgreOverlayElement.h>
 #include <OgreOverlayContainer.h>
-#include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 
@@ -2115,7 +2114,6 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_G
 	//Specific reference to the lifebar and active bar, which we'll be using quite often
 	plifeBar = static_cast<Ogre::OverlayContainer*>(pHud->getChild(player + "/LifeBar"));
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
-	
 	std::string charName;
 	std::string iconMatName = "GUI/Icons/" ;
 
@@ -2150,31 +2148,50 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_G
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
 	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();
-	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 15;
+	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 0.0f;
+
+
 
 
 }
 CPlayerGUI::~CPlayerGUI() {}
 
 void CPlayerGUI::tick(float delta) {
-
-
 }
 void CPlayerGUI::getMessage(Message * m) {
-	/*
-		This must be modyfied, as it takes EVERY life state update without knowing if the sender
-		is the player that this part of the HUD tracks.
-		TODO: Change the implementation so it filters the life state messages
 	
-	*/
-	if (m->getType() == MSG_LIFE_STATE &&((m->getEmmiter() == "Player_1" && p == P1)||(m->getEmmiter() == "Player_0" && p == P2)))
-		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+	switch (m->getType()) 
+	{
+	case MSG_LIFE_STATE:
+		if ((m->getEmmiter() == "Player_0" && p == P1) || (m->getEmmiter() == "Player_1" && p == P2))
+			updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+		break;
+	case MSG_UPDATE_ACTIVETIMER :
+		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
+			updateActive(static_cast<MUpdateActiveTimer *>(m)->getActiveTimer());
+		break;
+	}
+	
 
+}
+
+void CPlayerGUI::updateActive(size_t val)
+{
+	float newVal = (ACTIVE_MAX_WIDTH * val) / 100;
+	if (newVal < ACTIVE_MIN_WIDTH)newVal = ACTIVE_MIN_WIDTH;
+	if (p == P1)
+		pActiveBar->setWidth(newVal);
+	else {
+		Ogre::Real newX = pActiveBar->getLeft();
+		newX = (newX + pActiveBar->getWidth()) - newVal;
+		pActiveBar->setLeft(newX);
+		pActiveBar->setWidth(newVal);
+	}
 
 }
 void CPlayerGUI::updateLifebar(size_t val) {
 
-		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
+		float newVal = (LIFE_MAX_WIDTH * val) / 100;
 		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
 		if(p == P1)
 		plifeBar->setWidth(newVal);
@@ -2204,9 +2221,11 @@ void CGUITimer::tick(float delta)
 }
 void CGUITimer::getMessage(Message * m)
 {
-	if (m->getType() == MSG_UPDATE_SCENETIMER)
-		pTimer->getChild("TimerPanel/TextArea")->setCaption(to_string(floor(static_cast<MUpdateSceneTimer *>(m)->getSceneTimer())));
-
+	if (m->getType() == MSG_UPDATE_SCENETIMER) {
+		int val = (int)static_cast<MUpdateSceneTimer *>(m)->getSceneTimer();
+		val /= 1000;
+		pTimer->getChild("TimerPanel/TextArea")->setCaption(to_string(val));
+	}
 }
 #pragma endregion
 
