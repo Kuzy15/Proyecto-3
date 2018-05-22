@@ -20,7 +20,7 @@ Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc), _active(true
 }
 Entity::~Entity()
 {
-	//dispatch();
+	dispatch();
 
 	GameComponent* aux;
 	for (std::vector<GameComponent *>::iterator it = components.begin(); it != components.end();){
@@ -41,7 +41,9 @@ Entity::~Entity()
 	while (!msgs.empty()){
 		Message * aux = msgs.front();
 		msgs.pop();
-		delete aux;
+		if (aux != nullptr)
+			delete aux;
+		aux = nullptr;
 	}
 
 }

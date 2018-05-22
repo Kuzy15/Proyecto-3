@@ -33,7 +33,7 @@ private:
 	
 	const std::string _emitter = "InputManager";
 
-	ControllerInputState lastState;
+	std::vector<ControllerInputState> lastState;
 
 public:
 	~InputManager();

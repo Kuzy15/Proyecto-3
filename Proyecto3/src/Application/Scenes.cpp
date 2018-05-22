@@ -326,7 +326,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 #endif
 
 	//The limit time to choose cards
-	_prepareLimitTime = 30000.0f; //30 seconds
+	_prepareLimitTime = 15000.0f; //15 seconds
 	_prepareCounter = 0.0f;
 
 	//Load the stage passed by parameter
@@ -353,6 +353,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		_players[i].abilities.push_back(CMP_KHEPRI_BEETLE);
 		_players[i].currentActive = CMP_SHU_HEADDRESS;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
+		_players[i].activeSelected = true;
 		addEntity(_players[i].entity);
 		_players[i].entity->setActive(false);
 
@@ -521,12 +522,7 @@ void GamePlayScene::battlePhase(){
 			_currState = GS_END;
 		}
 
-
-
-
 	}
-
-
 
 }
 
@@ -576,7 +572,6 @@ void GamePlayScene::changePhase(GameplayState newState){
 		loadAbilities();
 
 		getMessage(new MButtonAct(_id, player1Index));
-		getMessage(new MButtonAct(_id, player2Index));
 
 		_currState = GS_SETUP;
 			break;
@@ -652,8 +647,7 @@ void GamePlayScene::resetPlayers(){
 
 
 void start_c(){
-	/**/
-
+	
 
 
 }
@@ -680,8 +674,8 @@ void GamePlayScene::loadAbilities(){
 
 	auxPos = Ogre::Vector2(0.0f, 700.0f);
 
-	aux = new Entity("Start_Button", this);
-	aux->addComponent(new CNormalButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0),start_c,"Start"));
+	/*aux = new Entity("Start_Button", this);
+	aux->addComponent(new CNormalButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0),start_c,"Start"));*/
 
 }
 
@@ -725,7 +719,7 @@ void GamePlayScene::processMsgSetup(Message* m){
 	switch (m->getType()){
 	case MSG_INPUT_STATE:
 		mInput = static_cast<MInputState*>(m);
-		if (mInput->getId() == 0){
+		if (mInput->getId() == 0 && !_pReady[0]){
 			if (mInput->getCInputState().Button_A == BTT_RELEASED)
 				getMessage(new MButtonClick(_id, player1Index));
 			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
@@ -733,21 +727,24 @@ void GamePlayScene::processMsgSetup(Message* m){
 				if (player1Index > 2) player1Index = 0;
 				getMessage(new MButtonAct(_id, player1Index));
 			}
-			else if (mInput->getCInputState().DPad_Up == BTT_PRESSED){
+			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
 				player1Index--;
 				if (player1Index < 0) player1Index = 2;
+				getMessage(new MButtonAct(_id, player1Index));
 			}
 		}
-		else if (mInput->getId() == 1){
-			if (mInput->getCInputState().Button_A == BTT_PRESSED)
+		else if (mInput->getId() == 1 && _pReady[0]){
+			if (mInput->getCInputState().Button_A == BTT_RELEASED)
 				getMessage(new MButtonClick(_id, player2Index));
-			else if (mInput->getCInputState().DPad_Down == BTT_PRESSED){
+			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
 				player2Index++;
 				if (player2Index > 5) player2Index = 3;
+				getMessage(new MButtonAct(_id, player2Index));
 			}
-			else if (mInput->getCInputState().DPad_Up == BTT_PRESSED){
+			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
 				player2Index--;
 				if (player2Index < 3) player2Index = 5;
+				getMessage(new MButtonAct(_id, player2Index));
 			}
 		}
 		break;

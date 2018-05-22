@@ -1962,7 +1962,7 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	_callback = callback;
 	_txt = buttonTxt;
 
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Wojojo"));
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Cabmiaresto"));
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
@@ -2012,18 +2012,17 @@ void CNormalButton::getMessage(Message * me)
 #pragma region Ability Button
 CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize,  int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
 _playerId(playerId), _compType(compType){
-	materials[0] = "GUI/Button/Idle";
-	materials[1] = "GUI/Button/Active";
-	materials[2] = "GUI/Button/Click";
+	
 
 
 	
-	
 
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
+	
+	/*pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
 	pContainer->setPosition(screenpos.x, screenpos.y);
-	overlay->add2D(pContainer);
-
+	overlay->add3D(n);
+	overlay->*/
+	
 }
 CAbilityButton::~CAbilityButton()
 {
@@ -2036,7 +2035,7 @@ void CAbilityButton::getMessage(Message * me)
 {
 
 
-	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
+	/*if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
 	{
 		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
 			_active = true;
@@ -2058,7 +2057,7 @@ void CAbilityButton::getMessage(Message * me)
 		}
 
 	}
-
+	*/
 
 }
 
