@@ -18,7 +18,6 @@
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 
-
 //Later removable
 #include <OgreCamera.h>
 #include <OgreNode.h>
@@ -385,7 +384,6 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	k->addComponent(new CPlayerGUI(k, overlay, P1, players[0].god));
 	k->addComponent(new CPlayerGUI(k, overlay, P2, players[1].god));
 	addEntity(k);
-	
 
 
 	overlay->show();

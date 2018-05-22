@@ -91,6 +91,38 @@ material GUI/RoundFull {
     }
   }
 }
+material GUI/PassiveUp {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Passive_Up.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+material GUI/PassiveDown {
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Passive_Down.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+
+
 
 
 

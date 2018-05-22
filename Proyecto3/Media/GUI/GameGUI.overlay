@@ -159,13 +159,13 @@ GUI
           height 0.15
           material GUI/Base_Player
 
-          container Panel (Player1/ActiveConainer/ActiveIcon)
+          container Panel (Player1/ActiveConainer/PassiveIcon)
           {
             top 0.046
             left 0.013
             width 0.039
             height 0.0694
-            material GUI/RoundEmpty
+            material GUI/PassiveUp
           }
           container Panel (Player1/ActiveContainer/ActiveBar)
           {
@@ -251,14 +251,14 @@ GUI
           height 0.15
           material GUI/Base_Player2
 
-          container Panel (Player2/ActiveConainer/ActiveIcon)
+          container Panel (Player2/ActiveConainer/PassiveIcon)
           {
             horz_align right
             top 0.046
             left -0.052
             height 0.0694
             width 0.039
-            material GUI/RoundEmpty
+            material GUI/PassiveUp
           }
           container Panel (Player2/ActiveContainer/ActiveBar)
           {

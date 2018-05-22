@@ -2210,6 +2210,9 @@ void CPlayerGUI::getMessage(Message * m) {
 			pActiveBar->setWidth(0);
 		}
 			break;
+	case MSG_PASSIVE_DEAD:
+		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
+			pLowerHud->getChild(player + "/ActiveConainer/PassiveIcon")->setMaterialName("GUI/PassiveDown");
 	}
 }
 
@@ -2224,6 +2227,7 @@ void CPlayerGUI::updateActive(size_t val)
 		newX = (newX + pActiveBar->getWidth()) - newVal;
 		pActiveBar->setLeft(newX);
 		pActiveBar->setWidth(newVal);
+	
 	}
 
 }
