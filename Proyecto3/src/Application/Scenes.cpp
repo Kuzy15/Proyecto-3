@@ -303,9 +303,8 @@ void BasicScene::processScnMsgs()
 
 #pragma endregion
 
-void K() {
-
-	std::cout << "CCALLLBACKK " << std::endl;
+void exitCallBack() {
+	Game::getInstance()->exitGame();
 }
 
 
@@ -367,8 +366,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	// Create an overlay
 	try {
-		bgCards = overlayManager.getByName("Background");
 		overlay = overlayManager.getByName("GUI");
+		bgCards = overlayManager.getByName("Background");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -382,11 +381,12 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Entity * k = new Entity("GUI", this);
 
 
-	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
-	k->addComponent(new CPlayerGUI(k, overlay, P1, EG_RA));
-	k->addComponent(new CPlayerGUI(k, overlay, P2, EG_AHPUCH));	addEntity(k);
-	// Create a panel
-	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
+	//k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
+	k->addComponent(new CGUITimer(k, overlay));
+	k->addComponent(new CPlayerGUI(k, overlay, P1, players[0].god));
+	k->addComponent(new CPlayerGUI(k, overlay, P2, players[1].god));
+	addEntity(k);
+	
 
 	changePhase(GS_SETUP);
 
@@ -515,11 +515,13 @@ void GamePlayScene::battlePhase(){
 
 		//Update time elapsed
 		_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
+		getMessage(new MUpdateSceneTimer(_id,_battleState.timeElapsed));
+
 
 		//If time is greater than limit, stop battle
 		if (_battleState.timeElapsed > TIME_LIMIT){
 			_battleState.battleEnded = true;
-			_currState = GS_END;
+			//_currState = GS_END;
 		}
 
 	}
@@ -602,11 +604,12 @@ void GamePlayScene::playerDied(std::string e){
 	if (playerDeadId == 0){
 		playerWonId = 1;
 	}
-	else
+	else{
 		playerWonId = 0;
-
+	}
 	//Increase runds completed
 	_players[playerWonId].roundsWon++;
+	getMessage(new MRoundFinished(_id,_players[playerWonId].entity->getID()));
 	_battleState.roundsCompleted++;
 
 	
@@ -802,18 +805,30 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	// Create an overlay
 	try {
-		overlay = overlayManager.getByName("GUI");
+		overlay = overlayManager.getByName("MENU");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
 		cout << std::endl;
 	}
 	// Show the overlay
-	Ogre::FontManager::getSingleton().getByName("Caption")->load();
+	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
 
-	Entity * k = new Entity("GUI", this);
-	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, k));
+	Ogre::Viewport* vp = nullptr;
+	Entity *cam = new Entity("camMenuIni",this);
+	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+
+	Entity * background = new Entity("fightButton", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {70,0,0}));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, background));
+
+	Entity * fightButton = new Entity("fightButton", this);
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
+
+	Entity * exitButton = new Entity("exitButton", this);
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
 
 	overlay->show();
 

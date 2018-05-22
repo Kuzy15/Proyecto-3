@@ -71,14 +71,16 @@ Game::Game(){
 	 std::vector<Player>* players = new std::vector<Player>(2);
 
 	 players->at(0).controllerId = 0;
-	 players->at(0).god = EG_RA;
+	 players->at(0).god = EG_AHPUCH;
 
 	 players->at(1).controllerId = 1;
 	 players->at(1).god = EG_AHPUCH;
 
 
-	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_TEMPLE);
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+	 //actScene = new MainMenuScene("MainMenu", this);
 
+	 _exit = false;
 
 	 delete players;
 
@@ -235,6 +237,10 @@ bool Game::initOgre(){
  }
 #pragma endregion
 
+ 
+ void Game::exitGame(){
+	 _exit = true;
+ }
 
 #pragma region Game Update Methods
 /*Main loop of the game.
@@ -249,7 +255,7 @@ void Game::loop() {
 	int frames = 0;
 
 
-	while (!pWindow->isClosed()){
+	while (!pWindow->isClosed() && !_exit){
 		//Refresh loop parameters
 		newTime = (SDL_GetTicks() / 1000.0);
 		frameTime = newTime - currentTime;

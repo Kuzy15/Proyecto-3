@@ -26,19 +26,40 @@ template container Panel(GUI/BaseButton)
     }
 }
 
+template container TextArea (GUI/PlayerName)
+{
+  left 0
+  top 0.032
+  width 0.104
+  height 0.05
+  font_name GUI/PlayerText
+  colour 1 1 1
+  char_height 0.038
+}
+
+
 template element Panel (GUI/Round)
 {
-  metrics_mode pixels
   left 0
-  top 0
-  width 40
-  height 40
+  top 0.185
+  width 0.021
+  height 0.037
   material GUI/RoundEmpty
+}
+template container Panel (GUI/Icon)
+{
+
+  top 0.0225
+  left 0
+  width 0.08
+  height 0.15
+  material GUI/RoundEmpty
+
 }
 
 Background
 {
-	zorder 200
+	zorder 50
 	container Panel (Wololo)
 	{
 	top 0
@@ -50,7 +71,10 @@ Background
 
 }
 
-
+MENU
+{
+	zorder 100
+}
 // Graphical User Interface for the PlayScene.
 GUI
 {
@@ -66,19 +90,19 @@ GUI
         // Another panel nested in this one
         container TextArea(TimerPanel/TextArea)
         {
-            metrics_mode pixels
+            metrics_mode relative
             //Horizontal allignment can be
             //Left, center or right
             horz_align center
             alignment center
             left 0
-            top 55
-            width 100
-            height 100
-            font_name GUI/TimeText
+            top 0.05
+            width 0.052
+            height 0.093
+            font_name GUI/PlayerText
+            caption 00
             colour 0.8 0.8 0
-            caption 56
-            char_height 40
+            char_height 0.05
           }
       }
 //----------------------------- PLAYER 1 GUI --------------------------------------
@@ -91,67 +115,44 @@ GUI
         height 0.2
         material GUI/Base_Player
 
-        container Panel (Player1/Icon)
+        container Panel (Player1/Icon) : GUI/Icon
         {
-          metrics_mode pixels
-          top 50
-          left 50
-          width 100
-          height 100
-          material GUI/RoundEmpty
-
+          left 0.013
         }
-
-        container TextArea (Player1/Name)
+        container TextArea (Player1/Name) : GUI/PlayerName
         {
-          metrics_mode pixels
-          left 175
-          top 35
-          width 100
-          height 25
-          font_name GUI/TimeText
-          colour 0 1 0.5
-          caption RA
-          char_height 30
+          left 0.104
         }
-
         container Panel (Player1/LifeBar)
         {
-          metrics_mode pixels
-          left 175
-          top 75
-          width 500
-          height 75
+          metrics_mode relative
+          left 0.104
+          top 0.0925
+          width 0.27
+          height 0.08
           material GUI/Player1/LifeBar
         }
-          container Panel (Player1/LifeBorder)
-          {
-            metrics_mode pixels
-            left 175
-            top 75
-            width 500
-            height 75
-           material GUI/Player1/LifeFrame
-          }
+        container Panel (Player1/LifeBorder)
+        {
+          metrics_mode relative
+          left 0.104
+          top 0.0925
+          width 0.27
+          height 0.08
+         material GUI/Player1/LifeFrame
+        }
 
         container Panel (Player1/Round1) : GUI/Round
         {
-          top 170
-          left 570
+          left 0.29
         }
         container Panel (Player1/Round2) : GUI/Round
         {
-          top 170
-          left 620
+          left 0.32
         }
-
-
-
-
 //Active hability
         container Panel (Player1/ActiveContainer)
         {
-          metrics_mode relative
           top 0.85
           left 0
           width 0.2
@@ -160,31 +161,28 @@ GUI
 
           container Panel (Player1/ActiveConainer/ActiveIcon)
           {
-            metrics_mode pixels
-            top 50
-            left 50
-            width 50
-            height 50
+            top 0.046
+            left 0.013
+            width 0.039
+            height 0.0694
             material GUI/RoundEmpty
           }
           container Panel (Player1/ActiveContainer/ActiveBar)
           {
-            metrics_mode pixels
-            top 50
-            left 125
-            width 100
-            height 50
+            top 0.064
+            left 0.065
+            width 0.08
+            height 0.05
             material GUI/Player1/ActiveBar
           }
-            element Panel (Player1/ActiveContainer/ActiveFrame)
-            {
-              metrics_mode pixels
-              top 50
-              left 125
-              width 150
-              height 50
-              material GUI/Player1/ActiveFrame
-            }
+          element Panel (Player1/ActiveContainer/ActiveFrame)
+          {
+            top 0.064
+            left 0.065
+            width 0.08
+            height 0.05
+            material GUI/Player1/ActiveFrame
+          }
         }
   }
   //Player1
@@ -200,75 +198,49 @@ GUI
         height 0.2
         material GUI/Base_Player2
 
-        container Panel (Player2/Icon)
+        container Panel (Player2/Icon) : GUI/Icon
         {
-          metrics_mode pixels
           horz_align right
-          top 50
-          left -150
-          width 100
-          height 100
+          left -0.093
           material GUI/RoundEmpty
 
         }
-        container TextArea (Player2/Name)
+        container TextArea (Player2/Name) : GUI/PlayerName
         {
-          metrics_mode pixels
+
           horz_align right
           alignment right
+          left -0.104
 
-          left -175
-          top 35
-          width 100
-          height 25
-          font_name GUI/TimeText
-          colour 0 1 0.5
-          caption Hachisman
-          char_height 30
         }
-
-
-
         container Panel (Player2/LifeBar)
         {
-          metrics_mode pixels
           horz_align right
-          left -675
-          top 75
-          width 500
-          height 75
+          left -0.374
+          top 0.0925
+          width 0.27
+          height 0.08
           material GUI/Player2/LifeBar
         }
-        container Panel (Player2/LifeBorder)
+        container Panel (Player2/ALifeBorder)
         {
-          metrics_mode pixels
           horz_align right
-          left -675
-          top 75
-          width 500
-          height 75
+          left -0.374
+          top 0.0925
+          width 0.27
+          height 0.08
           material GUI/Player2/LifeFrame
         }
-
-
         container Panel (Player2/Round1) : GUI/Round
         {
-          metrics_mode pixels
           horz_align right
-          top 170
-          left -610
+          left -0.311
         }
         container Panel (Player2/Round2) : GUI/Round
         {
-          metrics_mode pixels
           horz_align right
-          top 170
-          left -660
+          left -0.341
         }
-
-
-
-        //Active Hability
         container Panel (Player2/ActiveContainer)
         {
           metrics_mode relative
@@ -281,36 +253,31 @@ GUI
 
           container Panel (Player2/ActiveConainer/ActiveIcon)
           {
-            metrics_mode pixels
             horz_align right
-            top 50
-            left -100
-            width 50
-            height 50
+            top 0.046
+            left -0.052
+            height 0.0694
+            width 0.039
             material GUI/RoundEmpty
           }
           container Panel (Player2/ActiveContainer/ActiveBar)
           {
-            metrics_mode pixels
             horz_align right
-            top 50
-            left -275
-            width 150
-            height 50
+            top 0.064
+            left -0.145
+            width 0.08
+            height 0.05
             material GUI/Player2/ActiveBar
           }
           element Panel (Player2/ActiveContainer/ActiveFrame)
           {
-            metrics_mode pixels
             horz_align right
-            top 50
-            left -275
-            width 150
-            height 50
+            top 0.064
+            left -0.145
+            width 0.08
+            height 0.05
             material GUI/Player2/ActiveFrame
           }
         }
     }
-         //Player2
 }
-//Kek

@@ -36,7 +36,7 @@ public:
 	void Game::changeScene(GameScene* s);
 	void setOverlaySystem(Ogre::OverlaySystem *);
 
-
+	void exitGame();
 
 
 private:
@@ -69,6 +69,8 @@ private:
 	float accumulator;
 	float inputTime;
 
+
+	bool _exit;
 
 
 	//This will be removed. Just to test

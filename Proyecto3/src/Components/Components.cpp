@@ -13,11 +13,10 @@
 #include <OgreOverlayManager.h>
 #include <OgreOverlayElement.h>
 #include <OgreOverlayContainer.h>
-#include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 
-//Debug 
+//Debug
 #ifdef _DEBUG
 #include <iostream>
 #define new DEBUG_NEW
@@ -25,12 +24,12 @@
 
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
-//It implements basic behaviours like gets, sets 
+//It implements basic behaviours like gets, sets
 //and message sending
 #pragma region gameComponent
 GameComponent::GameComponent(ComponentType componentType, Entity * father) : _componentType(componentType), pEnt(father)
 {
-	
+
 }
 GameComponent::~GameComponent(){
 
@@ -54,7 +53,7 @@ void GameComponent::sendMessage(Message * m){
 //PRINTS A STRING WHEN RECEIVEING A STRING_MESSAGE
 #pragma region stringComponent
 CString::CString(Entity * fath) : GameComponent(CMP_STRING, fath), whatSay("HOLA, soy el componente basico"){
-	
+
 }
 CString::~CString(){
 
@@ -62,7 +61,7 @@ CString::~CString(){
 void CString::getMessage(Message * m){
 #ifdef _DEBUG
 	//if (m->getType() == STRING_MSG)std::cout << "MESSAGE SAID: " << static_cast<stringMessage*>(m)->getText() << std::endl;
-	
+
 #endif
 }
 void CString::tick(float delta){
@@ -79,7 +78,7 @@ CMessageSend::CMessageSend(Entity * father):GameComponent(CMP_MESSAGE_SEND, fath
 CMessageSend::~CMessageSend() {
 }
 void CMessageSend::tick(float delta) {
-	
+
 }
 void CMessageSend::getMessage(Message * m) {
 
@@ -99,7 +98,7 @@ CRender::CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM)
 	pOgreSceneNode = pSceneMgr->getRootSceneNode()->createChildSceneNode();
 	pChild = pOgreSceneNode->createChildSceneNode();
 	lastDir = 3.0f;
-	
+
 }
 CRender::~CRender(){
 	pSceneMgr->destroySceneNode(pChild);
@@ -120,30 +119,30 @@ void CRender::getMessage(Message *m) {
 
 			//Where our node will rotate.
 			Ogre::Vector3 parentPos = msg->GetPos();
-			
+
 			//Where our mesh is relative to the parent.
 			//The real pos of the object is the parent pos + this variable, _ogrepos.
 			float angleRad = msg->getRotation();
-			
+
 			if (angleRad != -1){
 				_ogrepos.x = w / 2;
-				_ogrepos.y = 0;	
+				_ogrepos.y = 0;
 				_ogrepos.z = 0;
 
 				//Move the parent to the collider location of rotation.
-				pOgreSceneNode->setPosition(parentPos);			
+				pOgreSceneNode->setPosition(parentPos);
 				//Move the child to the real pos of the collider.
 				pChild->setPosition(_ogrepos);
 
-				//Rotate the parent node the same degree as the collider.			
+				//Rotate the parent node the same degree as the collider.
 				float grades = (angleRad * 180) / 3.14159265359;
 				pOgreSceneNode->setOrientation(Ogre::Quaternion(Ogre::Degree(grades), Ogre::Vector3(0, 0, 1)));
 			}
 			else{
-			
+
 				_ogrepos.x = w / 2;
 				_ogrepos.y = 0;
-				_ogrepos.z = 0;			
+				_ogrepos.z = 0;
 
 				/*float actualX = pOgreSceneNode->getPosition().x;
 				float dir = parentPos.x - actualX;
@@ -167,13 +166,13 @@ void CRender::getMessage(Message *m) {
 				//Move the child to the real pos of the collider.
 				pChild->setPosition(_ogrepos);
 
-			
+
 			}
 
-		
+
 		}
 		break;
-	default: 
+	default:
 		break;
 	}
 }
@@ -187,12 +186,12 @@ void CRender::getMessage(Message *m) {
 CMeshRender::CMeshRender(Ogre::Vector3 pos, std::string meshName, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_MESH_RENDER, father, scnM) {
 	pOgreEnt = pSceneMgr->createEntity(father->getID(),meshName);
 	pOgreSceneNode->setPosition(pos);
-	
+
 	pChild->attachObject(pOgreEnt);
 	pChild->scale(scale);
 	//pChild->showBoundingBox(true);
 	//pOgreEnt->setCastShadows(true);
-	
+
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
@@ -208,7 +207,6 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-	
 }
 void CMeshRender::getMessage(Message * m) {
 	CRender::getMessage(m);
@@ -234,11 +232,11 @@ void CMeshRender::getMessage(Message * m) {
 		}
 		break;
 	case MSG_PLAYER_SHOT:
-		
 
 
 
-		
+
+
 		break;
 	case MSG_PASSMOD_DES:
 		invisActive = false;
@@ -297,14 +295,17 @@ CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNo
 	airTop->setLoop(true);
 	//chargeTop->setLoop(false);
 	shootTop->setLoop(false);
+	//Initial rotation
+	pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(-90), Ogre::Vector3(0, 1, 0)));
+
 
 	currentBot = idleBot;
 	currentBot->setEnabled(true);
-	currentTop = start;
+	currentTop = idleTop;
 	currentTop->setEnabled(true);
 	nextBot = nullptr;
 	nextTop = nullptr;
-	starting = true;
+	starting = false;
 
 }
 CAnimation::~CAnimation(){
@@ -321,21 +322,25 @@ void CAnimation::tick(float delta){
 		nextBot = nullptr;
 	}
 	*/
-	
+
 	if (currentTop->getLength() == currentTop->getTimePosition()){
 		currentTop->setEnabled(false);
-		nextTop->setTimePosition(0);
-		nextTop->setEnabled(true);
-		currentTop = nextTop;
+		if (nextTop != nullptr){
+			nextTop->setTimePosition(0);
+			nextTop->setEnabled(true);
+			currentTop = nextTop;
+		}
 		isShooting = false;
 		starting = false;
 	}
 
 	if (currentBot->getLength() == currentBot->getTimePosition()){
 		currentBot->setEnabled(false);
-		nextBot->setTimePosition(0);
-		nextBot->setEnabled(true);
-		currentBot = nextBot;
+		if (nextBot != nullptr){
+			nextBot->setTimePosition(0);
+			nextBot->setEnabled(true);
+			currentBot = nextBot;
+		}
 
 	}
 
@@ -358,7 +363,7 @@ void CAnimation::getMessage(Message * m){
 	case MSG_PLAYER_MOVE_X:
 		mMoveX = static_cast<MPlayerMoveX*>(m);
 
-		
+
 		if (!isShooting){
 			dir = mMoveX->GetValue();
 			angle = pChild->getOrientation().getYaw().valueDegrees();
@@ -373,9 +378,9 @@ void CAnimation::getMessage(Message * m){
 					pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
 
 				}
-			}		
+			}
 		}
-		
+
 
 
 		if (mMoveX->GetValue() != 0){
@@ -383,9 +388,9 @@ void CAnimation::getMessage(Message * m){
 				changeAnim(airBot, airTop,false,false);
 			else
 				changeAnim(moveBot, moveTop, true,false);
-				
+
 		}
-		else{			
+		else{
 			changeAnim(idleBot, idleTop, true,false);
 		}
 		break;
@@ -400,7 +405,7 @@ void CAnimation::getMessage(Message * m){
 		break;
 
 	case MSG_SHOT:
-		
+
 		isShooting = true;
 		angle = pChild->getOrientation().getYaw().valueDegrees();
 
@@ -415,7 +420,7 @@ void CAnimation::getMessage(Message * m){
 				pChild->setOrientation(Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3(0, 1, 0)));
 
 			}
-		}		
+		}
 		changeAnim(currentBot, shootTop, false,true);
 
 		break;
@@ -449,7 +454,7 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 			else{
 				nextTop = nextT;
 				nextTop->setLoop(loop);
-				
+
 			}
 
 		}
@@ -473,23 +478,25 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 
 		}
 	}
-	
 
-	
-	
-	
+
+
+
+
 }
 #pragma endregion
 
 
 
 #pragma region Skyplane Render Component
-CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
-	
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+
 	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
-		materialName, scale, 1, true, bow, 100, 100); 
+		materialName, scale, 1, true, bow, 100, 100);
 	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
 	// bow = 0, xsegments = 1, ysegments = 1
+
+	pOgreSceneNode->setPosition(pos);
 
 }
 CSkyPlaneRender::~CSkyPlaneRender(){}
@@ -505,33 +512,33 @@ void CSkyPlaneRender::getMessage(Message * m){}
 
 //PARTICLES
 CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string particleSystem, Entity * father, Ogre::SceneManager * scnM, Ogre::Vector3 scale, Ogre::Vector3 rotation) :CRender(CMP_PARTICLE_RENDER , father, scnM) {
-	
+
 
 	_particleSystem = scnM->createParticleSystem(id, particleSystem);
 	pChild->attachObject(_particleSystem);
 
 	pOgreSceneNode->setPosition(pos);
 	pChild->scale(scale);
-	
+
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.x), Ogre::Vector3(1, 0, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.y), Ogre::Vector3(0, 1, 0)));
 	pOgreSceneNode->rotate(Ogre::Quaternion(Ogre::Degree(rotation.z), Ogre::Vector3(0, 0, 1)));
 
 	_particleSystem->setEmitting(true);
-	
+
 
 }
 CParticleRender::~CParticleRender() {
 	pChild->detachObject(_particleSystem);
 }
 void CParticleRender::tick(float delta) {
-	
+
 
 
 }
 void CParticleRender::getMessage(Message * m) {
 	CRender::getMessage(m);
-	
+
 }
 #pragma endregion
 
@@ -570,7 +577,7 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	: GameComponent(CMP_CAMERA, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
 {
 	pCam = _scnMgr->createCamera(_camName);
-	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam); 
+	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam);
 
 	pCam->setPosition(_pos);
 	pCam->lookAt(_lookAt);
@@ -601,13 +608,13 @@ void CCamera::tick(float delta) {
 
 }
 void CCamera::getMessage(Message * m) {
-	
+
 }
 #pragma endregion
 
 
 
-#pragma region Action Camera Component 
+#pragma region Action Camera Component
 CActionCamera::CActionCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, float xBoundary, float yBoundary, float minZ, float maxZ):
 	CCamera(father, scnMgr, vp, "MainCamera", Ogre::Vector3(0,0,100), Ogre::Vector3(0,0,0), 5),
 	smooth(40.0), MAXZ(maxZ), MINZ(minZ), BOUNDARY_X(xBoundary), BOUNDARY_Y(yBoundary) {
@@ -632,33 +639,33 @@ CActionCamera::~CActionCamera() {
 //Function that calculates if a certain point is out of the defined boundaries for the camera
 bool CActionCamera::outOfBoundaries(const Ogre::Vector3 &pos) {
 	//Boundaries in each axis
-	
+
 
 	if ((pos.x > BOUNDARY_X || pos.x < -BOUNDARY_X) || (pos.y > BOUNDARY_Y || pos.y < -BOUNDARY_Y))return true;
 	else return false;
 }
 void CActionCamera::getMessage(Message * m) {
-	
+
 	if (m->getType() == MSG_CAMERA_FOLLOW && static_cast<MCameraFollow *>(m)->getEmmiter() == "Player_0") {
 		//We check if the player is inside the boundaries of the camera. If so, we put its camera position to 0.0.0
 		if (outOfBoundaries(static_cast<MCameraFollow *>(m)->GetPos()))
 			_pj1 = Ogre::Vector3::ZERO;
 		//if it has moved from its previous position, we update its position
-		else 
+		else
 			_pj1 = static_cast<MCameraFollow * >(m)->GetPos();
 
 	}
 	else if (m->getType() == MSG_CAMERA_FOLLOW && static_cast<MCameraFollow *>(m)->getEmmiter() == "Player_1") {
 		if (outOfBoundaries(static_cast<MCameraFollow *>(m)->GetPos()))
 			_pj2 = Ogre::Vector3::ZERO;
-		else 
+		else
 			_pj2 = static_cast<MCameraFollow * >(m)->GetPos();
 	}
 	else return;
-	
+
 	//We calculate the midpoint between the 2 players
 	_newPos = (_pj1 + _pj2) / 2.0;
-	
+
 	//we want the camera to be always a bit higher than the players
 	_newPos.y += 5;
 
@@ -674,13 +681,13 @@ void CActionCamera::getMessage(Message * m) {
 	//Now we want to make it smooth, for that we calculate the director vector of the line.
 	//And we divide it by the smooth factor we declared at initialization
 	Ogre::Vector3 dir = (_newPos - _pos) / smooth;
-	
+
 
 	_pos += dir;
 	_lookAt = _pos;
 	_lookAt.z = 0;
 	_lookAt.y += 10;
-	
+
 
 }
 
@@ -697,7 +704,7 @@ void CActionCamera::tick(float delta) {
 //Gives an entity a rigid body to simulate physics
 CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
-	
+
 	//Sets the pos attached to the render.
 	_pos.x = posInPixels.x / PPM;
 	_pos.y = posInPixels.y / PPM;
@@ -708,7 +715,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	//Body definition.
 	_bodyDef.position.Set(_pos.x, _pos.y);
 
-	
+
 
 	if (myCategory == MASK_PLAYER)
 		_bodyDef.fixedRotation = true;
@@ -720,7 +727,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 
 	/*_bodyDef.linearDamping = 5.0f;
 	_bodyDef.angularDamping = 0.0f;*/
-	
+
 	switch (rbType)
 	{
 		case RB_DYNAMIC:
@@ -744,9 +751,9 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	_body->SetTransform(_pos,radians);
 
 	//Set the body data pointer to entity
-	_body->SetUserData(pEnt);	
+	_body->SetUserData(pEnt);
 
-	//Fixture Definition.	
+	//Fixture Definition.
 	_fixtureDef.density = 9.0f / 3.0f;
 	//_fixtureDef.restitution = 0.0f;
 	_fixtureDef.friction = 0.0f;
@@ -795,31 +802,31 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_fixture = _body->CreateFixture(&_fixtureDef);
 		break;
 	case SH_POLYGON:
-		
+
 		_pShape.SetAsBox(_rbWeight / 2, _rbHeight / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 		_fixtureDef.shape = &_pShape;
-		
+
 		//Fixture creation.
 		_fixture = _body->CreateFixture(&_fixtureDef);
 		break;
 	case SH_PLAYER:
-		
+
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 }, 0);
 		_fixtureDef.shape = &_pShape;
-		
+
 		if (controllerId == 1){
 			_fixtureDef.filter.categoryBits = MASK_CHEST_1;
 			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_CHEST_0 | MASK_HEAD_0 | MASK_LEGS_0 | MASK_BULLET_0;
-		
+
 		}
 		else{
-		
+
 			_fixtureDef.filter.categoryBits = MASK_CHEST_0;
 			_fixtureDef.filter.maskBits = MASK_STATIC_TERRAIN | MASK_DEATHZONE | MASK_DINAMIC_TERRAIN | MASK_HEAD_1 | MASK_CHEST_1 | MASK_LEGS_1| MASK_BULLET_1;
-		
+
 		}
-		_body->CreateFixture(&_fixtureDef);		
-		
+		_body->CreateFixture(&_fixtureDef);
+
 		_pShape.SetAsBox(_rbWeight / 2, playerSize / 2, { _rbWeight / 2, _rbHeight / 2 + playerSize }, 0);
 		_fixtureDef.shape = &_pShape;
 		if (controllerId == 1){
@@ -858,49 +865,48 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 		_fixtureDef.filter.categoryBits = MASK_FOOT_SENSOR;
 		_fixtureDef.filter.maskBits = MASK_DINAMIC_TERRAIN | MASK_STATIC_TERRAIN;
 		_fixture = _body->CreateFixture(&_fixtureDef);
-		_fixture->SetSensor(true);	
+		_fixture->SetSensor(true);
 		break;
 	default:
 		break;
 	}
 
-	
-	
+
+
 
 
 }
 CRigidBody::~CRigidBody() {
 	pEnt->getScene()->addBodyToDelete(_body);
-	
+
 }
 void CRigidBody::tick(float delta) {
 
-	
+
 
 	//Send the message to the entity.
 	//Transformation from physics world to ogre world.
-	
+
 	if (_body->IsFixedRotation()){
 		MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), -1,_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
-		pEnt->getMessage(m);	
+		pEnt->getMessage(m);
 	}
 	else{
-		
+
 		MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x)* PPM, _body->GetPosition().y * PPM, 0), _body->GetAngle(), _rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
 		pEnt->getMessage(m);
 
 	}
 
-	if (pEnt->getID() == "Player_0")
-
-	std::cout << _body->GetPosition().x * PPM << std::endl;
+	//if (pEnt->getID() == "Player_0";
+	//std::cout << _body->GetPosition().x * PPM << std::endl;
 
 
 }
 
 void CRigidBody::getMessage(Message * m) {
 
-	
+
 	MRigidbodyMoveX* mMoveX;
 	float velX;
 	MRigidbodyMoveY* mMoveY;
@@ -908,7 +914,7 @@ void CRigidBody::getMessage(Message * m) {
 	MRigidbodyJump* mJump;
 	float jForce;
 	MDash* mDash;
-	
+
 	switch (m->getType()){
 		case MSG_RIGIDBODY_MOVE_X:
 			mMoveX = static_cast<MRigidbodyMoveX*>(m);
@@ -944,10 +950,10 @@ CPlayerCollisionHandler::~CPlayerCollisionHandler(){
 
 void CPlayerCollisionHandler::tick(float delta){}
 void CPlayerCollisionHandler::getMessage(Message * m){
-	
+
 
 	if (m->getType() == MSG_COLLISION){
-			
+
 		MCollisionBegin* mColBegin = static_cast<MCollisionBegin*>(m);
 		_myMask = mColBegin->GetMyCategory();
 		//std::cout << mColBegin->GetContactMask() << std::endl;
@@ -976,7 +982,7 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 //Player Controller Component
 #pragma region PlayerControllerComponent
 CPlayerController::CPlayerController(Entity* f, int i): GameComponent(CMP_PLAYER_CONTROLLER, f), _id(i){
-	
+
 }
 
 CPlayerController::~CPlayerController(){}
@@ -998,17 +1004,17 @@ void CPlayerController::getMessage(Message* m){
 				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
 			}
 
-			
+
 			float xValue = cState.Axis_RightX;
 			float yValue = cState.Axis_RightY;
 			//Check joystick rotation, to control the bullet spawn
 			if (!(xValue == 0.0f && yValue == 0.0f )){
 				MPlayerShot* m = new MPlayerShot(xValue, yValue, pEnt->getID());
 				pEnt->getMessage(m);
-			}				
+			}
 			if (cState.Axis_LeftX > AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
-				pEnt->getMessage(m);				
+				pEnt->getMessage(m);
 			}
 			else if (cState.Axis_LeftX < -AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
@@ -1069,12 +1075,12 @@ void CPlayerMove::getMessage(Message* m)
 		//transformarlo
 		float value = static_cast<MPlayerMoveX*>(m)->GetValue();
 		//value = value / 40;
-		
+
 		if (value > _moveVel)
 			value = _moveVel;
 		else if (value < - _moveVel)
 			value = - _moveVel;
-		
+
 		pEnt->getMessage(new MRigidbodyMoveX(value, pEnt->getID()));
 	}
 
@@ -1113,7 +1119,7 @@ CPlayerJump::CPlayerJump(Entity* father, float startForce) :GameComponent(CMP_JU
 	_timeCounter = 0.0f;
 	_lastTimeJump = 0.0f;
 	_jumpRate = 170.0f;
-	
+
 }
 
 CPlayerJump::~CPlayerJump(){}
@@ -1247,7 +1253,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		if (_fireRate > _maxFireRate){
 			_fireRate = _maxFireRate;
 		}
-		
+
 	}
 
 	else if (m->getType() == MSG_PASSMOD_DES){
@@ -1269,22 +1275,22 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 	//Normalize
 	if (vX == 0){
 		iniPos.x = 0;
-		iniPos.z = 0;		
+		iniPos.z = 0;
 		iniPos.y = _radius;
 		angle = 0.0f;
 
 		if (vY < 0){
 			iniPos.y =  - _radius;
-			angle = 180.0f;		
+			angle = 180.0f;
 		}
 
-	
+
 	}
 	else if (vY == 0){
-	
+
 		iniPos.x = _radius;
 		iniPos.y = 0;
-		iniPos.z = 0; 
+		iniPos.z = 0;
 		angle = -90;
 
 		if (vX < 0){
@@ -1368,7 +1374,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 CBullet::CBullet(Entity* father, E_BULLET bT, float damage, float vel) :GameComponent(CMP_BASIC_ATTACK, father), _damage(damage)
 , _velocity(vel), _toDelete(false), _auxVelocityReset(vel)
 {
-	
+
 
 }
 CBullet::~CBullet(){}
@@ -1377,7 +1383,7 @@ void CBullet::tick(float delta){}
 void CBullet::getMessage(Message* m){
 
 	//posible error de memoria dinamica
-	
+
 
  	MShot* mShot;
 	MCollisionBegin* mCollision;
@@ -1386,7 +1392,7 @@ void CBullet::getMessage(Message* m){
 	float yDir;
 
 	float velBullets;
-	
+
 	switch (m->getType()){
 
 	case MSG_SHOT:
@@ -1397,14 +1403,14 @@ void CBullet::getMessage(Message* m){
 
 		pEnt->getMessage(new MRigidbodyMoveX(xDir, pEnt->getID()));
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
-		
+
 		break;
 
 	case MSG_COLLISION:
 		if (!_toDelete){
 			mCollision = static_cast<MCollisionBegin*>(m);
 			mCollision->GetWho()->getMessage(new MBulletHit(_damage, mCollision->GetContactMask(), pEnt->getID()));
-			
+
 			pEnt->getScene()->addEntityToDelete(pEnt);
 			_toDelete = true;
 		}
@@ -1413,7 +1419,7 @@ void CBullet::getMessage(Message* m){
 	case MSG_MOD_VELBULLETS:
 		velBullets = static_cast<MModVelBullets*>(m)->getVelBulletsValue();
 		_velocity = _velocity + (_velocity * velBullets / 100.0f);
-		//añadir un maximo de vel de las balas si queremos
+		//aï¿½adir un maximo de vel de las balas si queremos
 		break;
 
 	case MSG_PASSMOD_DES:
@@ -1434,6 +1440,7 @@ CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float c
 _componentArmor(componentArmor), _limitLife(componentLife), _type(t)
 
 {
+	dead = false;
 	if (pEnt->getID() == "Player_0"){
 		switch (mask)
 		{
@@ -1449,7 +1456,7 @@ _componentArmor(componentArmor), _limitLife(componentLife), _type(t)
 		default:
 			break;
 		}
-	
+
 	}
 	else
 	{
@@ -1489,6 +1496,13 @@ void CAbility::getMessage(Message *m){
 			if (_componentLife > 0){
 				dmg = mDA->getDamage() * (1 - _componentArmor / 100.0f);
 			}
+			else if (!dead){
+				if (_myMask == MASK_HEAD_0 || _myMask == MASK_HEAD_1)
+					pEnt->getMessage(new MActiveDead(pEnt->getID()));
+				else
+					pEnt->getMessage(new MPassiveDead(pEnt->getID()));
+				dead = true;
+			}
 			pEnt->getMessage(new MDamage(dmg, pEnt->getID()));
 		}
 		break;
@@ -1518,7 +1532,7 @@ CPSkillEmpty::~CPSkillEmpty(){}
 
 void CPSkillEmpty::tick(float delta){}
 void CPSkillEmpty::getMessage(Message* m){
-	
+
 }
 
 GameComponent* createActiveAbilityEmpty(Entity* father, int id){ return new CASkillEmpty(father); }
@@ -1654,10 +1668,17 @@ CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRES
 	_timeCounter = _lastTimeDash = 0;
 	_coolDown = 500.0f; //5 seconds
 	_dashImpulse = 1000.0f;
+	_lastTimeDash = SDL_GetTicks();
 }
 CShuHeaddress::~CShuHeaddress(){}
 
-void CShuHeaddress::tick(float delta){}
+void CShuHeaddress::tick(float delta){
+	float val = (SDL_GetTicks() - _lastTimeDash) * 100 / _coolDown;
+	if (val > 100)val = 100;
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
+
+}
 void CShuHeaddress::getMessage(Message* m)
 {
 	if (m->getType() == MSG_INPUT_STATE){
@@ -1712,13 +1733,16 @@ void CJonsuMoon::tick(float delta){
 	}
 	//If is not active and is not available, we count the cooldown. Then turn it to available.
 	else if(!isAvailable){
-		
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _coolDown){
 			isAvailable = true;
 		}
-		
+		float  val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
 	}
+
 }
 void CJonsuMoon::getMessage(Message* m)
 {
@@ -1731,6 +1755,8 @@ void CJonsuMoon::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1769,8 +1795,13 @@ void CKhepriBeetle::tick(float delta){
 		if ((_timeCounter - _initTime) >= _coolDown){
 			isAvailable = true;
 		}
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 	}
+
+
 }
 void CKhepriBeetle::getMessage(Message* m)
 {
@@ -1783,6 +1814,8 @@ void CKhepriBeetle::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1791,7 +1824,7 @@ void CKhepriBeetle::getMessage(Message* m)
 #pragma endregion
 
 
-#pragma region Hera´s Rune
+#pragma region Heraï¿½s Rune
 //Velocity improvement
 
 GameComponent* createAbilityHeraRune(Entity* father, int id){ return new CHeraRune(father, id); }
@@ -1809,7 +1842,13 @@ void CHeraRune::tick(float delta) {
 		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
+
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
 	}
+
 }
 
 void CHeraRune::getMessage(Message* m)
@@ -1822,6 +1861,8 @@ void CHeraRune::getMessage(Message* m)
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1839,6 +1880,7 @@ void CHeraRune::getMessage(Message* m)
 #pragma region Heris Mark
 
 GameComponent* createAbilityHerisMark(Entity* father, int id){ return new CHerisMark(father, id); }
+
 
 CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0,0), _playerId(id){
 	_timeCounter = _initTime = 0;	
@@ -1858,7 +1900,7 @@ void CHerisMark::tick(float delta) {
 	if (_isActive) {
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _timeActiveLimit) {
-			pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
+			pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daï¿½o -20%
 			_availableShots = 10;
 			_isActive = false;
 			_initTime = SDL_GetTicks();
@@ -1872,6 +1914,10 @@ void CHerisMark::tick(float delta) {
 			isAvailable = true;
 		}
 
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
 	}
 
 	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
@@ -1879,9 +1925,14 @@ void CHerisMark::tick(float delta) {
 		_isActive = false;
 		_availableShots = 10;
 		_maxShots = false;
-		pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
+		pEnt->getMessage(new MReset(pEnt->getID()));
 		_initTime = SDL_GetTicks();
 	}
+
+
+
+
+
 }
 void CHerisMark::getMessage(Message* m)
 {
@@ -1889,11 +1940,14 @@ void CHerisMark::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Left_Shoulder == BTT_RELEASED) {
+
+			if (cState.Left_Shoulder == BTT_PRESSED) {
 				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar daño +20%
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1917,12 +1971,12 @@ void CHerisMark::getMessage(Message* m)
 #pragma region ButtonGUI
 CButtonGUI::CButtonGUI(ComponentType t,Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize) :GameComponent(t, father), _clicked(false) {
 	pOver = overlay;
-	
+
 	_sceneId = sceneId;
 
 
 }
-CButtonGUI::~CButtonGUI() 
+CButtonGUI::~CButtonGUI()
 {
 
 }
@@ -1931,7 +1985,7 @@ bool CButtonGUI::canClick() {
 	float act = SDL_GetTicks();
 
 	if (act - _lastClick > _minClickTime) {
-		_lastClick = act; 
+		_lastClick = act;
 		return true;
 	}
 	else return false;
@@ -1940,14 +1994,14 @@ size_t CButtonGUI::getScnId() {
 	return _sceneId;
 }
 
-void CButtonGUI::tick(float delta) 
+void CButtonGUI::tick(float delta)
 {
 
 }
 void CButtonGUI::getMessage(Message * me)
 {
-	
-	
+
+
 }
 
 #pragma endregion
@@ -1958,16 +2012,18 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	materials[1] = "GUI/Button/Active";
 	materials[2] = "GUI/Button/Click";
 
-	
+
 	_callback = callback;
 	_txt = buttonTxt;
 
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", "Cabmiaresto"));
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
+
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
 	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text" + father->getID()));
 		a->setCaption(_txt);
 	}
 	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
@@ -1983,7 +2039,7 @@ CNormalButton::~CNormalButton()
 void CNormalButton::getMessage(Message * me)
 {
 
-	
+
 	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
 	{
 		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
@@ -2014,8 +2070,6 @@ CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t 
 _playerId(playerId), _compType(compType){
 	
 
-
-	
 
 	
 	/*pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
@@ -2052,7 +2106,6 @@ void CAbilityButton::getMessage(Message * me)
 		if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
 			pContainer->setMaterialName(materials[2]);
 			_clicked = true;
-
 			pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType));
 		}
 
@@ -2067,11 +2120,11 @@ void CAbilityButton::getMessage(Message * me)
 #pragma region PlayerGUI
 CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_GOD character) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
 {
-	std::string player;
-	
+
+
 	if (plyer == P1)player = "Player1";
 	else player = "Player2";
-
+	roundsWon = 0;
 
 	//General container of the whole Player HUD
 	pHud = pOverlay->getChild(player);
@@ -2080,56 +2133,101 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_G
 	//Specific reference to the lifebar and active bar, which we'll be using quite often
 	plifeBar = static_cast<Ogre::OverlayContainer*>(pHud->getChild(player + "/LifeBar"));
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
-	
 	std::string charName;
+	std::string iconMatName = "GUI/Icons/" ;
 
 
 	switch (character) {
 	case EG_RA:
 		charName = "Ra";
+		if (p == P1)iconMatName += "Ra_P1";
+		else iconMatName += "Ra_P2";
 		break;
 	case EG_AHPUCH:
 		charName = "Ahpuch";
+		if (p == P1)iconMatName += "AhPuch_P1";
+		else iconMatName += "AhPuch_P2";
 		break;
 	case EG_HACHIMAN:
 		charName = "Hachiman";
+		if (p == P1)iconMatName += "Hachiman_P1";
+		else iconMatName += "Hachiman_P2";
 		break;
 	case EG_ZEUS:
 		charName = "Zeus";
+		if (p == P1)iconMatName += "Zeus_P1";
+		else iconMatName += "Zeus_P2";
 		break;
 	}
 
 
-
+//	std::cout << iconMatName << std::endl;
 	pHud->getChild(player + "/Name")->setCaption(charName);
+	pHud->getChild(player + "/Icon")->setMaterialName(iconMatName);
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
 	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();
-	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 15;
+	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 0.0f;
+
+
 
 
 }
 CPlayerGUI::~CPlayerGUI() {}
 
 void CPlayerGUI::tick(float delta) {
-
-
 }
 void CPlayerGUI::getMessage(Message * m) {
-	/*
-		This must be modyfied, as it takes EVERY life state update without knowing if the sender
-		is the player that this part of the HUD tracks.
-		TODO: Change the implementation so it filters the life state messages
-	
-	*/
-	if (m->getType() == MSG_LIFE_STATE &&((m->getEmmiter() == "Player_1" && p == P1)||(m->getEmmiter() == "Player_0" && p == P2)))
-		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
 
+	switch (m->getType())
+	{
+	case MSG_LIFE_STATE:
+		if ((m->getEmmiter() == "Player_0" && p == P1) || (m->getEmmiter() == "Player_1" && p == P2))
+			updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+		break;
+	case MSG_UPDATE_ACTIVETIMER :
+		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
+			updateActive(static_cast<MUpdateActiveTimer *>(m)->getActiveTimer());
+		break;
+	case MSG_ROUND_FINISHED:
+		if (static_cast<MRoundFinished *>(m)->getWinnerId() == "Player_0" && p == P1 || static_cast<MRoundFinished *>(m)->getWinnerId() == "Player_1" && p == P2) {
+			if (roundsWon == 0) {
+				pHud->getChild(player+ "/Round1")->setMaterialName("GUI/RoundFull");
+				roundsWon++;
+			}
+			else if (roundsWon == 1)
+			{
+				pHud->getChild(player+ "/Round2")->setMaterialName("GUI/RoundFull");
+				roundsWon++;
+			}
+		}
+		break;
+	case MSG_ACTIVE_DEAD:
+		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2) {
+			pLowerHud->getChild(player + "/ActiveContainer/ActiveFrame")->setMaterialName("GUI/" + player + "/ActiveDead");
+			pActiveBar->setWidth(0);
+		}
+			break;
+	}
+}
+
+void CPlayerGUI::updateActive(size_t val)
+{
+	float newVal = (ACTIVE_MAX_WIDTH * val) / 100;
+	if (newVal < ACTIVE_MIN_WIDTH)newVal = ACTIVE_MIN_WIDTH;
+	if (p == P1)
+		pActiveBar->setWidth(newVal);
+	else {
+		Ogre::Real newX = pActiveBar->getLeft();
+		newX = (newX + pActiveBar->getWidth()) - newVal;
+		pActiveBar->setLeft(newX);
+		pActiveBar->setWidth(newVal);
+	}
 
 }
 void CPlayerGUI::updateLifebar(size_t val) {
 
-		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
+		float newVal = (LIFE_MAX_WIDTH * val) / 100;
 		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
 		if(p == P1)
 		plifeBar->setWidth(newVal);
@@ -2141,11 +2239,28 @@ void CPlayerGUI::updateLifebar(size_t val) {
 		}
 }
 
-
-
 #pragma endregion
 
+#pragma region CGUITimer
 
+CGUITimer::CGUITimer(Entity* father, Ogre::Overlay * overlay):GameComponent(CMP_GUI_TIMER, father)
+{
+	pTimer = overlay->getChild("GUI/TimerPanel");
+}
+
+CGUITimer::~CGUITimer()
+{
+}
+void CGUITimer::tick(float delta)
+{
+
+}
+void CGUITimer::getMessage(Message * m)
+{
+	if (m->getType() == MSG_UPDATE_SCENETIMER) {
+		pTimer->getChild("TimerPanel/TextArea")->setCaption(std::to_string(static_cast<MUpdateSceneTimer *>(m)->getSceneTimer()));
+	}
+}
 #pragma endregion
 
 
@@ -2162,10 +2277,10 @@ void CCameraFollow::tick(float delta){
 
 }
 void CCameraFollow::getMessage(Message* m){
-		
+
 	if (m->getType() == MSG_UPDATE_TRANSFORM){
 		_nPos = static_cast<MUpdateTransform*>(m)->GetPos();
 	}
-	
+
 }
 #pragma endregion

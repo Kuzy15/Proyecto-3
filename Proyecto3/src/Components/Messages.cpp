@@ -3,6 +3,7 @@
 #include "Components.h"
 #include "DebugNew.h"
 #include "Box2D.h"
+#include <iostream>
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -23,7 +24,7 @@ MessageDestination Message::getDestination() {
 	return _messageDestination;
 }
 std::string Message::getEmmiter() {
-	return _emmiter;
+		return _emmiter;
 }
 #pragma endregion
 
@@ -275,7 +276,7 @@ MDamage::~MDamage(){}
 
 	//-------------------------------------------------- GUI MSGS -----------------------------------------------------------------------------
 #pragma region Button Active
-	MButtonAct::MButtonAct(std::string emmiter, unsigned int index) :Message(MSG_GUI_BUTTON_ACTIVE, SCENE, emmiter), _activeIndex(index) {}
+	MButtonAct::MButtonAct(std::string emmiter, unsigned int index) :Message(MSG_GUI_BUTTON_ACTIVE, ENTITY, emmiter), _activeIndex(index) {}
 	MButtonAct::~MButtonAct() {};
 	unsigned int MButtonAct::getActiveButtonIndex() { return _activeIndex; };
 #pragma endregion
@@ -297,4 +298,35 @@ MDamage::~MDamage(){}
 	MAbilitySet::MAbilitySet(std::string emmiter, int playerId, ComponentType compId) : Message(MSG_ABILITY_SETTER, SCENE_ONLY, emmiter), _playerId(playerId),_c(compId) {};
 	MAbilitySet::~MAbilitySet() {};
 
+#pragma endregion
+
+#pragma region Update Scene Timer 
+	MUpdateSceneTimer::MUpdateSceneTimer(std::string emmiter, size_t value) : Message(MSG_UPDATE_SCENETIMER, SCENE, emmiter), _value(value) {};
+	MUpdateSceneTimer::~MUpdateSceneTimer() {};
+	size_t MUpdateSceneTimer::getSceneTimer() { return _value; };
+
+#pragma endregion
+
+#pragma region Update Active Timer 
+	MUpdateActiveTimer::MUpdateActiveTimer(std::string emmiter, size_t value) : Message(MSG_UPDATE_ACTIVETIMER, SCENE, emmiter), _value(value) {};
+	MUpdateActiveTimer::~MUpdateActiveTimer() {};
+	size_t MUpdateActiveTimer::getActiveTimer() { return _value; };
+
+#pragma endregion
+
+
+#pragma region Passive Dead 
+	MPassiveDead::MPassiveDead(std::string emmiter) : Message(MSG_PASSIVE_DEAD, SCENE, emmiter) {};
+	MPassiveDead::~MPassiveDead() {};	
+#pragma endregion
+
+#pragma region Active Dead 
+	MActiveDead::MActiveDead(std::string emmiter) : Message(MSG_ACTIVE_DEAD, SCENE, emmiter) {};
+	MActiveDead::~MActiveDead() {};
+#pragma endregion
+
+#pragma region Round MRoundFinished
+	MRoundFinished::MRoundFinished(std::string emmiter, std::string winnerId) : Message(MSG_ROUND_FINISHED, SCENE, emmiter), _winnerId(winnerId) {};
+	MRoundFinished::~MRoundFinished() {};
+	std::string MRoundFinished::getWinnerId() { return _winnerId; };
 #pragma endregion
