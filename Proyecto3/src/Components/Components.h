@@ -9,6 +9,7 @@
 #include <list>
 #include <Box2D.h>
 #include <OgreTextAreaOverlayElement.h>
+#include <irrKlang.h>
 
 
 class Entity;
@@ -406,6 +407,7 @@ private:
 	b2BodyDef _bodyDef;
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
+
 	
 };
 /*
@@ -595,6 +597,8 @@ private:
 	//rango de explosión
 	bool _toDelete;
 	float _auxVelocityReset;
+
+	irrklang::ISound* s;
 
 };
 

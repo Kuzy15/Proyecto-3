@@ -103,7 +103,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 
 
 
-	AhPuch->addComponent(new CHerisMark(AhPuch, controllerId));
+	AhPuch->addComponent(new CShuHeaddress(AhPuch, controllerId));
 
 	return AhPuch;
 }

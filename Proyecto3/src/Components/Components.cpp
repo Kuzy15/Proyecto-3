@@ -710,6 +710,9 @@ void CActionCamera::tick(float delta) {
 CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 
+	//soundW = Game::getInstance()->getSoundEngine()->addSoundSourceFromFile("../Media/sounds/Movement/paso1.wav");
+
+	//soundJ = Game::getInstance()->getSoundEngine()->addSoundSourceFromFile("../Media/sounds/Movement/SaltoAire.wav");
 	//Sets the pos attached to the render.
 	_pos.x = posInPixels.x / PPM;
 	_pos.y = posInPixels.y / PPM;
@@ -919,11 +922,17 @@ void CRigidBody::getMessage(Message * m) {
 	MRigidbodyJump* mJump;
 	float jForce;
 	MDash* mDash;
+	bool playingW = false;
+	irrklang::ISound* s = nullptr;
 
 	switch (m->getType()){
 		case MSG_RIGIDBODY_MOVE_X:
 			mMoveX = static_cast<MRigidbodyMoveX*>(m);
 			velX = mMoveX->getXValue();
+
+			
+			
+
 			_body->SetLinearVelocity(b2Vec2(velX, _body->GetLinearVelocity().y));
 			break;
 		case MSG_RIGIDBODY_MOVE_Y:
@@ -934,6 +943,13 @@ void CRigidBody::getMessage(Message * m) {
 		case MSG_RIGIDBODY_JUMP:
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
+
+			
+			
+			Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Movement/SaltoAire.wav");
+			
+
+
 			//std::cout << jForce << std::endl;
 			_body->ApplyLinearImpulseToCenter(b2Vec2(0, jForce), true);
 			break;
@@ -1379,7 +1395,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 CBullet::CBullet(Entity* father, E_BULLET bT, float damage, float vel) :GameComponent(CMP_BASIC_ATTACK, father), _damage(damage)
 , _velocity(vel), _toDelete(false), _auxVelocityReset(vel)
 {
-
+	s = nullptr;
 
 }
 CBullet::~CBullet(){}
@@ -1409,6 +1425,8 @@ void CBullet::getMessage(Message* m){
 		pEnt->getMessage(new MRigidbodyMoveX(xDir, pEnt->getID()));
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
 
+
+
 		break;
 
 	case MSG_COLLISION:
@@ -1417,6 +1435,7 @@ void CBullet::getMessage(Message* m){
 			mCollision->GetWho()->getMessage(new MBulletHit(_damage, mCollision->GetContactMask(), pEnt->getID()));
 
 			pEnt->getScene()->addEntityToDelete(pEnt);
+	
 			_toDelete = true;
 		}
 		break;
@@ -1685,13 +1704,17 @@ void CShuHeaddress::tick(float delta){
 }
 void CShuHeaddress::getMessage(Message* m)
 {
+	
 	if (m->getType() == MSG_INPUT_STATE){
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId){
 			_timeCounter = SDL_GetTicks();
 			ControllerInputState cState = inputM->getCInputState();
 			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _coolDown){
-				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,cState.Axis_LeftY);
+
+				
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
+				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,0);
 				pEnt->getMessage(new MDash(pEnt->getID(), impulse));
 				_lastTimeDash = SDL_GetTicks();
 			}
@@ -1760,6 +1783,7 @@ void CJonsuMoon::getMessage(Message* m)
 				_isActive = true;
 				isAvailable = false;
 
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
@@ -1819,6 +1843,7 @@ void CKhepriBeetle::getMessage(Message* m)
 				_isActive = true;
 				isAvailable = false;
 
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
@@ -1865,6 +1890,8 @@ void CHeraRune::getMessage(Message* m)
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
+
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
@@ -1948,6 +1975,8 @@ void CHerisMark::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
@@ -2052,11 +2081,14 @@ void CNormalButton::getMessage(Message * me)
 			pContainer->setMaterialName(materials[0]);
 
 		}
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", true);
+		
 	}
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
 		_clicked = true;
 		_callback();
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", true);
 
 	}
 
@@ -2104,6 +2136,7 @@ void CAbilityButton::getMessage(Message * me)
 			pContainer->setMaterialName(materials[0]);
 
 		}
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", true);
 	}
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
@@ -2111,6 +2144,7 @@ void CAbilityButton::getMessage(Message * me)
 
 		pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(),_playerId,_compType,0));
 
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", true);
 	}
 
 

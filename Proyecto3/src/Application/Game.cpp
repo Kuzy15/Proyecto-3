@@ -74,7 +74,7 @@ Game::Game(){
 	 players->at(0).god = EG_AHPUCH;
 
 	 players->at(1).controllerId = 1;
-	 players->at(1).god = EG_AHPUCH;
+	 players->at(1).god = EG_ZEUS;
 
 
 	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
