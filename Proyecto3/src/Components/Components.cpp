@@ -1443,8 +1443,8 @@ void CBullet::getMessage(Message* m){
 #pragma region Ability Component
 CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask) :GameComponent(c, father), _componentLife(componentLife),
 _componentArmor(componentArmor), _limitLife(componentLife)
-
 {
+	dead = false;
 	if (pEnt->getID() == "Player_0"){
 		switch (mask)
 		{
@@ -1500,11 +1500,12 @@ void CAbility::getMessage(Message *m){
 			if (_componentLife > 0){
 				dmg = mDA->getDamage() * (1 - _componentArmor / 100.0f);
 			}
-			else{
+			else if (!dead){
 				if (_myMask == MASK_HEAD_0 || _myMask == MASK_HEAD_1)
 					pEnt->getMessage(new MActiveDead(pEnt->getID()));
 				else
 					pEnt->getMessage(new MPassiveDead(pEnt->getID()));
+				dead = true;
 			}
 			pEnt->getMessage(new MDamage(dmg, pEnt->getID()));
 		}
@@ -2191,8 +2192,7 @@ void CPlayerGUI::getMessage(Message * m) {
 			updateActive(static_cast<MUpdateActiveTimer *>(m)->getActiveTimer());
 		break;
 	case MSG_ROUND_FINISHED:
-		string aux = static_cast<MRoundFinished *>(m)->getWinnerId();
-		if (aux == "Player_0" && p == P1 || aux == "Player_1" && p == P2) {
+		if (static_cast<MRoundFinished *>(m)->getWinnerId() == "Player_0" && p == P1 || static_cast<MRoundFinished *>(m)->getWinnerId() == "Player_1" && p == P2) {
 			if (roundsWon == 0) {
 				pHud->getChild(player+ "/Round1")->setMaterialName("GUI/RoundFull");
 				roundsWon++;
@@ -2203,6 +2203,13 @@ void CPlayerGUI::getMessage(Message * m) {
 				roundsWon++;
 			}
 		}
+		break;
+	case MSG_ACTIVE_DEAD:
+		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2) {
+			pLowerHud->getChild(player + "/ActiveContainer/ActiveFrame")->setMaterialName("GUI/" + player + "/ActiveDead");
+			pActiveBar->setWidth(0);
+		}
+			break;
 	}
 }
 

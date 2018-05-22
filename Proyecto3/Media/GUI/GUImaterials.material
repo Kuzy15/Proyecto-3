@@ -188,6 +188,21 @@ material GUI/Player1/ActiveBar
     }
   }
 }
+material GUI/Player1/ActiveDead
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Active_Dead.png
+          tex_address_mode clamp
+       }
+    }
+  }
+}
 //------------------------- PLAYER 2 MATERIALS ---------------------------------
 material GUI/Base_Player2 {
   technique
@@ -286,7 +301,22 @@ material GUI/Player2/ActiveBar
     }
   }
 }
-
+material GUI/Player2/ActiveDead
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Active_Dead.png
+          tex_address_mode clamp
+          scale -1 1 
+       }
+    }
+  }
+}
 //------------------------- ICON MATERIALS ---------------------------------
 material GUI/Icons/Ra_P1
 {

@@ -615,6 +615,7 @@ protected:
 	float _coolDown;
 	uint16 _myMask;
 	float _limitLife;
+	bool dead;
 
 	
 };
