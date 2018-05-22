@@ -287,8 +287,145 @@ material GUI/Player2/ActiveBar
   }
 }
 
-//-----------------------------------------------------------------------------
+//------------------------- ICON MATERIALS ---------------------------------
+material GUI/Icons/Ra_P1
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Ra.png
+          tex_address_mode clamp
 
+       }
+    }
+  }
+}
+material GUI/Icons/Ra_P2
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Ra.png
+          tex_address_mode clamp
+          scale -1 1
+
+       }
+    }
+  }
+}
+material GUI/Icons/Hachiman_P1
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Hachiman.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+
+material GUI/Icons/Hachiman_P2
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Hachiman.png
+          tex_address_mode clamp
+          scale -1 1
+
+       }
+    }
+  }
+}
+
+material GUI/Icons/AhPuch_P1
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Ah_Puch.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+
+material GUI/Icons/AhPuch_P2
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Ah_Puch.png
+          tex_address_mode clamp
+          scale -1 1
+
+       }
+    }
+  }
+}
+
+material GUI/Icons/Zeus_P1
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Zeus.png
+          tex_address_mode clamp
+
+       }
+    }
+  }
+}
+
+material GUI/Icons/Zeus_P2
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+       texture_unit
+       {
+          texture Zeus.png
+          tex_address_mode clamp
+          scale -1 1
+       }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
 material GUI/BasicRed
 {
   technique

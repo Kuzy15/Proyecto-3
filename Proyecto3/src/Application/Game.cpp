@@ -77,8 +77,8 @@ Game::Game(){
 	 players->at(1).god = EG_AHPUCH;
 
 
-	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
-	 actScene = new MainMenuScene("MainMenu", this);
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+	 //actScene = new MainMenuScene("MainMenu", this);
 
 	 _exit = false;
 

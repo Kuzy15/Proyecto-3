@@ -13,7 +13,6 @@
 #include <OgreOverlayManager.h>
 #include <OgreOverlayElement.h>
 #include <OgreOverlayContainer.h>
-#include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 
@@ -904,9 +903,8 @@ void CRigidBody::tick(float delta) {
 
 	}
 
-	if (pEnt->getID() == "Player_0")
-
-	std::cout << _body->GetPosition().x * PPM << std::endl;
+	//if (pEnt->getID() == "Player_0";
+	//std::cout << _body->GetPosition().x * PPM << std::endl;
 
 
 }
@@ -1670,15 +1668,17 @@ void CPSkillSyn::getMessage(Message* m){
 //Dash
 GameComponent* createAbilityShuHeaddress(Entity* father, int id){ return new CShuHeaddress(father,id); }
 CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0), _playerId(id){
-	_timeCounter = _lastTimeDash = 0;
-	_coolDown = 500.0f; //5 seconds
+	_timeCounter = 0;
+	_coolDown = 5000.0f; //5 seconds
 	_dashImpulse = 1000.0f;
+	_lastTimeDash = SDL_GetTicks();
 }
 CShuHeaddress::~CShuHeaddress(){}
 
 void CShuHeaddress::tick(float delta){
-
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _lastTimeDash) * 100) / _coolDown));
+	float val = (SDL_GetTicks() - _lastTimeDash) * 100 / _coolDown;
+	if (val > 100)val = 100;
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 
 }
@@ -1736,14 +1736,16 @@ void CJonsuMoon::tick(float delta){
 	}
 	//If is not active and is not available, we count the cooldown. Then turn it to available.
 	else if(!isAvailable){
-		
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _coolDown){
 			isAvailable = true;
 		}
+		float  val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 		
 	}
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100) / _coolDown));
+	
 }
 void CJonsuMoon::getMessage(Message* m)
 {
@@ -1756,6 +1758,8 @@ void CJonsuMoon::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1794,9 +1798,12 @@ void CKhepriBeetle::tick(float delta){
 		if ((_timeCounter - _initTime) >= _coolDown){
 			isAvailable = true;
 		}
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 	}
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100) / _coolDown));
+	
 
 }
 void CKhepriBeetle::getMessage(Message* m)
@@ -1810,6 +1817,8 @@ void CKhepriBeetle::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1836,9 +1845,12 @@ void CHeraRune::tick(float delta) {
 		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
-	}
 
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100) / _coolDown));
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
+	}
 
 }
 
@@ -1852,6 +1864,8 @@ void CHeraRune::getMessage(Message* m)
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1902,6 +1916,10 @@ void CHerisMark::tick(float delta) {
 			isAvailable = true;
 		}
 
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
 	}
 
 	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
@@ -1909,11 +1927,10 @@ void CHerisMark::tick(float delta) {
 		_isActive = false;
 		_availableShots = 10;
 		_maxShots = false;
-		pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
+		pEnt->getMessage(new MReset(pEnt->getID()));
 		_initTime = SDL_GetTicks();
 	}
 
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), ((SDL_GetTicks() - _initTime) * 100 )/ _coolDown));
 
 
 
@@ -1930,6 +1947,8 @@ void CHerisMark::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -2102,11 +2121,11 @@ void CAbilityButton::getMessage(Message * me)
 #pragma region PlayerGUI
 CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_GOD character) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
 {
-	std::string player;
+
 	
 	if (plyer == P1)player = "Player1";
 	else player = "Player2";
-
+	roundsWon = 0;
 
 	//General container of the whole Player HUD
 	pHud = pOverlay->getChild(player);
@@ -2115,56 +2134,95 @@ CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_G
 	//Specific reference to the lifebar and active bar, which we'll be using quite often
 	plifeBar = static_cast<Ogre::OverlayContainer*>(pHud->getChild(player + "/LifeBar"));
 	pActiveBar = static_cast<Ogre::OverlayContainer*>(pLowerHud->getChild(player + "/ActiveContainer/ActiveBar"));
-	
 	std::string charName;
+	std::string iconMatName = "GUI/Icons/" ;
 
 
 	switch (character) {
 	case EG_RA:
 		charName = "Ra";
+		if (p == P1)iconMatName += "Ra_P1";
+		else iconMatName += "Ra_P2";
 		break;
 	case EG_AHPUCH:
 		charName = "Ahpuch";
+		if (p == P1)iconMatName += "AhPuch_P1";
+		else iconMatName += "AhPuch_P2";
 		break;
 	case EG_HACHIMAN:
 		charName = "Hachiman";
+		if (p == P1)iconMatName += "Hachiman_P1";
+		else iconMatName += "Hachiman_P2";
 		break;
 	case EG_ZEUS:
 		charName = "Zeus";
+		if (p == P1)iconMatName += "Zeus_P1";
+		else iconMatName += "Zeus_P2";
 		break;
 	}
 
 
-
+//	std::cout << iconMatName << std::endl;
 	pHud->getChild(player + "/Name")->setCaption(charName);
+	pHud->getChild(player + "/Icon")->setMaterialName(iconMatName);
 
 	LIFE_MAX_WIDTH = plifeBar->getWidth();
 	ACTIVE_MAX_WIDTH = pActiveBar->getWidth();
-	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 15;
+	LIFE_MIN_WIDTH = ACTIVE_MIN_WIDTH = 0.0f;
+
+
 
 
 }
 CPlayerGUI::~CPlayerGUI() {}
 
 void CPlayerGUI::tick(float delta) {
-
-
 }
 void CPlayerGUI::getMessage(Message * m) {
-	/*
-		This must be modyfied, as it takes EVERY life state update without knowing if the sender
-		is the player that this part of the HUD tracks.
-		TODO: Change the implementation so it filters the life state messages
 	
-	*/
-	if (m->getType() == MSG_LIFE_STATE &&((m->getEmmiter() == "Player_1" && p == P1)||(m->getEmmiter() == "Player_0" && p == P2)))
-		updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+	switch (m->getType()) 
+	{
+	case MSG_LIFE_STATE:
+		if ((m->getEmmiter() == "Player_0" && p == P1) || (m->getEmmiter() == "Player_1" && p == P2))
+			updateLifebar(static_cast<MLifeState *>(m)->getLifeState());
+		break;
+	case MSG_UPDATE_ACTIVETIMER :
+		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
+			updateActive(static_cast<MUpdateActiveTimer *>(m)->getActiveTimer());
+		break;
+	case MSG_ROUND_FINISHED:
+		string aux = static_cast<MRoundFinished *>(m)->getWinnerId();
+		if (aux == "Player_0" && p == P1 || aux == "Player_1" && p == P2) {
+			if (roundsWon == 0) {
+				pHud->getChild(player+ "/Round1")->setMaterialName("GUI/RoundFull");
+				roundsWon++;
+			}
+			else if (roundsWon == 1)
+			{
+				pHud->getChild(player+ "/Round2")->setMaterialName("GUI/RoundFull");
+				roundsWon++;
+			}
+		}
+	}
+}
 
+void CPlayerGUI::updateActive(size_t val)
+{
+	float newVal = (ACTIVE_MAX_WIDTH * val) / 100;
+	if (newVal < ACTIVE_MIN_WIDTH)newVal = ACTIVE_MIN_WIDTH;
+	if (p == P1)
+		pActiveBar->setWidth(newVal);
+	else {
+		Ogre::Real newX = pActiveBar->getLeft();
+		newX = (newX + pActiveBar->getWidth()) - newVal;
+		pActiveBar->setLeft(newX);
+		pActiveBar->setWidth(newVal);
+	}
 
 }
 void CPlayerGUI::updateLifebar(size_t val) {
 
-		size_t newVal = (LIFE_MAX_WIDTH * val) / 100;
+		float newVal = (LIFE_MAX_WIDTH * val) / 100;
 		if (newVal < LIFE_MIN_WIDTH)newVal = LIFE_MIN_WIDTH;
 		if(p == P1)
 		plifeBar->setWidth(newVal);
@@ -2176,11 +2234,28 @@ void CPlayerGUI::updateLifebar(size_t val) {
 		}
 }
 
-
-
 #pragma endregion
 
+#pragma region CGUITimer
 
+CGUITimer::CGUITimer(Entity* father, Ogre::Overlay * overlay):GameComponent(CMP_GUI_TIMER, father)
+{
+	pTimer = overlay->getChild("GUI/TimerPanel");
+}
+
+CGUITimer::~CGUITimer()
+{
+}
+void CGUITimer::tick(float delta)
+{
+
+}
+void CGUITimer::getMessage(Message * m)
+{
+	if (m->getType() == MSG_UPDATE_SCENETIMER) {
+		pTimer->getChild("TimerPanel/TextArea")->setCaption(std::to_string(static_cast<MUpdateSceneTimer *>(m)->getSceneTimer()));
+	}
+}
 #pragma endregion
 
 

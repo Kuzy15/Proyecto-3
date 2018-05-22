@@ -51,7 +51,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	Ra->addComponent(new CPlayerMove(Ra, VELOCITY));
 
 	//Ra->addComponent(new CPSkillHermes(Ra, 10.0f, 10.0f));
-	//Ra->addComponent(new CPSkillUll(Ra,0));
+	//Ra->addComponent(new CPSkillUll(Ra));
 	//Ra->addComponent(new CPSkillVidar(Ra));
 	//Ra->addComponent(new CShuHeaddress(Ra, controllerId));
 	//Ra->addComponent(EntityFactory::getInstance().createAbility(CMP_HERA_RUNE,Ra, controllerId));
@@ -103,7 +103,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	
 
 
-	
+	AhPuch->addComponent(new CHerisMark(AhPuch, controllerId));
 	
 	return AhPuch;
 }
@@ -480,6 +480,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 
 	Ogre::Light* light = s->getSceneManager()->createLight("MainLight");
 	light->setPosition(20, 30, 50);
+	light->setCastShadows(true);
 
 	Ogre::Viewport* vp = nullptr;
 	Entity * cam = new Entity("Camera1", s);

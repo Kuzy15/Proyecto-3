@@ -8,6 +8,7 @@
 #include <string>
 #include <list>
 #include <Box2D.h>
+#include <OgreTextAreaOverlayElement.h>
 
 
 class Entity;
@@ -73,6 +74,7 @@ typedef enum ComponentType {
 	CMP_KHEPRI_BEETLE,
 	CMP_GUI_BUTTON,
 	CMP_GUI_PLAYERGUI,
+	CMP_GUI_TIMER,
 	CMP_HERA_RUNE,
 	CMP_HERIS_MARK,
 	CMP_PARTICLE_RENDER,
@@ -880,8 +882,18 @@ protected:
 	float _lastClick;
 	const float _minClickTime = 500;
 };
+class CGUITimer: public GameComponent
+{
+public:
+	CGUITimer(Entity * father, Ogre::Overlay * overlay);
+	~CGUITimer();
+	virtual void tick(float delta);
+	virtual void getMessage(Message * m);
 
+private:
+	Ogre::OverlayContainer * pTimer;
 
+};
 class CNormalButton : public CButtonGUI
 {
 public:
@@ -926,7 +938,7 @@ public:
 	CPlayerGUI(Entity* father, Ogre::Overlay * ov, guiPlayer p, E_GOD character);
 	~CPlayerGUI();
 	void updateLifebar(size_t val);
-	void updateActive();
+	void updateActive(size_t val);
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 	void updatePassive();
@@ -937,8 +949,10 @@ private:
 	Ogre::OverlayContainer * plifeBar;
 	Ogre::OverlayContainer * pActiveBar;
 	Ogre::Overlay * pOverlay;
-	size_t LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
-	size_t ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
+	std::string player;
+	float LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
+	float ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
+	size_t roundsWon;
 	guiPlayer p;
 };
 

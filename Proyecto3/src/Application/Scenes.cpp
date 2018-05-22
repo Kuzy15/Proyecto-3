@@ -365,8 +365,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	// Create an overlay
 	try {
-		bgCards = overlayManager.getByName("Background");
 		overlay = overlayManager.getByName("GUI");
+		bgCards = overlayManager.getByName("Background");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -377,17 +377,18 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::FontManager::getSingleton().getByName("GUI/PlayerText")->load();
 
 
-	/*Entity * k = new Entity("GUI", this);
+	Entity * k = new Entity("GUI", this);
 
 
-	k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
-	k->addComponent(new CPlayerGUI(k, overlay, P1, EG_RA));
-	k->addComponent(new CPlayerGUI(k, overlay, P2, EG_AHPUCH));	addEntity(k);*/
-	// Create a panel
-	Ogre::OverlayElement * e = overlay->getChild("Player1")->getChild("Player1/LifeBar");
+	//k->addComponent(new CNormalButton(overlay, k, 0, Ogre::Vector2(-100, 150), Ogre::Vector2(0, 0), K, "Placeholder"));
+	k->addComponent(new CGUITimer(k, overlay));
+	k->addComponent(new CPlayerGUI(k, overlay, P1, players[0].god));
+	k->addComponent(new CPlayerGUI(k, overlay, P2, players[1].god));
+	addEntity(k);
+	
 
 
-	//overlay->show();
+	overlay->show();
 	//bgCards->show();
 
 
@@ -396,10 +397,10 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	_currState = GS_BATTLE;
 	_prepareCounter = SDL_GetTicks();
 
-	//loadAbilities();
+	loadAbilities();
 
-	getMessage(new MButtonAct(id, 0));
-	getMessage(new MButtonAct(id, 3));
+	//getMessage(new MButtonAct(id, 0));
+	//getMessage(new MButtonAct(id, 3));
 
 }
 GamePlayScene::~GamePlayScene(){
@@ -630,7 +631,7 @@ void GamePlayScene::playerDied(std::string e){
 	int playerDeadId = std::stoi( e.substr(7, 8));
 	int playerWonId;
 	if (playerDeadId == 0){
-		playerWonId = 1;		
+		playerWonId = 1;
 	}
 	else{
 		playerWonId = 0;
@@ -773,7 +774,7 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
 
 	Ogre::Viewport* vp = nullptr;
-	Entity *cam = new Entity("camMenuIni",this); 
+	Entity *cam = new Entity("camMenuIni",this);
 	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
 
 	Entity * background = new Entity("fightButton", this);
