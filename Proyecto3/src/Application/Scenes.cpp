@@ -1024,3 +1024,87 @@ void LoadingScene::processScnMsgs()
 };
 
 #pragma endregion
+
+initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getInstance()), _resCfgLoc(resCfgLoc)
+{
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	Ogre::Camera * cam = scnMgr->createCamera("InitCam");
+	Game::getInstance()->getRenderWindow()->addViewport(cam);
+	pOverlay = overlayManager.getByName("InitGUI");
+	pOverlay->show();
+}
+initScene::~initScene() {
+}
+void initScene::processScnMsgs() 
+{
+	
+}
+bool initScene::run() {
+	initResources();
+
+	//From here to the change scene, its everything basically trash. 
+	//DO not take this as a proper implementation
+	pOverlay->hide();
+	Game::getInstance()->getRenderWindow()->removeViewport(0);
+	scnMgr->clearScene();
+
+	Game::getInstance()->changeScene(new MainMenuScene("MainMenu", Game::getInstance()));
+	return EXIT_SUCCESS;
+}
+bool initScene::initResources() 
+{
+	//------------------------------------------------------------------------------------------------------
+	//Setting UP Resources
+	Ogre::ConfigFile cf;
+	//Parsing the config file into the system.
+	cf.load(_resCfgLoc);
+
+
+	//name: Path to resources in disk,
+	//loctype: defines what kind of location the element is (e.g. Filesystem, zip..)
+	Ogre::String name, locType;
+
+	//We now iterate through rach section in the resources.cfg.
+	//Sections are signaled as [NAME]
+	Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
+	while (secIt.hasMoreElements())
+	{
+		Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
+		Ogre::ConfigFile::SettingsMultiMap::iterator it;
+
+		//Now we are iterating INSIDE the section [secIt]
+		for (it = settings->begin(); it != settings->end(); ++it)
+		{
+			locType = it->first;
+			name = it->second;
+
+			//We now know the type of the element and its path.
+			//We add it as a location to the Resource Group Manager
+			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
+
+
+		}
+	}
+	//If there is no previous Ogre.cfg, this displays the config dialog
+
+	//------------------------------------------------------------------------------------------------------
+	//Resources Init
+
+	//Now we init every resource previously added
+	try {
+
+		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	}
+	catch (Ogre::Exception e) {
+#ifdef DEBUG
+		std::cout << e.what() << std::endl;
+	
+#endif // DEBUG
+
+		//We are only going to use 5 mimpams at a time. Mipmaps are efficent ways to save a texture.
+		//Taking only 1/3 more of space, we can have several sizes of the texture to choose from.
+		Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+		return EXIT_FAILURE;
+	}
+	return(EXIT_SUCCESS);
+}

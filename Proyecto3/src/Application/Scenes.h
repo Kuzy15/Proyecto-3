@@ -295,8 +295,27 @@ private:
 	float _timeLimit;
 	float _counter;
 
+
 };
 
+class initScene: public GameScene
+{
+public:
+	initScene(Ogre::String resCfgLoc);
+	~initScene();
+
+
+private:
+	Ogre::String _resCfgLoc;
+	Ogre::Overlay * pOverlay;
+	Entity * cam;
+	bool initResources();
+	virtual void processScnMsgs();
+
+	//Main loop of the scene.
+	//Each scene implements it differently
+	virtual bool run();
+};
 
 #pragma endregion
 #endif

@@ -596,6 +596,8 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 
 	//borrar
 	_vp = vp;
+	
+
 }
 CCamera::~CCamera() {
 	delete _vp;

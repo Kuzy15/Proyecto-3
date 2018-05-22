@@ -77,7 +77,7 @@ Game::Game(){
 	 players->at(1).god = EG_AHPUCH;
 
 
-	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+	 actScene = new initScene(resCfgLoc);
 	 //actScene = new MainMenuScene("MainMenu", this);
 
 	 _exit = false;
@@ -153,8 +153,8 @@ bool Game::initOgre(){
 	}
 	catch (std::exception e){
 #ifdef _DEBUG
-		std::cout << e.what();
-		std::cout << "aa";
+		std::cout << "-------------------------------------------- "<< std::endl;
+		std::cout << e.what()<< std::endl;
 #endif
 		return false;
 	}
@@ -163,76 +163,22 @@ bool Game::initOgre(){
 	pOverMan = Ogre::OverlayManager::getSingletonPtr();
 
 
-	//------------------------------------------------------------------------------------------------------
-	//Setting UP Resources
 
-	//Parsing the config file into the system.
-	cf.load(resCfgLoc);
-
-
-	//name: Path to resources in disk,
-	//loctype: defines what kind of location the element is (e.g. Filesystem, zip..)
-	Ogre::String name, locType;
-
-	//We now iterate through rach section in the resources.cfg.
-	//Sections are signaled as [NAME]
-	Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
-	while (secIt.hasMoreElements())
-	{
-		Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
-		Ogre::ConfigFile::SettingsMultiMap::iterator it;
-
-		//Now we are iterating INSIDE the section [secIt]
-		for (it = settings->begin(); it != settings->end(); ++it)
-		{
-			locType = it->first;
-			name = it->second;
-
-			//We now know the type of the element and its path.
-			//We add it as a location to the Resource Group Manager
-			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
-
-
-		}
-	}
-	//If there is no previous Ogre.cfg, this displays the config dialog
 	if (!(root->restoreConfig() || root->showConfigDialog()))
 		return false;
 
 	//------------------------------------------------------------------------------------------------------
 	//Render Window Creation
 	pWindow = root->initialise(true, "OGRE3D Game");
-
-
-
-
-
-	//------------------------------------------------------------------------------------------------------
-	//Resources Init
-
-	//We are only going to use 5 mimpams at a time. Mipmaps are efficent ways to save a texture.
-	//Taking only 1/3 more of space, we can have several sizes of the texture to choose from.
-	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-
-	//Now we init every resource previously added
-	try {
-
-		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	try
+	{
+		Ogre::ResourceGroupManager::getSingleton().addResourceLocation("../Media/Init", "FileSystem", "Essential");
+		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Essential");
 	}
-	catch (Ogre::Exception e) { 
-	#ifdef DEBUG
-		std::cout << e.what() << std::endl; 
-	#endif // DEBUG
+	catch (std::exception e)
+	{
+		std::cout << e.what() << std::endl;
 	}
-
-
-
-
-
-
-	//We register game as a listener of the window events, to know if it's been closed
-	//Ogre::WindowEventUtilities::addWindowEventListener(pWindow, this);
-
 
  }
 #pragma endregion

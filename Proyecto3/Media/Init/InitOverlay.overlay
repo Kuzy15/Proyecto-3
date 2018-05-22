@@ -1,0 +1,20 @@
+
+InitGUI
+{
+  container Panel (Init/Logo)
+  {
+    top 0.35
+    left 0.35
+    width 0.2
+    height 0.2
+    material Init/BasicRed
+  }
+  container Panel (LoadingBar)
+  {
+    top 0.7
+    height 0.05
+    left 0.3
+    width 0.4
+    material Init/BasicRed
+  }
+}
