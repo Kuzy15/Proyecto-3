@@ -79,6 +79,7 @@ Game::Game(){
 
 	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
 	 //actScene = new MainMenuScene("MainMenu", this);
+	 //actScene = new FightMenuScene("FightMenu", this);
 
 	 _exit = false;
 

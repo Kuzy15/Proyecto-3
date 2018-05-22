@@ -352,6 +352,7 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	entities->push_back(cam);
 
 
+	
 	Entity * e1 = new Entity("Suelo_01", s);
 	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, s->getSceneManager(), { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
 	e1->addComponent(cM);
@@ -488,7 +489,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	entities->push_back(cam);
 
 	/*Entity *sky = new Entity("sky", s);
-	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "mandelbrotSP"));
+	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "FondoE1", Ogre::Vector3{ 0, 0, 0 }));
 	entities->push_back(sky);*/
 
 	Entity * e1 = new Entity("Suelo_01", s);

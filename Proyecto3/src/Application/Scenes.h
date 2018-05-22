@@ -232,6 +232,34 @@ private:
 
 #pragma endregion
 
+#pragma region Fight Menu Scene
+/*----------------------------- FIGHT MENU SCENE -----------------------------*/
+
+//Basic class to debug and test the ogre implementation
+//and the behaviour of the components
+class FightMenuScene : public GameScene
+{
+public:
+	FightMenuScene(std::string id, Game * game);
+	virtual ~FightMenuScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
+
+
+};
+
+#pragma endregion
+
 #pragma region MultiplayerScene
 
 /*----------------------------- Multiplayer SCENE -----------------------------*/

@@ -775,16 +775,16 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	Entity *cam = new Entity("camMenuIni",this);
 	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
 
-	Entity * background = new Entity("fightButton", this);
-	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {70,0,0}));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, background));
+	/*Entity * background = new Entity("backgroundMainMenu", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
 
 	Entity * fightButton = new Entity("fightButton", this);
-	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
 
 	Entity * exitButton = new Entity("exitButton", this);
-	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
 	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
 
 	overlay->show();
@@ -854,6 +854,136 @@ void MainMenuScene::processScnMsgs()
 };
 
 void MainMenuScene::processInput(ControllerInputState c){
+
+	int totalButtons = _menuEntities.size();
+
+	if (c.DPad_Down == BTT_PRESSED){
+		selectedButton++;
+		if (selectedButton >= totalButtons)
+			selectedButton = 0;
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+	else if (c.DPad_Up == BTT_PRESSED){
+		selectedButton--;
+		if (selectedButton < 0)
+			selectedButton = (totalButtons - 1);
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+
+	if (c.Button_A == BTT_PRESSED){
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+	}
+}
+
+
+
+#pragma endregion
+
+
+#pragma region Fight Menu Scene
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+FightMenuScene::FightMenuScene(std::string id, Game * game) : GameScene(id, game) {
+
+	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	selectedButton = 0;
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("FIGHT");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
+
+	Ogre::Viewport* vp = nullptr;
+	Entity *cam = new Entity("camMenuCombate", this);
+	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+
+	/*Entity * background = new Entity("backgroundMainMenu", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
+
+	Entity * multiplayerButton = new Entity("multiplayerButton", this);
+	multiplayerButton->addComponent(new CNormalButton(overlay, multiplayerButton, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), exitCallBack, "Multiplayer"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, multiplayerButton));
+
+	Entity * tutorialButton = new Entity("tutorialButton", this);
+	tutorialButton->addComponent(new CNormalButton(overlay, tutorialButton, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), exitCallBack, "Tutorial"));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, tutorialButton));
+
+	overlay->show();
+
+	//Set the first button selected
+	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+
+}
+
+
+FightMenuScene::~FightMenuScene(){
+}
+
+
+
+
+bool FightMenuScene::run(){
+	//Here we would get the time between frames
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+
+	return aux;
+
+}
+
+void FightMenuScene::dispatch(){
+	GameScene::dispatch();
+
+
+}
+
+void FightMenuScene::processScnMsgs()
+{
+	MInputState* input;
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		switch (m->getType())
+		{
+		case MSG_INPUT_STATE:
+			input = static_cast<MInputState*>(*it);
+			processInput(input->getCInputState());
+			break;
+		default:
+			break;
+		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
+
+
+
+};
+
+void FightMenuScene::processInput(ControllerInputState c){
 
 	int totalButtons = _menuEntities.size();
 

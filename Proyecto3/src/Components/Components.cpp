@@ -501,7 +501,8 @@ CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, flo
 	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
 	// bow = 0, xsegments = 1, ysegments = 1
 
-	pOgreSceneNode->setPosition(pos);
+	//pOgreSceneNode->setPosition(pos);
+	
 
 }
 CSkyPlaneRender::~CSkyPlaneRender(){}
