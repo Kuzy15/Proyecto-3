@@ -100,11 +100,6 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB1AhPuch", "pB1AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB2AhPuch", "pB2AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 
-
-
-
-	AhPuch->addComponent(new CHerisMark(AhPuch, controllerId));
-
 	return AhPuch;
 }
 

@@ -357,6 +357,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		_players[i].entity->setActive(false);
 
 	}
+	_players[1].passiveSelected = true;
+	_pReady[1] = true;
 
 	//Not paused at start
 	_paused = false;
@@ -417,7 +419,6 @@ bool GamePlayScene::run(){
 		//This state should control the gameplay state (Time, rounds, the end, etc)
 	case GS_BATTLE:
 		battlePhase();
-
 		break;
 		//Last state before leave the scene
 	case GS_END:
@@ -561,7 +562,6 @@ void GamePlayScene::changePhase(GameplayState newState){
 	switch (newState){
 	case GS_SETUP:
 		overlay->hide();
-		bgCards->show();
 		//Set the starter state to SETUP
 		_prepareCounter = SDL_GetTicks();
 
@@ -572,6 +572,7 @@ void GamePlayScene::changePhase(GameplayState newState){
 		_nPlayers = MAX_PLAYERS;
 
 		loadAbilities();
+		bgCards->show();
 
 		getMessage(new MButtonAct(_id, player1Index));
 
@@ -579,7 +580,7 @@ void GamePlayScene::changePhase(GameplayState newState){
 			break;
 	case GS_BATTLE:
 		for (Entity* e : _cardGUIEntities){
-			deleteEntity(e->getID());
+			addEntityToDelete(e);
 		}
 		_cardGUIEntities.clear();
 		for (Player p : _players){
@@ -637,14 +638,18 @@ void GamePlayScene::resetPlayers(){
 
 	int i = 0;
 
-	for (Player p : _players){
-		deleteEntity(p.entity->getID());
-		p.activeSelected = false;
-		p.passiveSelected = false;
-		p.currentActive = CMP_ACTIVE_DEFAULT;
-		p.currentPassive = CMP_PASSIVE_DEFAULT;
-		p.entity = EntityFactory::getInstance().createGod(p.god,this,playerPos[i],p.controllerId);
-		i++;
+	for (int i = 0; i < _players.size(); i++){
+		deleteEntity(_players[i].entity->getID());
+		_players[i].entity = nullptr;
+		_players[i].activeSelected = false;
+		_players[i].passiveSelected = false;
+		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
+		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
+		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god,this,playerPos[i],_players[i].controllerId);
+		_players[i].entity->setActive(false);
+		addEntity(_players[i].entity);
+		_pReady[i] = false;
+		
 	}
 }
 
@@ -663,14 +668,12 @@ void GamePlayScene::loadAbilities(){
 	for (Player p : _players){
 		//There, we should choose 3 random abilities to show
 		for (ComponentType c : p.abilities){
-			aux = new Entity((to_string(p.controllerId) + to_string(c)), this);
+			aux = new Entity((to_string(p.controllerId) + to_string(c) + to_string(_battleState.roundsCompleted)), this);
 			aux->addComponent(new CAbilityButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0), p.controllerId, c));
 			auxPos.x += 50.0f;
-			//limpiarlas luego
 			_cardGUIEntities.emplace_back(aux);
 			addEntity(aux);
 			idCounter++;
-
 		}
 		auxPos.y += 100.0f;
 	}
@@ -723,8 +726,10 @@ void GamePlayScene::processMsgSetup(Message* m){
 	case MSG_INPUT_STATE:
 		mInput = static_cast<MInputState*>(m);
 		if (mInput->getId() == 0 && !_pReady[0]){
-			if (mInput->getCInputState().Button_A == BTT_RELEASED)
+			if (mInput->getCInputState().Button_A == BTT_RELEASED){
 				getMessage(new MButtonClick(_id, player1Index));
+				
+			}
 			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
 				player1Index++;
 				if (player1Index > 2) player1Index = 0;

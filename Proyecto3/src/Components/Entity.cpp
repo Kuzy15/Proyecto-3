@@ -137,8 +137,7 @@ void Entity::deleteAllMsgs(){
 
 	while (!msgs.empty()){
 		Message * aux = msgs.front();
-		if (aux->getDestination() == ENTITY)
-			delete aux;
+		if(aux->getType() == ENTITY)delete aux;
 		msgs.pop();
 	}
 

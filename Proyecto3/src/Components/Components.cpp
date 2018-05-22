@@ -22,6 +22,39 @@
 #define new DEBUG_NEW
 #endif
 
+
+
+std::string compToString(ComponentType t){
+
+	switch (t){
+	case CMP_PASSIVE_HADES:
+		return "PASSIVE_HADES";
+	case CMP_PASSIVE_HERMES:
+		return "PASSIVE_HERMES";
+	case CMP_PASSIVE_SYN:
+		return "PASSIVE_SYN";
+	case CMP_PASSIVE_ULL:
+		return "PASSIVE_ULL";
+	case CMP_PASSIVE_VALI:
+		return "PASSIVE_VALI";
+	case CMP_PASSIVE_VIDAR:
+		return "PASSIVE_VIDAR";
+	case CMP_HERA_RUNE:
+		return "HERA_RUNE";
+	case CMP_KHEPRI_BEETLE:
+		return "KHEPRI_BEETLE";
+	case CMP_JONSU_MOON:
+		return "JONSU_MOON";
+	case CMP_HERIS_MARK:
+		return "HERIS_MARK";
+	case CMP_SHU_HEADDRESS:
+		return "SHU_HEADDRESS";
+	default:
+		break;
+	}
+
+};
+
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
 //It implements basic behaviours like gets, sets
@@ -530,6 +563,7 @@ CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string p
 }
 CParticleRender::~CParticleRender() {
 	pChild->detachObject(_particleSystem);
+	pSceneMgr->destroyParticleSystem(_particleSystem);
 }
 void CParticleRender::tick(float delta) {
 
@@ -2069,48 +2103,54 @@ void CNormalButton::getMessage(Message * me)
 CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize,  int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
 _playerId(playerId), _compType(compType){
 	
-
-
+	std::string cmpName = compToString(compType);
 	
-	/*pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
+
+	materials[0] = cmpName + "-IDLE";
+	materials[1] = cmpName + "-ACTIVE";
+	materials[2] = cmpName + "-CLICK";
+
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
+	
 	pContainer->setPosition(screenpos.x, screenpos.y);
-	overlay->add3D(n);
-	overlay->*/
+	overlay->add2D(pContainer);
 	
 }
 CAbilityButton::~CAbilityButton()
 {
-
-
+	
+	//Ogre::OverlayManager::getSingleton().destroyOverlayElement(pEnt->getID());
 }
 
 
 void CAbilityButton::getMessage(Message * me)
 {
+	if (_clicked){
 
-
-	/*if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
-	{
-		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
-			_active = true;
-			pContainer->setMaterialName(materials[1]);
-		}
-		else if (_active)
+		if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
 		{
-			_active = false;
-			pContainer->setMaterialName(materials[0]);
+			if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+				_active = true;
+				pContainer->setMaterialName(materials[1]);
+			}
+			else if (_active)
+			{
+				_active = false;
+				pContainer->setMaterialName(materials[0]);
+
+			}
+		}
+		if (me->getType() == MSG_GUI_BUTTON_CLICK) {
+			if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
+				pContainer->setMaterialName(materials[2]);
+				_clicked = true;
+				pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType));
+			}
 
 		}
 	}
-	if (me->getType() == MSG_GUI_BUTTON_CLICK) {
-		if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
-			pContainer->setMaterialName(materials[2]);
-			_clicked = true;
-			pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType));
-		}
-
-	}
-	*/
+	
 
 }
 

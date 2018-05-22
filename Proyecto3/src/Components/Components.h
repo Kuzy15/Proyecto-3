@@ -86,6 +86,9 @@ typedef enum ComponentType {
 
 };
 
+std::string compToString(ComponentType t);
+
+
 typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
 
 //Basic gameComponent class from which every other component will inherit.
@@ -960,5 +963,7 @@ private:
 	size_t roundsWon;
 	guiPlayer p;
 };
+
+
 
 #endif
