@@ -949,6 +949,7 @@ private:
 	Ogre::OverlayContainer * plifeBar;
 	Ogre::OverlayContainer * pActiveBar;
 	Ogre::Overlay * pOverlay;
+	std::string player;
 	float LIFE_MAX_WIDTH, LIFE_MIN_WIDTH = 5;
 	float ACTIVE_MAX_WIDTH, ACTIVE_MIN_WIDTH = 5;
 	size_t roundsWon;

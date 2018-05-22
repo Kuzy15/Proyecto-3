@@ -1668,15 +1668,17 @@ void CPSkillSyn::getMessage(Message* m){
 //Dash
 GameComponent* createAbilityShuHeaddress(Entity* father, int id){ return new CShuHeaddress(father,id); }
 CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0), _playerId(id){
-	_timeCounter = _lastTimeDash = 0;
-	_coolDown = 500.0f; //5 seconds
+	_timeCounter = 0;
+	_coolDown = 5000.0f; //5 seconds
 	_dashImpulse = 1000.0f;
+	_lastTimeDash = SDL_GetTicks();
 }
 CShuHeaddress::~CShuHeaddress(){}
 
 void CShuHeaddress::tick(float delta){
-
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _lastTimeDash));
+	float val = (SDL_GetTicks() - _lastTimeDash) * 100 / _coolDown;
+	if (val > 100)val = 100;
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 
 }
@@ -1734,14 +1736,16 @@ void CJonsuMoon::tick(float delta){
 	}
 	//If is not active and is not available, we count the cooldown. Then turn it to available.
 	else if(!isAvailable){
-		
 		_timeCounter = SDL_GetTicks();
 		if ((_timeCounter - _initTime) >= _coolDown){
 			isAvailable = true;
 		}
+		float  val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 		
 	}
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+	
 }
 void CJonsuMoon::getMessage(Message* m)
 {
@@ -1754,6 +1758,8 @@ void CJonsuMoon::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1792,9 +1798,12 @@ void CKhepriBeetle::tick(float delta){
 		if ((_timeCounter - _initTime) >= _coolDown){
 			isAvailable = true;
 		}
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 	}
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+	
 
 }
 void CKhepriBeetle::getMessage(Message* m)
@@ -1808,6 +1817,8 @@ void CKhepriBeetle::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1834,9 +1845,12 @@ void CHeraRune::tick(float delta) {
 		if ((_timeCounter - _initTime) >= _coolDown) {
 			isAvailable = true;
 		}
-	}
 
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
+	}
 
 }
 
@@ -1850,6 +1864,8 @@ void CHeraRune::getMessage(Message* m)
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -1900,6 +1916,10 @@ void CHerisMark::tick(float delta) {
 			isAvailable = true;
 		}
 
+		float val = (SDL_GetTicks() - _initTime) * 100 / _coolDown;
+		if (val > 100)val = 100;
+		pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+
 	}
 
 	// Maximum number of shots has been reached so deactivate the effect and start cooldown.
@@ -1907,12 +1927,10 @@ void CHerisMark::tick(float delta) {
 		_isActive = false;
 		_availableShots = 10;
 		_maxShots = false;
-		pEnt->getMessage(new MReset(pEnt->getID())); // Mensage modificar daño -20%
+		pEnt->getMessage(new MReset(pEnt->getID()));
 		_initTime = SDL_GetTicks();
 	}
 
-
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), _coolDown - _initTime));
 
 
 
@@ -1929,6 +1947,8 @@ void CHerisMark::getMessage(Message* m)
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
 	}
@@ -2101,7 +2121,7 @@ void CAbilityButton::getMessage(Message * me)
 #pragma region PlayerGUI
 CPlayerGUI::CPlayerGUI(Entity * father, Ogre::Overlay * ov, guiPlayer plyer, E_GOD character) : GameComponent(CMP_GUI_PLAYERGUI, father),  pOverlay(ov), p(plyer)
 {
-	std::string player;
+
 	
 	if (plyer == P1)player = "Player1";
 	else player = "Player2";
@@ -2174,11 +2194,13 @@ void CPlayerGUI::getMessage(Message * m) {
 		string aux = static_cast<MRoundFinished *>(m)->getWinnerId();
 		if (aux == "Player_0" && p == P1 || aux == "Player_1" && p == P2) {
 			if (roundsWon == 0) {
-				pHud->getChild("Player1/Round1")->setMaterialName("GUI/RoundFull");
+				pHud->getChild(player+ "/Round1")->setMaterialName("GUI/RoundFull");
+				roundsWon++;
 			}
 			else if (roundsWon == 1)
 			{
-				pHud->getChild("Player1/Round2")->setMaterialName("GUI/RoundFull");
+				pHud->getChild(player+ "/Round2")->setMaterialName("GUI/RoundFull");
+				roundsWon++;
 			}
 		}
 	}
@@ -2231,9 +2253,7 @@ void CGUITimer::tick(float delta)
 void CGUITimer::getMessage(Message * m)
 {
 	if (m->getType() == MSG_UPDATE_SCENETIMER) {
-		int val = (int)static_cast<MUpdateSceneTimer *>(m)->getSceneTimer();
-		val /= 1000;
-		pTimer->getChild("TimerPanel/TextArea")->setCaption(to_string(val));
+		pTimer->getChild("TimerPanel/TextArea")->setCaption(std::to_string(static_cast<MUpdateSceneTimer *>(m)->getSceneTimer()));
 	}
 }
 #pragma endregion

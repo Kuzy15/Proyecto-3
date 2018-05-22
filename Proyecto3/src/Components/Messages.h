@@ -622,9 +622,9 @@ class MUpdateSceneTimer : public Message
 public:
 	MUpdateSceneTimer(std::string emmiter, size_t value);
 	~MUpdateSceneTimer();
-	float getSceneTimer();
+	size_t getSceneTimer();
 private:
-	float _value;
+	size_t _value;
 };
 
 
@@ -634,9 +634,9 @@ class MUpdateActiveTimer : public Message
 public:
 	MUpdateActiveTimer(std::string emmiter, size_t value);
 	~MUpdateActiveTimer();
-	float getActiveTimer();
+	size_t getActiveTimer();
 private:
-	float _value;
+	size_t _value;
 };
 
 

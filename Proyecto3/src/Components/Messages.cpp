@@ -303,14 +303,14 @@ MDamage::~MDamage(){}
 #pragma region Update Scene Timer 
 	MUpdateSceneTimer::MUpdateSceneTimer(std::string emmiter, size_t value) : Message(MSG_UPDATE_SCENETIMER, SCENE, emmiter), _value(value) {};
 	MUpdateSceneTimer::~MUpdateSceneTimer() {};
-	float MUpdateSceneTimer::getSceneTimer() { return _value; };
+	size_t MUpdateSceneTimer::getSceneTimer() { return _value; };
 
 #pragma endregion
 
 #pragma region Update Active Timer 
 	MUpdateActiveTimer::MUpdateActiveTimer(std::string emmiter, size_t value) : Message(MSG_UPDATE_ACTIVETIMER, SCENE, emmiter), _value(value) {};
 	MUpdateActiveTimer::~MUpdateActiveTimer() {};
-	float MUpdateActiveTimer::getActiveTimer() { return _value; };
+	size_t MUpdateActiveTimer::getActiveTimer() { return _value; };
 
 #pragma endregion
 
