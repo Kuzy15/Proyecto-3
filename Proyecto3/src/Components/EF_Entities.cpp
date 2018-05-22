@@ -659,3 +659,47 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	return entities;
 
 }
+
+
+std::vector<Entity*>* createStageCity(GameScene* s){
+
+	std::vector<Entity*>* entities = new std::vector<Entity*>();
+
+	s->getSceneManager()->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	Ogre::Light* light = s->getSceneManager()->createLight("MainLight");
+	light->setPosition(20, 30, 50);
+
+	Ogre::Viewport* vp = nullptr;
+	Entity * cam = new Entity("Camera1", s);
+	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150, 150, 60, 150));
+	entities->push_back(cam);
+
+
+	Entity * ciudad = new Entity("Suelo_03", s);
+	CMeshRender* cM3 = new CMeshRender({ 0, 15,  -1000 }, "BarroCity.mesh", ciudad, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 15, -90, -10 });
+	ciudad->addComponent(cM3);
+	entities->push_back(ciudad);
+
+
+	// Colliders
+	Entity * top = new Entity("ColliderTecho_01", s);
+
+	top->addComponent(new CRigidBody(top, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, 100, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(top);
+
+	Entity * rightEdge = new Entity("ColliderLimite_Dcho", s);
+	rightEdge->addComponent(new CRigidBody(rightEdge, s->getGame()->getPhysicsWorld(), Ogre::Vector3(100, -500, 0), 1000, 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(rightEdge);
+
+	Entity * leftEdge = new Entity("ColliderLimite_Izqdo", s);
+	leftEdge->addComponent(new CRigidBody(leftEdge, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-150, -500, 0), 1000, 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(leftEdge);
+
+	Entity *suelo = new Entity("DeathZone_01", s);
+	suelo->addComponent(new CRigidBody(suelo, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, -5, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(suelo);
+
+
+	return entities;
+}

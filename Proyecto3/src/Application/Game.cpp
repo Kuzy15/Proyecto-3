@@ -77,8 +77,8 @@ Game::Game(){
 	 players->at(1).god = EG_AHPUCH;
 
 
-	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
-	 actScene = new MainMenuScene("MainMenu", this);
+	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_CITY);
+	 //actScene = new MainMenuScene("MainMenu", this);
 
 	 _exit = false;
 
@@ -220,7 +220,7 @@ bool Game::initOgre(){
 		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 	}
 	catch (Ogre::Exception e) { 
-	#ifdef DEBUG
+	#ifdef _DEBUG
 		std::cout << e.what() << std::endl; 
 	#endif // DEBUG
 	}
@@ -272,13 +272,13 @@ void Game::loop() {
 			frames++;
 		}
 		//std::cout << frames << std::endl;
-#ifdef DEBUG
+#ifdef _DEBUG
 		world->DrawDebugData();
 #endif // DEBUG
 
 		render();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		actScene->clearDebugDraw();
 #endif // DEBUG
 

@@ -398,8 +398,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//loadAbilities();
 
-	getMessage(new MButtonAct(id, 0));
-	getMessage(new MButtonAct(id, 3));
+	//getMessage(new MButtonAct(id, 0));
+	//GetMessage(new MButtonAct(id, 3));
 
 }
 GamePlayScene::~GamePlayScene(){

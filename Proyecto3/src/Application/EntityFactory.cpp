@@ -30,6 +30,7 @@ EntityFactory::EntityFactory()
 	//Stages
 	_createStageFuncs.emplace(ES_TEMPLE, &createStageTemple);
 	_createStageFuncs.emplace(ES_ISLANDS, &createStageIslands);
+	_createStageFuncs.emplace(ES_CITY, &createStageCity);
 
 	//Abilities
 	_createAbilityFuncs.emplace(CMP_PASSIVE_VIDAR, &createAbilityVidar);

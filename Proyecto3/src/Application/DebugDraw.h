@@ -20,7 +20,7 @@ public:
 
 	//DebugDraw(){}
 	~DebugDraw(){
-		//delete mDebug;
+//		delete mDebug;
 		
 	}
 
