@@ -16,7 +16,7 @@ enum ComponentType;
 
 
 enum ButtonState{
-	BTT_PRESSED = 1, BTT_NONE = 0
+	BTT_PRESSED = 1, BTT_NONE = 0, BTT_RELEASED = 2
 };
 
 struct ControllerInputState{
@@ -584,10 +584,12 @@ private:
 class MButtonClick: public Message
 {
 public:
-	MButtonClick(std::string emmiter);
+	MButtonClick(std::string emmiter, int id);
 	~MButtonClick();
+	inline int getId(){ return _idClicked; };
 
 private:
+	int _idClicked;
 };
 //--------------------------------------------------	LIFE STATE MSG		----------------------------------------------------------//
 class MLifeState: public Message
@@ -615,6 +617,7 @@ private:
 	ComponentType _c;
 	int _type;
 };
+
 
 //--------------------------------------------------	SCENE TIMER UPDATE MSG		----------------------------------------------------------//
 class MUpdateSceneTimer : public Message

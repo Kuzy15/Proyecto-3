@@ -19,6 +19,8 @@ InputManager::InputManager()
 	//Enable event flow
 	SDL_JoystickEventState(SDL_ENABLE);
 
+	lastState = std::vector<ControllerInputState>(2);
+
 
 #pragma endregion
 
@@ -189,21 +191,38 @@ void InputManager::updateControllersState(ControllerInputState &cState, int id){
 	
 	//Main Buttons
 	cState.Button_A = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_A);
+	if (cState.Button_A == BTT_NONE && lastState[id].Button_A == BTT_PRESSED) cState.Button_A = BTT_RELEASED;
 	cState.Button_B = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_B);
+	if (cState.Button_B == BTT_NONE && lastState[id].Button_B == BTT_PRESSED) cState.Button_B = BTT_RELEASED;
 	cState.Button_X = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_X);
+	if (cState.Button_X == BTT_NONE && lastState[id].Button_X == BTT_PRESSED) cState.Button_X = BTT_RELEASED;
 	cState.Button_Y = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_Y);
+	if (cState.Button_Y == BTT_NONE && lastState[id].Button_Y == BTT_PRESSED) cState.Button_Y = BTT_RELEASED;
 	cState.Left_Shoulder = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+	if (cState.Left_Shoulder == BTT_NONE && lastState[id].Left_Shoulder == BTT_PRESSED) cState.Left_Shoulder = BTT_RELEASED;
 	cState.Right_Shoulder = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+	if (cState.Right_Shoulder == BTT_NONE && lastState[id].Right_Shoulder == BTT_PRESSED) cState.Right_Shoulder = BTT_RELEASED;
 
 	//Pads
 	cState.DPad_Down = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+	if (cState.DPad_Down == BTT_NONE && lastState[id].DPad_Down == BTT_PRESSED) cState.DPad_Down = BTT_RELEASED;
 	cState.DPad_Up = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_UP);
+	if (cState.DPad_Up == BTT_NONE && lastState[id].DPad_Up == BTT_PRESSED) cState.DPad_Up = BTT_RELEASED;
 	cState.DPad_Left = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+	if (cState.DPad_Left == BTT_NONE && lastState[id].DPad_Left == BTT_PRESSED) cState.DPad_Left = BTT_RELEASED;
 	cState.DPad_Right = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+	if (cState.DPad_Right == BTT_NONE && lastState[id].DPad_Right == BTT_PRESSED) cState.DPad_Right = BTT_RELEASED;
+
 
 	//Other Buttons
 	cState.Button_Back = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_BACK);
+	if (cState.Button_Back == BTT_NONE && lastState[id].Button_Back == BTT_PRESSED) cState.Button_Back = BTT_RELEASED;
 	cState.Button_Start = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_START);
+	if (cState.Button_Start == BTT_NONE && lastState[id].Button_Start == BTT_PRESSED) cState.Button_Start = BTT_RELEASED;
 	cState.Left_Stick = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_LEFTSTICK);
+	if (cState.Left_Stick == BTT_NONE && lastState[id].Left_Stick == BTT_PRESSED) cState.Left_Stick = BTT_RELEASED;
 	cState.Right_Stick = (ButtonState)SDL_GameControllerGetButton(_playerController[id], SDL_CONTROLLER_BUTTON_RIGHTSTICK);
+	if (cState.Right_Stick == BTT_NONE && lastState[id].Right_Stick == BTT_PRESSED) cState.Right_Stick = BTT_RELEASED;
+
+	lastState[id] = cState;
 }

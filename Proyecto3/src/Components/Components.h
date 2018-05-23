@@ -9,6 +9,7 @@
 #include <list>
 #include <Box2D.h>
 #include <OgreTextAreaOverlayElement.h>
+#include <irrKlang.h>
 
 
 class Entity;
@@ -85,6 +86,9 @@ typedef enum ComponentType {
 	CMP_PASSIVE_DEFAULT
 
 };
+
+std::string compToString(ComponentType t, int &type);
+
 
 typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
 
@@ -409,6 +413,7 @@ private:
 	b2BodyDef _bodyDef;
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
+
 	
 };
 /*
@@ -599,6 +604,8 @@ private:
 	bool _toDelete;
 	float _auxVelocityReset;
 
+	irrklang::ISound* s;
+
 };
 
 
@@ -607,10 +614,12 @@ private:
 class CAbility : public GameComponent
 {
 public:
-	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, uint16 mask); 
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, uint16 mask, int type); 
 	~CAbility();
 
 	virtual void getMessage(Message* m);
+
+	inline int getType(){ return _type; }
 
 protected:
 	float _componentLife;
@@ -618,7 +627,9 @@ protected:
 	float _coolDown;
 	uint16 _myMask;
 	float _limitLife;
+	int _type;		//0 = Active ; 1 = Passive
 	bool dead;
+
 
 	
 };
@@ -927,6 +938,8 @@ public:
 private:
 	int _playerId;
 	ComponentType _compType;
+	int _type;
+	
 	
 };
 
@@ -975,5 +988,7 @@ private:
 	size_t roundsWon;
 	guiPlayer p;
 };
+
+
 
 #endif

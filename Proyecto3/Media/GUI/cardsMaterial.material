@@ -1,0 +1,730 @@
+//ACTIVE MATERIALS
+material HERA_RUNE-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture HERA_RUNE-ACTIVE.png
+            }
+        }
+    }
+}
+material HERIS_MARK-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture HERIS_MARK-ACTIVE.png
+            }
+        }
+    }
+}
+material JONSU_MOON-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture JONSU_MOON-ACTIVE.png
+            }
+        }
+    }
+}
+material KHEPRI_BEETLE-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture KHEPRI_BEETLE-ACTIVE.png
+            }
+        }
+    }
+}
+material PASSIVE_HADES-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_HADES-ACTIVE.png
+            }
+        }
+    }
+}
+material PASSIVE_HERMES-ACTIVE
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_HERMES-ACTIVE.png
+            }
+        }
+    }
+}
+material PASSIVE_SYN-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_SYN-ACTIVE.png
+            }
+        }
+    }
+}
+material PASSIVE_ULL-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_ULL-ACTIVE.png
+            }
+        }
+    }
+}
+material PASSIVE_VALI-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_VALI-ACTIVE.png
+            }
+        }
+    }
+}
+material PASSIVE_VIDAR-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_VIDAR-ACTIVE.png
+            }
+        }
+    }
+}
+
+
+material SHU_HEADDRESS-ACTIVE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture SHU_HEADDRESS-ACTIVE.png
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------
+//IDLE MATERIALS
+material HERA_RUNE-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture HERA_RUNE-IDLE.png
+            }
+        }
+    }
+}
+material HERIS_MARK-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture HERIS_MARK-IDLE.png
+            }
+        }
+    }
+}
+material JONSU_MOON-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture JONSU_MOON-IDLE.png
+            }
+        }
+    }
+}
+material KHEPRI_BEETLE-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture KHEPRI_BEETLE-IDLE.png
+            }
+        }
+    }
+}
+material PASSIVE_HADES-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_HADES-IDLE.png
+            }
+        }
+    }
+}
+material PASSIVE_HERMES-IDLE
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_HERMES-IDLE.png
+            }
+        }
+    }
+}
+material PASSIVE_SYN-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_SYN-IDLE.png
+            }
+        }
+    }
+}
+material PASSIVE_ULL-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_ULL-IDLE.png
+            }
+        }
+    }
+}
+material PASSIVE_VALI-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_VALI-IDLE.png
+            }
+        }
+    }
+}
+material PASSIVE_VIDAR-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture PASSIVE_VIDAR-IDLE.png
+            }
+        }
+    }
+}
+
+
+material SHU_HEADDRESS-IDLE
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture SHU_HEADDRESS-IDLE.png
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------------------------
+//CLICK MATERIALS
+material PASSIVE_VIDAR-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture AnillodeVidarS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material PASSIVE_HADES-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture ArgolladeHadesS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material PASSIVE_ULL-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture BotasdeUllS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material KHEPRI_BEETLE-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture EscarabajodeKhepriS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material PASSIVE_VALI-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture JubondeValiS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material JONSU_MOON-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture LunadeJonsuS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material HERIS_MARK-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture MarcadeHerisS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material HERA_RUNE-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture RunadeHeraS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material PASSIVE_HERMES-CLICK  
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture SandaliasdeHermesS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+
+material PASSIVE_SYN-CLICK 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture TobilleradeSynS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+
+
+
+material SHU_HEADDRESS-CLICK 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass Material
+        {
+            ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+            diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            texture_unit 
+            {
+                texture TocadodeShuS.png
+                tex_address_mode wrap
+            }
+        }
+    }
+}
+
+

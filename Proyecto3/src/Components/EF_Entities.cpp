@@ -10,7 +10,7 @@
 #define new DEBUG_NEW
 #endif
 
-const float JUMPFORCE = 90.0f;
+const float JUMPFORCE = 75.0f;
 const float VELOCITY = 8.0f;
 const float HEIGHT = 6.0f;
 const float WIDTH = 2.5f;
@@ -101,10 +101,6 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	AhPuch->addComponent(new CParticleRender({ 0, 0, 0 }, id + "pB2AhPuch", "pB2AhPuch", AhPuch, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 
 
-
-
-	AhPuch->addComponent(new CHerisMark(AhPuch, controllerId));
-
 	return AhPuch;
 }
 
@@ -151,6 +147,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus5", "LZeus5", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus6", "LZeus6", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 
+	Zeus->addComponent(new CPSkillVidar(Zeus));
 
 
 	return Zeus;
@@ -346,10 +343,7 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	Ogre::Light* light = s->getSceneManager()->createLight("MainLight");
 	light->setPosition(20, 80, 50);
 
-	Ogre::Viewport* vp = nullptr;
-	Entity * cam = new Entity("Camera1", s);
-	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp,100,100,40,100));
-	entities->push_back(cam);
+
 
 
 	
@@ -449,7 +443,10 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	tree14->addComponent(new CMeshRender({ 40, -1, -10 }, "ArbolRosa1.mesh", tree14, s->getSceneManager(), { 6.0f, 6.0f, 6.0f }, { 90, 0, 0 }));
 	entities->push_back(tree14);
 
-
+	Ogre::Viewport* vp = nullptr;
+	Entity * cam = new Entity("Camera1", s);
+	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 100, 100, 40, 100));
+	entities->push_back(cam);
 
 
 #pragma endregion
@@ -483,10 +480,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	light->setPosition(20, 30, 50);
 	light->setCastShadows(true);
 
-	Ogre::Viewport* vp = nullptr;
-	Entity * cam = new Entity("Camera1", s);
-	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150,150,60,150));
-	entities->push_back(cam);
+	
 
 	/*Entity *sky = new Entity("sky", s);
 	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "FondoE1", Ogre::Vector3{ 0, 0, 0 }));
@@ -657,6 +651,10 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	tree7->addComponent(new CMeshRender({ 50, 45, -7 }, "ArbolVerde2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 90, 0, 0 }));
 	entities->push_back(tree7);
 
+	Ogre::Viewport* vp = nullptr;
+	Entity * cam = new Entity("Camera1", s);
+	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150, 150, 60, 150));
+	entities->push_back(cam);
 
 	return entities;
 
