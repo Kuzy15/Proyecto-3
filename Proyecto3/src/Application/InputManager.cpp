@@ -21,7 +21,7 @@ InputManager::InputManager()
 
 	lastState = std::vector<ControllerInputState>(2);
 
-
+	receiving = true;
 #pragma endregion
 
 }
@@ -50,6 +50,12 @@ InputManager::~InputManager()
 	SDL_Quit();
 }
 
+
+void InputManager::stopReceiving(bool b){
+
+	receiving = b;
+}
+
 InputManager& InputManager::getInstance(){
 	// Lazy initialize.
 	if (InputManager::_instance == nullptr) InputManager::_instance = new InputManager();
@@ -71,61 +77,63 @@ void InputManager::getMessages(std::list<Message*> &sceneQueue){
 
 void InputManager::handleInput(){
 
-	SDL_Event event;
-	/* Other initializtion code goes here */
+	if (receiving){
 
-	//Create main Input message who contains the events and variables to store the values
-	for (int i = 0; i < MAX_PLAYERS; i++){
-		if (_playerController[i] != nullptr)
-			_inputMsg[i] = new MInputState(i, _emitter);
+		SDL_Event event;
+		/* Other initializtion code goes here */
 
-	}
+		//Create main Input message who contains the events and variables to store the values
+		for (int i = 0; i < MAX_PLAYERS; i++){
+			if (_playerController[i] != nullptr)
+				_inputMsg[i] = new MInputState(i, _emitter);
 
-	/* Start main game loop here */
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-		case SDL_KEYDOWN:
-			break;
-		case SDL_QUIT:
-			break;			
-//Events for Controller recognize: connect and disconnect
-		case SDL_CONTROLLERDEVICEADDED:
-			addJoystick(event.cdevice.which);
-			_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 1));
-			break;
-		case SDL_CONTROLLERDEVICEREMOVED:
-			_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 0));
-			deleteJoystick(event.cdevice.which);
-			break;
-		default:
-			break;
 		}
 
+		/* Start main game loop here */
+		while (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_KEYDOWN:
+				break;
+			case SDL_QUIT:
+				break;
+				//Events for Controller recognize: connect and disconnect
+			case SDL_CONTROLLERDEVICEADDED:
+				addJoystick(event.cdevice.which);
+				_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 1));
+				break;
+			case SDL_CONTROLLERDEVICEREMOVED:
+				_myQueue.push_back(new MControllerState(_emitter, event.cdevice.which, 0));
+				deleteJoystick(event.cdevice.which);
+				break;
+			default:
+				break;
+			}
 
-		
+
+
 
 #ifdef _DEBUG
-		//PRINT DEBUG FOR CONSOLE:
-		//printf(std::to_string(event.cbutton.button).c_str());
-		
+			//PRINT DEBUG FOR CONSOLE:
+			//printf(std::to_string(event.cbutton.button).c_str());
+
 #endif
 
-	}
+		}
 
-	//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
-	for (int i = 0; i < MAX_PLAYERS; i++){
-		if (_inputMsg[i] != nullptr && _playerController[i] != nullptr) {
-			updateControllersState(_inputMsg[i]->getCInputState(),i);
-			_myQueue.push_back(_inputMsg[i]);
+		//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
+		for (int i = 0; i < MAX_PLAYERS; i++){
+			if (_inputMsg[i] != nullptr && _playerController[i] != nullptr) {
+				updateControllersState(_inputMsg[i]->getCInputState(), i);
+				_myQueue.push_back(_inputMsg[i]);
+			}
+			else{
+				delete _inputMsg[i];
+			}
+			_inputMsg[i] = nullptr;
 		}
-		else{
-			delete _inputMsg[i];
-		}
-		_inputMsg[i] = nullptr;
 	}
-	
 }
 
 int InputManager::numMessages(){

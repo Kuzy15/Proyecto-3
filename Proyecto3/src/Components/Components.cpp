@@ -624,6 +624,7 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	pCam = _scnMgr->createCamera(_camName);
 	Ogre::RenderWindow* w = Game::getInstance()->getRenderWindow();
 	vp = w->addViewport(pCam);
+	
 
 	pCam->setPosition(_pos);
 	pCam->lookAt(_lookAt);
@@ -639,7 +640,8 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	_vp = vp;
 }
 CCamera::~CCamera() {
-	delete _vp;
+	Game::getInstance()->getRenderWindow()->removeViewport(_vp->getZOrder());
+	
 	delete pCam;
 }
 void CCamera::tick(float delta) {
@@ -2100,6 +2102,7 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	try {
 		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text" + father->getID()));
 		a->setCaption(_txt);
+		
 	}
 	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
 
@@ -2134,7 +2137,7 @@ void CNormalButton::getMessage(Message * me)
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
 		_clicked = true;
-		_callback();
+ 		_callback();
 		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
 
 	}

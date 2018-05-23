@@ -51,12 +51,11 @@ GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),s
 }
 GameScene::~GameScene()
 {
+	deleteAllEntities();
 
 	deleteAllMessages();
 
-	deleteAllEntities();
-
-	EntityFactory::getInstance().resetInstance();
+	
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 
@@ -154,11 +153,6 @@ void GameScene::deleteAllEntities(){
 	}
 	_entities.clear();
 
-	/*for (auto e : _menuEntities){
-		aux = e.second;
-		if (aux != nullptr)
-			delete aux;
-	}*/
 
 }
 
@@ -306,15 +300,18 @@ void exitCallBack() {
 	Game::getInstance()->exitGame();
 }
 void battleCallBack() {
-	/*std::vector<Player>* players = new std::vector<Player>(2);
+	
+
+	std::vector<Player>* players = new std::vector<Player>(2);
 
 	players->at(0).controllerId = 0;
 	players->at(0).god = EG_HACHIMAN;
 
 	players->at(1).controllerId = 1;
 	players->at(1).god = EG_ZEUS;
-	GameScene* s = new GamePlayScene("GamePlayScene", Game::getInstance(), (*players), ES_ISLANDS);
-	Game::getInstance()->newScene(s);*/
+	Game::getInstance()->changeScene(GAMEPLAY,(*players),ES_ISLANDS);
+
+	delete players;
 }
 
 void returnMainMenu(){}
@@ -339,7 +336,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 #endif
 
 	//The limit time to choose cards
-	_prepareLimitTime = 5000.0f; //15 seconds
+	_prepareLimitTime = 50000.0f; //15 seconds
 	_prepareCounter = 0.0f;
 
 	_postGameLimitTime = 5000.0f;
@@ -556,9 +553,7 @@ void GamePlayScene::battlePhase(){
 		if ((SDL_GetTicks() - _preGameCounter) > _preGameLimitTime){
 			_battleState.battleStarted = true;
 			_battleState.timeCountStart = SDL_GetTicks();
-			for (Player p : _players){
-				p.entity->setActive(true);
-			}
+			InputManager::getInstance().stopReceiving(true);
 
 		}
 	}
@@ -583,14 +578,19 @@ void GamePlayScene::battlePhase(){
 			if ((SDL_GetTicks() - _postGameCounter)  > _postGameLimitTime){
 				if (_battleState.roundsCompleted == MAX_ROUNDS){
 					changePhase(GS_END);
+					InputManager::getInstance().stopReceiving(true);
 				}
 				else{
 					resetPlayers();
+					InputManager::getInstance().stopReceiving(true);
 					changePhase(GS_SETUP);
 				}
 
 				_battleState.battleStarted = false;
 				_battleState.battleEnded = false;
+				for (Player p : _players){
+					p.entity->setActive(false);
+				}
 
 				
 
@@ -622,14 +622,11 @@ void GamePlayScene::controllerConnected(int id){
 void GamePlayScene::loadStage(){
 
 	//Store the entities in an aux array
-	std::vector<Entity*>* stageEntities = EntityFactory::getInstance().createStage(_stage, this);
+	std::vector<Entity*>* stageEntities = EntityFactory::getInstance().createStage(_stage, this, _stageEntities);
 
 	//Then push the cam to the main arrya entities. The rest goes into _stageEntities array.
-	addEntity(stageEntities->back());
-	stageEntities->pop_back();
-
 	for (auto e : (*stageEntities)){
-		_stageEntities.push_back(e);
+		addEntity(e);
 	}
 	stageEntities->clear();
 	delete stageEntities;
@@ -660,6 +657,10 @@ void GamePlayScene::changePhase(GameplayState newState){
 		_preGameCounter = SDL_GetTicks();
 		getMessage(new MUpdateSceneTimer(_id, (TIME_LIMIT) / 1000.0f));
 		_currState = GS_BATTLE;
+		InputManager::getInstance().stopReceiving(false);
+		for (Player p : _players){
+			p.entity->setActive(true);
+		}
 		break;
 	case GS_END:
 		overlay->hide();
@@ -693,13 +694,8 @@ void GamePlayScene::playerDied(std::string e){
 	_battleState.roundsCompleted++;
 
 	_battleState.battleEnded = true;
+	InputManager::getInstance().stopReceiving(false);
 	_postGameCounter = SDL_GetTicks();
-
-	for (Player p : _players){
-		p.entity->setActive(false);
-	}
-	
-	
 
 }
 
@@ -804,8 +800,6 @@ void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId){
 		}
 	}
 }
-
-
 
 void GamePlayScene::processMsgSetup(Message* m){
 
@@ -950,24 +944,26 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	addEntity(background);
 
 	Entity * fightButton = new Entity("fightButton", this);
-	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), battleCallBack, "Combate"));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
 	addEntity(fightButton);
 
 	Entity * exitButton = new Entity("exitButton", this);
-	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 1, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
 	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
 	addEntity(exitButton);
 
 	overlay->show();
 
 	//Set the first button selected
-	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	getMessage(new MButtonAct(_id, selectedButton));
 
 }
 
 
 MainMenuScene::~MainMenuScene(){
+
+	Ogre::OverlayManager::getSingleton().destroy("MENU");
 }
 
 
@@ -1003,6 +999,9 @@ void MainMenuScene::dispatch(){
 void MainMenuScene::processScnMsgs()
 {
 	MInputState* input;
+	ControllerInputState c;
+
+	int totalButtons = _menuEntities.size();
 
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
@@ -1011,7 +1010,25 @@ void MainMenuScene::processScnMsgs()
 		{
 		case MSG_INPUT_STATE:
 			input = static_cast<MInputState*>(*it);
-			processInput(input->getCInputState());
+			c = input->getCInputState();
+			if (input->getId() == 0){
+				if (c.DPad_Down == BTT_RELEASED){
+					selectedButton++;
+					if (selectedButton >= totalButtons)
+						selectedButton = 0;
+					getMessage(new MButtonAct(_id, selectedButton));
+				}
+				else if (c.DPad_Up == BTT_RELEASED){
+					selectedButton--;
+					if (selectedButton < 0)
+						selectedButton = (totalButtons - 1);
+					getMessage(new MButtonAct(_id, selectedButton));
+				}
+
+				else if (c.Button_A == BTT_RELEASED){
+					getMessage(new MButtonClick(_id, selectedButton));
+				}
+			}
 			break;
 		default:
 			break;
@@ -1025,27 +1042,6 @@ void MainMenuScene::processScnMsgs()
 
 };
 
-void MainMenuScene::processInput(ControllerInputState c){
-
-	int totalButtons = _menuEntities.size();
-
-	if (c.DPad_Down == BTT_RELEASED){
-		selectedButton++;
-		if (selectedButton >= totalButtons)
-			selectedButton = 0;
-		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
-	}
-	else if (c.DPad_Up == BTT_RELEASED){
-		selectedButton--;
-		if (selectedButton < 0)
-			selectedButton = (totalButtons - 1);
-		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
-	}
-
-	if (c.Button_A == BTT_PRESSED){
-		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
-	}
-}
 
 
 

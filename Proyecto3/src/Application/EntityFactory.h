@@ -20,7 +20,7 @@ public:
 
 	Entity* createBullet(E_BULLET bullet, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD);
 
-	std::vector<Entity*>* createStage(E_STAGE stage, GameScene* s);
+	std::vector<Entity*>* createStage(E_STAGE stage, GameScene* s, std::vector<Entity*> &deleteables);
 
 	GameComponent* createAbility(ComponentType ability, Entity* father, int id);
 

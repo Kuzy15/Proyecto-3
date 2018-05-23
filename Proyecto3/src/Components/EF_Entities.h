@@ -20,7 +20,7 @@ class GameComponent;
 #pragma region Typedef functions
 typedef Entity*(*createGodFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, int controllerId);
 typedef Entity*(*creteBulletFunc)(std::string id, GameScene* s, Ogre::Vector3 iniPos, float angle, float damage, std::string iD);
-typedef std::vector<Entity*>*(*createStageFunc)(GameScene* s);
+typedef std::vector<Entity*>*(*createStageFunc)(GameScene* s, std::vector<Entity*> &deleteable);
 typedef GameComponent*(*createAbilityFunc)(Entity* father, int id);
 
 
@@ -50,8 +50,8 @@ Entity* createBulletHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos,
 #pragma endregion
 
 #pragma region Stages
-std::vector<Entity*>* createStageTemple(GameScene* s);
-std::vector<Entity*>* createStageIslands(GameScene* s);
+std::vector<Entity*>* createStageTemple(GameScene* s, std::vector<Entity*> &deleteable);
+std::vector<Entity*>* createStageIslands(GameScene* s, std::vector<Entity*> &deleteable);
 #pragma endregion 
 
 #pragma region Abilities
