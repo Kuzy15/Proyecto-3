@@ -27,7 +27,6 @@ Entity::~Entity()
 		
 		aux = *it;
 		try{
-			
 			it = components.erase(it);
 		}
 		catch (std::exception &e){
@@ -47,8 +46,6 @@ Entity::~Entity()
 	}
 
 }
-
-
 #pragma endregion
 
 #pragma region Component Interaction

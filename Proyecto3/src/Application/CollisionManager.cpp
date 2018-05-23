@@ -32,7 +32,6 @@ void CollisionManager::BeginContact(b2Contact* c){
 		static_cast<Entity*>(bodyUserDataA)->getMessage(m);
 	}
 
-	//check if fixture B was a ball
 	
 	if (bodyUserDataB){
 		MCollisionBegin* m = new MCollisionBegin(c->GetFixtureB()->GetFilterData().categoryBits, c->GetFixtureA()->GetFilterData().categoryBits, static_cast<Entity*>(bodyUserDataA), static_cast<Entity*>(bodyUserDataB)->getID());

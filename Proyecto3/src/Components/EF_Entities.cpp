@@ -341,10 +341,7 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	Ogre::Light* light = s->getSceneManager()->createLight("MainLight");
 	light->setPosition(20, 80, 50);
 
-	Ogre::Viewport* vp = nullptr;
-	Entity * cam = new Entity("Camera1", s);
-	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp,100,100,40,100));
-	entities->push_back(cam);
+
 
 
 	Entity * e1 = new Entity("Suelo_01", s);
@@ -443,7 +440,10 @@ std::vector<Entity*>* createStageTemple(GameScene* s){
 	tree14->addComponent(new CMeshRender({ 40, -1, -10 }, "ArbolRosa1.mesh", tree14, s->getSceneManager(), { 6.0f, 6.0f, 6.0f }, { 90, 0, 0 }));
 	entities->push_back(tree14);
 
-
+	Ogre::Viewport* vp = nullptr;
+	Entity * cam = new Entity("Camera1", s);
+	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 100, 100, 40, 100));
+	entities->push_back(cam);
 
 
 #pragma endregion
@@ -477,10 +477,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	light->setPosition(20, 30, 50);
 	light->setCastShadows(true);
 
-	Ogre::Viewport* vp = nullptr;
-	Entity * cam = new Entity("Camera1", s);
-	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150,150,60,150));
-	entities->push_back(cam);
+	
 
 	/*Entity *sky = new Entity("sky", s);
 	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "mandelbrotSP"));
@@ -651,6 +648,10 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	tree7->addComponent(new CMeshRender({ 50, 45, -7 }, "ArbolVerde2.mesh", tree7, s->getSceneManager(), { 3.0f, 3.0f, 3.0f }, { 90, 0, 0 }));
 	entities->push_back(tree7);
 
+	Ogre::Viewport* vp = nullptr;
+	Entity * cam = new Entity("Camera1", s);
+	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150, 150, 60, 150));
+	entities->push_back(cam);
 
 	return entities;
 

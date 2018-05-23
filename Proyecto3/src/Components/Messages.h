@@ -607,7 +607,7 @@ private:
 class MAbilitySet : public Message
 {
 public:
-	MAbilitySet(std::string emmiter, int playerId, ComponentType compId);
+	MAbilitySet(std::string emmiter, int playerId, ComponentType compId, int type);
 	~MAbilitySet();
 	inline int getId(){ return _playerId; };
 	inline ComponentType getComponentType(){ return _c; };
@@ -617,6 +617,7 @@ private:
 	ComponentType _c;
 	int _type;
 };
+
 
 //--------------------------------------------------	SCENE TIMER UPDATE MSG		----------------------------------------------------------//
 class MUpdateSceneTimer : public Message

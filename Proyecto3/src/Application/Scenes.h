@@ -188,12 +188,13 @@ private:
 	GameplayState _currState;	//The current state of the scene
 	BattleState _battleState;		//The state of the battle
 	E_STAGE _stage;			//Stage type
+	std::vector<Entity*> _stageEntities;
 	const int TOTAL_ROUNDS = 3;
 	int _nPlayers;				//Number of players
 	std::vector<Player> _players;	//Array of pointer to the players Entities
 	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
 	bool _paused;
-	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
+	std::vector<Entity*> _cardGUIEntities;		//Buttons for card select entities
 	int player1Index;
 	int player2Index;
 

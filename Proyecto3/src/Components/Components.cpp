@@ -24,30 +24,41 @@
 
 
 
-std::string compToString(ComponentType t){
+std::string compToString(ComponentType t, int &type){
 
 	switch (t){
 	case CMP_PASSIVE_HADES:
+		type = 1;
 		return "PASSIVE_HADES";
 	case CMP_PASSIVE_HERMES:
+		type = 1;
 		return "PASSIVE_HERMES";
 	case CMP_PASSIVE_SYN:
+		type = 1;
 		return "PASSIVE_SYN";
 	case CMP_PASSIVE_ULL:
+		type = 1;
 		return "PASSIVE_ULL";
 	case CMP_PASSIVE_VALI:
+		type = 1;
 		return "PASSIVE_VALI";
 	case CMP_PASSIVE_VIDAR:
+		type = 1;
 		return "PASSIVE_VIDAR";
 	case CMP_HERA_RUNE:
+		type = 0;
 		return "HERA_RUNE";
 	case CMP_KHEPRI_BEETLE:
+		type = 0;
 		return "KHEPRI_BEETLE";
 	case CMP_JONSU_MOON:
+		type = 0;
 		return "JONSU_MOON";
 	case CMP_HERIS_MARK:
+		type = 0;
 		return "HERIS_MARK";
 	case CMP_SHU_HEADDRESS:
+		type = 0;
 		return "SHU_HEADDRESS";
 	default:
 		break;
@@ -2093,8 +2104,6 @@ void CNormalButton::getMessage(Message * me)
 		_callback();
 
 	}
-
-
 }
 
 #pragma endregion
@@ -2103,8 +2112,8 @@ void CNormalButton::getMessage(Message * me)
 CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize,  int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
 _playerId(playerId), _compType(compType){
 	
-	std::string cmpName = compToString(compType);
-	
+	std::string cmpName = compToString(compType, _type);
+	_clicked = false;
 
 	materials[0] = cmpName + "-IDLE";
 	materials[1] = cmpName + "-ACTIVE";
@@ -2112,8 +2121,8 @@ _playerId(playerId), _compType(compType){
 
 
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
-	
 	pContainer->setPosition(screenpos.x, screenpos.y);
+	pContainer->setMaterialName(materials[0]);
 	overlay->add2D(pContainer);
 	
 }
@@ -2126,10 +2135,9 @@ CAbilityButton::~CAbilityButton()
 
 void CAbilityButton::getMessage(Message * me)
 {
-	if (_clicked){
-
-		if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
-		{
+	if (!_clicked){
+		switch (me->getType()){
+		case MSG_GUI_BUTTON_ACTIVE:
 			if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
 				_active = true;
 				pContainer->setMaterialName(materials[1]);
@@ -2138,19 +2146,26 @@ void CAbilityButton::getMessage(Message * me)
 			{
 				_active = false;
 				pContainer->setMaterialName(materials[0]);
-
 			}
-		}
-		if (me->getType() == MSG_GUI_BUTTON_CLICK) {
+			break;
+		case MSG_GUI_BUTTON_CLICK:
 			if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
 				pContainer->setMaterialName(materials[2]);
 				_clicked = true;
-				pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType));
+				pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType, _type));
 			}
-
+			break;
+		case MSG_ABILITY_SETTER:
+			if (_type == static_cast<MAbilitySet*>(me)->getType()){
+				pContainer->setMaterialName(materials[2]);
+				_clicked = true;
+			}
+			break;
+		default:
+			break;
 		}
+
 	}
-	
 
 }
 

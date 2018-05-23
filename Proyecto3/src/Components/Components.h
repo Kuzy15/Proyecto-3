@@ -86,7 +86,7 @@ typedef enum ComponentType {
 
 };
 
-std::string compToString(ComponentType t);
+std::string compToString(ComponentType t, int &type);
 
 
 typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
@@ -931,6 +931,7 @@ public:
 private:
 	int _playerId;
 	ComponentType _compType;
+	int _type;
 	
 };
 

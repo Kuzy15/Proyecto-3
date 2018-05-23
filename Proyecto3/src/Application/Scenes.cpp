@@ -325,7 +325,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 #endif
 
 	//The limit time to choose cards
-	_prepareLimitTime = 15000.0f; //15 seconds
+	_prepareLimitTime = 150000.0f; //15 seconds
 	_prepareCounter = 0.0f;
 
 	//Load the stage passed by parameter
@@ -350,15 +350,12 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		_players[i].abilities.push_back(CMP_HERA_RUNE);
 		_players[i].abilities.push_back(CMP_PASSIVE_HADES);
 		_players[i].abilities.push_back(CMP_KHEPRI_BEETLE);
-		_players[i].currentActive = CMP_SHU_HEADDRESS;
+		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
-		_players[i].activeSelected = true;
 		addEntity(_players[i].entity);
 		_players[i].entity->setActive(false);
 
 	}
-	_players[1].passiveSelected = true;
-	_pReady[1] = true;
 
 	//Not paused at start
 	_paused = false;
@@ -397,6 +394,16 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 GamePlayScene::~GamePlayScene(){
 	_players.clear();
 	_cardGUIEntities.clear();
+
+	Entity* aux;
+
+	for (Entity* e : _stageEntities){
+		aux = e;
+		if (aux != nullptr)
+			delete aux;
+	}
+
+	_stageEntities.clear();
 
 }
 bool GamePlayScene::run(){
@@ -549,9 +556,12 @@ void GamePlayScene::loadStage(){
 	//Store the entities in an aux array
 	std::vector<Entity*>* stageEntities = EntityFactory::getInstance().createStage(_stage, this);
 
-	//Then push them to the main array of entities
+	//Then push the cam to the main arrya entities. The rest goes into _stageEntities array.
+	addEntity(stageEntities->back());
+	stageEntities->pop_back();
+
 	for (auto e : (*stageEntities)){
-		addEntity(e);
+		_stageEntities.push_back(e);
 	}
 	stageEntities->clear();
 	delete stageEntities;
@@ -678,6 +688,12 @@ void GamePlayScene::loadAbilities(){
 		auxPos.y += 100.0f;
 	}
 
+	
+	for (int i = 3; i < 6; i++){
+		_cardGUIEntities.at(i)->setActive(false);
+	}
+
+
 	auxPos = Ogre::Vector2(0.0f, 700.0f);
 
 	/*aux = new Entity("Start_Button", this);
@@ -712,7 +728,17 @@ void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId){
 		p.passiveSelected = true;
 	}
 
-	if (p.activeSelected && p.passiveSelected) _pReady[playerId] = true;
+	if (p.activeSelected && p.passiveSelected){
+		_pReady[playerId] = true;
+		if (_pReady[0] && !_pReady[1]){
+			for (int i = 3; i < 6; i++){
+				_cardGUIEntities.at(i)->setActive(true);
+			}
+			for (int i = 0; i < 3; i++){
+				_cardGUIEntities.at(i)->setActive(false);
+			}
+		}
+	}
 }
 
 
