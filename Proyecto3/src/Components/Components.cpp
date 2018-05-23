@@ -22,6 +22,53 @@
 #define new DEBUG_NEW
 #endif
 
+
+
+
+
+std::string compToString(ComponentType t, int &type){
+
+	switch (t){
+	case CMP_PASSIVE_HADES:
+		type = 1;
+		return "PASSIVE_HADES";
+	case CMP_PASSIVE_HERMES:
+		type = 1;
+		return "PASSIVE_HERMES";
+	case CMP_PASSIVE_SYN:
+		type = 1;
+		return "PASSIVE_SYN";
+	case CMP_PASSIVE_ULL:
+		type = 1;
+		return "PASSIVE_ULL";
+	case CMP_PASSIVE_VALI:
+		type = 1;
+		return "PASSIVE_VALI";
+	case CMP_PASSIVE_VIDAR:
+		type = 1;
+		return "PASSIVE_VIDAR";
+	case CMP_HERA_RUNE:
+		type = 0;
+		return "HERA_RUNE";
+	case CMP_KHEPRI_BEETLE:
+		type = 0;
+		return "KHEPRI_BEETLE";
+	case CMP_JONSU_MOON:
+		type = 0;
+		return "JONSU_MOON";
+	case CMP_HERIS_MARK:
+		type = 0;
+		return "HERIS_MARK";
+	case CMP_SHU_HEADDRESS:
+		type = 0;
+		return "SHU_HEADDRESS";
+	default:
+		break;
+	}
+
+};
+
+
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
 //It implements basic behaviours like gets, sets
@@ -207,11 +254,6 @@ CMeshRender::~CMeshRender() {
 void CMeshRender::tick(float delta) {
 
 
-	//std::cout << pOgreSceneNode->getPosition().x << std::endl;
-
-
-
-
 }
 void CMeshRender::getMessage(Message * m) {
 	CRender::getMessage(m);
@@ -237,16 +279,16 @@ void CMeshRender::getMessage(Message * m) {
 		}
 		break;
 	case MSG_PLAYER_SHOT:
-
-
-
-
-
 		break;
 	case MSG_PASSMOD_DES:
 		invisActive = false;
 		break;
-
+	case MSG_ACT_RENDERGODMENU:
+		pOgreEnt->setVisible(true);
+		break;
+	case MSG_DES_RENDERGODMENU:
+		pOgreEnt->setVisible(false);
+		break;
 	default:
 		break;
 	}
@@ -494,17 +536,26 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 
 
 #pragma region Skyplane Render Component
-CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 
-	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
-		materialName, scale, 1, true, bow, 100, 100);
-	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
-	// bow = 0, xsegments = 1, ysegments = 1
+	plane = Ogre::MeshManager::getSingleton().createPlane(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::Plane(Ogre::Vector3::UNIT_Z, 0),
+		96, 54, 100, 100, false, 1, 1.0, 1.0);
+	entity = scnM->createEntity("plano" + materialName + pEnt->getScene()->getId(), materialName);
+
+	entity->setMaterialName(materialName);
+	pOgreSceneNode->attachObject(entity);
 
 	pOgreSceneNode->setPosition(pos);
+	//pOgreSceneNode->setScale({ scale, scale, scale });
 
 }
-CSkyPlaneRender::~CSkyPlaneRender(){}
+CSkyPlaneRender::~CSkyPlaneRender(){
+
+	Ogre::MeshManager::getSingleton().remove(plane);
+
+	pOgreSceneNode->detachObject(entity);
+	pSceneMgr->destroyEntity(entity);
+}
 
 
 void CSkyPlaneRender::tick(float delta){}
@@ -535,6 +586,7 @@ CParticleRender::CParticleRender(Ogre::Vector3 pos, std::string id,std::string p
 }
 CParticleRender::~CParticleRender() {
 	pChild->detachObject(_particleSystem);
+	pSceneMgr->destroyParticleSystem(_particleSystem);
 }
 void CParticleRender::tick(float delta) {
 
@@ -582,7 +634,9 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	: GameComponent(CMP_CAMERA, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
 {
 	pCam = _scnMgr->createCamera(_camName);
-	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam);
+	Ogre::RenderWindow* w = Game::getInstance()->getRenderWindow();
+	vp = w->addViewport(pCam);
+
 
 	pCam->setPosition(_pos);
 	pCam->lookAt(_lookAt);
@@ -596,11 +650,10 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 
 	//borrar
 	_vp = vp;
-	
+
 
 }
 CCamera::~CCamera() {
-	delete _vp;
 	delete pCam;
 }
 void CCamera::tick(float delta) {
@@ -712,6 +765,9 @@ void CActionCamera::tick(float delta) {
 CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixels, float heightInPixels, float weightInPixels, float angle, RigidBodyType rbType, ShapeType shType, FilterMask myCategory, int controllerId)
 : _rbHeight(heightInPixels / PPM), _rbWeight(weightInPixels / PPM), _myWorld(world), GameComponent(CMP_PHYSICS,father) {
 
+	//soundW = Game::getInstance()->getSoundEngine()->addSoundSourceFromFile("../Media/sounds/Movement/paso1.wav");
+
+	//soundJ = Game::getInstance()->getSoundEngine()->addSoundSourceFromFile("../Media/sounds/Movement/SaltoAire.wav");
 	//Sets the pos attached to the render.
 	_pos.x = posInPixels.x / PPM;
 	_pos.y = posInPixels.y / PPM;
@@ -921,11 +977,17 @@ void CRigidBody::getMessage(Message * m) {
 	MRigidbodyJump* mJump;
 	float jForce;
 	MDash* mDash;
+	bool playingW = false;
+	irrklang::ISound* s = nullptr;
 
 	switch (m->getType()){
 		case MSG_RIGIDBODY_MOVE_X:
 			mMoveX = static_cast<MRigidbodyMoveX*>(m);
 			velX = mMoveX->getXValue();
+
+
+
+
 			_body->SetLinearVelocity(b2Vec2(velX, _body->GetLinearVelocity().y));
 			break;
 		case MSG_RIGIDBODY_MOVE_Y:
@@ -936,6 +998,13 @@ void CRigidBody::getMessage(Message * m) {
 		case MSG_RIGIDBODY_JUMP:
 			mJump = static_cast<MRigidbodyJump*>(m);
 			jForce = mJump->getForce();
+
+
+
+			Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Movement/SaltoAire.wav");
+
+
+
 			//std::cout << jForce << std::endl;
 			_body->ApplyLinearImpulseToCenter(b2Vec2(0, jForce), true);
 			break;
@@ -1005,7 +1074,7 @@ void CPlayerController::getMessage(Message* m){
 
 			ControllerInputState cState = inputM->getCInputState();
 
-			if (cState.Trigger_Right > TRIGGER_DEADZONE){
+			if (cState.Right_Shoulder == BTT_PRESSED){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
@@ -1040,7 +1109,10 @@ void CPlayerController::getMessage(Message* m){
 
 //Life Component
 #pragma region Life Component
-CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {}
+CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {
+
+
+}
 CLife::~CLife(){}
 
 void CLife::tick(float delta){
@@ -1178,7 +1250,7 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entP
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
-	_radius = 6.0f;
+	_radius = 3.0f;
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){
@@ -1246,7 +1318,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		float dmgValue = static_cast<MModDmg*>(m)->getValue();
 		_damage = _damage + (_damage* dmgValue / 100.0f);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		//std::cout << _damage << "\n";
 
 #endif // DEBUG
@@ -1256,13 +1328,12 @@ void CPlayerBasicAttack::getMessage(Message* m){
 
 	else if (m->getType() == MSG_MOD_FIRERATE){
 		float fireRateValue = static_cast<MModFireRate*>(m)->getFireRateValue();
-		_fireRate = _fireRate + (_fireRate*fireRateValue / 100.0f);
-		if (_fireRate > _maxFireRate){
+		_fireRate = _fireRate - (_fireRate*fireRateValue / 100.0f);
+		if (_fireRate < _maxFireRate){
 			_fireRate = _maxFireRate;
 		}
 
 	}
-
 	else if (m->getType() == MSG_PASSMOD_DES){
 		resetDamage();
 		resetFireRate();
@@ -1381,7 +1452,7 @@ void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, O
 CBullet::CBullet(Entity* father, E_BULLET bT, float damage, float vel) :GameComponent(CMP_BASIC_ATTACK, father), _damage(damage)
 , _velocity(vel), _toDelete(false), _auxVelocityReset(vel)
 {
-
+	s = nullptr;
 
 }
 CBullet::~CBullet(){}
@@ -1411,6 +1482,8 @@ void CBullet::getMessage(Message* m){
 		pEnt->getMessage(new MRigidbodyMoveX(xDir, pEnt->getID()));
 		pEnt->getMessage(new MRigidbodyMoveY(yDir, pEnt->getID()));
 
+
+
 		break;
 
 	case MSG_COLLISION:
@@ -1419,6 +1492,7 @@ void CBullet::getMessage(Message* m){
 			mCollision->GetWho()->getMessage(new MBulletHit(_damage, mCollision->GetContactMask(), pEnt->getID()));
 
 			pEnt->getScene()->addEntityToDelete(pEnt);
+
 			_toDelete = true;
 		}
 		break;
@@ -1443,8 +1517,9 @@ void CBullet::getMessage(Message* m){
 
 
 #pragma region Ability Component
-CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask) :GameComponent(c, father), _componentLife(componentLife),
-_componentArmor(componentArmor), _limitLife(componentLife)
+CAbility::CAbility(ComponentType c, Entity* father, float componentLife, float componentArmor, uint16 mask, int t) :GameComponent(c, father), _componentLife(componentLife),
+_componentArmor(componentArmor), _limitLife(componentLife), _type(t)
+
 {
 	dead = false;
 	if (pEnt->getID() == "Player_0"){
@@ -1531,7 +1606,7 @@ void CArmor::getMessage(Message* m){}
 #pragma region CPSkill Component
 
 GameComponent* createPassiveAbilityEmpty(Entity* father, int id){ return new CPSkillEmpty(father); }
-CPSkillEmpty::CPSkillEmpty(Entity * father) :CAbility(CMP_PASSIVE_DEFAULT, father, 0, 0, MASK_LEGS_0){
+CPSkillEmpty::CPSkillEmpty(Entity * father) :CAbility(CMP_PASSIVE_DEFAULT, father, 0, 0, MASK_LEGS_0,1){
 
 }
 CPSkillEmpty::~CPSkillEmpty(){}
@@ -1542,7 +1617,7 @@ void CPSkillEmpty::getMessage(Message* m){
 }
 
 GameComponent* createActiveAbilityEmpty(Entity* father, int id){ return new CASkillEmpty(father); }
-CASkillEmpty::CASkillEmpty(Entity * father) :CAbility(CMP_ACTIVE_DEFAULT, father, 0, 0, MASK_HEAD_0){
+CASkillEmpty::CASkillEmpty(Entity * father) :CAbility(CMP_ACTIVE_DEFAULT, father, 0, 0, MASK_HEAD_0,1){
 
 }
 CASkillEmpty::~CASkillEmpty(){}
@@ -1555,7 +1630,7 @@ void CASkillEmpty::getMessage(Message* m){
 
 ///invisibility
 GameComponent* createAbilityVidar(Entity* father, int id){ return new CPSkillVidar(father); }
-CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0){
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0,1){
 	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 }
 CPSkillVidar::~CPSkillVidar(){}
@@ -1571,7 +1646,7 @@ void CPSkillVidar::getMessage(Message* m){
 
 ///modify dmg of a god
 GameComponent* createAbilityHades(Entity* father, int id){ return new CPSkillHades(father); }
-CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_HADES, father, 25, 100, MASK_LEGS_0){
+CPSkillHades::CPSkillHades(Entity * father) :CAbility(CMP_PASSIVE_HADES, father, 25, 100, MASK_LEGS_0,1){
 	pEnt->getMessage(new MModDmg(pEnt->getID(), 10.0f));
 }
 CPSkillHades::~CPSkillHades(){}
@@ -1592,7 +1667,7 @@ void CPSkillHades::getMessage(Message* m){
 
 ///modify velocity of a god
 GameComponent* createAbilityUll(Entity* father, int id){ return new CPSkillUll(father); }
-CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_ULL, father, 100, 100, MASK_LEGS_0){
+CPSkillUll::CPSkillUll(Entity * father) :CAbility(CMP_PASSIVE_ULL, father, 100, 100, MASK_LEGS_0,1){
 	pEnt->getMessage(new MModVel(pEnt->getID(), -20.0f));
 }
 CPSkillUll::~CPSkillUll(){}
@@ -1611,7 +1686,7 @@ void CPSkillUll::getMessage(Message* m){
 
 ///modify vel of bullets
 GameComponent* createAbilityVali(Entity* father, int id){ return new CPSkillVali(father); }
-CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_VALI, father, 50, 75, MASK_LEGS_0){
+CPSkillVali::CPSkillVali(Entity * father) :CAbility(CMP_PASSIVE_VALI, father, 50, 75, MASK_LEGS_0,1){
 	pEnt->getMessage(new MModVelBullets(pEnt->getID(), 10));
 }
 CPSkillVali::~CPSkillVali(){}
@@ -1630,7 +1705,7 @@ void CPSkillVali::getMessage(Message* m){
 
 ///modify velocity and jump of a god
 GameComponent* createAbilityHermes(Entity* father, int id){ return new CPSkillHermes(father); }
-CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_HERMES, father, 50, 25, MASK_LEGS_0){
+CPSkillHermes::CPSkillHermes(Entity * father) :CAbility(CMP_PASSIVE_HERMES, father, 50, 25, MASK_LEGS_0,1){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20.0f, 20.0f));
 }
 CPSkillHermes::~CPSkillHermes(){}
@@ -1649,7 +1724,7 @@ void CPSkillHermes::getMessage(Message* m){
 
 ///modify vel of fire rate
 GameComponent* createAbilitySyn(Entity* father, int id){ return new CPSkillSyn(father); }
-CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SYN, father, 50, 50, MASK_LEGS_0){
+CPSkillSyn::CPSkillSyn(Entity * father) :CAbility(CMP_PASSIVE_SYN, father, 50, 50, MASK_LEGS_0,1){
 	pEnt->getMessage(new MModVelAndJump(pEnt->getID(), 20, 20));
 }
 CPSkillSyn::~CPSkillSyn(){}
@@ -1670,9 +1745,9 @@ void CPSkillSyn::getMessage(Message* m){
 #pragma region Shu Headdress
 //Dash
 GameComponent* createAbilityShuHeaddress(Entity* father, int id){ return new CShuHeaddress(father,id); }
-CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0), _playerId(id){
-	_timeCounter = 0;
-	_coolDown = 5000.0f; //5 seconds
+CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0,0), _playerId(id){
+	_timeCounter = _lastTimeDash = 0;
+	_coolDown = 500.0f; //5 seconds
 	_dashImpulse = 1000.0f;
 	_lastTimeDash = SDL_GetTicks();
 }
@@ -1687,13 +1762,17 @@ void CShuHeaddress::tick(float delta){
 }
 void CShuHeaddress::getMessage(Message* m)
 {
+
 	if (m->getType() == MSG_INPUT_STATE){
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId){
 			_timeCounter = SDL_GetTicks();
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED && (_timeCounter - _lastTimeDash) > _coolDown){
-				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,cState.Axis_LeftY);
+
+			if (cState.Left_Shoulder == BTT_RELEASED && (_timeCounter - _lastTimeDash) > _coolDown){
+
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
+				b2Vec2 *impulse = calculateDash(cState.Axis_LeftX,0);
 				pEnt->getMessage(new MDash(pEnt->getID(), impulse));
 				_lastTimeDash = SDL_GetTicks();
 			}
@@ -1716,7 +1795,7 @@ b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 //Velocity improvement
 GameComponent* createAbilityJonsuMoon(Entity* father, int id){ return new CJonsuMoon(father, id); }
 
-CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD_0), _playerId(id){
+CJonsuMoon::CJonsuMoon(Entity * father, int id) :CAbility(CMP_JONSU_MOON, father, 100, 100, MASK_HEAD_0,0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 5000.0f; //5 seconds
 	_coolDown = 10000.0f;
@@ -1756,12 +1835,13 @@ void CJonsuMoon::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable){
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED ){
+			if (cState.Left_Shoulder == BTT_RELEASED ){
 				pEnt->getMessage(new MModVel(pEnt->getID(), _velocityPercentage));
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
 
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
@@ -1773,7 +1853,7 @@ void CJonsuMoon::getMessage(Message* m)
 #pragma region Khepri Beetle
 //Velocity improvement
 GameComponent* createAbilityKhepriBeetle(Entity* father, int id){ return new CKhepriBeetle(father, id); }
-CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD_0), _playerId(id){
+CKhepriBeetle::CKhepriBeetle(Entity * father, int id) :CAbility(CMP_KHEPRI_BEETLE, father, 100, 100, MASK_HEAD_0,0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_timeActiveLimit = 3000.0f; //3 seconds
 	_coolDown = 10000.0f;
@@ -1815,12 +1895,13 @@ void CKhepriBeetle::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable){
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Left_Shoulder == BTT_RELEASED){
 				pEnt->getMessage(new MModFireRate(pEnt->getID(), _fireRatePercentage));
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
 
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
 		}
@@ -1834,7 +1915,7 @@ void CKhepriBeetle::getMessage(Message* m)
 //Velocity improvement
 
 GameComponent* createAbilityHeraRune(Entity* father, int id){ return new CHeraRune(father, id); }
-CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD_0), _playerId(id){
+CHeraRune::CHeraRune(Entity * father, int id) :CAbility(CMP_HERA_RUNE, father, 50, 100, MASK_HEAD_0,0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_coolDown = 10000.0f;
 	isAvailable = true;
@@ -1863,10 +1944,12 @@ void CHeraRune::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED) {
+			if (cState.Left_Shoulder == BTT_RELEASED) {
 				pEnt->getMessage(new MRestoreLifeCards(pEnt->getID()));
 				_initTime = SDL_GetTicks();
 				isAvailable = false;
+
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
@@ -1887,7 +1970,8 @@ void CHeraRune::getMessage(Message* m)
 
 GameComponent* createAbilityHerisMark(Entity* father, int id){ return new CHerisMark(father, id); }
 
-CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0), _playerId(id){
+
+CHerisMark::CHerisMark(Entity * father, int id) :CAbility(CMP_HERIS_MARK, father, 50, 100, MASK_HEAD_0,0), _playerId(id){
 	_timeCounter = _initTime = 0;
 	_coolDown = 10000.0f;
 	_timeActiveLimit = 30000.0f;
@@ -1945,11 +2029,14 @@ void CHerisMark::getMessage(Message* m)
 		MInputState* inputM = static_cast<MInputState*>(m);
 		if (inputM->getId() == _playerId && isAvailable) {
 			ControllerInputState cState = inputM->getCInputState();
-			if (cState.Right_Shoulder == BTT_PRESSED) {
+
+			if (cState.Left_Shoulder == BTT_PRESSED) {
 				pEnt->getMessage(new MModDmg(pEnt->getID(), 20.0f)); // Mensage modificar da�o +20%
 				_initTime = SDL_GetTicks();
 				_isActive = true;
 				isAvailable = false;
+
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/FightScene/ActiveUse.wav");
 
 				pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), 0));
 			}
@@ -2020,19 +2107,26 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	_callback = callback;
 	_txt = buttonTxt;
 
+
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
+
+
+
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
-	Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text" + father->getID()));
-	a->setCaption(_txt);
-	
-	
+	try {
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
+
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+
 }
 CNormalButton::~CNormalButton()
 {
-
-
+	if (Ogre::OverlayManager::getSingleton().hasOverlayElement(pContainer->getName()))
+		pOver->remove2D(pContainer);
 }
 
 
@@ -2045,6 +2139,7 @@ void CNormalButton::getMessage(Message * me)
 		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
 			_active = true;
 			pContainer->setMaterialName(materials[1]);
+			Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", false);
 		}
 		else if (_active)
 		{
@@ -2052,15 +2147,16 @@ void CNormalButton::getMessage(Message * me)
 			pContainer->setMaterialName(materials[0]);
 
 		}
+
+
 	}
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
 		_clicked = true;
-		_callback();
+ 		_callback();
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
 
 	}
-
-
 }
 
 #pragma endregion
@@ -2068,22 +2164,24 @@ void CNormalButton::getMessage(Message * me)
 #pragma region Ability Button
 CAbilityButton::CAbilityButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize,  int playerId, ComponentType compType) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
 _playerId(playerId), _compType(compType){
-	materials[0] = "GUI/Button/Idle";
-	materials[1] = "GUI/Button/Active";
-	materials[2] = "GUI/Button/Click";
+
+	std::string cmpName = compToString(compType, _type);
+	_clicked = false;
+
+	materials[0] = cmpName + "-IDLE";
+	materials[1] = cmpName + "-ACTIVE";
+	materials[2] = cmpName + "-CLICK";
 
 
-
-
-
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
 	pContainer->setPosition(screenpos.x, screenpos.y);
+	pContainer->setMaterialName(materials[0]);
 	overlay->add2D(pContainer);
 
 }
 CAbilityButton::~CAbilityButton()
 {
-
+	pOver->remove2D(pContainer);
 
 }
 
@@ -2091,32 +2189,110 @@ CAbilityButton::~CAbilityButton()
 void CAbilityButton::getMessage(Message * me)
 {
 
+	if (!_clicked){
+		switch (me->getType()){
+		case MSG_GUI_BUTTON_ACTIVE:
+			if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+				_active = true;
+				pContainer->setMaterialName(materials[1]);
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", false);
 
-	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
-	{
-		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
-			_active = true;
-			pContainer->setMaterialName(materials[1]);
-		}
-		else if (_active)
-		{
-			_active = false;
-			pContainer->setMaterialName(materials[0]);
-
+			}
+			else if (_active)
+			{
+				_active = false;
+				pContainer->setMaterialName(materials[0]);
+			}
+			break;
+		case MSG_GUI_BUTTON_CLICK:
+			if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
+				pContainer->setMaterialName(materials[2]);
+				_clicked = true;
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
+				pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType, _type));
+			}
+			break;
+		case MSG_ABILITY_SETTER:
+			if (_type == static_cast<MAbilitySet*>(me)->getType()){
+				pContainer->setMaterialName(materials[2]);
+				_clicked = true;
+			}
+			break;
+		default:
+			break;
 		}
 	}
-	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
-		pContainer->setMaterialName(materials[2]);
-		_clicked = true;
+}
 
-		pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(),_playerId,_compType,0));
+#pragma endregion
 
+
+
+
+#pragma region God Button
+CGodButton::CGodButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
+_playerId(playerId), _god(god){
+
+	std::string godName = pEnt->getScene()->godToString(god);
+
+	materials[0] = godName + "-IDLE";
+	materials[1] = godName + "-ACTIVE";
+	materials[2] = godName + "-CLICK";
+
+
+
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+	pContainer->setMaterialName(materials[0]);
+
+
+}
+CGodButton::~CGodButton()
+{
+
+	pOver->remove2D(pContainer);
+}
+
+
+void CGodButton::getMessage(Message * me)
+{
+
+	if (!_clicked){
+		switch (me->getType()){
+		case MSG_GUI_BUTTON_ACTIVE:
+			if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+				_active = true;
+				pContainer->setMaterialName(materials[1]);
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", false);
+
+			}
+			else if (_active)
+			{
+				_active = false;
+				pContainer->setMaterialName(materials[0]);
+			}
+			break;
+		case MSG_GUI_BUTTON_CLICK:
+			if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
+				pContainer->setMaterialName(materials[2]);
+				_clicked = true;
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
+				pEnt->getScene()->getMessage(new MGodSet(pEnt->getID(), _playerId, _god));
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 
 }
 
 #pragma endregion
+
+
 
 
 #pragma region PlayerGUI
@@ -2181,6 +2357,9 @@ void CPlayerGUI::tick(float delta) {
 }
 void CPlayerGUI::getMessage(Message * m) {
 
+	MActiveDead* mAD;
+	MPassiveDead* mPD;
+
 	switch (m->getType())
 	{
 	case MSG_LIFE_STATE:
@@ -2209,10 +2388,25 @@ void CPlayerGUI::getMessage(Message * m) {
 			pLowerHud->getChild(player + "/ActiveContainer/ActiveFrame")->setMaterialName("GUI/" + player + "/ActiveDead");
 			pActiveBar->setWidth(0);
 		}
-			break;
+		break;
 	case MSG_PASSIVE_DEAD:
+
 		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
 			pLowerHud->getChild(player + "/ActiveConainer/PassiveIcon")->setMaterialName("GUI/PassiveDown");
+		break;
+	case MSG_RESET_GUI:
+
+		pActiveBar->setMaterialName("GUI/" + player + "/ActiveBar");
+
+		pLowerHud->getChild(player + "/ActiveConainer/PassiveIcon")->setMaterialName("GUI/PassiveUp");
+		updateLifebar(LIFE_MAX_WIDTH);
+		updateActive(ACTIVE_MAX_WIDTH);
+
+
+		break;
+
+
+
 	}
 }
 
@@ -2227,7 +2421,7 @@ void CPlayerGUI::updateActive(size_t val)
 		newX = (newX + pActiveBar->getWidth()) - newVal;
 		pActiveBar->setLeft(newX);
 		pActiveBar->setWidth(newVal);
-	
+
 	}
 
 }

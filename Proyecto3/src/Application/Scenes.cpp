@@ -17,7 +17,10 @@
 #include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
+
 #include <thread>
+#include <stdlib.h>
+#include <time.h>
 
 
 //Later removable
@@ -53,14 +56,18 @@ GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),s
 }
 GameScene::~GameScene()
 {
+	deleteAllEntities();
+
+	Ogre::OverlayManager::getSingleton().destroy(overlay->getName());
+
 	deleteAllMessages();
 
-	deleteAllEntities();
-	Ogre::OverlayManager::getSingleton().destroyAll();
-	
-	EntityFactory::getInstance().resetInstance();
+
+
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
+
+	Game::getInstance()->getRenderWindow()->removeAllViewports();
 
 	destroyBodies();
 
@@ -156,11 +163,6 @@ void GameScene::deleteAllEntities(){
 	}
 	_entities.clear();
 
-	for (auto e : _menuEntities){
-		aux = e.second;
-		if (aux != nullptr)
-			delete aux;
-	}
 
 }
 
@@ -205,6 +207,25 @@ void GameScene::destroyEntities(){
 		deleteEntity(_entitiesToDelete[i]->getID());
 	}
 	_entitiesToDelete.clear();
+}
+
+std::string GameScene::godToString(E_GOD g){
+	switch (g){
+	case EG_RA:
+		return "RA";
+		break;
+	case EG_AHPUCH:
+		return "AH_PUCH";
+		break;
+	case EG_ZEUS:
+		return "ZEUS";
+		break;
+	case EG_HACHIMAN:
+		return "HACHIMAN";
+		break;
+	default:
+		break;
+	}
 }
 #pragma endregion
 
@@ -307,6 +328,24 @@ void BasicScene::processScnMsgs()
 void exitCallBack() {
 	Game::getInstance()->exitGame();
 }
+void battleCallBack() {
+
+}
+void selectGodCallBack(){
+
+	Game::getInstance()->changeScene(MULTIPLAYER);
+
+}
+void returnMainMenu(){
+
+	Game::getInstance()->changeScene(MAIN_MENU);
+
+}
+
+void returnMulitplayerMenu(){
+
+	Game::getInstance()->changeScene(MULTIPLAYER);
+}
 
 
 #pragma region GamePlayScene
@@ -326,8 +365,14 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 #endif
 
 	//The limit time to choose cards
-	_prepareLimitTime = 30000.0f; //30 seconds
+	_prepareLimitTime = 50000.0f; //15 seconds
 	_prepareCounter = 0.0f;
+
+	_postGameLimitTime = 5000.0f;
+	_postGameCounter = 0.0f;
+
+	_preGameLimitTime = 5000.0f;
+	_preGameCounter = 0.0f;
 
 	//Load the stage passed by parameter
 	loadStage();
@@ -336,22 +381,50 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//Store and configure the players structure
 	_players = players;
-	std::vector<Ogre::Vector3> playersPos(2);
-	playersPos[0] = Ogre::Vector3(-30.0f, 0.0f, 0.0f);
-	playersPos[1] = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
+
+	std::vector<Ogre::Vector3> playerPos;
+	playerPos.push_back(_posP1);
+	playerPos.push_back(_posP2);
 
 	int i = 0;
-	//for (Player p : _players){
+#pragma region Abilities
+	_totalPassives.push_back(CMP_PASSIVE_VIDAR);
+	_totalPassives.push_back(CMP_PASSIVE_HADES);
+	_totalPassives.push_back(CMP_PASSIVE_ULL);
+	_totalPassives.push_back(CMP_PASSIVE_VALI);
+	_totalPassives.push_back(CMP_PASSIVE_HERMES);
+	_totalPassives.push_back(CMP_PASSIVE_SYN);
+
+	_totalActives.push_back(CMP_SHU_HEADDRESS);
+	_totalActives.push_back(CMP_JONSU_MOON);
+	_totalActives.push_back(CMP_KHEPRI_BEETLE);
+	_totalActives.push_back(CMP_HERA_RUNE);
+	_totalActives.push_back(CMP_HERIS_MARK);
+#pragma endregion
+
+
+
+	int rng = 0;
+	int rng2 = 0;
 	for (int i = 0;  i < _players.size(); i++){
 
-		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god, this, playersPos[i], _players[i].controllerId);
-		_players[i].abilities.push_back(CMP_HERA_RUNE);
-		_players[i].abilities.push_back(CMP_PASSIVE_HADES);
-		_players[i].abilities.push_back(CMP_KHEPRI_BEETLE);
+		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god, this, playerPos[i], _players[i].controllerId);
+
+		rng = std::rand() % 6;
+		_players[i].abilities.push_back(_totalPassives[rng]);
+
+		rng2 = std::rand() % 6;
+		if (rng2 == rng)
+			rng2 = (rng2 + 1) % 6;
+		_players[i].abilities.push_back(_totalPassives[rng2]);
+
+		rng = std::rand() % 5;
+		_players[i].abilities.push_back(_totalActives[rng]);
+
 		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
-		_players[i].entity->setActive(true);
 		addEntity(_players[i].entity);
+		_players[i].entity->setActive(false);
 
 	}
 
@@ -359,21 +432,26 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	_paused = false;
 
 
-
-
-
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 
 	// Create an overlay
-	
-	overlay = overlayManager.getByName("GUI");
-	bgCards = overlayManager.getByName("Background");
-
-
+	try {
+		overlay = overlayManager.getByName("GUI");
+		bgCards = overlayManager.getByName("bgCards");
+		bgEnd = overlayManager.getByName("bgEnd");
+	}
+	catch (Ogre::Exception e) {
+		#ifdef _DEBUG
+		cout << e.what() << std::endl;
+		cout << std::endl;
+		#endif
+	}
 	// Show the overlay
 	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
 	Ogre::FontManager::getSingleton().getByName("GUI/PlayerText")->load();
 
+	overlay->hide();
+	bgEnd->hide();
 
 	Entity * k = new Entity("GUI", this);
 
@@ -385,24 +463,42 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	addEntity(k);
 
 
-	overlay->show();
-	//bgCards->show();
+	//Add end GUI entities
+	Entity* endButton0 = new Entity("EndButton_0", this);
+	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(0, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Batalla"));
+	endButton0->setActive(false);
+	addEntity(endButton0);
+	_endGUIEntities.push_back(endButton0);
 
 
+	Entity* endButton1 = new Entity("EndButton_1", this);
+	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(0,-100.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Menu Principal"));
+	endButton1->setActive(false);
+	addEntity(endButton1);
+	_endGUIEntities.push_back(endButton1);
 
-	//Set the starter state to SETUP
-	_currState = GS_BATTLE;
-	_prepareCounter = SDL_GetTicks();
 
-	loadAbilities();
+	changePhase(GS_SETUP);
 
-	//getMessage(new MButtonAct(id, 0));
-	//getMessage(new MButtonAct(id, 3));
+	irrklang::ISound* bso = game->getSoundEngine()->play2D("../Media/sounds/BattleTheme.wav",true,false,true);
+	if (bso){
+		bso->setVolume(0.1f);
+	}
 
 }
 GamePlayScene::~GamePlayScene(){
 	_players.clear();
 	_cardGUIEntities.clear();
+
+	Entity* aux;
+
+	for (Entity* e : _stageEntities){
+		aux = e;
+		if (aux != nullptr)
+			delete aux;
+	}
+
+	_stageEntities.clear();
 
 }
 bool GamePlayScene::run(){
@@ -420,13 +516,11 @@ bool GamePlayScene::run(){
 	{
 		//In this state, we should set up the players God (mesh renderer, habilities, etc) and playing cards
 	case GS_SETUP:
-		//loadOut();
-
+		preparePhase();
 		break;
 		//This state should control the gameplay state (Time, rounds, the end, etc)
 	case GS_BATTLE:
 		battlePhase();
-
 		break;
 		//Last state before leave the scene
 	case GS_END:
@@ -457,46 +551,7 @@ bool GamePlayScene::run(){
 
 void GamePlayScene::dispatch(){
 
-
-
-	nMessages = _messages.size();
-	std::list<Message *>::iterator it = _messages.begin();
-
-
-
-
-	switch (_currState){
-	case GS_SETUP:
-		for (int i = 0; i < nMessages && it != _messages.end(); i++, it++) {
-			//If the message destination is only the scene, we only push it to the local queue.
-			if ((*it)->getDestination() == SCENE_ONLY)
-			{
-				_sceneMessages.push_back((*it));
-			}
-			//If the message have more receivers than the scene, push them to the entities.
-			else
-			{
-				if ((*it)->getDestination() == SCENE)
-					_sceneMessages.push_back((*it));
-				for (std::list<Entity*>::iterator itEnt = _cardGUIEntities.begin(); itEnt != _cardGUIEntities.end(); ++itEnt) {
-					if ((*it)->getEmmiter() != (*itEnt)->getID())
-						(*itEnt)->getMessage(*it);
-				}
-			}
-		}
-		break;
-	case GS_BATTLE:
-		GameScene::dispatch();
-		break;
-	case GS_END:
-
-		break;
-	default:
-		break;
-	}
-
-
-
+	GameScene::dispatch();
 
 }
 
@@ -531,16 +586,16 @@ void GamePlayScene::preparePhase(){
 
 	float currentTime = SDL_GetTicks();
 	if (currentTime - _prepareCounter > _prepareLimitTime)
-		_currState = GS_BATTLE;
+		changePhase(GS_BATTLE);
 
-		bool playersAreReady = true;
-		for(int i = 0; i < _nPlayers; i++){
-			playersAreReady = playersAreReady & _pReady[i];
-		}
+	bool playersAreReady = true;
+	for(int i = 0; i < _nPlayers; i++){
+		playersAreReady = playersAreReady & _pReady[i];
+	}
 
-		if (playersAreReady){
-			_currState = GS_BATTLE;
-		}
+	if (playersAreReady){
+		changePhase(GS_BATTLE);
+	}
 }
 
 void GamePlayScene::battlePhase(){
@@ -550,34 +605,61 @@ void GamePlayScene::battlePhase(){
 
 	//Pre-battle: little wait time to let players getting ready
 	if (!_battleState.battleStarted){
-
-
-
 	//Contador de 5 seg (por ejemplo) y empieza el combate
-	_battleState.battleStarted = true;
-	_battleState.timeCountStart = SDL_GetTicks();
+		if ((SDL_GetTicks() - _preGameCounter) > _preGameLimitTime){
+			_battleState.battleStarted = true;
+			_battleState.timeCountStart = SDL_GetTicks();
+			InputManager::getInstance().stopReceiving(true);
+
+		}
 	}
 
 	//Battle
 	else{
+		if (!_battleState.battleEnded){
+			//Update time elapsed
+			_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
+			getMessage(new MUpdateSceneTimer(_id, (TIME_LIMIT - _battleState.timeElapsed) / 1000.0f));
 
-		//Update time elapsed
-		_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
-		getMessage(new MUpdateSceneTimer(_id,_battleState.timeElapsed));
+
+			//If time is greater than limit, stop battle
+			if (_battleState.timeElapsed > TIME_LIMIT){
+
+				_battleState.battleEnded = true;
+				InputManager::getInstance().stopReceiving(false);
+				_postGameCounter = SDL_GetTicks();
 
 
-		//If time is greater than limit, stop battle
-		if (_battleState.timeElapsed > TIME_LIMIT){
-			_battleState.battleEnded = true;
-			//_currState = GS_END;
+
+			}
+		}
+		else{
+
+			//If the rounds elapsed are 3, we finish the game. Else, continue.
+			if ((SDL_GetTicks() - _postGameCounter)  > _postGameLimitTime){
+				if (_battleState.roundsCompleted == MAX_ROUNDS || _players[0].roundsWon == 2 || _players[1].roundsWon == 2){
+					changePhase(GS_END);
+					InputManager::getInstance().stopReceiving(true);
+				}
+				else{
+					resetPlayers();
+					InputManager::getInstance().stopReceiving(true);
+					changePhase(GS_SETUP);
+				}
+
+				_battleState.battleStarted = false;
+				_battleState.battleEnded = false;
+				for (Player p : _players){
+					p.entity->setActive(false);
+				}
+
+			}
+
+
+
 		}
 
-
-
-
 	}
-
-
 
 }
 
@@ -599,9 +681,9 @@ void GamePlayScene::controllerConnected(int id){
 void GamePlayScene::loadStage(){
 
 	//Store the entities in an aux array
-	std::vector<Entity*>* stageEntities = EntityFactory::getInstance().createStage(_stage, this);
+	std::vector<Entity*>* stageEntities = EntityFactory::getInstance().createStage(_stage, this, _stageEntities);
 
-	//Then push them to the main array of entities
+	//Then push the cam to the main arrya entities. The rest goes into _stageEntities array.
 	for (auto e : (*stageEntities)){
 		addEntity(e);
 	}
@@ -613,10 +695,45 @@ void GamePlayScene::changePhase(GameplayState newState){
 
 	switch (newState){
 	case GS_SETUP:
+		overlay->hide();
+		//Set the starter state to SETUP
+		_prepareCounter = SDL_GetTicks();
+		player1Index = 0;
+		player2Index = 3;
+		_nPlayers = MAX_PLAYERS;
+		loadAbilities();
+		bgCards->show();
+		getMessage(new MButtonAct(_id, player1Index));
+		_currState = GS_SETUP;
 			break;
 	case GS_BATTLE:
+		for (Entity* e : _cardGUIEntities){
+			addEntityToDelete(e);
+		}
+		_cardGUIEntities.clear();
+		bgCards->hide();
+		overlay->show();
+		_preGameCounter = SDL_GetTicks();
+		getMessage(new MUpdateSceneTimer(_id, (TIME_LIMIT) / 1000.0f));
+
+		_currState = GS_BATTLE;
+		InputManager::getInstance().stopReceiving(false);
+		for (Player p : _players){
+			p.entity->setActive(true);
+		}
+
+
 		break;
 	case GS_END:
+		overlay->hide();
+		bgCards->hide();
+		bgEnd->show();
+		for (Entity* e : _endGUIEntities){
+			e->setActive(true);
+		}
+		player1Index = 0;
+		getMessage(new MButtonAct(_id, player1Index));
+		_currState = GS_END;
 		break;
 	}
 
@@ -638,12 +755,77 @@ void GamePlayScene::playerDied(std::string e){
 	getMessage(new MRoundFinished(_id,_players[playerWonId].entity->getID()));
 	_battleState.roundsCompleted++;
 
-	//If the rounds elapsed are 3, we finish the game. Else, continue.
-	if (_battleState.roundsCompleted == MAX_ROUNDS){
-		changePhase(GS_END);
+	_battleState.battleEnded = true;
+	InputManager::getInstance().stopReceiving(false);
+	_postGameCounter = SDL_GetTicks();
+
+
+
+}
+
+void GamePlayScene::resetPlayers(){
+
+
+	std::vector<Ogre::Vector3> playerPos;
+	playerPos.push_back(_posP1);
+	playerPos.push_back(_posP2);
+
+	int i = 0;
+
+	for (int i = 0; i < _players.size(); i++){
+		deleteEntity(_players[i].entity->getID());
+		_players[i].entity = nullptr;
+		_players[i].activeSelected = false;
+		_players[i].passiveSelected = false;
+		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
+		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
+		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god,this,playerPos[i],_players[i].controllerId);
+		_players[i].entity->setActive(false);
+		addEntity(_players[i].entity);
+		_pReady[i] = false;
+
 	}
-	else
-		changePhase(GS_SETUP);
+
+	getMessage(new MLifeState(_players[0].entity->getID(), 100));
+	getMessage(new MLifeState(_players[1].entity->getID(), 100));
+	getMessage(new MResetGui(_id));
+
+
+
+
+
+}
+
+
+
+void start_c(){
+
+
+
+}
+void GamePlayScene::reloadAbilities(){
+
+
+	int rng = 0;
+	int rng2 = 0;
+	for (int i = 0; i < _players.size(); i++){
+
+		rng = std::rand() % 6;
+		_players[i].abilities.push_back(_totalPassives[rng]);
+
+		rng2 = std::rand() % 6;
+		if (rng2 == rng)
+			rng2 = (rng2 + 1) % 6;
+		_players[i].abilities.push_back(_totalPassives[rng2]);
+
+		rng = std::rand() % 5;
+		_players[i].abilities.push_back(_totalActives[rng]);
+
+		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
+		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
+
+
+	}
 
 
 }
@@ -651,64 +833,119 @@ void GamePlayScene::playerDied(std::string e){
 void GamePlayScene::loadAbilities(){
 
 	Entity* aux;
-	Ogre::Vector2 auxPos(-100.0f,150.0f);
+	Ogre::Vector2 auxPos(-400.0f,-100.0f);
 	int idCounter = 0;
 	for (Player p : _players){
 		//There, we should choose 3 random abilities to show
 		for (ComponentType c : p.abilities){
-			aux = new Entity((to_string(p.controllerId) + to_string(c)), this);
+			aux = new Entity((to_string(p.controllerId) + to_string(c) + to_string(_battleState.roundsCompleted)), this);
 			aux->addComponent(new CAbilityButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0), p.controllerId, c));
-			auxPos.x += 20.0f;
-			//limpiarlas luego
+			auxPos.x += 100.0f;
 			_cardGUIEntities.emplace_back(aux);
+			addEntity(aux);
 			idCounter++;
-
 		}
-		auxPos.y += 30.0f;
+		auxPos.y += 100.0f;
 	}
+
+
+	for (int i = 3; i < 6; i++){
+		_cardGUIEntities.at(i)->setActive(false);
+	}
+
+
+	auxPos = Ogre::Vector2(0.0f, 700.0f);
+
+	/*aux = new Entity("Start_Button", this);
+	aux->addComponent(new CNormalButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0),start_c,"Start"));*/
 
 }
 
-void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId, int type){
+void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId){
 
 	GameComponent* c = EntityFactory::getInstance().createAbility(compId, _players[playerId].entity, playerId);
-	Player p = _players[playerId];
-#ifdef _DEBUG
-	if (c == nullptr)
-		std::cout << "No existe esa habilidad" << std::endl;
-#endif
+	#ifdef _DEBUG
+		if (c == nullptr)
+			std::cout << "No existe esa habilidad" << std::endl;
+	#endif
+	int type = static_cast<CAbility*>(c)->getType();
+
 	//if is active or passive
 	if (type == 0){
-		if (p.currentActive != compId ){
-			p.entity->deleteComponent(p.currentActive);
-			p.entity->addComponent(c);
+		if (_players[playerId].currentActive != compId){
+			_players[playerId].entity->deleteComponent(_players[playerId].currentActive);
+			_players[playerId].entity->addComponent(c);
 		}
 		else { delete c; }
+		_players[playerId].activeSelected = true;
 	}
 	else{
-		if (p.currentPassive != compId /*cambiar por default*/){
-			p.entity->deleteComponent(p.currentPassive);
-			p.entity->addComponent(c);
+		if (_players[playerId].currentPassive != compId /*cambiar por default*/){
+			_players[playerId].entity->deleteComponent(_players[playerId].currentPassive);
+			_players[playerId].entity->addComponent(c);
 		}
 		else { delete c; }
+		_players[playerId].passiveSelected = true;
 	}
 
+	if (_players[playerId].activeSelected && _players[playerId].passiveSelected){
+		_pReady[playerId] = true;
+		if (_pReady[0] && !_pReady[1]){
+			for (int i = 3; i < 6; i++){
+				_cardGUIEntities.at(i)->setActive(true);
+			}
+			for (int i = 0; i < 3; i++){
+				_cardGUIEntities.at(i)->setActive(false);
+			}
+		}
+	}
 }
-
-
 
 void GamePlayScene::processMsgSetup(Message* m){
 
+	MAbilitySet* mAbility;
 	MInputState* mInput;
 
 	switch (m->getType()){
 	case MSG_INPUT_STATE:
 		mInput = static_cast<MInputState*>(m);
-		if (mInput->getCInputState().Button_A == BTT_PRESSED)
-			getMessage(new MButtonClick(_id));
+		if (mInput->getId() == 0 && !_pReady[0]){
+			if (mInput->getCInputState().Button_A == BTT_RELEASED){
+				getMessage(new MButtonClick(_id, player1Index));
 
+			}
+			else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
+				player1Index++;
+				if (player1Index > 2) player1Index = 0;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+			else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
+				player1Index--;
+				if (player1Index < 0) player1Index = 2;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+		}
+		else if (mInput->getId() == 1 && _pReady[0]){
+			if (mInput->getCInputState().Button_A == BTT_RELEASED)
+				getMessage(new MButtonClick(_id, player2Index));
+			else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
+				player2Index++;
+				if (player2Index > 5) player2Index = 3;
+				getMessage(new MButtonAct(_id, player2Index));
+			}
+			else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
+				player2Index--;
+				if (player2Index < 3) player2Index = 5;
+				getMessage(new MButtonAct(_id, player2Index));
+			}
+		}
 		break;
-
+	case MSG_ABILITY_SETTER:
+		mAbility = static_cast<MAbilitySet*>(m);
+		addAbilityComponent(mAbility->getId(), mAbility->getComponentType());
+		break;
+	default:
+		break;
 	}
 
 
@@ -716,7 +953,7 @@ void GamePlayScene::processMsgSetup(Message* m){
 
 void GamePlayScene::processMsgBattle(Message* m){
 
-	MAbilitySet* mAbility;
+
 
 	switch (m->getType())
 	{
@@ -730,10 +967,6 @@ void GamePlayScene::processMsgBattle(Message* m){
 			playerDied(m->getEmmiter());
 		}
 		break;
-	case MSG_ABILITY_SETTER:
-		mAbility = static_cast<MAbilitySet*>(m);
-		addAbilityComponent(mAbility->getId(), mAbility->getComponentType(), mAbility->getType());
-		break;
 	default:
 		break;
 	}
@@ -743,6 +976,32 @@ void GamePlayScene::processMsgBattle(Message* m){
 void GamePlayScene::processMsgEnd(Message* m){
 
 
+
+	MAbilitySet* mAbility;
+	MInputState* mInput;
+
+	switch (m->getType()){
+	case MSG_INPUT_STATE:
+		mInput = static_cast<MInputState*>(m);
+		if (mInput->getId() == 0){
+			if (mInput->getCInputState().Button_A == BTT_RELEASED){
+				getMessage(new MButtonClick(_id, player1Index));
+			}
+			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+				player1Index++;
+				if (player1Index > 1) player1Index = 0;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+				player1Index--;
+				if (player1Index < 0) player1Index = 1;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+		}
+		break;
+	default:
+		break;
+	}
 
 
 
@@ -758,6 +1017,10 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	selectedButton = 0;
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	irrklang::ISound* bso = game->getSoundEngine()->play2D("../Media/sounds/MenuTheme.wav", true);
+	if (bso){
+		bso->setVolume(0.2f);
+	}
 
 	// Create an overlay
 	try {
@@ -772,29 +1035,42 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	Ogre::Viewport* vp = nullptr;
 	Entity *cam = new Entity("camMenuIni",this);
-	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+	CCamera* cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10);
+	cam->addComponent(cCam);
+	addEntity(cam);
+	vp = cCam->getVP();
 
-	Entity * background = new Entity("fightButton", this);
-	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {70,0,0}));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, background));
+	Entity * background = new Entity("Bg", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, "MainMenu", {70,0,0}, vp));
+	//_menuEntities.emplace(std::pair<int, Entity*>(2, background));
+	addEntity(background);
+
 
 	Entity * fightButton = new Entity("fightButton", this);
-	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
+
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(-450, 50), Ogre::Vector2(0, 0), selectGodCallBack, "Combate"));
+
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
+	addEntity(fightButton);
 
 	Entity * exitButton = new Entity("exitButton", this);
-	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 1, Ogre::Vector2(-450, 200), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+
 	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
+	addEntity(exitButton);
 
 	overlay->show();
 
 	//Set the first button selected
-	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	getMessage(new MButtonAct(_id, selectedButton));
 
 }
 
 
 MainMenuScene::~MainMenuScene(){
+
+
 }
 
 
@@ -830,6 +1106,444 @@ void MainMenuScene::dispatch(){
 void MainMenuScene::processScnMsgs()
 {
 	MInputState* input;
+	ControllerInputState c;
+
+	int totalButtons = _menuEntities.size();
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		switch (m->getType())
+		{
+		case MSG_INPUT_STATE:
+			input = static_cast<MInputState*>(*it);
+			c = input->getCInputState();
+			if (input->getId() == 0){
+				if (c.DPad_Down == BTT_RELEASED){
+					selectedButton++;
+					if (selectedButton >= totalButtons)
+						selectedButton = 0;
+					getMessage(new MButtonAct(_id, selectedButton));
+				}
+				else if (c.DPad_Up == BTT_RELEASED){
+					selectedButton--;
+					if (selectedButton < 0)
+						selectedButton = (totalButtons - 1);
+					getMessage(new MButtonAct(_id, selectedButton));
+				}
+
+				else if (c.Button_A == BTT_RELEASED){
+					getMessage(new MButtonClick(_id, selectedButton));
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
+
+
+
+};
+
+
+
+
+#pragma endregion
+
+
+#pragma region Select God Scene
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game) {
+
+	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	Ogre::Light* light = getSceneManager()->createLight("SelectGodLight");
+	light->setPosition(0, 30, 50);
+	light->setCastShadows(true);
+
+	std::srand(time(NULL));
+
+
+
+	std::vector<Player>* players = new std::vector<Player>(2);
+	players->at(0).controllerId = 0;
+	players->at(1).controllerId = 1;
+	_players = (*players);
+	delete players;
+
+	selectedButton = 0;
+	player1Index = player2Index = 0;
+
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("SELECT");
+
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
+
+	Ogre::Viewport* vp = nullptr;
+	Entity *cam = new Entity("camSelectGod", this);
+	CCamera * cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 0, 60), Ogre::Vector3(0, 0, 0), 10);
+	vp = cCam->getVP();
+	cam->addComponent(cCam);
+
+	/*Entity * background = new Entity("backgroundMainMenu", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
+
+
+	Entity *sky = new Entity("sky", this);
+	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "SelectGodMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
+	addEntity(sky);
+
+	Entity* renderAhPuch = new Entity("0", this);
+	CMeshRender * AhPuchMeshRender = new CMeshRender({ 0, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	AhPuchMeshRender->setVisible(true);
+	renderAhPuch->addComponent(AhPuchMeshRender);
+	addEntity(renderAhPuch);
+
+	Entity* renderAux2 = new Entity("1", this);
+	CMeshRender* RaMeshRender = new CMeshRender({ 0, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	RaMeshRender->setVisible(false);
+	renderAux2->addComponent(RaMeshRender);
+	addEntity(renderAux2);
+
+	Entity* renderAux3 = new Entity("2", this);
+	CMeshRender* ZeusMeshRender = new CMeshRender({ 0, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	ZeusMeshRender->setVisible(false);
+	renderAux3->addComponent(ZeusMeshRender);
+	addEntity(renderAux3);
+
+	Entity* renderAux4 = new Entity("3", this);
+	CMeshRender* HachimanMeshRender = new CMeshRender({ 0, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	HachimanMeshRender->setVisible(false);
+	renderAux4->addComponent(HachimanMeshRender);
+	addEntity(renderAux4);
+
+
+#pragma region Player1 Gods
+
+
+	Entity * aux = new Entity("AhPuchP0", this);
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
+	_godsButtons.push_back(aux);
+
+
+
+	Entity * aux2 = new Entity("RaP0", this);
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
+	_godsButtons.push_back(aux2);
+
+
+	Entity * aux3 = new Entity("ZeusP0", this);
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
+	_godsButtons.push_back(aux3);
+
+
+	Entity * aux4 = new Entity("HachimanP0", this);
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
+	_godsButtons.push_back(aux4);
+
+
+#pragma endregion
+
+
+
+
+	for (int i = 0; i < 4; i++){
+		addEntity(_godsButtons[i]);
+	}
+
+	overlay->show();
+
+	//Set the first button selected
+	getMessage(new MButtonAct(_id, selectedButton));
+
+}
+
+
+SelectGodScene::~SelectGodScene(){
+
+}
+
+
+
+bool SelectGodScene::run(){
+	//Here we would get the time between frames
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+
+	return aux;
+
+}
+
+void SelectGodScene::dispatch(){
+	GameScene::dispatch();
+
+
+}
+
+void SelectGodScene::processScnMsgs()
+{
+	MGodSet* mGodSet;
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		MInputState* mInput;
+
+		switch (m->getType()){
+		case MSG_INPUT_STATE:
+			mInput = static_cast<MInputState*>(m);
+			if (mInput->getId() == 0 && !_pReady[0]){
+				if (mInput->getCInputState().Button_A == BTT_RELEASED){
+					getMessage(new MButtonClick(_id, player1Index));
+
+				}
+				else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
+					_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+					player1Index++;
+					if (player1Index > 3) player1Index = 0;
+					getMessage(new MButtonAct(_id, player1Index));
+					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+
+				}
+				else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
+					_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+					player1Index--;
+					if (player1Index < 0) player1Index = 3;
+					getMessage(new MButtonAct(_id, player1Index));
+					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+				}
+			}
+			else if (mInput->getId() == 1 && _pReady[0]){
+
+				if (mInput->getCInputState().Button_A == BTT_RELEASED){
+					getMessage(new MButtonClick(_id, player2Index));
+
+				}
+				else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
+					_entities.at(std::to_string(player2Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+					player2Index++;
+					if (player2Index > 3) player2Index = 0;
+					getMessage(new MButtonAct(_id, player2Index));
+					_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+
+				}
+				else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
+					_entities.at(std::to_string(player2Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+					player2Index--;
+					if (player2Index < 0) player2Index = 3;
+					getMessage(new MButtonAct(_id, player2Index));
+					_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+				}
+			}
+			break;
+		case MSG_GOD_SETTER:
+			mGodSet = static_cast<MGodSet*>(m);
+			selectGod(mGodSet->getGod(), mGodSet->getId());
+			_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+			_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+			break;
+		default:
+			break;
+
+		}
+		it++;
+		_sceneMessages.pop_front();
+	}
+
+};
+
+void SelectGodScene::processInput(ControllerInputState c){
+
+	int totalButtons = _menuEntities.size();
+
+	if (c.DPad_Down == BTT_PRESSED){
+		selectedButton++;
+		if (selectedButton >= totalButtons)
+			selectedButton = 0;
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+	else if (c.DPad_Up == BTT_PRESSED){
+		selectedButton--;
+		if (selectedButton < 0)
+			selectedButton = (totalButtons - 1);
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+
+	if (c.Button_A == BTT_PRESSED){
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
+	}
+}
+
+void SelectGodScene::selectGod(E_GOD g, int playerId){
+
+	_players[playerId].god = g;
+	_pReady[playerId] = true;
+
+	if (playerId == 0){
+		for (int i = 0; i < 4; i++){
+			deleteEntity(_godsButtons[i]->getID());
+		}
+		createButtons();
+
+		for (int i = 4; i < 8; i++){
+			addEntity(_godsButtons[i]);
+		}
+
+		getMessage(new MButtonAct(_id, 0));
+	}
+
+	else{
+
+		E_STAGE stage;
+		int rng = std::rand() % 2;
+
+		(rng == 0) ? stage = ES_TEMPLE : stage = ES_ISLANDS;
+		Game::getInstance()->changeScene(GAMEPLAY, _players, stage);
+
+
+
+	}
+
+}
+
+void SelectGodScene::createButtons(){
+
+#pragma region Player2 Gods
+
+	Entity* aux = new Entity("AhPuchP1", this);
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_AHPUCH));
+	_godsButtons.push_back(aux);
+
+
+
+	Entity* aux2 = new Entity("RaP1", this);
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_RA));
+	_godsButtons.push_back(aux2);
+
+
+	Entity* aux3 = new Entity("ZeusP1", this);
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_ZEUS));
+	_godsButtons.push_back(aux3);
+
+
+	Entity* aux4 = new Entity("HachimanP1", this);
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_HACHIMAN));
+	_godsButtons.push_back(aux4);
+
+
+#pragma endregion
+
+}
+#pragma endregion
+
+
+#pragma region Fight Menu Scene
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+FightMenuScene::FightMenuScene(std::string id, Game * game) : GameScene(id, game) {
+
+	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	selectedButton = 0;
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("FIGHT");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
+
+	Ogre::Viewport* vp = nullptr;
+	Entity *cam = new Entity("camMenuCombate", this);
+	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+
+	/*Entity * background = new Entity("backgroundMainMenu", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
+
+	Entity * multiplayerButton = new Entity("multiplayerButton", this);
+	multiplayerButton->addComponent(new CNormalButton(overlay, multiplayerButton, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), exitCallBack, "Multiplayer"));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, multiplayerButton));
+
+	Entity * tutorialButton = new Entity("tutorialButton", this);
+	tutorialButton->addComponent(new CNormalButton(overlay, tutorialButton, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), exitCallBack, "Tutorial"));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, tutorialButton));
+
+	overlay->show();
+
+	//Set the first button selected
+	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+
+}
+
+
+FightMenuScene::~FightMenuScene(){
+}
+
+
+
+
+bool FightMenuScene::run(){
+	//Here we would get the time between frames
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+
+	return aux;
+
+}
+
+void FightMenuScene::dispatch(){
+	GameScene::dispatch();
+
+
+}
+
+void FightMenuScene::processScnMsgs()
+{
+	MInputState* input;
 
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
@@ -852,7 +1566,7 @@ void MainMenuScene::processScnMsgs()
 
 };
 
-void MainMenuScene::processInput(ControllerInputState c){
+void FightMenuScene::processInput(ControllerInputState c){
 
 	int totalButtons = _menuEntities.size();
 
@@ -870,7 +1584,7 @@ void MainMenuScene::processInput(ControllerInputState c){
 	}
 
 	if (c.Button_A == BTT_PRESSED){
-		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
 	}
 }
 
@@ -1024,6 +1738,7 @@ void LoadingScene::processScnMsgs()
 
 #pragma endregion
 
+#pragma region InitScene
 initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getInstance()), _resCfgLoc(resCfgLoc)
 {
 	LoadComplete = false;
@@ -1034,18 +1749,15 @@ initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getIn
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	overlay = overlayManager.getByName("InitGUI");
 	overlay->show();
-	
+
 	startLoadThread();
 }
 initScene::~initScene() {
-	overlay->hide();
-	Game::getInstance()->getRenderWindow()->removeAllViewports();
-	scnMgr->clearScene();
 
 }
-void initScene::processScnMsgs() 
+void initScene::processScnMsgs()
 {
-	
+
 }
 void initScene::startLoadThread()
 {
@@ -1053,10 +1765,9 @@ void initScene::startLoadThread()
 	ldThread.detach();
 
 }
-
 bool initScene::run() {
 	if (LoadComplete == true && SDL_GetTicks() - tInicial >= 5000) {
-		overlay = Ogre::OverlayManager::getSingleton().getByName("Foto");
+		Game::getInstance()->changeScene(MAIN_MENU);
 	}
 
 	return 0;
@@ -1120,3 +1831,4 @@ bool initScene::initResources()
 		LoadComplete = true;
 		return LoadComplete;
 }
+#pragma endregion

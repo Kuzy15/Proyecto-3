@@ -12,7 +12,8 @@ enum E_STAGE;
 enum ComponentType;
 struct ControllerInputState;
 
-
+const Ogre::Vector3 _posP1(-20.0f,20.0f,0.0f);
+const Ogre::Vector3 _posP2(20.0f, 20.0f, 0.0f);
 
 #pragma region Game Scene
 
@@ -42,13 +43,16 @@ public:
 	//Each scene implements it differently
 	virtual bool run() = 0;
 	bool updateEnts(float delta);
-
+	inline std::string getId(){ return _id; }
 	//Debug
 	void clearDebugDraw();
 
 	//Box2d Bodies delete
 	void addBodyToDelete(b2Body* b);
 	void addEntityToDelete(Entity* e);
+
+
+	std::string godToString(E_GOD g);
 
 protected:
 	std::string _id;
@@ -74,6 +78,7 @@ protected:
 	//List of bodies to destruct at the end of the frame.
 	void destroyBodies();
 	void destroyEntities();
+
 
 };
 
@@ -128,11 +133,12 @@ typedef enum GameplayState{
 };
 //Struct and global variables that stores the battle information
 const int MAX_ROUNDS = 3;
-const float TIME_LIMIT = 0;
+const float TIME_LIMIT = 120000.0f;
 
 struct BattleState{
 	bool battleStarted = false; //Bool battle started
 	bool battleEnded = false;
+	bool battleStoped = false;
 	float timeElapsed = 0;		//Time elapsed sice the start of the battle
 	int roundsCompleted = 0;	//Rounds completed
 	float timeCountStart = 0;	//Time when battle started
@@ -145,8 +151,10 @@ struct Player{
 	E_GOD god;
 	int roundsWon = 0;
 	std::vector<ComponentType> abilities;
-	ComponentType currentActive; // = default
+	ComponentType currentActive; 
 	ComponentType currentPassive;
+	bool passiveSelected = false;
+	bool activeSelected = false;
 };
 
 
@@ -166,11 +174,13 @@ private:
 	void battlePhase();
 	void endPhase();
 	void changePhase(GameplayState);
+	void resetPlayers();
 	//Load the stage
 	void loadStage();
 	//Load the ability cards entities for each player
 	void loadAbilities();
-	void addAbilityComponent(int playerId, ComponentType id, int type); //Type values (0 = Active), (1 = Passive)
+	void reloadAbilities();
+	void addAbilityComponent(int playerId, ComponentType id); //Type values (0 = Active), (1 = Passive)
 	//Controller manage methods
 	void controllerDisconected(int id);
 	void controllerConnected(int id);
@@ -186,17 +196,35 @@ private:
 	GameplayState _currState;	//The current state of the scene
 	BattleState _battleState;		//The state of the battle
 	E_STAGE _stage;			//Stage type
+	std::vector<Entity*> _stageEntities;
 	const int TOTAL_ROUNDS = 3;
 	int _nPlayers;				//Number of players
 	std::vector<Player> _players;	//Array of pointer to the players Entities
-	std::vector<bool> _pReady = std::vector<bool>(4, false);			//Array that show if players are ready to play
+	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
 	bool _paused;
-	std::list<Entity*> _cardGUIEntities;		//Buttons for card select entities
+	std::vector<Entity*> _cardGUIEntities;		//Buttons for card select entities
+	std::vector<Entity*> _endGUIEntities;
+	std::vector<ComponentType> _totalPassives;
+	std::vector<ComponentType> _totalActives;
+	int player1Index;
+	int player2Index;
+
+	
+
 
 	Ogre::Overlay* bgCards;
+	Ogre::Overlay* bgEnd;
+
+	
 
 	float _prepareCounter;
 	float _prepareLimitTime;
+
+	float _postGameCounter;
+	float _postGameLimitTime;
+
+	float _preGameCounter;
+	float _preGameLimitTime;
 
 
 };
@@ -210,6 +238,7 @@ private:
 
 //Basic class to debug and test the ogre implementation
 //and the behaviour of the components
+
 class MainMenuScene : public GameScene
 {
 public:
@@ -227,7 +256,68 @@ private:
 	void processInput(ControllerInputState c);
 
 	int selectedButton;
-	
+
+
+};
+#pragma endregion
+
+
+#pragma region Select God Scene
+class SelectGodScene : public GameScene
+{
+public:
+	SelectGodScene(std::string id, Game * game);
+	virtual ~SelectGodScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+
+	void processInput(ControllerInputState c);
+	void selectGod(E_GOD G, int playerId);
+	void createButtons();
+	int selectedButton;
+	std::vector<Entity*> _godsButtons;
+
+	std::vector<Player> _players;	//Array of pointer to the players Entities
+
+	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
+
+	int player1Index;
+	int player2Index;
+
+
+};
+
+#pragma endregion
+
+#pragma region Fight Menu Scene
+/*----------------------------- FIGHT MENU SCENE -----------------------------*/
+
+//Basic class to debug and test the ogre implementation
+//and the behaviour of the components
+class FightMenuScene : public GameScene
+{
+public:
+	FightMenuScene(std::string id, Game * game);
+	virtual ~FightMenuScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
+
 
 };
 

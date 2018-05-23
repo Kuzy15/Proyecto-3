@@ -33,6 +33,10 @@ private:
 	
 	const std::string _emitter = "InputManager";
 
+	std::vector<ControllerInputState> lastState;
+
+	bool receiving; 
+
 public:
 	~InputManager();
 
@@ -42,6 +46,7 @@ public:
 	void handleInput();											//Main functiion. Read the input from SDL
 	void getMessages(std::list<Message*> &sceneQueue);			//Send input messages to another queue
 	int numMessages();											//Return the number of currently messages in the queue
+	void stopReceiving(bool b);
 
 };
 #endif

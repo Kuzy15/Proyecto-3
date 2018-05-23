@@ -10,13 +10,14 @@ class Entity;
 class GameComponent;
 class b2Vec2;
 enum ComponentType;
+enum E_GOD;
 
 #pragma region CInputState
 
 
 
 enum ButtonState{
-	BTT_PRESSED = 1, BTT_NONE = 0
+	BTT_PRESSED = 1, BTT_NONE = 0, BTT_RELEASED = 2
 };
 
 struct ControllerInputState{
@@ -89,7 +90,11 @@ typedef enum MessageType {
 	MSG_UPDATE_ACTIVETIMER,
 	MSG_PASSIVE_DEAD,
 	MSG_ACTIVE_DEAD,
-	MSG_ROUND_FINISHED
+	MSG_ROUND_FINISHED,
+	MSG_ACT_RENDERGODMENU,
+	MSG_DES_RENDERGODMENU,
+	MSG_GOD_SETTER,
+	MSG_RESET_GUI
 
 	
 
@@ -584,10 +589,12 @@ private:
 class MButtonClick: public Message
 {
 public:
-	MButtonClick(std::string emmiter);
+	MButtonClick(std::string emmiter, int id);
 	~MButtonClick();
+	inline int getId(){ return _idClicked; };
 
 private:
+	int _idClicked;
 };
 //--------------------------------------------------	LIFE STATE MSG		----------------------------------------------------------//
 class MLifeState: public Message
@@ -615,6 +622,22 @@ private:
 	ComponentType _c;
 	int _type;
 };
+
+//--------------------------------------------------	GOD SETTER MSG		----------------------------------------------------------//
+class MGodSet : public Message
+{
+public:
+	MGodSet(std::string emmiter, int playerId, E_GOD god);
+	~MGodSet();
+	inline int getId(){ return _playerId; };
+	inline E_GOD getGod(){ return _god; };
+	
+private:
+	int _playerId;
+	E_GOD _god;
+	
+};
+
 
 //--------------------------------------------------	SCENE TIMER UPDATE MSG		----------------------------------------------------------//
 class MUpdateSceneTimer : public Message
@@ -670,6 +693,36 @@ private:
 	std::string _winnerId;
 };
 
+
+//--------------------------------------------------	SELECT GOD RENDER MSG		----------------------------------------------------------//
+class MActSeleGodRender : public Message
+{
+public:
+	MActSeleGodRender(std::string emmiter);
+	~MActSeleGodRender();
+	inline int getIdx(){ return _idx; };
+private:
+	int _idx;
+};
+
+
+class MDesSeleGodRender : public Message
+{
+public:
+	MDesSeleGodRender(std::string emmiter);
+	~MDesSeleGodRender();
+	inline int getIdx(){ return _idx; };
+private:
+	int _idx;
+};
+
+class MResetGui : public Message
+{
+public:
+	MResetGui(std::string emmiter);
+	~MResetGui();
+
+};
 
 
 

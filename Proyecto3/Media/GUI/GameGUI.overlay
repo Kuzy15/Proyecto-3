@@ -57,7 +57,7 @@ template container Panel (GUI/Icon)
 
 }
 
-Background
+bgCards
 {
 	zorder 50
 	container Panel (Wololo)
@@ -71,9 +71,59 @@ Background
 
 }
 
+bgEnd
+{
+	zorder 50
+	container Panel (EndPanel)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/BasicRed
+	}
+
+}
+
 MENU
 {
-	zorder 100
+	zorder 50
+	container Panel (FondoMainMenu)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/FondoMainMenu
+	}
+}
+
+
+SELECT
+{
+
+	zorder 200
+	//container Panel (FondoSelectGod)
+	//{
+	//top 0
+	//left 0
+	//width 1
+	//height 1
+	//material GUI/FondoSelectGod
+	//}
+}
+
+FIGHT
+{
+	zorder 50
+	container Panel (FondoFightMenu)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/FondoFightMenu
+	}
 }
 // Graphical User Interface for the PlayScene.
 GUI
@@ -139,7 +189,7 @@ GUI
           top 0.0925
           width 0.27
           height 0.08
-         material GUI/Player1/LifeFrame
+          material GUI/Player1/LifeFrame
         }
 
         container Panel (Player1/Round1) : GUI/Round
@@ -203,7 +253,6 @@ GUI
           horz_align right
           left -0.093
           material GUI/RoundEmpty
-
         }
         container TextArea (Player2/Name) : GUI/PlayerName
         {
@@ -212,7 +261,7 @@ GUI
           alignment right
           left -0.104
 
-        }
+        }        
         container Panel (Player2/LifeBar)
         {
           horz_align right
@@ -221,16 +270,7 @@ GUI
           width 0.27
           height 0.08
           material GUI/Player2/LifeBar
-        }
-        container Panel (Player2/ALifeBorder)
-        {
-          horz_align right
-          left -0.374
-          top 0.0925
-          width 0.27
-          height 0.08
-          material GUI/Player2/LifeFrame
-        }
+        }    
         container Panel (Player2/Round1) : GUI/Round
         {
           horz_align right

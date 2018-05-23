@@ -276,13 +276,13 @@ MDamage::~MDamage(){}
 
 	//-------------------------------------------------- GUI MSGS -----------------------------------------------------------------------------
 #pragma region Button Active
-	MButtonAct::MButtonAct(std::string emmiter, unsigned int index) :Message(MSG_GUI_BUTTON_ACTIVE, ENTITY, emmiter), _activeIndex(index) {}
+	MButtonAct::MButtonAct(std::string emmiter, unsigned int index) :Message(MSG_GUI_BUTTON_ACTIVE, SCENE, emmiter), _activeIndex(index) {}
 	MButtonAct::~MButtonAct() {};
 	unsigned int MButtonAct::getActiveButtonIndex() { return _activeIndex; };
 #pragma endregion
 
 #pragma region Button Click
-	MButtonClick::MButtonClick(std::string emmiter) :Message(MSG_GUI_BUTTON_CLICK, ENTITY, emmiter) {};
+	MButtonClick::MButtonClick(std::string emmiter, int id) :Message(MSG_GUI_BUTTON_CLICK, SCENE, emmiter), _idClicked(id) {};
 	MButtonClick::~MButtonClick() {};
 
 #pragma endregion
@@ -295,8 +295,16 @@ MDamage::~MDamage(){}
 #pragma endregion
 
 #pragma region Ability Set
-	MAbilitySet::MAbilitySet(std::string emmiter, int playerId, ComponentType compId, int type) : Message(MSG_ABILITY_SETTER, SCENE_ONLY, emmiter), _playerId(playerId),_c(compId), _type(type) {};
+	MAbilitySet::MAbilitySet(std::string emmiter, int playerId, ComponentType compId, int type) : Message(MSG_ABILITY_SETTER, SCENE, emmiter), _playerId(playerId),_c(compId), _type(type) {};
 	MAbilitySet::~MAbilitySet() {};
+
+#pragma endregion
+
+#pragma region God Set
+
+	MGodSet::MGodSet(std::string emmiter, int playerId, E_GOD god):Message(MSG_GOD_SETTER,SCENE_ONLY,emmiter), _god(god),_playerId(playerId){};
+	MGodSet::~MGodSet(){};
+		
 
 #pragma endregion
 
@@ -329,4 +337,20 @@ MDamage::~MDamage(){}
 	MRoundFinished::MRoundFinished(std::string emmiter, std::string winnerId) : Message(MSG_ROUND_FINISHED, SCENE, emmiter), _winnerId(winnerId) {};
 	MRoundFinished::~MRoundFinished() {};
 	std::string MRoundFinished::getWinnerId() { return _winnerId; };
+#pragma endregion
+
+#pragma region Select God
+
+
+	MActSeleGodRender::MActSeleGodRender(std::string emmiter) : Message(MSG_ACT_RENDERGODMENU, ENTITY, emmiter){};
+	MActSeleGodRender::~MActSeleGodRender(){};
+
+	MDesSeleGodRender::MDesSeleGodRender(std::string emmiter) : Message(MSG_DES_RENDERGODMENU, ENTITY, emmiter){};
+	MDesSeleGodRender::~MDesSeleGodRender(){};
+	
+#pragma endregion
+
+#pragma region Reset Gui 
+	MResetGui::MResetGui(std::string emmiter) : Message(MSG_RESET_GUI, SCENE, emmiter) {};
+	MResetGui::~MResetGui() {};
 #pragma endregion

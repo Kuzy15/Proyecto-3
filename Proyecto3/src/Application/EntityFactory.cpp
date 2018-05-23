@@ -98,12 +98,12 @@ Entity* EntityFactory::createBullet(E_BULLET cE,  GameScene* s, Ogre::Vector3 in
 #endif
 }
 
-std::vector<Entity*>* EntityFactory::createStage(E_STAGE cE, GameScene* s){
+std::vector<Entity*>* EntityFactory::createStage(E_STAGE cE, GameScene* s, std::vector<Entity*> &deleteables){
 
 
 	createStageFunc c = _createStageFuncs.at(cE);
 	if (c != nullptr)
-		return c(s);
+		return c(s, deleteables);
 #ifdef _DEBUG
 	std::cout << "No existe esa funcion de creacion" << std::endl;
 #endif

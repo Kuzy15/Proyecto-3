@@ -8,12 +8,17 @@
 #include <OgreWindowEventUtilities.h>
 #include "irrKlang.h"
 #include <OgreOverlaySystem.h>
+#include <stack>
+#include "EF_Entities.h"
 
 using namespace irrklang;
 
 
 class GameScene;
+struct Player;
 
+
+enum SCENES_ENUM { MAIN_MENU = 0, MULTIPLAYER = 1, GAMEPLAY = 2  };
 
 
 //Game is a window event listener,
@@ -33,8 +38,12 @@ public:
 	b2World* getPhysicsWorld();
 
 	Ogre::OverlaySystem * getOverlaySystem();
-	void Game::changeScene(GameScene* s);
 	void setOverlaySystem(Ogre::OverlaySystem *);
+
+	void newScene();
+	void changeScene(SCENES_ENUM newScene, std::vector<Player> players = std::vector<Player>(), E_STAGE s = ES_TEMPLE );
+	void popScene();
+
 
 	void exitGame();
 
@@ -57,6 +66,9 @@ private:
 	//Sound engine pointer
 	ISoundEngine* _soundEngine;
 
+	//Stack of Scenes
+	std::stack<GameScene*> scenes;
+	SCENES_ENUM _nextScene;
 	//Box2D parameters
 	b2World* world;		//Pointer to the world
 	const b2Vec2 GRAVITY = b2Vec2(0.0,-40.0f);
@@ -71,14 +83,14 @@ private:
 
 
 	bool _exit;
+	bool _changeScene;
 
 
-	//This will be removed. Just to test
-	GameScene * actScene;
 
 	//Singleton
 	static Game * _instance;
-
+	std::vector<Player> _nextPlayers;
+	E_STAGE _nextStage;
 	//internal private methods
 	bool initOgre();
 	void render();

@@ -9,6 +9,7 @@
 #include <list>
 #include <Box2D.h>
 #include <OgreTextAreaOverlayElement.h>
+#include <irrKlang.h>
 
 
 class Entity;
@@ -24,8 +25,8 @@ typedef enum E_GOD;
 //Limits for the components variables 
 const float MAX_SPEED = 13.0f;
 const int MAX_LIFE = 150;
-const float MAX_JUMP_DISTANCE = 150.0f;
-const float MAX_FIRE_RATE = 0.0f;
+const float MAX_JUMP_DISTANCE = 90.0f;
+const float MAX_FIRE_RATE = 200.0f;
 
 //Pixels per meter
 const float PPM = 3.0f;
@@ -85,6 +86,9 @@ typedef enum ComponentType {
 	CMP_PASSIVE_DEFAULT
 
 };
+
+std::string compToString(ComponentType t, int &type);
+
 
 typedef void ButtonAbilityCallback(int playerId, ComponentType c, int type);
 
@@ -160,6 +164,7 @@ public:
 	//Ogre::SceneNode * getSceneNode();
 	virtual void getMessage(Message *m);
 
+
 protected:
 	CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM);
 	// Inside the Ogre Node we can find al the render values needed by ogre
@@ -214,7 +219,7 @@ class CSkyPlaneRender : public CRender
 {
 public:
 
-	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos);
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp);
 	~CSkyPlaneRender();
 
 
@@ -222,7 +227,8 @@ public:
 	virtual void getMessage(Message * m);
 	
 private:
-	
+	Ogre::MeshPtr plane;
+	Ogre::Entity* entity;
 };
 
 
@@ -239,6 +245,7 @@ public:
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
 	Ogre::SceneNode* getChildNode(){ return pChild; }
+	inline void setVisible(bool visible){ pOgreEnt->setVisible(visible); };
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -301,6 +308,7 @@ public:
 	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	inline Ogre::Viewport* getVP(){ return _vp; };
 	
 
 protected:
@@ -406,6 +414,7 @@ private:
 	b2BodyDef _bodyDef;
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
+
 	
 };
 /*
@@ -596,6 +605,8 @@ private:
 	bool _toDelete;
 	float _auxVelocityReset;
 
+	irrklang::ISound* s;
+
 };
 
 
@@ -604,10 +615,12 @@ private:
 class CAbility : public GameComponent
 {
 public:
-	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, uint16 mask); 
+	CAbility(ComponentType c,Entity * father, float componentLife, float componentArmor, uint16 mask, int type); 
 	~CAbility();
 
 	virtual void getMessage(Message* m);
+
+	inline int getType(){ return _type; }
 
 protected:
 	float _componentLife;
@@ -615,7 +628,9 @@ protected:
 	float _coolDown;
 	uint16 _myMask;
 	float _limitLife;
+	int _type;		//0 = Active ; 1 = Passive
 	bool dead;
+
 
 	
 };
@@ -924,8 +939,27 @@ public:
 private:
 	int _playerId;
 	ComponentType _compType;
+	int _type;
+	
 	
 };
+
+
+class CGodButton : public CButtonGUI
+{
+public:
+	CGodButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god);
+	~CGodButton();
+
+	virtual void getMessage(Message * m);
+
+private:
+	int _playerId;
+	E_GOD _god;
+
+};
+
+
 
 
 enum guiPlayer{
@@ -956,5 +990,7 @@ private:
 	size_t roundsWon;
 	guiPlayer p;
 };
+
+
 
 #endif

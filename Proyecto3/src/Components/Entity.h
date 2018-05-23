@@ -44,6 +44,8 @@ private:
 	//queue managing during tick function
 	void dispatch();
 
+	void deleteAllMsgs();
+
 };
 
 

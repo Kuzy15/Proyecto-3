@@ -27,15 +27,3 @@ InitGUI
      material Init/CircleIn
    }
 }
-Foto
-{
-  zOrder 200
-  element Panel(FotoMando)
-  {
-    top 0
-    left 0
-    height 1
-    width 1
-    material Init/FotoMando
-  }
-}

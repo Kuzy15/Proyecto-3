@@ -14,7 +14,7 @@
 
 
 #pragma region Constructors and Destructors
-Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc)
+Entity::Entity(std::string id, GameScene * sc) :_id(id), scene(sc), _active(true)
 {
 
 }
@@ -27,7 +27,6 @@ Entity::~Entity()
 		
 		aux = *it;
 		try{
-			
 			it = components.erase(it);
 		}
 		catch (std::exception &e){
@@ -37,10 +36,13 @@ Entity::~Entity()
 		
 	}
 	
+
 	while (!msgs.empty()){
 		Message * aux = msgs.front();
 		msgs.pop();
-		delete aux;
+		if (aux != nullptr && aux->getDestination() == ENTITY)
+			delete aux;
+		aux = nullptr;
 	}
 
 }
@@ -90,8 +92,15 @@ GameScene* Entity::getScene(){ return scene; }
 
 void Entity::getMessage(Message * m){
 	//If the message is SOMETHING we push it in the queue
-	if (m != nullptr)
-		msgs.push(m);
+	if (m != nullptr){
+		if (!_active){
+			if (m->getDestination() == ENTITY)
+				delete m;		
+		}
+		else {			
+			msgs.push(m);		
+		}
+	}
 }
 //Method to send a message to the scene
 void Entity::sendMessage(Message * m) {
@@ -128,17 +137,33 @@ void Entity::dispatch(){
 	}
 }
 
+void Entity::deleteAllMsgs(){
+
+	while (!msgs.empty()){
+		Message * aux = msgs.front();
+		if(aux->getType() == ENTITY)delete aux;
+		msgs.pop();
+	}
+
+}
 #pragma endregion
 
 #pragma region Tick
 void Entity::tick(float delta){
-	//Deliver every message in queue
-	dispatch();
 
-	//Update every component in the entity
-	for (auto comp : components)
-		comp->tick(delta);
+	if (_active){
 
+		//Deliver every message in queue
+		dispatch();
+
+		//Update every component in the entity
+		for (auto comp : components)
+			comp->tick(delta);
+	}
+	else
+		deleteAllMsgs();
+	
+	
 }
 
 #pragma endregion

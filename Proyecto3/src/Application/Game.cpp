@@ -17,6 +17,7 @@
 #include <OgreOverlaySystem.h>
 #include <OgreOverlayManager.h>
 #include <exception>
+#include "EntityFactory.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -56,6 +57,8 @@ Game::Game(){
 
 
 
+
+
 	//Inicialization of SDL. Only starts JOYSTICK functionality.
 	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
 #ifdef _DEBUG
@@ -68,32 +71,30 @@ Game::Game(){
 
 	 initOgre();
 
-	 std::vector<Player>* players = new std::vector<Player>(2);
 
-	 players->at(0).controllerId = 0;
-	 players->at(0).god = EG_AHPUCH;
-
-	 players->at(1).controllerId = 1;
-	 players->at(1).god = EG_AHPUCH;
-
-
-	 actScene = new initScene(resCfgLoc);
-	 render();
-	// actScene->run();
-	 //actScene = new MainMenuScene("MainMenu", this);
+	 _nextPlayers = std::vector<Player>();
+	 _nextStage = ES_TEMPLE;
 
 	 _exit = false;
+	 _changeScene = false;
 
-	 delete players;
+
+	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+	 GameScene* actScene = new initScene(resCfgLoc);//new MainMenuScene("MainMenuScene", this);
+	 scenes.push(actScene);
+
+
 
 }
  Game::~Game(){
 
 
+	 while (!scenes.empty()){
+		 GameScene* s = scenes.top();
+		 scenes.pop();
+		 delete s;
 
-
-	 if (actScene != nullptr)
-		 delete actScene;
+	 }
 	 //Remove the game from the window listeners
 	 //Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
 
@@ -102,6 +103,8 @@ Game::Game(){
 	 world = nullptr;
 
 	 InputManager::resetInstance();
+
+	 EntityFactory::getInstance().resetInstance();
 	 /*if (root != nullptr)
 		delete root;*/
 
@@ -123,6 +126,43 @@ Game::Game(){
 	 return pOverSyst;
  };
 
+ void Game::popScene(){
+
+	 if (!scenes.empty()){
+		 GameScene* s = scenes.top();
+		 scenes.pop();
+		 delete s;
+	 }
+ }
+ void Game::newScene(){
+
+	 GameScene* s;
+	 switch (_nextScene)
+	 {
+	 case GAMEPLAY:
+		 s = new GamePlayScene("GameplayScene", this, _nextPlayers, _nextStage);
+		 break;
+	 case MAIN_MENU:
+		 s = new MainMenuScene("MainMenuScene", this);
+		 break;
+	 case MULTIPLAYER:
+		 s = new SelectGodScene("MultiplayerScene", this);
+		 break;
+	 default:
+		 break;
+	 }
+	scenes.push(s);
+
+
+ }
+
+ void Game::changeScene(SCENES_ENUM newScene, std::vector<Player> players , E_STAGE s ){
+	 _changeScene = true;
+	 _nextScene = newScene;
+
+	 _nextStage = s;
+	 _nextPlayers = players;
+ }
 #pragma endregion
 
 
@@ -188,7 +228,7 @@ bool Game::initOgre(){
  }
 #pragma endregion
 
- 
+
  void Game::exitGame(){
 	 _exit = true;
  }
@@ -207,6 +247,13 @@ void Game::loop() {
 
 
 	while (!pWindow->isClosed() && !_exit){
+
+		if (_changeScene){
+			popScene();
+			newScene();
+			_changeScene = false;
+		}
+
 		//Refresh loop parameters
 		newTime = (SDL_GetTicks() / 1000.0);
 		frameTime = newTime - currentTime;
@@ -218,7 +265,8 @@ void Game::loop() {
 
 			handleInput();
 			world->Step(FPS_CAP, 10, 2);
-			actScene->run();
+			if (!scenes.empty())
+				scenes.top()->run();
 			accumulator -= FPS_CAP;
 			frames++;
 		}
@@ -251,18 +299,6 @@ void Game::render() {
 //Read the input
 void Game::handleInput(){ InputManager::getInstance().handleInput();}
 
-void Game::changeScene(GameScene* s){
 
-	//Mostrar una imagen de carga
-
-
-
-
-
-
-
-	delete actScene;
-	actScene = s;
-}
 
 #pragma endregion
