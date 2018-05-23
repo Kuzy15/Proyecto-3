@@ -10,6 +10,7 @@ class Entity;
 class GameComponent;
 class b2Vec2;
 enum ComponentType;
+enum E_GOD;
 
 #pragma region CInputState
 
@@ -91,7 +92,8 @@ typedef enum MessageType {
 	MSG_ACTIVE_DEAD,
 	MSG_ROUND_FINISHED,
 	MSG_ACT_RENDERGODMENU,
-	MSG_DES_RENDERGODMENU
+	MSG_DES_RENDERGODMENU,
+	MSG_GOD_SETTER
 
 	
 
@@ -618,6 +620,21 @@ private:
 	int _playerId;
 	ComponentType _c;
 	int _type;
+};
+
+//--------------------------------------------------	GOD SETTER MSG		----------------------------------------------------------//
+class MGodSet : public Message
+{
+public:
+	MGodSet(std::string emmiter, int playerId, E_GOD god);
+	~MGodSet();
+	inline int getId(){ return _playerId; };
+	inline E_GOD getGod(){ return _god; };
+	
+private:
+	int _playerId;
+	E_GOD _god;
+	
 };
 
 

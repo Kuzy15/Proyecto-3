@@ -227,7 +227,8 @@ public:
 	virtual void getMessage(Message * m);
 	
 private:
-	
+	Ogre::MeshPtr plane;
+	Ogre::Entity* entity;
 };
 
 
@@ -954,6 +955,7 @@ public:
 
 private:
 	int _playerId;
+	E_GOD _god;
 
 };
 

@@ -11,7 +11,8 @@ enum E_STAGE;
 enum ComponentType;
 struct ControllerInputState;
 
-
+const Ogre::Vector3 _posP1(20.0f,5.0f,0.0f);
+const Ogre::Vector3 _posP2(-20.0f, 5.0f, 0.0f);
 
 #pragma region Game Scene
 
@@ -41,7 +42,7 @@ public:
 	//Each scene implements it differently
 	virtual bool run() = 0;
 	bool updateEnts(float delta);
-
+	inline std::string getId(){ return _id; }
 	//Debug
 	void clearDebugDraw();
 
@@ -205,8 +206,7 @@ private:
 	int player2Index;
 
 	
-	Ogre::Vector3 _posP1; 
-	Ogre::Vector3 _posP2; 
+
 
 	Ogre::Overlay* bgCards;
 	Ogre::Overlay* bgEnd;
@@ -262,7 +262,7 @@ private:
 class SelectGodScene : public GameScene
 {
 public:
-	SelectGodScene(std::string id, Game * game, std::vector<Player> players);
+	SelectGodScene(std::string id, Game * game);
 	virtual ~SelectGodScene();
 
 
@@ -274,8 +274,10 @@ public:
 private:
 
 	void processInput(ControllerInputState c);
-
+	void selectGod(E_GOD G, int playerId);
+	void createButtons();
 	int selectedButton;
+	std::vector<Entity*> _godsButtons;
 
 	std::vector<Player> _players;	//Array of pointer to the players Entities
 

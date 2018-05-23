@@ -538,9 +538,9 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 #pragma region Skyplane Render Component
 CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 
-	Ogre::MeshPtr plane = Ogre::MeshManager::getSingleton().createPlane(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::Plane(Ogre::Vector3::UNIT_Z, 0), 
+	plane = Ogre::MeshManager::getSingleton().createPlane(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::Plane(Ogre::Vector3::UNIT_Z, 0),
 		96, 54, 100, 100, false, 1, 1.0, 1.0);
-	Ogre::Entity* entity = scnM->createEntity("plano" + materialName, materialName);
+	entity = scnM->createEntity("plano" + materialName + pEnt->getScene()->getId(), materialName);
 
 	entity->setMaterialName(materialName);
 	pOgreSceneNode->attachObject(entity);
@@ -549,7 +549,12 @@ CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, flo
 	//pOgreSceneNode->setScale({ scale, scale, scale });
 
 }
-CSkyPlaneRender::~CSkyPlaneRender(){}
+CSkyPlaneRender::~CSkyPlaneRender(){
+
+	/*Ogre::MeshManager::getSingleton()
+	pChild->detachObject(entity);
+	pSceneMgr->destroyEntity(entity);*/
+}
 
 
 void CSkyPlaneRender::tick(float delta){}
@@ -646,8 +651,6 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	_vp = vp;
 }
 CCamera::~CCamera() {
-	Game::getInstance()->getRenderWindow()->removeViewport(_vp->getZOrder());
-	
 	delete pCam;
 }
 void CCamera::tick(float delta) {
@@ -2221,7 +2224,7 @@ void CAbilityButton::getMessage(Message * me)
 
 #pragma region God Button
 CGodButton::CGodButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
-_playerId(playerId){
+_playerId(playerId), _god(god){
 
 	std::string godName = pEnt->getScene()->godToString(god);
 
@@ -2242,31 +2245,39 @@ _playerId(playerId){
 CGodButton::~CGodButton()
 {
 
-
+	pOver->remove2D(pContainer);
 }
 
 
 void CGodButton::getMessage(Message * me)
 {
 
+	if (!_clicked){
+		switch (me->getType()){
+		case MSG_GUI_BUTTON_ACTIVE:
+			if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+				_active = true;
+				pContainer->setMaterialName(materials[1]);
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", false);
 
-	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
-	{
-		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
-			_active = true;
-			pContainer->setMaterialName(materials[1]);
+			}
+			else if (_active)
+			{
+				_active = false;
+				pContainer->setMaterialName(materials[0]);
+			}
+			break;
+		case MSG_GUI_BUTTON_CLICK:
+			if (static_cast<MButtonClick*>(me)->getId() == _sceneId){
+				pContainer->setMaterialName(materials[2]);
+				_clicked = true;
+				Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
+				pEnt->getScene()->getMessage(new MGodSet(pEnt->getID(), _playerId, _god));
+			}
+			break;
+		default:
+			break;
 		}
-		else if (_active)
-		{
-			_active = false;
-			pContainer->setMaterialName(materials[0]);
-
-		}
-	}
-	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
-		pContainer->setMaterialName(materials[2]);
-		_clicked = true;
-
 	}
 
 

@@ -300,6 +300,14 @@ MDamage::~MDamage(){}
 
 #pragma endregion
 
+#pragma region God Set
+
+	MGodSet::MGodSet(std::string emmiter, int playerId, E_GOD god):Message(MSG_GOD_SETTER,SCENE_ONLY,emmiter), _god(god),_playerId(playerId){};
+	MGodSet::~MGodSet(){};
+		
+
+#pragma endregion
+
 #pragma region Update Scene Timer 
 	MUpdateSceneTimer::MUpdateSceneTimer(std::string emmiter, size_t value) : Message(MSG_UPDATE_SCENETIMER, SCENE, emmiter), _value(value) {};
 	MUpdateSceneTimer::~MUpdateSceneTimer() {};

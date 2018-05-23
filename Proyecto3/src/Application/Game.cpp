@@ -80,7 +80,7 @@ Game::Game(){
 	
 
 	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
-	 GameScene* actScene = new MainMenuScene("MainMenu", this);
+	 GameScene* actScene = new MainMenuScene("MainMenuScene", this);
 	 scenes.push(actScene);
 
 	 
@@ -133,9 +133,6 @@ Game::Game(){
 		 scenes.pop();
 		 delete s;
 	 }
-	 
-	
-
  }
  void Game::newScene(){
 	
@@ -146,8 +143,10 @@ Game::Game(){
 		 s = new GamePlayScene("GameplayScene", this, _nextPlayers, _nextStage);
 		 break;
 	 case MAIN_MENU:
+		 s = new MainMenuScene("MainMenuScene", this);
 		 break;
 	 case MULTIPLAYER:
+		 s = new SelectGodScene("MultiplayerScene", this);
 		 break;
 	 default:
 		 break;

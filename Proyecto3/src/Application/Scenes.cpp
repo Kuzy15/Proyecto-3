@@ -59,6 +59,8 @@ GameScene::~GameScene()
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 
+	Game::getInstance()->getRenderWindow()->removeAllViewports();
+
 	destroyBodies();
 
 	scnMgr->removeRenderQueueListener(Game::getInstance()->getOverlaySystem());
@@ -320,19 +322,12 @@ void exitCallBack() {
 }
 void battleCallBack() {
 	
-
-	std::vector<Player>* players = new std::vector<Player>(2);
-
-	players->at(0).controllerId = 0;
-	players->at(0).god = EG_HACHIMAN;
-
-	players->at(1).controllerId = 1;
-	players->at(1).god = EG_ZEUS;
-	Game::getInstance()->changeScene(GAMEPLAY,(*players),ES_ISLANDS);
-
-	delete players;
 }
+void selectGodCallBack(){
 
+	Game::getInstance()->changeScene(MULTIPLAYER);
+
+}
 void returnMainMenu(){}
 
 void returnMulitplayerMenu(){}
@@ -371,8 +366,6 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//Store and configure the players structure
 	_players = players;
-	_posP1 = Ogre::Vector3(-30.0f, 0.0f, 0.0f);
-	_posP2 = Ogre::Vector3(-20.0f, 0.0f, 0.0f);
 
 	std::vector<Ogre::Vector3> playerPos;
 	playerPos.push_back(_posP1);
@@ -967,7 +960,7 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	Entity * fightButton = new Entity("fightButton", this);
 
-	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), battleCallBack, "Combate"));
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), selectGodCallBack, "Combate"));
 
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
 	addEntity(fightButton);
@@ -1076,7 +1069,7 @@ void MainMenuScene::processScnMsgs()
 
 #pragma region Select God Scene
 //The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
-SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> players) : GameScene(id, game) {
+SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game) {
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
@@ -1084,17 +1077,23 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	light->setPosition(0, 30, 50);
 	light->setCastShadows(true);
 
-	_players = players;
+	
+
+	std::vector<Player>* players = new std::vector<Player>(2);
+	players->at(0).controllerId = 0;
+	players->at(1).controllerId = 1;
+	_players = (*players);
+	delete players;
 
 	selectedButton = 0;
-
-	player1Index = 0;
-	player2Index = 4;
+	player1Index = player2Index = 0;
+	
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	// Create an overlay
 	try {
 		overlay = overlayManager.getByName("SELECT");
+
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -1113,54 +1112,67 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
 
-	Entity *sky = new Entity("sky", this);
-	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "MainMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
-	addEntity(sky);
 
-	Entity * aux = new Entity("AhPuchP0", this);
-	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, aux));
-	addEntity(aux);
+	/*Entity *sky = new Entity("sky", this);
+	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "MainMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
+	addEntity(sky); */
+
 	Entity* renderAhPuch = new Entity("0", this);
 	CMeshRender * AhPuchMeshRender = new CMeshRender({ -6, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	AhPuchMeshRender->setVisible(true);
 	renderAhPuch->addComponent(AhPuchMeshRender);
 	addEntity(renderAhPuch);
-	
 
-	Entity * aux2 = new Entity("RaP0", this);
-	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, aux2));
-	addEntity(aux2);
 	Entity* renderAux2 = new Entity("1", this);
 	CMeshRender* RaMeshRender = new CMeshRender({ -6, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	RaMeshRender->setVisible(false);
 	renderAux2->addComponent(RaMeshRender);
 	addEntity(renderAux2);
 
-	Entity * aux3 = new Entity("ZeusP0", this);
-	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, aux3));
-	addEntity(aux3);
 	Entity* renderAux3 = new Entity("2", this);
 	CMeshRender* ZeusMeshRender = new CMeshRender({ -6, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	ZeusMeshRender->setVisible(false);
 	renderAux3->addComponent(ZeusMeshRender);
 	addEntity(renderAux3);
 
-	Entity * aux4 = new Entity("HachimanP0", this);
-	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, aux4));
-	addEntity(aux4);
 	Entity* renderAux4 = new Entity("3", this);
 	CMeshRender* HachimanMeshRender = new CMeshRender({ -6, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	HachimanMeshRender->setVisible(false);
 	renderAux4->addComponent(HachimanMeshRender);
 	addEntity(renderAux4);
+
+
+#pragma region Player1 Gods
+
+	Entity * aux = new Entity("AhPuchP0", this);
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
+	_godsButtons.push_back(aux);
+	
 	
 
+	Entity * aux2 = new Entity("RaP0", this);
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
+	_godsButtons.push_back(aux2);
 
 
+	Entity * aux3 = new Entity("ZeusP0", this);
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
+	_godsButtons.push_back(aux3);
+
+
+	Entity * aux4 = new Entity("HachimanP0", this);
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
+	_godsButtons.push_back(aux4);
+
+	
+#pragma endregion
+
+
+
+
+	for (int i = 0; i < 4; i++){
+		addEntity(_godsButtons[i]);
+	}
 
 	overlay->show();
 
@@ -1205,7 +1217,7 @@ void SelectGodScene::dispatch(){
 
 void SelectGodScene::processScnMsgs()
 {
-	
+	MGodSet* mGodSet;
 
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
@@ -1220,7 +1232,7 @@ void SelectGodScene::processScnMsgs()
 					getMessage(new MButtonClick(_id, player1Index));
 
 				}
-				else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+				else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
 					_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 					player1Index++;
 					if (player1Index > 3) player1Index = 0;
@@ -1228,7 +1240,7 @@ void SelectGodScene::processScnMsgs()
 					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 
 				}
-				else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+				else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
 					_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 					player1Index--;
 					if (player1Index < 0) player1Index = 3;
@@ -1237,23 +1249,30 @@ void SelectGodScene::processScnMsgs()
 				}
 			}
 			else if (mInput->getId() == 1 && _pReady[0]){
-				if (mInput->getCInputState().Button_A == BTT_RELEASED)
+				if (mInput->getCInputState().Button_A == BTT_RELEASED){
 					getMessage(new MButtonClick(_id, player2Index));
-				else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
-					player2Index++;
-					if (player2Index > 7) player2Index = 4;
-					getMessage(new MButtonAct(_id, player2Index));
+
 				}
-				else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
-					player2Index--;
-					if (player2Index < 4) player2Index = 7;
+				else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
+					_entities.at(std::to_string(player2Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+					player2Index++;
+					if (player2Index > 3) player2Index = 0;
 					getMessage(new MButtonAct(_id, player2Index));
+					_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+
+				}
+				else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
+					_entities.at(std::to_string(player2Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
+					player2Index--;
+					if (player2Index < 0) player2Index = 3;
+					getMessage(new MButtonAct(_id, player2Index));
+					_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
 				}
 			}
 			break;
-		/*case MSG_ABILITY_SETTER:
-			mAbility = static_cast<MAbilitySet*>(m);
-			addAbilityComponent(mAbility->getId(), mAbility->getComponentType());*/
+		case MSG_GOD_SETTER:
+			mGodSet = static_cast<MGodSet*>(m);
+			selectGod(mGodSet->getGod(), mGodSet->getId());
 			break;
 		default:
 			break;
@@ -1287,6 +1306,62 @@ void SelectGodScene::processInput(ControllerInputState c){
 	}
 }
 
+void SelectGodScene::selectGod(E_GOD g, int playerId){
+
+	_players[playerId].god = g;
+	_pReady[playerId] = true;
+
+	if (playerId == 0){
+		for (int i = 0; i < 4; i++){
+			deleteEntity(_godsButtons[i]->getID());
+		}
+		createButtons();
+
+		for (int i = 4; i < 8; i++){
+			addEntity(_godsButtons[i]);
+		}
+
+		getMessage(new MButtonAct(_id, 0));
+	}
+
+	else{
+		
+		Game::getInstance()->changeScene(GAMEPLAY, _players, ES_TEMPLE);
+
+		
+	
+	}
+
+}
+
+void SelectGodScene::createButtons(){
+
+#pragma region Player2 Gods
+
+	Entity* aux = new Entity("AhPuchP1", this);
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_AHPUCH));
+	_godsButtons.push_back(aux);
+
+
+
+	Entity* aux2 = new Entity("RaP1", this);
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_RA));
+	_godsButtons.push_back(aux2);
+
+
+	Entity* aux3 = new Entity("ZeusP1", this);
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_ZEUS));
+	_godsButtons.push_back(aux3);
+
+
+	Entity* aux4 = new Entity("HachimanP1", this);
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_HACHIMAN));
+	_godsButtons.push_back(aux4);
+
+
+#pragma endregion
+
+}
 #pragma endregion
 
 
