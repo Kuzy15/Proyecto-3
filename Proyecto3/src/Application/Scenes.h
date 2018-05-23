@@ -260,7 +260,10 @@ private:
 
 	std::vector<Player> _players;	//Array of pointer to the players Entities
 
+	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
 
+	int player1Index;
+	int player2Index;
 
 
 };

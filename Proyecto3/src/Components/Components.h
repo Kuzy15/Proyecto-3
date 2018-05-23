@@ -160,6 +160,7 @@ public:
 	//Ogre::SceneNode * getSceneNode();
 	virtual void getMessage(Message *m);
 
+
 protected:
 	CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM);
 	// Inside the Ogre Node we can find al the render values needed by ogre
@@ -239,6 +240,7 @@ public:
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
 	Ogre::SceneNode* getChildNode(){ return pChild; }
+	void setVisible(bool visible){ pOgreEnt->setVisible(visible); };
 
 private:
 	Ogre::Entity * pOgreEnt;

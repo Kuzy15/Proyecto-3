@@ -909,6 +909,9 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 
 	selectedButton = 0;
 
+	player1Index = 0;
+	player2Index = 4;
+
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	// Create an overlay
 	try {
@@ -923,7 +926,7 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 
 	Ogre::Viewport* vp = nullptr;
 	Entity *cam = new Entity("camSelectGod", this);
-	CCamera * cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 15, 50), Ogre::Vector3(0, 0, 0), 10);
+	CCamera * cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 0, 60), Ogre::Vector3(0, 0, 0), 10);
 	vp = cCam->getVP();
 	cam->addComponent(cCam);
 
@@ -935,41 +938,43 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "MainMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
 	addEntity(sky);
 
-	/*int idCount = 0;
-	for (int i = 0; i < 2; i++){*/
-		std::string name = "AhPuchP" + std::to_string(0);
-		Entity * aux = new Entity(name, this);
-		aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(200 * 0, -150), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, aux));
-		addEntity(aux);
-		Entity* a = new Entity("sadsad", this);
-		a->addComponent(new CMeshRender({ 0, 10, 40 }, "AhPuch.mesh", aux, aux->getScene()->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 }));
-		addEntity(a);
-		//++;
-
-		/*name = "RaP" + std::to_string(i);
-		Entity * aux2 = new Entity(name, this);
-		aux->addComponent(new CGodButton(overlay, aux2, idCount, Ogre::Vector2(200 * i, 80), Ogre::Vector2(0, 0), _players[i].controllerId, EG_RA));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, aux2));
-		addEntity(aux2);
-		idCount++;
-
-		name = "ZeusP" + std::to_string(i);
-		Entity * aux3 = new Entity(name, this);
-		aux->addComponent(new CGodButton(overlay, aux3, idCount, Ogre::Vector2(200 * i, 140), Ogre::Vector2(0, 0), _players[i].controllerId, EG_ZEUS));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, aux3));
-		addEntity(aux3);
-		idCount++;
-
-		name = "HachimanP" + std::to_string(i);
-		Entity * aux4 = new Entity(name, this);
-		aux->addComponent(new CGodButton(overlay, aux4, idCount, Ogre::Vector2(200 * i, 180), Ogre::Vector2(0, 0), _players[i].controllerId, EG_HACHIMAN));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, aux4));
-		addEntity(aux4);
-		idCount++;*/
-
-	//}
+	Entity * aux = new Entity("AhPuchP0", this);
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, aux));
+	addEntity(aux);
+	Entity* renderAhPuch = new Entity("AhPuchRender", this);
+	CMeshRender * meshRender = new CMeshRender({ -6, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	renderAhPuch->addComponent(meshRender);
+	addEntity(renderAhPuch);
 	
+
+	Entity * aux2 = new Entity("RaP0", this);
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, aux2));
+	addEntity(aux2);
+	Entity* renderAux2 = new Entity("RaRender", this);
+	renderAux2->addComponent(new CMeshRender({ -6, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 }));
+	addEntity(renderAux2);
+
+	Entity * aux3 = new Entity("ZeusP0", this);
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, aux3));
+	addEntity(aux3);
+	Entity* renderAux3 = new Entity("ZeusRender", this);
+	renderAux3->addComponent(new CMeshRender({ -6, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 }));
+	addEntity(renderAux3);
+
+	Entity * aux4 = new Entity("HachimanP0", this);
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, aux4));
+	addEntity(aux4);
+	Entity* renderAux4 = new Entity("HachimanRender", this);
+	renderAux4->addComponent(new CMeshRender({ -6, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 }));
+	addEntity(renderAux4);
+	
+
+
+
 
 	overlay->show();
 
@@ -1014,7 +1019,7 @@ void SelectGodScene::dispatch(){
 
 void SelectGodScene::processScnMsgs()
 {
-	MInputState* input;
+	/*MInputState* input;
 
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
@@ -1032,7 +1037,55 @@ void SelectGodScene::processScnMsgs()
 		it++;
 		_sceneMessages.pop_front();
 	}
-	
+	*/
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		MInputState* mInput;
+
+		switch (m->getType()){
+		case MSG_INPUT_STATE:
+			mInput = static_cast<MInputState*>(m);
+			if (mInput->getId() == 0 && !_pReady[0]){
+				if (mInput->getCInputState().Button_A == BTT_RELEASED){
+					getMessage(new MButtonClick(_id, player1Index));
+
+				}
+				else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+					player1Index++;
+					if (player1Index > 2) player1Index = 0;
+					getMessage(new MButtonAct(_id, player1Index));
+				}
+				else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+					player1Index--;
+					if (player1Index < 0) player1Index = 2;
+					getMessage(new MButtonAct(_id, player1Index));
+				}
+			}
+			else if (mInput->getId() == 1 && _pReady[0]){
+				if (mInput->getCInputState().Button_A == BTT_RELEASED)
+					getMessage(new MButtonClick(_id, player2Index));
+				else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+					player2Index++;
+					if (player2Index > 5) player2Index = 3;
+					getMessage(new MButtonAct(_id, player2Index));
+				}
+				else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+					player2Index--;
+					if (player2Index < 3) player2Index = 5;
+					getMessage(new MButtonAct(_id, player2Index));
+				}
+			}
+			break;
+		case MSG_ABILITY_SETTER:
+			mAbility = static_cast<MAbilitySet*>(m);
+			addAbilityComponent(mAbility->getId(), mAbility->getComponentType());
+			break;
+		default:
+			break;
+		}
+	}
 
 };
 

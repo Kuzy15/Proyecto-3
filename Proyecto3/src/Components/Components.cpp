@@ -500,7 +500,7 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 
 	Ogre::MeshPtr plane = Ogre::MeshManager::getSingleton().createPlane(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::Plane(Ogre::Vector3::UNIT_Z, 0), 
-		86,46, 100, 100, false, 1, 1.0, 1.0);
+		96, 54, 100, 100, false, 1, 1.0, 1.0);
 	Ogre::Entity* entity = scnM->createEntity("plano" + materialName, materialName);
 
 	entity->setMaterialName(materialName);
