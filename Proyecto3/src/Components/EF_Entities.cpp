@@ -676,10 +676,25 @@ std::vector<Entity*>* createStageCity(GameScene* s){
 	entities->push_back(cam);
 
 
-	Entity * ciudad = new Entity("Suelo_03", s);
-	CMeshRender* cM3 = new CMeshRender({ 0, 15,  -1000 }, "BarroCity.mesh", ciudad, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 15, -90, -10 });
-	ciudad->addComponent(cM3);
+	Entity * ciudad = new Entity("Ciudad", s);
+	CMeshRender* cM = new CMeshRender({ 0, -12,  -1700 }, "E3.mesh", ciudad, s->getSceneManager(), { 10.0f, 10.0f, 10.0f }, { 100, 0, -90 });
+	ciudad->addComponent(cM);
 	entities->push_back(ciudad);
+
+	Entity * coche = new Entity("Coche", s);
+	CMeshRender* cM1 = new CMeshRender({ 14, -19, 0 }, "car.mesh", coche, s->getSceneManager(), { 1.2f, 1.2f, 1.2f }, { 100, 0, -7 });
+	coche->addComponent(cM1);
+	Entity * cocheCollider = new Entity("Coche", s);
+	cocheCollider->addComponent(new CRigidBody(cocheCollider, s->getGame()->getPhysicsWorld(), Ogre::Vector3(12, -19, 0), cM1->getSize().y + 1000, 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(coche);
+
+
+	Entity * coche2 = new Entity("Coche2", s);
+	CMeshRender* cM2 = new CMeshRender({ -68, -19, 0 }, "car.mesh", coche2, s->getSceneManager(), { 1.2f, 1.2f, 1.2f }, { 100, 0, -7 });
+	coche->addComponent(cM2);
+	Entity * cocheCollider2 = new Entity("Coche2", s);
+	cocheCollider2->addComponent(new CRigidBody(cocheCollider2, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-67, -19, 0), cM2->getSize().y + 1000, 1, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	entities->push_back(coche2);
 
 
 	// Colliders
@@ -697,7 +712,7 @@ std::vector<Entity*>* createStageCity(GameScene* s){
 	entities->push_back(leftEdge);
 
 	Entity *suelo = new Entity("DeathZone_01", s);
-	suelo->addComponent(new CRigidBody(suelo, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, -5, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
+	suelo->addComponent(new CRigidBody(suelo, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, -20, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_STATIC_TERRAIN, -1));
 	entities->push_back(suelo);
 
 
