@@ -92,8 +92,15 @@ GameScene* Entity::getScene(){ return scene; }
 
 void Entity::getMessage(Message * m){
 	//If the message is SOMETHING we push it in the queue
-	if (m != nullptr)
-		msgs.push(m);
+	if (m != nullptr){
+		if (!_active){
+			if (m->getDestination() == ENTITY)
+				delete m;		
+		}
+		else {			
+			msgs.push(m);		
+		}
+	}
 }
 //Method to send a message to the scene
 void Entity::sendMessage(Message * m) {

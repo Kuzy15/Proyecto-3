@@ -709,26 +709,26 @@ void GamePlayScene::addAbilityComponent(int playerId, ComponentType compId){
 			std::cout << "No existe esa habilidad" << std::endl;
 	#endif
 	int type = static_cast<CAbility*>(c)->getType();
-	Player p = _players[playerId];
+	
 	//if is active or passive
 	if (type == 0){
-		if (p.currentActive != compId ){
-			p.entity->deleteComponent(p.currentActive);
-			p.entity->addComponent(c);
+		if (_players[playerId].currentActive != compId){
+			_players[playerId].entity->deleteComponent(_players[playerId].currentActive);
+			_players[playerId].entity->addComponent(c);
 		}
 		else { delete c; }
-		p.activeSelected = true;
+		_players[playerId].activeSelected = true;
 	}
 	else{
-		if (p.currentPassive != compId /*cambiar por default*/){
-			p.entity->deleteComponent(p.currentPassive);
-			p.entity->addComponent(c);
+		if (_players[playerId].currentPassive != compId /*cambiar por default*/){
+			_players[playerId].entity->deleteComponent(_players[playerId].currentPassive);
+			_players[playerId].entity->addComponent(c);
 		}
 		else { delete c; }
-		p.passiveSelected = true;
+		_players[playerId].passiveSelected = true;
 	}
 
-	if (p.activeSelected && p.passiveSelected){
+	if (_players[playerId].activeSelected && _players[playerId].passiveSelected){
 		_pReady[playerId] = true;
 		if (_pReady[0] && !_pReady[1]){
 			for (int i = 3; i < 6; i++){
