@@ -880,6 +880,159 @@ void MainMenuScene::processInput(ControllerInputState c){
 #pragma endregion
 
 
+#pragma region Select God Scene
+//The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
+SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> players) : GameScene(id, game) {
+
+	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
+
+	_players = players;
+
+	selectedButton = 0;
+
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	// Create an overlay
+	try {
+		overlay = overlayManager.getByName("Background");
+	}
+	catch (Ogre::Exception e) {
+		cout << e.what() << std::endl;
+		cout << std::endl;
+	}
+	// Show the overlay
+	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
+
+	Ogre::Viewport* vp = nullptr;
+	Entity *cam = new Entity("camMenuIni", this);
+	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+
+	/*Entity * background = new Entity("backgroundMainMenu", this);
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
+
+	Entity * AhPuchP1 = new Entity("fightButton", this);
+	AhPuchP1->addComponent(new CGodButton(overlay, AhPuchP1, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, AhPuchP1));
+
+	Entity * HachimanP1 = new Entity("exitButton", this);
+	HachimanP1->addComponent(new CGodButton(overlay, HachimanP1, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, HachimanP1));
+
+	Entity * RaP1 = new Entity("fightButton", this);
+	RaP1->addComponent(new CGodButton(overlay, RaP1, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, RaP1));
+
+	Entity * ZeusP1 = new Entity("exitButton", this);
+	ZeusP1->addComponent(new CGodButton(overlay, ZeusP1, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, ZeusP1));
+
+	Entity * AhPuchP2 = new Entity("fightButton", this);
+	AhPuchP2->addComponent(new CGodButton(overlay, AhPuchP2, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, AhPuchP2));
+
+	Entity * HachimanP2 = new Entity("exitButton", this);
+	HachimanP2->addComponent(new CGodButton(overlay, HachimanP2, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, HachimanP2));
+
+	Entity * RaP2 = new Entity("fightButton", this);
+	RaP2->addComponent(new CGodButton(overlay, RaP2, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(0, RaP2));
+
+	Entity * ZeusP2 = new Entity("exitButton", this);
+	ZeusP2->addComponent(new CGodButton(overlay, ZeusP2, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
+	_menuEntities.emplace(std::pair<int, Entity*>(1, ZeusP2));
+
+	overlay->show();
+
+	//Set the first button selected
+	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+
+}
+
+
+MainMenuScene::~MainMenuScene(){
+}
+
+
+
+
+bool MainMenuScene::run(){
+	//Here we would get the time between frames
+
+	//Take messages from input
+	InputManager::getInstance().getMessages(_messages);
+	//Then we deliver the messages
+	dispatch();
+
+	processScnMsgs();
+
+	//Logic simulation done here
+	bool aux = updateEnts(0.025);
+
+	//Clear dispatched messages
+	clearMessageQueue();
+
+
+	return aux;
+
+}
+
+void MainMenuScene::dispatch(){
+	GameScene::dispatch();
+
+
+}
+
+void MainMenuScene::processScnMsgs()
+{
+	MInputState* input;
+
+	int nSceneMessages = _sceneMessages.size();
+	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
+		Message* m = (*it);
+		switch (m->getType())
+		{
+		case MSG_INPUT_STATE:
+			input = static_cast<MInputState*>(*it);
+			processInput(input->getCInputState());
+			break;
+		default:
+			break;
+		}
+
+		it++;
+		_sceneMessages.pop_front();
+	}
+
+
+
+};
+
+void MainMenuScene::processInput(ControllerInputState c){
+
+	int totalButtons = _menuEntities.size();
+
+	if (c.DPad_Down == BTT_PRESSED){
+		selectedButton++;
+		if (selectedButton >= totalButtons)
+			selectedButton = 0;
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+	else if (c.DPad_Up == BTT_PRESSED){
+		selectedButton--;
+		if (selectedButton < 0)
+			selectedButton = (totalButtons - 1);
+		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	}
+
+	if (c.Button_A == BTT_PRESSED){
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+	}
+}
+
+#pragma endregion
+
+
 #pragma region Fight Menu Scene
 //The main menu class that contains the buttons to access to the diferents menus(Fight, Options, etc)
 FightMenuScene::FightMenuScene(std::string id, Game * game) : GameScene(id, game) {

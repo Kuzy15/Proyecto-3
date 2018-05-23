@@ -194,6 +194,8 @@ private:
 
 	Ogre::Overlay* bgCards;
 
+	
+
 	float _prepareCounter;
 	float _prepareLimitTime;
 
@@ -209,6 +211,7 @@ private:
 
 //Basic class to debug and test the ogre implementation
 //and the behaviour of the components
+
 class MainMenuScene : public GameScene
 {
 public:
@@ -226,7 +229,35 @@ private:
 	void processInput(ControllerInputState c);
 
 	int selectedButton;
-	
+
+
+};
+#pragma endregion
+
+
+#pragma region Select God Scene
+class SelectGodScene : public GameScene
+{
+public:
+	SelectGodScene(std::string id, Game * game, std::vector<Player> players);
+	virtual ~SelectGodScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
+
+	std::vector<Player> _players;	//Array of pointer to the players Entities
+
+
+
 
 };
 

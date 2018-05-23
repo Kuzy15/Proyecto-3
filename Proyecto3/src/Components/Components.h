@@ -928,6 +928,22 @@ private:
 };
 
 
+class CGodButton : public CButtonGUI
+{
+public:
+	CGodButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god);
+	~CGodButton();
+
+	virtual void getMessage(Message * m);
+
+private:
+	int _playerId;
+
+};
+
+
+
+
 enum guiPlayer{
 	P1 = 0, P2 = 1
 };
