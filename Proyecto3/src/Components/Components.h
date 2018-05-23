@@ -244,7 +244,7 @@ public:
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
 	Ogre::SceneNode* getChildNode(){ return pChild; }
-	void setVisible(bool visible){ pOgreEnt->setVisible(visible); };
+	inline void setVisible(bool visible){ pOgreEnt->setVisible(visible); };
 
 private:
 	Ogre::Entity * pOgreEnt;

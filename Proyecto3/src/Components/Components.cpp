@@ -279,16 +279,16 @@ void CMeshRender::getMessage(Message * m) {
 		}
 		break;
 	case MSG_PLAYER_SHOT:
-
-
-
-
-
 		break;
 	case MSG_PASSMOD_DES:
 		invisActive = false;
 		break;
-
+	case MSG_ACT_RENDERGODMENU:
+		pOgreEnt->setVisible(true);
+		break;
+	case MSG_DES_RENDERGODMENU:
+		pOgreEnt->setVisible(false);
+		break;
 	default:
 		break;
 	}

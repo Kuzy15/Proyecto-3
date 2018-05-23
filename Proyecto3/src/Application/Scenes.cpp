@@ -960,12 +960,13 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	Ogre::Viewport* vp = nullptr;
 	Entity *cam = new Entity("camMenuIni",this);
-	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+	CCamera* cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10);
+	cam->addComponent(cCam);
 	addEntity(cam);
-
+	vp = cCam->getVP();
 
 	Entity * background = new Entity("Bg", this);
-	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {70,0,0}));
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, "MainMenu", {70,0,0}, vp));
 	//_menuEntities.emplace(std::pair<int, Entity*>(2, background));
 	addEntity(background);
 
@@ -1079,6 +1080,10 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
+	Ogre::Light* light = getSceneManager()->createLight("SelectGodLight");
+	light->setPosition(0, 30, 50);
+	light->setCastShadows(true);
+
 	_players = players;
 
 	selectedButton = 0;
@@ -1116,9 +1121,10 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, aux));
 	addEntity(aux);
-	Entity* renderAhPuch = new Entity("AhPuchRender", this);
-	CMeshRender * meshRender = new CMeshRender({ -6, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
-	renderAhPuch->addComponent(meshRender);
+	Entity* renderAhPuch = new Entity("0", this);
+	CMeshRender * AhPuchMeshRender = new CMeshRender({ -6, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	AhPuchMeshRender->setVisible(true);
+	renderAhPuch->addComponent(AhPuchMeshRender);
 	addEntity(renderAhPuch);
 	
 
@@ -1126,24 +1132,30 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, aux2));
 	addEntity(aux2);
-	Entity* renderAux2 = new Entity("RaRender", this);
-	renderAux2->addComponent(new CMeshRender({ -6, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 }));
+	Entity* renderAux2 = new Entity("1", this);
+	CMeshRender* RaMeshRender = new CMeshRender({ -6, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	RaMeshRender->setVisible(false);
+	renderAux2->addComponent(RaMeshRender);
 	addEntity(renderAux2);
 
 	Entity * aux3 = new Entity("ZeusP0", this);
 	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, aux3));
 	addEntity(aux3);
-	Entity* renderAux3 = new Entity("ZeusRender", this);
-	renderAux3->addComponent(new CMeshRender({ -6, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 }));
+	Entity* renderAux3 = new Entity("2", this);
+	CMeshRender* ZeusMeshRender = new CMeshRender({ -6, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	ZeusMeshRender->setVisible(false);
+	renderAux3->addComponent(ZeusMeshRender);
 	addEntity(renderAux3);
 
 	Entity * aux4 = new Entity("HachimanP0", this);
 	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, aux4));
 	addEntity(aux4);
-	Entity* renderAux4 = new Entity("HachimanRender", this);
-	renderAux4->addComponent(new CMeshRender({ -6, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 }));
+	Entity* renderAux4 = new Entity("3", this);
+	CMeshRender* HachimanMeshRender = new CMeshRender({ -6, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	HachimanMeshRender->setVisible(false);
+	renderAux4->addComponent(HachimanMeshRender);
 	addEntity(renderAux4);
 	
 
@@ -1153,7 +1165,7 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	overlay->show();
 
 	//Set the first button selected
-	_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
+	getMessage(new MButtonAct(_id, selectedButton));
 
 }
 
@@ -1193,25 +1205,7 @@ void SelectGodScene::dispatch(){
 
 void SelectGodScene::processScnMsgs()
 {
-	/*MInputState* input;
-
-	int nSceneMessages = _sceneMessages.size();
-	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
-		Message* m = (*it);
-		switch (m->getType())
-		{
-		case MSG_INPUT_STATE:
-			input = static_cast<MInputState*>(*it);
-			processInput(input->getCInputState());
-			break;
-		default:
-			break;
-		}
-
-		it++;
-		_sceneMessages.pop_front();
-	}
-	*/
+	
 
 	int nSceneMessages = _sceneMessages.size();
 	for (std::list<Message *>::iterator it = _sceneMessages.begin(); it != _sceneMessages.end();){
@@ -1227,14 +1221,19 @@ void SelectGodScene::processScnMsgs()
 
 				}
 				else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+					_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 					player1Index++;
-					if (player1Index > 2) player1Index = 0;
+					if (player1Index > 3) player1Index = 0;
 					getMessage(new MButtonAct(_id, player1Index));
+					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+
 				}
 				else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+					_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 					player1Index--;
-					if (player1Index < 0) player1Index = 2;
+					if (player1Index < 0) player1Index = 3;
 					getMessage(new MButtonAct(_id, player1Index));
+					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 				}
 			}
 			else if (mInput->getId() == 1 && _pReady[0]){
@@ -1242,23 +1241,26 @@ void SelectGodScene::processScnMsgs()
 					getMessage(new MButtonClick(_id, player2Index));
 				else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
 					player2Index++;
-					if (player2Index > 5) player2Index = 3;
+					if (player2Index > 7) player2Index = 4;
 					getMessage(new MButtonAct(_id, player2Index));
 				}
 				else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
 					player2Index--;
-					if (player2Index < 3) player2Index = 5;
+					if (player2Index < 4) player2Index = 7;
 					getMessage(new MButtonAct(_id, player2Index));
 				}
 			}
 			break;
-		case MSG_ABILITY_SETTER:
+		/*case MSG_ABILITY_SETTER:
 			mAbility = static_cast<MAbilitySet*>(m);
-			addAbilityComponent(mAbility->getId(), mAbility->getComponentType());
+			addAbilityComponent(mAbility->getId(), mAbility->getComponentType());*/
 			break;
 		default:
 			break;
+
 		}
+		it++;
+		_sceneMessages.pop_front();
 	}
 
 };
@@ -1281,7 +1283,7 @@ void SelectGodScene::processInput(ControllerInputState c){
 	}
 
 	if (c.Button_A == BTT_PRESSED){
-		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
 	}
 }
 
@@ -1409,7 +1411,7 @@ void FightMenuScene::processInput(ControllerInputState c){
 	}
 
 	if (c.Button_A == BTT_PRESSED){
-		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id));
+		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
 	}
 }
 

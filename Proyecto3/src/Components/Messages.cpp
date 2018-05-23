@@ -330,3 +330,14 @@ MDamage::~MDamage(){}
 	MRoundFinished::~MRoundFinished() {};
 	std::string MRoundFinished::getWinnerId() { return _winnerId; };
 #pragma endregion
+
+#pragma region Select God
+
+
+	MActSeleGodRender::MActSeleGodRender(std::string emmiter) : Message(MSG_ACT_RENDERGODMENU, ENTITY, emmiter){};
+	MActSeleGodRender::~MActSeleGodRender(){};
+
+	MDesSeleGodRender::MDesSeleGodRender(std::string emmiter) : Message(MSG_DES_RENDERGODMENU, ENTITY, emmiter){};
+	MDesSeleGodRender::~MDesSeleGodRender(){};
+	
+#pragma endregion
