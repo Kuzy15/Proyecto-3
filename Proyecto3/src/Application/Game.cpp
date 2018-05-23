@@ -78,7 +78,8 @@ Game::Game(){
 
 
 	 actScene = new initScene(resCfgLoc);
-	 delete actScene;
+	 render();
+	// actScene->run();
 	 //actScene = new MainMenuScene("MainMenu", this);
 
 	 _exit = false;
@@ -250,6 +251,12 @@ void Game::handleInput(){ InputManager::getInstance().handleInput();}
 void Game::changeScene(GameScene* s){
 
 	//Mostrar una imagen de carga
+
+
+
+
+
+
 
 	delete actScene;
 	actScene = s;

@@ -495,16 +495,12 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 
 #pragma region Skyplane Render Component
 CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
-	try{
-		scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
-			materialName, scale, 1, true, bow, 100, 100);
-		// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
-		// bow = 0, xsegments = 1, ysegments = 1
-	}
-	catch (Ogre::Exception e)
-	{
-		std::cout << e.what() << std::endl;
-	}
+
+	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
+		materialName, scale, 1, true, bow, 100, 100);
+	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
+	// bow = 0, xsegments = 1, ysegments = 1
+
 	pOgreSceneNode->setPosition(pos);
 
 }

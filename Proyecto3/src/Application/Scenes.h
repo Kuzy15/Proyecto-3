@@ -1,6 +1,7 @@
 #ifndef SCENES_H
 #define SCENES_H
 #include <OgreTextAreaOverlayElement.h>
+#include <thread>
 
 class Entity;
 class Message;
@@ -303,14 +304,19 @@ class initScene: public GameScene
 public:
 	initScene(Ogre::String resCfgLoc);
 	~initScene();
+	bool initResources();
 
 
 private:
+	std::thread loadThreadWrapper();
 	Ogre::String _resCfgLoc;
 	Ogre::Overlay * pOverlay;
 	Entity * cam;
-	bool initResources();
 	virtual void processScnMsgs();
+	bool LoadComplete;
+	void CompleteLoad();
+
+	std::thread ldThread;
 
 	//Main loop of the scene.
 	//Each scene implements it differently

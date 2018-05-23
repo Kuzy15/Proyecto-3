@@ -17,6 +17,8 @@
 #include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
+#include <thread>
+
 
 //Later removable
 #include <OgreCamera.h>
@@ -56,8 +58,7 @@ GameScene::~GameScene()
 
 	deleteAllEntities();
 
-	//ESTO DA PROBLEMAS AL TENER VARIAS ESCENAS
-	//EntityFactory::getInstance().resetInstance();
+	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 
@@ -65,7 +66,7 @@ GameScene::~GameScene()
 
 	scnMgr->removeRenderQueueListener(Game::getInstance()->getOverlaySystem());
 
-	Game::getInstance()->getRoot()->destroySceneManager(scnMgr);
+
 	/*if (scnMgr != nullptr)
 		Game::getInstance()->getRoot()->destroySceneManager(scnMgr);*/
 
@@ -1028,28 +1029,43 @@ void LoadingScene::processScnMsgs()
 
 initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getInstance()), _resCfgLoc(resCfgLoc)
 {
-	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+	LoadComplete = false;
 	Ogre::Camera * cam = scnMgr->createCamera("InitCam");
-	Game::getInstance()->getRenderWindow()->addViewport(cam, 5);
+	Game::getInstance()->getRenderWindow()->addViewport(cam);
+	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	pOverlay = overlayManager.getByName("InitGUI");
 	pOverlay->show();
+	
 }
 initScene::~initScene() {
+	pOverlay->hide();
+	Game::getInstance()->getRenderWindow()->removeAllViewports();
+	scnMgr->clearScene();
 
+	ldThread.join();
 }
 void initScene::processScnMsgs() 
 {
 	
 }
+std::thread initScene::loadThreadWrapper() 
+{
+	return  std::thread([&] {initResources(); });
+
+}
+void initScene::CompleteLoad()
+{
+	LoadComplete = true;
+}
 bool initScene::run() {
-	initResources();
+	if (LoadComplete) {
+		std::cout << "load Complete" << std::endl;
+		ldThread.join();
+	}
 
-	//From here to the change scene, its everything basically trash. 
-	//DO not take this as a proper implementation
-	pOverlay->hide();
-	Game::getInstance()->getRenderWindow()->removeViewport(5);
-	scnMgr->clearScene();
 
+
+	while (true);
 	return EXIT_SUCCESS;
 }
 bool initScene::initResources() 
@@ -1099,13 +1115,14 @@ bool initScene::initResources()
 	catch (Ogre::Exception e) {
 #ifdef DEBUG
 		std::cout << e.what() << std::endl;
-	
-#endif // DEBUG
 
+#endif // DEBUG
+	}
 		//We are only going to use 5 mimpams at a time. Mipmaps are efficent ways to save a texture.
 		//Taking only 1/3 more of space, we can have several sizes of the texture to choose from.
 		Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-		return EXIT_FAILURE;
-	}
-	return(EXIT_SUCCESS);
+
+		//Hay que ver como modificamos el booleano para que el hilo principal sepa que se ha acabado la carga
+		CompleteLoad();
+		return true;
 }
