@@ -56,7 +56,8 @@ GameScene::~GameScene()
 
 	deleteAllEntities();
 
-	EntityFactory::getInstance().resetInstance();
+	//ESTO DA PROBLEMAS AL TENER VARIAS ESCENAS
+	//EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
 
@@ -64,7 +65,7 @@ GameScene::~GameScene()
 
 	scnMgr->removeRenderQueueListener(Game::getInstance()->getOverlaySystem());
 
-
+	Game::getInstance()->getRoot()->destroySceneManager(scnMgr);
 	/*if (scnMgr != nullptr)
 		Game::getInstance()->getRoot()->destroySceneManager(scnMgr);*/
 
@@ -1029,11 +1030,12 @@ initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getIn
 {
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	Ogre::Camera * cam = scnMgr->createCamera("InitCam");
-	Game::getInstance()->getRenderWindow()->addViewport(cam);
+	Game::getInstance()->getRenderWindow()->addViewport(cam, 5);
 	pOverlay = overlayManager.getByName("InitGUI");
 	pOverlay->show();
 }
 initScene::~initScene() {
+
 }
 void initScene::processScnMsgs() 
 {
@@ -1045,10 +1047,9 @@ bool initScene::run() {
 	//From here to the change scene, its everything basically trash. 
 	//DO not take this as a proper implementation
 	pOverlay->hide();
-	Game::getInstance()->getRenderWindow()->removeViewport(0);
+	Game::getInstance()->getRenderWindow()->removeViewport(5);
 	scnMgr->clearScene();
 
-	Game::getInstance()->changeScene(new MainMenuScene("MainMenu", Game::getInstance()));
 	return EXIT_SUCCESS;
 }
 bool initScene::initResources() 
