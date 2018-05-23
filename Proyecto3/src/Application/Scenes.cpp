@@ -17,6 +17,8 @@
 #include <OgreTextAreaOverlayElement.h>
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
+#include <stdlib.h>
+#include <time.h>
 
 //Later removable
 #include <OgreCamera.h>
@@ -53,7 +55,10 @@ GameScene::~GameScene()
 {
 	deleteAllEntities();
 
+	Ogre::OverlayManager::getSingleton().destroy(overlay->getName());
+
 	deleteAllMessages();
+
 
 	
 	scnMgr->clearScene();
@@ -328,9 +333,16 @@ void selectGodCallBack(){
 	Game::getInstance()->changeScene(MULTIPLAYER);
 
 }
-void returnMainMenu(){}
+void returnMainMenu(){
 
-void returnMulitplayerMenu(){}
+	Game::getInstance()->changeScene(MAIN_MENU);
+
+}
+
+void returnMulitplayerMenu(){
+
+	Game::getInstance()->changeScene(MULTIPLAYER);
+}
 
 
 #pragma region GamePlayScene
@@ -362,7 +374,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	//Load the stage passed by parameter
 	loadStage();
 
-	
+
 
 	//Store and configure the players structure
 	_players = players;
@@ -372,13 +384,40 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	playerPos.push_back(_posP2);
 
 	int i = 0;
-	//for (Player p : _players){
+#pragma region Abilities
+	_totalPassives.push_back(CMP_PASSIVE_VIDAR);
+	_totalPassives.push_back(CMP_PASSIVE_HADES);
+	_totalPassives.push_back(CMP_PASSIVE_ULL);
+	_totalPassives.push_back(CMP_PASSIVE_VALI);
+	_totalPassives.push_back(CMP_PASSIVE_HERMES);
+	_totalPassives.push_back(CMP_PASSIVE_SYN);
+
+	_totalActives.push_back(CMP_SHU_HEADDRESS);
+	_totalActives.push_back(CMP_JONSU_MOON);
+	_totalActives.push_back(CMP_KHEPRI_BEETLE);
+	_totalActives.push_back(CMP_HERA_RUNE);
+	_totalActives.push_back(CMP_HERIS_MARK);
+#pragma endregion
+
+
+
+	int rng = 0;
+	int rng2 = 0;
 	for (int i = 0;  i < _players.size(); i++){
 
 		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god, this, playerPos[i], _players[i].controllerId);
-		_players[i].abilities.push_back(CMP_HERA_RUNE);
-		_players[i].abilities.push_back(CMP_PASSIVE_HADES);
-		_players[i].abilities.push_back(CMP_KHEPRI_BEETLE);
+		
+		rng = std::rand() % 6;	
+		_players[i].abilities.push_back(_totalPassives[rng]);
+		
+		rng2 = std::rand() % 6;
+		if (rng2 == rng)
+			rng2 = (rng2 + 1) % 6;
+		_players[i].abilities.push_back(_totalPassives[rng2]);
+
+		rng = std::rand() % 5;
+		_players[i].abilities.push_back(_totalActives[rng]);
+
 		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
 		addEntity(_players[i].entity);
@@ -421,14 +460,14 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	
 	//Add end GUI entities
 	Entity* endButton0 = new Entity("EndButton_0", this);
-	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(-200.0f, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Batalla"));
+	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(0, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Batalla"));
 	endButton0->setActive(false);
 	addEntity(endButton0);
 	_endGUIEntities.push_back(endButton0);
 
 
 	Entity* endButton1 = new Entity("EndButton_1", this);
-	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(-200.0f,0.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Menu Principal"));
+	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(0,-100.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Menu Principal"));
 	endButton1->setActive(false);
 	addEntity(endButton1);
 	_endGUIEntities.push_back(endButton1);
@@ -580,7 +619,12 @@ void GamePlayScene::battlePhase(){
 
 			//If time is greater than limit, stop battle
 			if (_battleState.timeElapsed > TIME_LIMIT){
+				
 				_battleState.battleEnded = true;
+				InputManager::getInstance().stopReceiving(false);
+				_postGameCounter = SDL_GetTicks();
+
+
 				
 			}
 		}
@@ -588,7 +632,7 @@ void GamePlayScene::battlePhase(){
 
 			//If the rounds elapsed are 3, we finish the game. Else, continue.
 			if ((SDL_GetTicks() - _postGameCounter)  > _postGameLimitTime){
-				if (_battleState.roundsCompleted == MAX_ROUNDS){
+				if (_battleState.roundsCompleted == MAX_ROUNDS || _players[0].roundsWon == 2 || _players[1].roundsWon == 2){
 					changePhase(GS_END);
 					InputManager::getInstance().stopReceiving(true);
 				}
@@ -602,9 +646,7 @@ void GamePlayScene::battlePhase(){
 				_battleState.battleEnded = false;
 				for (Player p : _players){
 					p.entity->setActive(false);
-				}
-
-				
+				}			
 
 			}
 
@@ -668,11 +710,14 @@ void GamePlayScene::changePhase(GameplayState newState){
 		overlay->show();
 		_preGameCounter = SDL_GetTicks();
 		getMessage(new MUpdateSceneTimer(_id, (TIME_LIMIT) / 1000.0f));
+		
 		_currState = GS_BATTLE;
 		InputManager::getInstance().stopReceiving(false);
 		for (Player p : _players){
 			p.entity->setActive(true);
 		}
+
+
 		break;
 	case GS_END:
 		overlay->hide();
@@ -709,6 +754,8 @@ void GamePlayScene::playerDied(std::string e){
 	InputManager::getInstance().stopReceiving(false);
 	_postGameCounter = SDL_GetTicks();
 
+	
+
 }
 
 void GamePlayScene::resetPlayers(){
@@ -733,7 +780,17 @@ void GamePlayScene::resetPlayers(){
 		_pReady[i] = false;
 		
 	}
+
+	getMessage(new MLifeState(_players[0].entity->getID(), 100));
+	getMessage(new MLifeState(_players[1].entity->getID(), 100));
+	getMessage(new MResetGui(_id));
+
+	
+
+
+
 }
+
 
 
 void start_c(){
@@ -741,18 +798,44 @@ void start_c(){
 
 
 }
+void GamePlayScene::reloadAbilities(){
+
+
+	int rng = 0;
+	int rng2 = 0;
+	for (int i = 0; i < _players.size(); i++){
+
+		rng = std::rand() % 6;
+		_players[i].abilities.push_back(_totalPassives[rng]);
+
+		rng2 = std::rand() % 6;
+		if (rng2 == rng)
+			rng2 = (rng2 + 1) % 6;
+		_players[i].abilities.push_back(_totalPassives[rng2]);
+
+		rng = std::rand() % 5;
+		_players[i].abilities.push_back(_totalActives[rng]);
+
+		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
+		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
+		
+
+	}
+
+
+}
 
 void GamePlayScene::loadAbilities(){
 
 	Entity* aux;
-	Ogre::Vector2 auxPos(-200.0f,0.0f);
+	Ogre::Vector2 auxPos(-400.0f,-100.0f);
 	int idCounter = 0;
 	for (Player p : _players){
 		//There, we should choose 3 random abilities to show
 		for (ComponentType c : p.abilities){
 			aux = new Entity((to_string(p.controllerId) + to_string(c) + to_string(_battleState.roundsCompleted)), this);
 			aux->addComponent(new CAbilityButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0), p.controllerId, c));
-			auxPos.x += 50.0f;
+			auxPos.x += 100.0f;
 			_cardGUIEntities.emplace_back(aux);
 			addEntity(aux);
 			idCounter++;
@@ -826,12 +909,12 @@ void GamePlayScene::processMsgSetup(Message* m){
 				getMessage(new MButtonClick(_id, player1Index));
 				
 			}
-			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+			else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
 				player1Index++;
 				if (player1Index > 2) player1Index = 0;
 				getMessage(new MButtonAct(_id, player1Index));
 			}
-			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+			else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
 				player1Index--;
 				if (player1Index < 0) player1Index = 2;
 				getMessage(new MButtonAct(_id, player1Index));
@@ -840,12 +923,12 @@ void GamePlayScene::processMsgSetup(Message* m){
 		else if (mInput->getId() == 1 && _pReady[0]){
 			if (mInput->getCInputState().Button_A == BTT_RELEASED)
 				getMessage(new MButtonClick(_id, player2Index));
-			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+			else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
 				player2Index++;
 				if (player2Index > 5) player2Index = 3;
 				getMessage(new MButtonAct(_id, player2Index));
 			}
-			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+			else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
 				player2Index--;
 				if (player2Index < 3) player2Index = 5;
 				getMessage(new MButtonAct(_id, player2Index));
@@ -960,14 +1043,14 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	Entity * fightButton = new Entity("fightButton", this);
 
-	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), selectGodCallBack, "Combate"));
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(-450, 50), Ogre::Vector2(0, 0), selectGodCallBack, "Combate"));
 
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
 	addEntity(fightButton);
 
 	Entity * exitButton = new Entity("exitButton", this);
 
-	exitButton->addComponent(new CNormalButton(overlay, exitButton, 1, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 1, Ogre::Vector2(-450, 200), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
 
 	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
 	addEntity(exitButton);
@@ -982,7 +1065,7 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 MainMenuScene::~MainMenuScene(){
 
-	Ogre::OverlayManager::getSingleton().destroy("MENU");
+
 }
 
 
@@ -1077,6 +1160,8 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 	light->setPosition(0, 30, 50);
 	light->setCastShadows(true);
 
+	std::srand(time(NULL));
+
 	
 
 	std::vector<Player>* players = new std::vector<Player>(2);
@@ -1113,30 +1198,30 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
 
 
-	/*Entity *sky = new Entity("sky", this);
-	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "MainMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
-	addEntity(sky); */
+	Entity *sky = new Entity("sky", this);
+	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "SelectGodMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
+	addEntity(sky); 
 
 	Entity* renderAhPuch = new Entity("0", this);
-	CMeshRender * AhPuchMeshRender = new CMeshRender({ -6, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	CMeshRender * AhPuchMeshRender = new CMeshRender({ 0, -5, 40 }, "AhPuch.mesh", renderAhPuch, renderAhPuch->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	AhPuchMeshRender->setVisible(true);
 	renderAhPuch->addComponent(AhPuchMeshRender);
 	addEntity(renderAhPuch);
 
 	Entity* renderAux2 = new Entity("1", this);
-	CMeshRender* RaMeshRender = new CMeshRender({ -6, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	CMeshRender* RaMeshRender = new CMeshRender({ 0, -5, 40 }, "Ra.mesh", renderAux2, renderAux2->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	RaMeshRender->setVisible(false);
 	renderAux2->addComponent(RaMeshRender);
 	addEntity(renderAux2);
 
 	Entity* renderAux3 = new Entity("2", this);
-	CMeshRender* ZeusMeshRender = new CMeshRender({ -6, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	CMeshRender* ZeusMeshRender = new CMeshRender({ 0, -5, 40 }, "Zeus.mesh", renderAux3, renderAux3->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	ZeusMeshRender->setVisible(false);
 	renderAux3->addComponent(ZeusMeshRender);
 	addEntity(renderAux3);
 
 	Entity* renderAux4 = new Entity("3", this);
-	CMeshRender* HachimanMeshRender = new CMeshRender({ -6, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
+	CMeshRender* HachimanMeshRender = new CMeshRender({ 0, -5, 40 }, "Hachiman.mesh", renderAux4, renderAux4->getScene()->getSceneManager(), { 1.6f, 1.6f, 1.6f }, { 0, 0, 0 });
 	HachimanMeshRender->setVisible(false);
 	renderAux4->addComponent(HachimanMeshRender);
 	addEntity(renderAux4);
@@ -1144,24 +1229,25 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 
 #pragma region Player1 Gods
 
+
 	Entity * aux = new Entity("AhPuchP0", this);
-	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
 	_godsButtons.push_back(aux);
 	
 	
 
 	Entity * aux2 = new Entity("RaP0", this);
-	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
 	_godsButtons.push_back(aux2);
 
 
 	Entity * aux3 = new Entity("ZeusP0", this);
-	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
 	_godsButtons.push_back(aux3);
 
 
 	Entity * aux4 = new Entity("HachimanP0", this);
-	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
 	_godsButtons.push_back(aux4);
 
 	
@@ -1249,6 +1335,7 @@ void SelectGodScene::processScnMsgs()
 				}
 			}
 			else if (mInput->getId() == 1 && _pReady[0]){
+				
 				if (mInput->getCInputState().Button_A == BTT_RELEASED){
 					getMessage(new MButtonClick(_id, player2Index));
 
@@ -1273,6 +1360,8 @@ void SelectGodScene::processScnMsgs()
 		case MSG_GOD_SETTER:
 			mGodSet = static_cast<MGodSet*>(m);
 			selectGod(mGodSet->getGod(), mGodSet->getId());
+			_entities.at(std::to_string(player1Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
+			_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
 			break;
 		default:
 			break;
@@ -1326,7 +1415,11 @@ void SelectGodScene::selectGod(E_GOD g, int playerId){
 
 	else{
 		
-		Game::getInstance()->changeScene(GAMEPLAY, _players, ES_TEMPLE);
+		E_STAGE stage;		
+		int rng = std::rand() % 2;
+
+		(rng == 0) ? stage = ES_TEMPLE : stage = ES_ISLANDS;
+		Game::getInstance()->changeScene(GAMEPLAY, _players, stage);
 
 		
 	
@@ -1339,23 +1432,23 @@ void SelectGodScene::createButtons(){
 #pragma region Player2 Gods
 
 	Entity* aux = new Entity("AhPuchP1", this);
-	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-600, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_AHPUCH));
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_AHPUCH));
 	_godsButtons.push_back(aux);
 
 
 
 	Entity* aux2 = new Entity("RaP1", this);
-	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_RA));
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_RA));
 	_godsButtons.push_back(aux2);
 
 
 	Entity* aux3 = new Entity("ZeusP1", this);
-	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_ZEUS));
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_ZEUS));
 	_godsButtons.push_back(aux3);
 
 
 	Entity* aux4 = new Entity("HachimanP1", this);
-	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_HACHIMAN));
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_HACHIMAN));
 	_godsButtons.push_back(aux4);
 
 

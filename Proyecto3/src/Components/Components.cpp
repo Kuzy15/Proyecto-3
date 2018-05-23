@@ -551,9 +551,10 @@ CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, flo
 }
 CSkyPlaneRender::~CSkyPlaneRender(){
 
-	/*Ogre::MeshManager::getSingleton()
-	pChild->detachObject(entity);
-	pSceneMgr->destroyEntity(entity);*/
+	Ogre::MeshManager::getSingleton().remove(plane);
+	
+	pOgreSceneNode->detachObject(entity);
+	pSceneMgr->destroyEntity(entity);
 }
 
 
@@ -1071,7 +1072,7 @@ void CPlayerController::getMessage(Message* m){
 
 			ControllerInputState cState = inputM->getCInputState();
 
-			if (cState.Right_Shoulder == BTT_RELEASED){
+			if (cState.Right_Shoulder == BTT_PRESSED){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
@@ -1106,7 +1107,10 @@ void CPlayerController::getMessage(Message* m){
 
 //Life Component
 #pragma region Life Component
-CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {}
+CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {
+
+	
+}
 CLife::~CLife(){}
 
 void CLife::tick(float delta){
@@ -1244,7 +1248,7 @@ _maxFireRate(MAX_FIRE_RATE), _fireRate(fireRate), _bulletType(bT), _ogrepos(entP
 {
 	_lastTimeShot = 0;
 	_timeCounter = 0;
-	_radius = 6.0f;
+	_radius = 3.0f;
 
 }
 CPlayerBasicAttack::~CPlayerBasicAttack(){
@@ -1312,7 +1316,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 		float dmgValue = static_cast<MModDmg*>(m)->getValue();
 		_damage = _damage + (_damage* dmgValue / 100.0f);
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		//std::cout << _damage << "\n";
 
 #endif // DEBUG
@@ -1322,13 +1326,12 @@ void CPlayerBasicAttack::getMessage(Message* m){
 
 	else if (m->getType() == MSG_MOD_FIRERATE){
 		float fireRateValue = static_cast<MModFireRate*>(m)->getFireRateValue();
-		_fireRate = _fireRate + (_fireRate*fireRateValue / 100.0f);
-		if (_fireRate > _maxFireRate){
+		_fireRate = _fireRate - (_fireRate*fireRateValue / 100.0f);
+		if (_fireRate < _maxFireRate){
 			_fireRate = _maxFireRate;
 		}
 
 	}
-
 	else if (m->getType() == MSG_PASSMOD_DES){
 		resetDamage();
 		resetFireRate();
@@ -2105,6 +2108,8 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
 
+
+
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
@@ -2118,8 +2123,8 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 }
 CNormalButton::~CNormalButton()
 {
-
-
+	if (Ogre::OverlayManager::getSingleton().hasOverlayElement(pContainer->getName()))
+		pOver->remove2D(pContainer);
 }
 
 
@@ -2350,6 +2355,9 @@ void CPlayerGUI::tick(float delta) {
 }
 void CPlayerGUI::getMessage(Message * m) {
 
+	MActiveDead* mAD;
+	MPassiveDead* mPD;
+
 	switch (m->getType())
 	{
 	case MSG_LIFE_STATE:
@@ -2378,10 +2386,25 @@ void CPlayerGUI::getMessage(Message * m) {
 			pLowerHud->getChild(player + "/ActiveContainer/ActiveFrame")->setMaterialName("GUI/" + player + "/ActiveDead");
 			pActiveBar->setWidth(0);
 		}
-			break;
+		break;
 	case MSG_PASSIVE_DEAD:
+		
 		if (m->getEmmiter() == "Player_0" && p == P1 || m->getEmmiter() == "Player_1" && p == P2)
 			pLowerHud->getChild(player + "/ActiveConainer/PassiveIcon")->setMaterialName("GUI/PassiveDown");
+		break;
+	case MSG_RESET_GUI:
+		
+		pActiveBar->setMaterialName("GUI/" + player + "/ActiveBar");
+
+		pLowerHud->getChild(player + "/ActiveConainer/PassiveIcon")->setMaterialName("GUI/PassiveUp");
+		updateLifebar(LIFE_MAX_WIDTH);
+		updateActive(ACTIVE_MAX_WIDTH);
+
+		
+		break;
+
+		
+		
 	}
 }
 

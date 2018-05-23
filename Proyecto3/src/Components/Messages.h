@@ -93,7 +93,8 @@ typedef enum MessageType {
 	MSG_ROUND_FINISHED,
 	MSG_ACT_RENDERGODMENU,
 	MSG_DES_RENDERGODMENU,
-	MSG_GOD_SETTER
+	MSG_GOD_SETTER,
+	MSG_RESET_GUI
 
 	
 
@@ -715,6 +716,13 @@ private:
 	int _idx;
 };
 
+class MResetGui : public Message
+{
+public:
+	MResetGui(std::string emmiter);
+	~MResetGui();
+
+};
 
 
 

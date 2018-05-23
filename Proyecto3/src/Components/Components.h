@@ -25,8 +25,8 @@ typedef enum E_GOD;
 //Limits for the components variables 
 const float MAX_SPEED = 13.0f;
 const int MAX_LIFE = 150;
-const float MAX_JUMP_DISTANCE = 150.0f;
-const float MAX_FIRE_RATE = 0.0f;
+const float MAX_JUMP_DISTANCE = 90.0f;
+const float MAX_FIRE_RATE = 200.0f;
 
 //Pixels per meter
 const float PPM = 3.0f;

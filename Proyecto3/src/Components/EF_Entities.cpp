@@ -39,7 +39,7 @@ Entity* createGodRa(std::string id, GameScene* s, Ogre::Vector3 iniPos, int cont
 	//CollisionHandler
 	Ra->addComponent(new CPlayerCollisionHandler(Ra));
 	//Basic Attack
-	Ra->addComponent(new CPlayerBasicAttack(Ra, 1000.0f, EB_RA,iniPos,10.0f));
+	Ra->addComponent(new CPlayerBasicAttack(Ra, 800.0f, EB_RA,iniPos,10.0f));
 
 	//LIfe
 	Ra->addComponent(new CLife(Ra, 100.0f));
@@ -85,7 +85,7 @@ Entity* createGodAhPuch(std::string id, GameScene* s, Ogre::Vector3 iniPos, int 
 	//CollisionHandler
 	AhPuch->addComponent(new CPlayerCollisionHandler(AhPuch));
 	//Basic Attack
-	AhPuch->addComponent(new CPlayerBasicAttack(AhPuch, 500.0f, EB_AHPUCH, iniPos, 2.0f));
+	AhPuch->addComponent(new CPlayerBasicAttack(AhPuch, 300.0f, EB_AHPUCH, iniPos, 2.0f));
 
 	//LIfe
 	AhPuch->addComponent(new CLife(AhPuch, 100.0f));
@@ -127,7 +127,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	//CollisionHandler
 	Zeus->addComponent(new CPlayerCollisionHandler(Zeus));
 	//Basic Attack
-	Zeus->addComponent(new CPlayerBasicAttack(Zeus, 1000.0f, EB_ZEUS, iniPos, 7.0f));
+	Zeus->addComponent(new CPlayerBasicAttack(Zeus, 800.0f, EB_ZEUS, iniPos, 7.0f));
 
 	//LIfe
 	Zeus->addComponent(new CLife(Zeus, 100.0f));
@@ -176,7 +176,7 @@ Entity* createGodHachiman(std::string id, GameScene* s, Ogre::Vector3 iniPos, in
 	//CollisionHandler
 	Hachiman->addComponent(new CPlayerCollisionHandler(Hachiman));
 	//Basic Attack
-	Hachiman->addComponent(new CPlayerBasicAttack(Hachiman, 750.0f, EB_HACHIMAN, iniPos, 4.0f));
+	Hachiman->addComponent(new CPlayerBasicAttack(Hachiman, 550.0f, EB_HACHIMAN, iniPos, 4.0f));
 
 	//LIfe
 	Hachiman->addComponent(new CLife(Hachiman, 100.0f));
@@ -594,7 +594,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s, std::vector<Entity*> &del
 	entities->push_back(leftEdge);
 
 	Entity *deathZone = new Entity("DeathZone_01", s);
-	deathZone->addComponent(new CRigidBody(deathZone, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, -50, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_DEATHZONE, -1));
+	deathZone->addComponent(new CRigidBody(deathZone, s->getGame()->getPhysicsWorld(), Ogre::Vector3(-300, -100, 0), 3, 2000, 0, RB_STATIC, SH_POLYGON, MASK_DEATHZONE, -1));
 	entities->push_back(deathZone);
 
 	//trees
@@ -628,7 +628,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s, std::vector<Entity*> &del
 
 	Ogre::Viewport* vp = nullptr;
 	Entity * cam = new Entity("Camera1", s);
-	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150, 150, 60, 150));
+	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150, 50, 60, 150));
 	entities->push_back(cam);
 
 	return entities;

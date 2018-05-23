@@ -7,6 +7,7 @@ material HERA_RUNE-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -22,11 +23,13 @@ material HERA_RUNE-ACTIVE
 material HERIS_MARK-ACTIVE
 {
     receive_shadows on 
+    
 
     technique
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -42,11 +45,13 @@ material HERIS_MARK-ACTIVE
 material JONSU_MOON-ACTIVE
 {
     receive_shadows on 
+   
 
     technique
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -67,6 +72,7 @@ material KHEPRI_BEETLE-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -87,6 +93,7 @@ material PASSIVE_HADES-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -100,12 +107,15 @@ material PASSIVE_HADES-ACTIVE
     }
 }
 material PASSIVE_HERMES-ACTIVE
+{
+
     receive_shadows on 
 
     technique
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -126,6 +136,7 @@ material PASSIVE_SYN-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -146,6 +157,7 @@ material PASSIVE_ULL-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -166,6 +178,7 @@ material PASSIVE_VALI-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -186,6 +199,7 @@ material PASSIVE_VIDAR-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -208,6 +222,7 @@ material SHU_HEADDRESS-ACTIVE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -231,6 +246,7 @@ material HERA_RUNE-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -251,6 +267,7 @@ material HERIS_MARK-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -271,6 +288,7 @@ material JONSU_MOON-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -291,6 +309,7 @@ material KHEPRI_BEETLE-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -311,6 +330,7 @@ material PASSIVE_HADES-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -324,12 +344,15 @@ material PASSIVE_HADES-IDLE
     }
 }
 material PASSIVE_HERMES-IDLE
+{
+
     receive_shadows on 
 
     technique
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -350,6 +373,7 @@ material PASSIVE_SYN-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -370,6 +394,7 @@ material PASSIVE_ULL-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -390,6 +415,7 @@ material PASSIVE_VALI-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -410,6 +436,7 @@ material PASSIVE_VIDAR-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -432,6 +459,7 @@ material SHU_HEADDRESS-IDLE
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -454,6 +482,7 @@ material PASSIVE_VIDAR-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -480,6 +509,7 @@ material PASSIVE_HADES-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -506,6 +536,7 @@ material PASSIVE_ULL-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -532,6 +563,7 @@ material KHEPRI_BEETLE-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -558,6 +590,7 @@ material PASSIVE_VALI-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -584,6 +617,7 @@ material JONSU_MOON-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -610,6 +644,7 @@ material HERIS_MARK-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -636,6 +671,7 @@ material HERA_RUNE-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -662,6 +698,7 @@ material PASSIVE_HERMES-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -688,6 +725,7 @@ material PASSIVE_SYN-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5
@@ -713,6 +751,7 @@ material SHU_HEADDRESS-CLICK
     {
         pass Material
         {
+            scene_blend alpha_blend
             ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
             diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
             specular 0.5 0.5 0.5 1.0 12.5

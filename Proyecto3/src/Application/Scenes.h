@@ -11,8 +11,8 @@ enum E_STAGE;
 enum ComponentType;
 struct ControllerInputState;
 
-const Ogre::Vector3 _posP1(20.0f,5.0f,0.0f);
-const Ogre::Vector3 _posP2(-20.0f, 5.0f, 0.0f);
+const Ogre::Vector3 _posP1(-20.0f,20.0f,0.0f);
+const Ogre::Vector3 _posP2(20.0f, 20.0f, 0.0f);
 
 #pragma region Game Scene
 
@@ -178,6 +178,7 @@ private:
 	void loadStage();
 	//Load the ability cards entities for each player
 	void loadAbilities();
+	void reloadAbilities();
 	void addAbilityComponent(int playerId, ComponentType id); //Type values (0 = Active), (1 = Passive)
 	//Controller manage methods
 	void controllerDisconected(int id);
@@ -202,6 +203,8 @@ private:
 	bool _paused;
 	std::vector<Entity*> _cardGUIEntities;		//Buttons for card select entities
 	std::vector<Entity*> _endGUIEntities;
+	std::vector<ComponentType> _totalPassives;
+	std::vector<ComponentType> _totalActives;
 	int player1Index;
 	int player2Index;
 

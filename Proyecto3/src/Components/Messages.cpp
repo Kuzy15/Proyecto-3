@@ -349,3 +349,8 @@ MDamage::~MDamage(){}
 	MDesSeleGodRender::~MDesSeleGodRender(){};
 	
 #pragma endregion
+
+#pragma region Reset Gui 
+	MResetGui::MResetGui(std::string emmiter) : Message(MSG_RESET_GUI, SCENE, emmiter) {};
+	MResetGui::~MResetGui() {};
+#pragma endregion
