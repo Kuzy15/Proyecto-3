@@ -87,14 +87,14 @@ bgEnd
 
 MENU
 {
-	zorder 50
+	zorder 100
 	container Panel (FondoMainMenu)
 	{
 	top 0
 	left 0
 	width 1
 	height 1
-	material GUI/FondoMainMenu
+	material MainMenu2
 	}
 }
 

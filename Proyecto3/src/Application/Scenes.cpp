@@ -1041,7 +1041,7 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	vp = cCam->getVP();
 
 	Entity * background = new Entity("Bg", this);
-	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, "MainMenu", {70,0,0}, vp));
+	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, "MainMenu2", {70,0,0}, vp));
 	//_menuEntities.emplace(std::pair<int, Entity*>(2, background));
 	addEntity(background);
 
@@ -1739,9 +1739,9 @@ void LoadingScene::processScnMsgs()
 #pragma endregion
 
 #pragma region InitScene
-initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getInstance()), _resCfgLoc(resCfgLoc)
+initScene::initScene() :GameScene("InitScene", Game::getInstance())
 {
-	LoadComplete = false;
+	
 	tInicial = SDL_GetTicks();
 	Ogre::Camera * cam = scnMgr->createCamera("InitCam");
 	Game::getInstance()->getRenderWindow()->addViewport(cam);
@@ -1750,7 +1750,7 @@ initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getIn
 	overlay = overlayManager.getByName("InitGUI");
 	overlay->show();
 
-	startLoadThread();
+	
 }
 initScene::~initScene() {
 
@@ -1759,76 +1759,14 @@ void initScene::processScnMsgs()
 {
 
 }
-void initScene::startLoadThread()
-{
-	ldThread = std::thread(&initScene::initResources, this);
-	ldThread.detach();
 
-}
 bool initScene::run() {
-	if (LoadComplete == true && SDL_GetTicks() - tInicial >= 5000) {
+	if (SDL_GetTicks() - tInicial >= 5000) {
 		Game::getInstance()->changeScene(MAIN_MENU);
 	}
 
 	return 0;
 }
-bool initScene::initResources()
-{
-	//bool & aux = const_cast<bool &>(ldComplete);
-	//------------------------------------------------------------------------------------------------------
-	//Setting UP Resources
-	Ogre::ConfigFile cf;
-	//Parsing the config file into the system.
-	cf.load(_resCfgLoc);
 
 
-	//name: Path to resources in disk,
-	//loctype: defines what kind of location the element is (e.g. Filesystem, zip..)
-	Ogre::String name, locType;
-
-	//We now iterate through rach section in the resources.cfg.
-	//Sections are signaled as [NAME]
-	Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
-	while (secIt.hasMoreElements())
-	{
-		Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
-		Ogre::ConfigFile::SettingsMultiMap::iterator it;
-
-		//Now we are iterating INSIDE the section [secIt]
-		for (it = settings->begin(); it != settings->end(); ++it)
-		{
-			locType = it->first;
-			name = it->second;
-
-			//We now know the type of the element and its path.
-			//We add it as a location to the Resource Group Manager
-			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
-
-
-		}
-	}
-	//If there is no previous Ogre.cfg, this displays the config dialog
-
-	//------------------------------------------------------------------------------------------------------
-	//Resources Init
-
-	//Now we init every resource previously added
-	try {
-
-		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
-	}
-	catch (Ogre::Exception e) {
-#ifdef DEBUG
-		std::cout << e.what() << std::endl;
-
-#endif // DEBUG
-	}
-		//We are only going to use 5 mimpams at a time. Mipmaps are efficent ways to save a texture.
-		//Taking only 1/3 more of space, we can have several sizes of the texture to choose from.
-		Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
-
-		//Hay que ver como modificamos el booleano para que el hilo principal sepa que se ha acabado la carga
-		LoadComplete = true;
-		return LoadComplete;
-}
 #pragma endregion

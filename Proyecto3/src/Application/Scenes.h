@@ -392,8 +392,8 @@ private:
 class initScene: public GameScene
 {
 public:
-	initScene(Ogre::String resCfgLoc);
-	~initScene();
+	initScene();
+	virtual ~initScene();
 	bool initResources();
 
 

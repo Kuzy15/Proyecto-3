@@ -2175,6 +2175,7 @@ _playerId(playerId), _compType(compType){
 
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
 	pContainer->setPosition(screenpos.x, screenpos.y);
+	pContainer->setDimensions(0.156, 0.234);
 	pContainer->setMaterialName(materials[0]);
 	overlay->add2D(pContainer);
 

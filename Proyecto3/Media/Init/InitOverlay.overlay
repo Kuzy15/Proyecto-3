@@ -4,12 +4,12 @@ InitGUI
   zOrder 200
   container Panel (Logo)
   {
-    top 0.1
-    left 0.353
-    width 0.295
-    height 0.525
-    material Init/Logo
-  }
+    top 0
+    left 0
+    width 1
+    height 1
+    material Init/FotoMando
+  
   container Panel (CircleOut)
   {
     top 0.7
@@ -26,4 +26,6 @@ InitGUI
      width 0.15
      material Init/CircleIn
    }
+  }
 }
+

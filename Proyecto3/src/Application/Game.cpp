@@ -78,9 +78,7 @@ Game::Game(){
 	 _exit = false;
 	 _changeScene = false;
 
-
-	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
-	 GameScene* actScene = new initScene(resCfgLoc);//new MainMenuScene("MainMenuScene", this);
+	 GameScene* actScene = new initScene();
 	 scenes.push(actScene);
 
 
@@ -224,6 +222,62 @@ bool Game::initOgre(){
 #endif // _DEBUG
 
 	}
+
+	//bool & aux = const_cast<bool &>(ldComplete);
+	//------------------------------------------------------------------------------------------------------
+	//Setting UP Resources
+	Ogre::ConfigFile cf;
+	//Parsing the config file into the system.
+	cf.load(resCfgLoc);
+
+
+	//name: Path to resources in disk,
+	//loctype: defines what kind of location the element is (e.g. Filesystem, zip..)
+	Ogre::String name, locType;
+
+	//We now iterate through rach section in the resources.cfg.
+	//Sections are signaled as [NAME]
+	Ogre::ConfigFile::SectionIterator secIt = cf.getSectionIterator();
+	while (secIt.hasMoreElements())
+	{
+		Ogre::ConfigFile::SettingsMultiMap* settings = secIt.getNext();
+		Ogre::ConfigFile::SettingsMultiMap::iterator it;
+
+		//Now we are iterating INSIDE the section [secIt]
+		for (it = settings->begin(); it != settings->end(); ++it)
+		{
+			locType = it->first;
+			name = it->second;
+
+			//We now know the type of the element and its path.
+			//We add it as a location to the Resource Group Manager
+			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
+
+
+		}
+	}
+	//If there is no previous Ogre.cfg, this displays the config dialog
+
+	//------------------------------------------------------------------------------------------------------
+	//Resources Init
+
+	Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
+	//Now we init every resource previously added
+	try {
+
+		Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+	}
+	catch (Ogre::Exception e) {
+#ifdef DEBUG
+		std::cout << e.what() << std::endl;
+
+#endif // DEBUG
+	}
+	//We are only going to use 5 mimpams at a time. Mipmaps are efficent ways to save a texture.
+	//Taking only 1/3 more of space, we can have several sizes of the texture to choose from.
+
+
+
 
  }
 #pragma endregion
