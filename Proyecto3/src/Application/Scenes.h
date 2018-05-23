@@ -127,11 +127,12 @@ typedef enum GameplayState{
 };
 //Struct and global variables that stores the battle information
 const int MAX_ROUNDS = 3;
-const float TIME_LIMIT = 0;
+const float TIME_LIMIT = 120000.0f;
 
 struct BattleState{
 	bool battleStarted = false; //Bool battle started
 	bool battleEnded = false;
+	bool battleStoped = false;
 	float timeElapsed = 0;		//Time elapsed sice the start of the battle
 	int roundsCompleted = 0;	//Rounds completed
 	float timeCountStart = 0;	//Time when battle started
@@ -195,6 +196,7 @@ private:
 	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
 	bool _paused;
 	std::vector<Entity*> _cardGUIEntities;		//Buttons for card select entities
+	std::vector<Entity*> _endGUIEntities;
 	int player1Index;
 	int player2Index;
 
@@ -203,9 +205,16 @@ private:
 	Ogre::Vector3 _posP2; 
 
 	Ogre::Overlay* bgCards;
+	Ogre::Overlay* bgEnd;
 
 	float _prepareCounter;
 	float _prepareLimitTime;
+
+	float _postGameCounter;
+	float _postGameLimitTime;
+
+	float _preGameCounter;
+	float _preGameLimitTime;
 
 
 };

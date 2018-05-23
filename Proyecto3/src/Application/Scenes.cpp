@@ -307,6 +307,10 @@ void exitCallBack() {
 	Game::getInstance()->exitGame();
 }
 
+void returnMainMenu(){}
+
+void returnMulitplayerMenu(){}
+
 
 #pragma region GamePlayScene
 
@@ -325,13 +329,19 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 #endif
 
 	//The limit time to choose cards
-	_prepareLimitTime = 150000.0f; //15 seconds
+	_prepareLimitTime = 5000.0f; //15 seconds
 	_prepareCounter = 0.0f;
+
+	_postGameLimitTime = 5000.0f;
+	_postGameCounter = 0.0f;
+
+	_preGameLimitTime = 5000.0f;
+	_preGameCounter = 0.0f;
 
 	//Load the stage passed by parameter
 	loadStage();
 
-
+	
 
 	//Store and configure the players structure
 	_players = players;
@@ -366,7 +376,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	// Create an overlay
 	try {
 		overlay = overlayManager.getByName("GUI");
-		bgCards = overlayManager.getByName("Background");
+		bgCards = overlayManager.getByName("bgCards");
+		bgEnd = overlayManager.getByName("bgEnd");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -376,6 +387,8 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
 	Ogre::FontManager::getSingleton().getByName("GUI/PlayerText")->load();
 
+	overlay->hide();
+	bgEnd->hide();
 
 	Entity * k = new Entity("GUI", this);
 
@@ -386,6 +399,18 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	k->addComponent(new CPlayerGUI(k, overlay, P2, players[1].god));
 	addEntity(k);
 	
+	//Add end GUI entities
+	Entity* endButton0 = new Entity("EndButton_0", this);
+	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(-200.0f, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Batalla"));
+	endButton0->setActive(false);
+	addEntity(endButton0);
+	_endGUIEntities.push_back(endButton0);
+
+	Entity* endButton1 = new Entity("EndButton_1", this);
+	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(-200.0f,0.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Menu Principal"));
+	endButton1->setActive(false);
+	addEntity(endButton1);
+	_endGUIEntities.push_back(endButton1);
 
 	changePhase(GS_SETUP);
 
@@ -510,26 +535,52 @@ void GamePlayScene::battlePhase(){
 
 	//Pre-battle: little wait time to let players getting ready
 	if (!_battleState.battleStarted){
-
-
-
 	//Contador de 5 seg (por ejemplo) y empieza el combate
-	_battleState.battleStarted = true;
-	_battleState.timeCountStart = SDL_GetTicks();
+		if ((SDL_GetTicks() - _preGameCounter) > _preGameLimitTime){
+			_battleState.battleStarted = true;
+			_battleState.timeCountStart = SDL_GetTicks();
+			for (Player p : _players){
+				p.entity->setActive(true);
+			}
+
+		}
 	}
 
 	//Battle
 	else{
+		if (!_battleState.battleEnded){
+			//Update time elapsed
+			_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
+			getMessage(new MUpdateSceneTimer(_id, (TIME_LIMIT - _battleState.timeElapsed) / 1000.0f));
 
-		//Update time elapsed
-		_battleState.timeElapsed = SDL_GetTicks() - _battleState.timeCountStart;
-		getMessage(new MUpdateSceneTimer(_id,_battleState.timeElapsed));
+
+			//If time is greater than limit, stop battle
+			if (_battleState.timeElapsed > TIME_LIMIT){
+				_battleState.battleEnded = true;
+				
+			}
+		}
+		else{
+
+			//If the rounds elapsed are 3, we finish the game. Else, continue.
+			if ((SDL_GetTicks() - _postGameCounter)  > _postGameLimitTime){
+				if (_battleState.roundsCompleted == MAX_ROUNDS){
+					changePhase(GS_END);
+				}
+				else{
+					resetPlayers();
+					changePhase(GS_SETUP);
+				}
+
+				_battleState.battleStarted = false;
+				_battleState.battleEnded = false;
+
+				
+
+			}
 
 
-		//If time is greater than limit, stop battle
-		if (_battleState.timeElapsed > TIME_LIMIT){
-			_battleState.battleEnded = true;
-			//_currState = GS_END;
+
 		}
 
 	}
@@ -574,18 +625,12 @@ void GamePlayScene::changePhase(GameplayState newState){
 		overlay->hide();
 		//Set the starter state to SETUP
 		_prepareCounter = SDL_GetTicks();
-
-
 		player1Index = 0;
 		player2Index = 3;
-
 		_nPlayers = MAX_PLAYERS;
-
 		loadAbilities();
 		bgCards->show();
-
 		getMessage(new MButtonAct(_id, player1Index));
-
 		_currState = GS_SETUP;
 			break;
 	case GS_BATTLE:
@@ -593,15 +638,22 @@ void GamePlayScene::changePhase(GameplayState newState){
 			addEntityToDelete(e);
 		}
 		_cardGUIEntities.clear();
-		for (Player p : _players){
-			p.entity->setActive(true);
-		}
 		bgCards->hide();
 		overlay->show();
+		_preGameCounter = SDL_GetTicks();
+		getMessage(new MUpdateSceneTimer(_id, (TIME_LIMIT) / 1000.0f));
 		_currState = GS_BATTLE;
 		break;
 	case GS_END:
-		
+		overlay->hide();
+		bgCards->hide();
+		bgEnd->show();
+		for (Entity* e : _endGUIEntities){
+			e->setActive(true);
+		}
+		player1Index = 0;
+		getMessage(new MButtonAct(_id, player1Index));
+		_currState = GS_END;
 		break;
 	}
 
@@ -623,19 +675,14 @@ void GamePlayScene::playerDied(std::string e){
 	getMessage(new MRoundFinished(_id,_players[playerWonId].entity->getID()));
 	_battleState.roundsCompleted++;
 
+	_battleState.battleEnded = true;
+	_postGameCounter = SDL_GetTicks();
+
+	for (Player p : _players){
+		p.entity->setActive(false);
+	}
 	
-
-
-
-	//If the rounds elapsed are 3, we finish the game. Else, continue.
-	if (_battleState.roundsCompleted == MAX_ROUNDS){
-		changePhase(GS_END);
-	}
-	else{
-		resetPlayers();
-		changePhase(GS_SETUP);
-	}
-
+	
 
 }
 
@@ -818,6 +865,32 @@ void GamePlayScene::processMsgBattle(Message* m){
 void GamePlayScene::processMsgEnd(Message* m){
 
 
+
+	MAbilitySet* mAbility;
+	MInputState* mInput;
+
+	switch (m->getType()){
+	case MSG_INPUT_STATE:
+		mInput = static_cast<MInputState*>(m);
+		if (mInput->getId() == 0){
+			if (mInput->getCInputState().Button_A == BTT_RELEASED){
+				getMessage(new MButtonClick(_id, player1Index));
+			}
+			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
+				player1Index++;
+				if (player1Index > 1) player1Index = 0;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
+				player1Index--;
+				if (player1Index < 0) player1Index = 1;
+				getMessage(new MButtonAct(_id, player1Index));
+			}
+		}
+		break;
+	default:
+		break;
+	}
 
 
 

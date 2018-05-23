@@ -933,6 +933,7 @@ private:
 	ComponentType _compType;
 	int _type;
 	
+	
 };
 
 

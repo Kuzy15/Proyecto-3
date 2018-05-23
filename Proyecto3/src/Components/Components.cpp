@@ -2128,8 +2128,8 @@ _playerId(playerId), _compType(compType){
 }
 CAbilityButton::~CAbilityButton()
 {
+	pOver->remove2D(pContainer);
 	
-	//Ogre::OverlayManager::getSingleton().destroyOverlayElement(pEnt->getID());
 }
 
 
