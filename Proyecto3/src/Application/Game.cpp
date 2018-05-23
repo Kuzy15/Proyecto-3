@@ -165,21 +165,24 @@ bool Game::initOgre(){
 	pOverMan = Ogre::OverlayManager::getSingletonPtr();
 
 
-
 	if (!(root->restoreConfig() || root->showConfigDialog()))
 		return false;
 
 	//------------------------------------------------------------------------------------------------------
 	//Render Window Creation
 	pWindow = root->initialise(true, "OGRE3D Game");
-	try
-	{
-		Ogre::ResourceGroupManager::getSingleton().addResourceLocation("../Media/Init", "FileSystem", "Essential");
+
+	Ogre::ResourceGroupManager::getSingleton().addResourceLocation("../Media/Init", "FileSystem", "Essential");
+	try {
 		Ogre::ResourceGroupManager::getSingleton().initialiseResourceGroup("Essential");
 	}
-	catch (std::exception e)
+	catch (Ogre::Exception e)
 	{
+#ifdef _DEBUG
+
 		std::cout << e.what() << std::endl;
+#endif // _DEBUG
+
 	}
 
  }

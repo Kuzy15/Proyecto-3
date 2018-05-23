@@ -2,7 +2,7 @@
 #define SCENES_H
 #include <OgreTextAreaOverlayElement.h>
 #include <thread>
-
+#include <atomic>
 class Entity;
 class Message;
 class Game;
@@ -308,14 +308,13 @@ public:
 
 
 private:
-	std::thread loadThreadWrapper();
+	void startLoadThread();
 	Ogre::String _resCfgLoc;
-	Ogre::Overlay * pOverlay;
 	Entity * cam;
 	virtual void processScnMsgs();
-	bool LoadComplete;
-	void CompleteLoad();
+	std::atomic<bool> LoadComplete;
 
+	float tInicial;
 	std::thread ldThread;
 
 	//Main loop of the scene.

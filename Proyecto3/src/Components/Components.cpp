@@ -2024,12 +2024,10 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
 
-	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text" + father->getID()));
-		a->setCaption(_txt);
-	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
-
+	Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text" + father->getID()));
+	a->setCaption(_txt);
+	
+	
 }
 CNormalButton::~CNormalButton()
 {

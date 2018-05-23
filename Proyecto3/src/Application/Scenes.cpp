@@ -53,11 +53,11 @@ GameScene::GameScene(std::string id, Game * game) :_id(id), pGame(game), vp(0),s
 }
 GameScene::~GameScene()
 {
-
 	deleteAllMessages();
 
 	deleteAllEntities();
-
+	Ogre::OverlayManager::getSingleton().destroyAll();
+	
 	EntityFactory::getInstance().resetInstance();
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
@@ -365,14 +365,11 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 
 	// Create an overlay
-	try {
-		overlay = overlayManager.getByName("GUI");
-		bgCards = overlayManager.getByName("Background");
-	}
-	catch (Ogre::Exception e) {
-		cout << e.what() << std::endl;
-		cout << std::endl;
-	}
+	
+	overlay = overlayManager.getByName("GUI");
+	bgCards = overlayManager.getByName("Background");
+
+
 	// Show the overlay
 	Ogre::FontManager::getSingleton().getByName("GUI/TimeText")->load();
 	Ogre::FontManager::getSingleton().getByName("GUI/PlayerText")->load();
@@ -1030,46 +1027,43 @@ void LoadingScene::processScnMsgs()
 initScene::initScene(Ogre::String resCfgLoc) :GameScene("InitScene", Game::getInstance()), _resCfgLoc(resCfgLoc)
 {
 	LoadComplete = false;
+	tInicial = SDL_GetTicks();
 	Ogre::Camera * cam = scnMgr->createCamera("InitCam");
 	Game::getInstance()->getRenderWindow()->addViewport(cam);
+	cam->getViewport()->setBackgroundColour(Ogre::ColourValue(1, 1, 1));
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
-	pOverlay = overlayManager.getByName("InitGUI");
-	pOverlay->show();
+	overlay = overlayManager.getByName("InitGUI");
+	overlay->show();
 	
+	startLoadThread();
 }
 initScene::~initScene() {
-	pOverlay->hide();
+	overlay->hide();
 	Game::getInstance()->getRenderWindow()->removeAllViewports();
 	scnMgr->clearScene();
 
-	ldThread.join();
 }
 void initScene::processScnMsgs() 
 {
 	
 }
-std::thread initScene::loadThreadWrapper() 
+void initScene::startLoadThread()
 {
-	return  std::thread([&] {initResources(); });
+	ldThread = std::thread(&initScene::initResources, this);
+	ldThread.detach();
 
 }
-void initScene::CompleteLoad()
-{
-	LoadComplete = true;
-}
+
 bool initScene::run() {
-	if (LoadComplete) {
-		std::cout << "load Complete" << std::endl;
-		ldThread.join();
+	if (LoadComplete == true && SDL_GetTicks() - tInicial >= 5000) {
+		overlay = Ogre::OverlayManager::getSingleton().getByName("Foto");
 	}
 
-
-
-	while (true);
-	return EXIT_SUCCESS;
+	return 0;
 }
-bool initScene::initResources() 
+bool initScene::initResources()
 {
+	//bool & aux = const_cast<bool &>(ldComplete);
 	//------------------------------------------------------------------------------------------------------
 	//Setting UP Resources
 	Ogre::ConfigFile cf;
@@ -1123,6 +1117,6 @@ bool initScene::initResources()
 		Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
 		//Hay que ver como modificamos el booleano para que el hilo principal sepa que se ha acabado la carga
-		CompleteLoad();
-		return true;
+		LoadComplete = true;
+		return LoadComplete;
 }

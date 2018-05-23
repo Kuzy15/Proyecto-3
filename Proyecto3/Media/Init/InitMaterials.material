@@ -1,4 +1,52 @@
-material Init/BasicRed
+material Init/Logo
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture logo.png
+        tex_address_mode clamp
+      }
+    }
+  }
+}
+material Init/CircleOut
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Circulo_Out.png
+        tex_address_mode clamp
+        rotate_anim -0.1
+      }
+    }
+  }
+}
+material Init/CircleIn
+{
+  technique
+  {
+    pass
+    {
+      scene_blend alpha_blend
+      texture_unit
+      {
+        texture Circulo_In.png
+        tex_address_mode clamp
+        rotate_anim -0.3
+        scale -1 1
+      }
+    }
+  }
+}
+material Init/FotoMando
 {
   technique
   {
@@ -6,7 +54,7 @@ material Init/BasicRed
     {
       texture_unit
       {
-        colour_op_ex source1 src_manual src_current 1 0 0
+        texture LoadingMando.png
       }
     }
   }
