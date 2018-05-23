@@ -391,7 +391,7 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 	//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
 	irrklang::ISound* bso = game->getSoundEngine()->play2D("../Media/sounds/BattleTheme.wav",true,false,true);
 	if (bso){
-		bso->setVolume(0.2f);
+		bso->setVolume(0.1f);
 	}
 	//Set the starter state to SETUP
 	_currState = GS_BATTLE;
@@ -761,7 +761,10 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	selectedButton = 0;
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
-	game->getSoundEngine()->play2D("../Media/sounds/MenuTheme.wav", true);
+	irrklang::ISound* bso = game->getSoundEngine()->play2D("../Media/sounds/MenuTheme.wav", true);
+	if (bso){
+		bso->setVolume(0.2f);
+	}
 
 	// Create an overlay
 	try {

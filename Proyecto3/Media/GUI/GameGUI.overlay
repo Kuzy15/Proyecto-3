@@ -139,7 +139,7 @@ GUI
           top 0.0925
           width 0.27
           height 0.08
-         material GUI/Player1/LifeFrame
+          material GUI/Player1/LifeFrame
         }
 
         container Panel (Player1/Round1) : GUI/Round
@@ -203,7 +203,6 @@ GUI
           horz_align right
           left -0.093
           material GUI/RoundEmpty
-
         }
         container TextArea (Player2/Name) : GUI/PlayerName
         {
@@ -212,7 +211,7 @@ GUI
           alignment right
           left -0.104
 
-        }
+        }        
         container Panel (Player2/LifeBar)
         {
           horz_align right
@@ -221,16 +220,7 @@ GUI
           width 0.27
           height 0.08
           material GUI/Player2/LifeBar
-        }
-        container Panel (Player2/ALifeBorder)
-        {
-          horz_align right
-          left -0.374
-          top 0.0925
-          width 0.27
-          height 0.08
-          material GUI/Player2/LifeFrame
-        }
+        }    
         container Panel (Player2/Round1) : GUI/Round
         {
           horz_align right

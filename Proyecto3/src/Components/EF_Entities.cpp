@@ -10,7 +10,7 @@
 #define new DEBUG_NEW
 #endif
 
-const float JUMPFORCE = 90.0f;
+const float JUMPFORCE = 75.0f;
 const float VELOCITY = 8.0f;
 const float HEIGHT = 6.0f;
 const float WIDTH = 2.5f;
@@ -151,6 +151,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus5", "LZeus5", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus6", "LZeus6", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 
+	Zeus->addComponent(new CPSkillVidar(Zeus));
 
 
 	return Zeus;
