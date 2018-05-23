@@ -2202,7 +2202,7 @@ void CAbilityButton::getMessage(Message * me)
 		default:
 			break;
 		}
-
+	}
 }
 
 #pragma endregion
