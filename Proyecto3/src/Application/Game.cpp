@@ -53,6 +53,8 @@ Game::Game(){
 	//world->SetAllowSleeping(false);
 	world->SetContactListener(&collisionManager);
 
+	
+
 
 
 
@@ -79,6 +81,7 @@ Game::Game(){
 
 	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
 	 //actScene = new MainMenuScene("MainMenu", this);
+	 newScene(actScene);
 
 	 _exit = false;
 
@@ -88,10 +91,12 @@ Game::Game(){
  Game::~Game(){
 
 
-
-
-	 if (actScene != nullptr)
-		 delete actScene;
+	 while (!scenes.empty()){
+		 GameScene* s = scenes.top();
+		 scenes.pop();
+		 delete s;
+	 
+	 }
 	 //Remove the game from the window listeners
 	 //Ogre::WindowEventUtilities::removeWindowEventListener(pWindow, this);
 
@@ -120,6 +125,17 @@ Game::Game(){
  Ogre::OverlaySystem * Game::getOverlaySystem() {
 	 return pOverSyst;
  };
+
+ void Game::newScene(GameScene* nS){
+	if (!scenes.empty()){
+		GameScene* s = scenes.top();
+		scenes.pop();
+		delete s;
+	}
+	scenes.push(nS);	 	 
+	
+ 
+ }
 
 #pragma endregion
 
@@ -267,7 +283,7 @@ void Game::loop() {
 
 			handleInput();
 			world->Step(FPS_CAP, 10, 2);
-			actScene->run();
+			scenes.top()->run();
 			accumulator -= FPS_CAP;
 			frames++;
 		}

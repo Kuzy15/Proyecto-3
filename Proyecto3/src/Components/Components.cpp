@@ -582,7 +582,8 @@ CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * 
 	: GameComponent(CMP_CAMERA, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
 {
 	pCam = _scnMgr->createCamera(_camName);
-	vp = Game::getInstance()->getRenderWindow()->addViewport(pCam);
+	Ogre::RenderWindow* w = Game::getInstance()->getRenderWindow();
+	vp = w->addViewport(pCam);
 
 	pCam->setPosition(_pos);
 	pCam->lookAt(_lookAt);
@@ -2074,6 +2075,7 @@ void CNormalButton::getMessage(Message * me)
 		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
 			_active = true;
 			pContainer->setMaterialName(materials[1]);
+			Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", false);
 		}
 		else if (_active)
 		{
@@ -2081,14 +2083,14 @@ void CNormalButton::getMessage(Message * me)
 			pContainer->setMaterialName(materials[0]);
 
 		}
-		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", true);
+		
 		
 	}
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
 		_clicked = true;
 		_callback();
-		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", true);
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
 
 	}
 
@@ -2129,6 +2131,7 @@ void CAbilityButton::getMessage(Message * me)
 		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
 			_active = true;
 			pContainer->setMaterialName(materials[1]);
+			Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", false);
 		}
 		else if (_active)
 		{
@@ -2136,7 +2139,7 @@ void CAbilityButton::getMessage(Message * me)
 			pContainer->setMaterialName(materials[0]);
 
 		}
-		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/Button.wav", true);
+		
 	}
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
@@ -2144,7 +2147,7 @@ void CAbilityButton::getMessage(Message * me)
 
 		pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(),_playerId,_compType,0));
 
-		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", true);
+		Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Buttons/ButtonOk.wav", false);
 	}
 
 

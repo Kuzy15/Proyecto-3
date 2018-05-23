@@ -154,11 +154,11 @@ void GameScene::deleteAllEntities(){
 	}
 	_entities.clear();
 
-	for (auto e : _menuEntities){
+	/*for (auto e : _menuEntities){
 		aux = e.second;
 		if (aux != nullptr)
 			delete aux;
-	}
+	}*/
 
 }
 
@@ -304,6 +304,17 @@ void BasicScene::processScnMsgs()
 
 void exitCallBack() {
 	Game::getInstance()->exitGame();
+}
+void battleCallBack() {
+	/*std::vector<Player>* players = new std::vector<Player>(2);
+
+	players->at(0).controllerId = 0;
+	players->at(0).god = EG_HACHIMAN;
+
+	players->at(1).controllerId = 1;
+	players->at(1).god = EG_ZEUS;
+	GameScene* s = new GamePlayScene("GamePlayScene", Game::getInstance(), (*players), ES_ISLANDS);
+	Game::getInstance()->newScene(s);*/
 }
 
 
@@ -780,18 +791,22 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 	Ogre::Viewport* vp = nullptr;
 	Entity *cam = new Entity("camMenuIni",this);
 	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+	addEntity(cam);
 
-	Entity * background = new Entity("fightButton", this);
+	Entity * background = new Entity("Bg", this);
 	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {70,0,0}));
-		_menuEntities.emplace(std::pair<int, Entity*>(0, background));
+	//_menuEntities.emplace(std::pair<int, Entity*>(2, background));
+	addEntity(background);
 
 	Entity * fightButton = new Entity("fightButton", this);
 	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(0, 150), Ogre::Vector2(0, 0), exitCallBack, "Combate"));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
+	addEntity(fightButton);
 
 	Entity * exitButton = new Entity("exitButton", this);
 	exitButton->addComponent(new CNormalButton(overlay, exitButton, 0, Ogre::Vector2(0, 300), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
 	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
+	addEntity(exitButton);
 
 	overlay->show();
 
