@@ -164,6 +164,7 @@ public:
 	//Ogre::SceneNode * getSceneNode();
 	virtual void getMessage(Message *m);
 
+
 protected:
 	CRender(ComponentType t, Entity * father, Ogre::SceneManager * scnM);
 	// Inside the Ogre Node we can find al the render values needed by ogre
@@ -218,7 +219,7 @@ class CSkyPlaneRender : public CRender
 {
 public:
 
-	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos);
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp);
 	~CSkyPlaneRender();
 
 
@@ -243,6 +244,7 @@ public:
 	virtual void getMessage(Message * m);
 	Ogre::Vector3 getSize();
 	Ogre::SceneNode* getChildNode(){ return pChild; }
+	inline void setVisible(bool visible){ pOgreEnt->setVisible(visible); };
 
 private:
 	Ogre::Entity * pOgreEnt;
@@ -305,6 +307,7 @@ public:
 	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	inline Ogre::Viewport* getVP(){ return _vp; };
 	
 
 protected:
@@ -939,6 +942,22 @@ private:
 	
 	
 };
+
+
+class CGodButton : public CButtonGUI
+{
+public:
+	CGodButton(Ogre::Overlay * overlay, Entity * father, size_t _id, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god);
+	~CGodButton();
+
+	virtual void getMessage(Message * m);
+
+private:
+	int _playerId;
+
+};
+
+
 
 
 enum guiPlayer{

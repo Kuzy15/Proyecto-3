@@ -71,8 +71,10 @@ Game::Game(){
 
 	 initOgre();
 
+
 	 _nextPlayers = std::vector<Player>();
 	 _nextStage = ES_TEMPLE;
+
 	 _exit = false;
 	 _changeScene = false;
 	

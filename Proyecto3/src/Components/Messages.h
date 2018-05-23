@@ -89,7 +89,9 @@ typedef enum MessageType {
 	MSG_UPDATE_ACTIVETIMER,
 	MSG_PASSIVE_DEAD,
 	MSG_ACTIVE_DEAD,
-	MSG_ROUND_FINISHED
+	MSG_ROUND_FINISHED,
+	MSG_ACT_RENDERGODMENU,
+	MSG_DES_RENDERGODMENU
 
 	
 
@@ -671,6 +673,29 @@ public:
 	std::string getWinnerId();
 private:
 	std::string _winnerId;
+};
+
+
+//--------------------------------------------------	SELECT GOD RENDER MSG		----------------------------------------------------------//
+class MActSeleGodRender : public Message
+{
+public:
+	MActSeleGodRender(std::string emmiter);
+	~MActSeleGodRender();
+	inline int getIdx(){ return _idx; };
+private:
+	int _idx;
+};
+
+
+class MDesSeleGodRender : public Message
+{
+public:
+	MDesSeleGodRender(std::string emmiter);
+	~MDesSeleGodRender();
+	inline int getIdx(){ return _idx; };
+private:
+	int _idx;
 };
 
 

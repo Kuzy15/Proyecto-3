@@ -347,6 +347,7 @@ std::vector<Entity*>* createStageTemple(GameScene* s, std::vector<Entity*> &dele
 	
 
 
+	
 	Entity * e1 = new Entity("Suelo_01", s);
 	CMeshRender* cM = new CMeshRender({ 45, -20, -30 }, "suelo.mesh", e1, s->getSceneManager(), { 100.0f, 100.0f, 100.0f }, { 0, -90.0f, 0 });
 	e1->addComponent(cM);
@@ -465,6 +466,7 @@ std::vector<Entity*>* createStageIslands(GameScene* s, std::vector<Entity*> &del
 	Ogre::Light* light = s->getSceneManager()->createLight("MainLight");
 	light->setPosition(20, 30, 50);
 	light->setCastShadows(true);
+
 
 
 	Entity * e1 = new Entity("Suelo_01", s);

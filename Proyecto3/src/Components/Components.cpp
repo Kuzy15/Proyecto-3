@@ -24,6 +24,8 @@
 
 
 
+
+
 std::string compToString(ComponentType t, int &type){
 
 	switch (t){
@@ -65,6 +67,7 @@ std::string compToString(ComponentType t, int &type){
 	}
 
 };
+
 
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
@@ -276,16 +279,16 @@ void CMeshRender::getMessage(Message * m) {
 		}
 		break;
 	case MSG_PLAYER_SHOT:
-
-
-
-
-
 		break;
 	case MSG_PASSMOD_DES:
 		invisActive = false;
 		break;
-
+	case MSG_ACT_RENDERGODMENU:
+		pOgreEnt->setVisible(true);
+		break;
+	case MSG_DES_RENDERGODMENU:
+		pOgreEnt->setVisible(false);
+		break;
 	default:
 		break;
 	}
@@ -533,14 +536,17 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 
 
 #pragma region Skyplane Render Component
-CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 
-	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
-		materialName, scale, 1, true, bow, 100, 100);
-	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
-	// bow = 0, xsegments = 1, ysegments = 1
+	Ogre::MeshPtr plane = Ogre::MeshManager::getSingleton().createPlane(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::Plane(Ogre::Vector3::UNIT_Z, 0), 
+		96, 54, 100, 100, false, 1, 1.0, 1.0);
+	Ogre::Entity* entity = scnM->createEntity("plano" + materialName, materialName);
+
+	entity->setMaterialName(materialName);
+	pOgreSceneNode->attachObject(entity);
 
 	pOgreSceneNode->setPosition(pos);
+	//pOgreSceneNode->setScale({ scale, scale, scale });
 
 }
 CSkyPlaneRender::~CSkyPlaneRender(){}
@@ -2209,6 +2215,66 @@ void CAbilityButton::getMessage(Message * me)
 }
 
 #pragma endregion
+
+
+
+
+#pragma region God Button
+CGodButton::CGodButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
+_playerId(playerId){
+
+	std::string godName = pEnt->getScene()->godToString(god);
+
+	materials[0] = godName + "-IDLE";
+	materials[1] = godName + "-ACTIVE";
+	materials[2] = godName + "-CLICK";
+
+
+
+
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
+	pContainer->setPosition(screenpos.x, screenpos.y);
+	overlay->add2D(pContainer);
+	pContainer->setMaterialName(materials[0]);
+
+
+}
+CGodButton::~CGodButton()
+{
+
+
+}
+
+
+void CGodButton::getMessage(Message * me)
+{
+
+
+	if (me->getType() == MSG_GUI_BUTTON_ACTIVE)
+	{
+		if (static_cast<MButtonAct*>(me)->getActiveButtonIndex() == _sceneId){
+			_active = true;
+			pContainer->setMaterialName(materials[1]);
+		}
+		else if (_active)
+		{
+			_active = false;
+			pContainer->setMaterialName(materials[0]);
+
+		}
+	}
+	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
+		pContainer->setMaterialName(materials[2]);
+		_clicked = true;
+
+	}
+
+
+}
+
+#pragma endregion
+
+
 
 
 #pragma region PlayerGUI

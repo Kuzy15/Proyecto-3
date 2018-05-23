@@ -49,6 +49,9 @@ public:
 	void addBodyToDelete(b2Body* b);
 	void addEntityToDelete(Entity* e);
 
+
+	std::string godToString(E_GOD g);
+
 protected:
 	std::string _id;
 	Game * pGame;
@@ -73,6 +76,7 @@ protected:
 	//List of bodies to destruct at the end of the frame.
 	void destroyBodies();
 	void destroyEntities();
+
 
 };
 
@@ -207,6 +211,8 @@ private:
 	Ogre::Overlay* bgCards;
 	Ogre::Overlay* bgEnd;
 
+	
+
 	float _prepareCounter;
 	float _prepareLimitTime;
 
@@ -228,6 +234,7 @@ private:
 
 //Basic class to debug and test the ogre implementation
 //and the behaviour of the components
+
 class MainMenuScene : public GameScene
 {
 public:
@@ -245,7 +252,66 @@ private:
 	void processInput(ControllerInputState c);
 
 	int selectedButton;
-	
+
+
+};
+#pragma endregion
+
+
+#pragma region Select God Scene
+class SelectGodScene : public GameScene
+{
+public:
+	SelectGodScene(std::string id, Game * game, std::vector<Player> players);
+	virtual ~SelectGodScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
+
+	std::vector<Player> _players;	//Array of pointer to the players Entities
+
+	std::vector<bool> _pReady = std::vector<bool>(2, false);			//Array that show if players are ready to play
+
+	int player1Index;
+	int player2Index;
+
+
+};
+
+#pragma endregion
+
+#pragma region Fight Menu Scene
+/*----------------------------- FIGHT MENU SCENE -----------------------------*/
+
+//Basic class to debug and test the ogre implementation
+//and the behaviour of the components
+class FightMenuScene : public GameScene
+{
+public:
+	FightMenuScene(std::string id, Game * game);
+	virtual ~FightMenuScene();
+
+
+	virtual bool run();
+	virtual void dispatch();
+	void processScnMsgs();
+
+
+private:
+
+	void processInput(ControllerInputState c);
+
+	int selectedButton;
+
 
 };
 

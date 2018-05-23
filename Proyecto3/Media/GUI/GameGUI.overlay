@@ -87,7 +87,43 @@ bgEnd
 
 MENU
 {
-	zorder 100
+	zorder 50
+	container Panel (FondoMainMenu)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/FondoMainMenu
+	}
+}
+
+
+SELECT
+{
+
+	zorder 200
+	//container Panel (FondoSelectGod)
+	//{
+	//top 0
+	//left 0
+	//width 1
+	//height 1
+	//material GUI/FondoSelectGod
+	//}
+}
+
+FIGHT
+{
+	zorder 50
+	container Panel (FondoFightMenu)
+	{
+	top 0
+	left 0
+	width 1
+	height 1
+	material GUI/FondoFightMenu
+	}
 }
 // Graphical User Interface for the PlayScene.
 GUI
