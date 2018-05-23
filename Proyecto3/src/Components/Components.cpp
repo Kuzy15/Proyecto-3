@@ -24,25 +24,7 @@
 
 
 
-std::string godToString(E_GOD g){
-	switch (g){
-	case EG_RA:
-		return "Ra";
-		break;
-	case EG_AHPUCH:
-		return "Ah_Puch";
-		break;
-	case EG_ZEUS:
-		return "Zeus";
-		break;
-	case EG_HACHIMAN:
-		return "Hachiman";
-		break;
-	default:
-		break;
 
-	}
-}
 /*-------------------------BASIC GAME COMPONENT------------------------------------*/
 //Component base class, made for inheriting.
 //It implements basic behaviours like gets, sets
@@ -2147,7 +2129,7 @@ void CAbilityButton::getMessage(Message * me)
 CGodButton::CGodButton(Ogre::Overlay * overlay, Entity * father, size_t sceneId, Ogre::Vector2 screenpos, Ogre::Vector2 pixelSize, int playerId, E_GOD god) :CButtonGUI(CMP_NORMAL_BUTTON, overlay, father, sceneId, screenpos, pixelSize),
 _playerId(playerId){
 
-	std::string godName = godToString(god);
+	std::string godName = pEnt->getScene()->godToString(god);
 
 	materials[0] = godName + "-IDLE";
 	materials[1] = godName + "-ACTIVE";
@@ -2159,6 +2141,8 @@ _playerId(playerId){
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
 	pContainer->setPosition(screenpos.x, screenpos.y);
 	overlay->add2D(pContainer);
+	pContainer->setMaterialName(materials[0]);
+
 
 }
 CGodButton::~CGodButton()
@@ -2188,8 +2172,6 @@ void CGodButton::getMessage(Message * me)
 	if (_active && me->getType() == MSG_GUI_BUTTON_CLICK) {
 		pContainer->setMaterialName(materials[2]);
 		_clicked = true;
-
-		pEnt->getScene()->getMessage(new MAbilitySet(pEnt->getID(), _playerId, _compType, 0));
 
 	}
 

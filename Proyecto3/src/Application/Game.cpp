@@ -77,9 +77,10 @@ Game::Game(){
 	 players->at(1).god = EG_AHPUCH;
 
 
-	 actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
+	 //actScene = new GamePlayScene("GamePlayScene", this, (*players), ES_ISLANDS);
 	 //actScene = new MainMenuScene("MainMenu", this);
 	 //actScene = new FightMenuScene("FightMenu", this);
+	 actScene = new SelectGodScene("SelectGod", this, (*players));
 
 	 _exit = false;
 

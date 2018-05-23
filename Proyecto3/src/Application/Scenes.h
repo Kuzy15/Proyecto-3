@@ -49,6 +49,9 @@ public:
 	void addBodyToDelete(b2Body* b);
 	void addEntityToDelete(Entity* e);
 
+
+	std::string godToString(E_GOD g);
+
 protected:
 	std::string _id;
 	Game * pGame;
@@ -73,6 +76,7 @@ protected:
 	//List of bodies to destruct at the end of the frame.
 	void destroyBodies();
 	void destroyEntities();
+
 
 };
 

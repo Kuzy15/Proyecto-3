@@ -88,15 +88,15 @@ MENU
 SELECT
 {
 
-	zorder 50
-	container Panel (FondoSelectGod)
-	{
-	top 0
-	left 0
-	width 1
-	height 1
-	material GUI/FondoSelectGod
-	}
+	zorder 200
+	//container Panel (FondoSelectGod)
+	//{
+	//top 0
+	//left 0
+	//width 1
+	//height 1
+	//material GUI/FondoSelectGod
+	//}
 }
 
 FIGHT

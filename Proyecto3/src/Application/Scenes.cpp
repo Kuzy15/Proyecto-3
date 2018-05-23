@@ -154,11 +154,11 @@ void GameScene::deleteAllEntities(){
 	}
 	_entities.clear();
 
-	for (auto e : _menuEntities){
+	/*for (auto e : _menuEntities){
 		aux = e.second;
 		if (aux != nullptr)
 			delete aux;
-	}
+	}*/
 
 }
 
@@ -203,6 +203,25 @@ void GameScene::destroyEntities(){
 		deleteEntity(_entitiesToDelete[i]->getID());
 	}
 	_entitiesToDelete.clear();
+}
+
+std::string GameScene::godToString(E_GOD g){
+	switch (g){
+	case EG_RA:
+		return "RA";
+		break;
+	case EG_AHPUCH:
+		return "AH_PUCH";
+		break;
+	case EG_ZEUS:
+		return "ZEUS";
+		break;
+	case EG_HACHIMAN:
+		return "HACHIMAN";
+		break;
+	default:
+		break;
+	}
 }
 #pragma endregion
 
@@ -893,7 +912,7 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
 	// Create an overlay
 	try {
-		overlay = overlayManager.getByName("Background");
+		overlay = overlayManager.getByName("SELECT");
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -903,44 +922,50 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
 
 	Ogre::Viewport* vp = nullptr;
-	Entity *cam = new Entity("camMenuIni", this);
+	Entity *cam = new Entity("camSelectGod", this);
 	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
 
 	/*Entity * background = new Entity("backgroundMainMenu", this);
 	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
 
-	Entity * AhPuchP1 = new Entity("fightButton", this);
-	AhPuchP1->addComponent(new CGodButton(overlay, AhPuchP1, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, AhPuchP1));
+	Entity *sky = new Entity("sky", this);
+	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 100.0f, 1.0f, "MainMenu", Ogre::Vector3{ 0, 0, 0 }));
+	addEntity(sky);
 
-	Entity * HachimanP1 = new Entity("exitButton", this);
-	HachimanP1->addComponent(new CGodButton(overlay, HachimanP1, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(1, HachimanP1));
+	int idCount = 0;
+	for (int i = 0; i < 2; i++){
+		std::string name = "AhPuchP" + std::to_string(i);
+		Entity * aux = new Entity(name, this);
+		aux->addComponent(new CGodButton(overlay, aux, idCount, Ogre::Vector2(200 * i, 50), Ogre::Vector2(0, 0), _players[i].controllerId, EG_AHPUCH));
+		aux->addComponent(new CMeshRender({ -30, -5, 0 }, "AhPuch.mesh", aux, aux->getScene()->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, -90, 0 }));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, aux));
+		addEntity(aux);
+		idCount++;
 
-	Entity * RaP1 = new Entity("fightButton", this);
-	RaP1->addComponent(new CGodButton(overlay, RaP1, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, RaP1));
+		name = "RaP" + std::to_string(i);
+		Entity * aux2 = new Entity(name, this);
+		aux->addComponent(new CGodButton(overlay, aux2, idCount, Ogre::Vector2(200 * i, 80), Ogre::Vector2(0, 0), _players[i].controllerId, EG_RA));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, aux2));
+		addEntity(aux2);
+		idCount++;
 
-	Entity * ZeusP1 = new Entity("exitButton", this);
-	ZeusP1->addComponent(new CGodButton(overlay, ZeusP1, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[0].controllerId, _players[0].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(1, ZeusP1));
+		name = "ZeusP" + std::to_string(i);
+		Entity * aux3 = new Entity(name, this);
+		aux->addComponent(new CGodButton(overlay, aux3, idCount, Ogre::Vector2(200 * i, 140), Ogre::Vector2(0, 0), _players[i].controllerId, EG_ZEUS));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, aux3));
+		addEntity(aux3);
+		idCount++;
 
-	Entity * AhPuchP2 = new Entity("fightButton", this);
-	AhPuchP2->addComponent(new CGodButton(overlay, AhPuchP2, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, AhPuchP2));
+		name = "HachimanP" + std::to_string(i);
+		Entity * aux4 = new Entity(name, this);
+		aux->addComponent(new CGodButton(overlay, aux4, idCount, Ogre::Vector2(200 * i, 180), Ogre::Vector2(0, 0), _players[i].controllerId, EG_HACHIMAN));
+		_menuEntities.emplace(std::pair<int, Entity*>(0, aux4));
+		addEntity(aux4);
+		idCount++;
 
-	Entity * HachimanP2 = new Entity("exitButton", this);
-	HachimanP2->addComponent(new CGodButton(overlay, HachimanP2, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(1, HachimanP2));
-
-	Entity * RaP2 = new Entity("fightButton", this);
-	RaP2->addComponent(new CGodButton(overlay, RaP2, 0, Ogre::Vector2(-750, 50), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(0, RaP2));
-
-	Entity * ZeusP2 = new Entity("exitButton", this);
-	ZeusP2->addComponent(new CGodButton(overlay, ZeusP2, 0, Ogre::Vector2(-750, 225), Ogre::Vector2(0, 0), _players[1].controllerId, _players[1].god));
-	_menuEntities.emplace(std::pair<int, Entity*>(1, ZeusP2));
+	}
+	
 
 	overlay->show();
 
@@ -950,13 +975,13 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 }
 
 
-MainMenuScene::~MainMenuScene(){
+SelectGodScene::~SelectGodScene(){
+
 }
 
 
 
-
-bool MainMenuScene::run(){
+bool SelectGodScene::run(){
 	//Here we would get the time between frames
 
 	//Take messages from input
@@ -977,13 +1002,13 @@ bool MainMenuScene::run(){
 
 }
 
-void MainMenuScene::dispatch(){
+void SelectGodScene::dispatch(){
 	GameScene::dispatch();
 
 
 }
 
-void MainMenuScene::processScnMsgs()
+void SelectGodScene::processScnMsgs()
 {
 	MInputState* input;
 
@@ -1003,12 +1028,11 @@ void MainMenuScene::processScnMsgs()
 		it++;
 		_sceneMessages.pop_front();
 	}
-
-
+	
 
 };
 
-void MainMenuScene::processInput(ControllerInputState c){
+void SelectGodScene::processInput(ControllerInputState c){
 
 	int totalButtons = _menuEntities.size();
 
