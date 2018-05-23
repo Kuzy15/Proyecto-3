@@ -214,7 +214,7 @@ class CSkyPlaneRender : public CRender
 {
 public:
 
-	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos);
+	CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp);
 	~CSkyPlaneRender();
 
 
@@ -301,6 +301,7 @@ public:
 	virtual ~CCamera();
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
+	inline Ogre::Viewport* getVP(){ return _vp; };
 	
 
 protected:

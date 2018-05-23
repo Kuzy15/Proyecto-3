@@ -488,9 +488,9 @@ std::vector<Entity*>* createStageIslands(GameScene* s){
 	cam->addComponent(new CActionCamera(cam, s->getSceneManager(), vp, 150,150,60,150));
 	entities->push_back(cam);
 
-	Entity *sky = new Entity("sky", s);
+	/*Entity *sky = new Entity("sky", s);
 	sky->addComponent(new CSkyPlaneRender(sky, s->getSceneManager(), 100.0f, 1.0f, "FondoE1", Ogre::Vector3{ 0, 0, 0 }));
-	entities->push_back(sky);
+	entities->push_back(sky);*/
 
 	Entity * e1 = new Entity("Suelo_01", s);
 	CMeshRender* cM = new CMeshRender({ 0, -3, -30 }, "IslaPrincipal.mesh", e1, s->getSceneManager(), { 50.0f, 30.0f, 50.0f }, { 0, 0, 0 });

@@ -497,15 +497,17 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 
 
 #pragma region Skyplane Render Component
-CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, float bow, std::string materialName, Ogre::Vector3 pos) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
+CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 
-	scnM->setSkyPlane(true, Ogre::Plane(Ogre::Vector3::UNIT_Z, -20),
-		materialName, scale, 1, true, bow, 100, 100);
-	// enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
-	// bow = 0, xsegments = 1, ysegments = 1
+	Ogre::MeshPtr plane = Ogre::MeshManager::getSingleton().createPlane(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::Plane(Ogre::Vector3::UNIT_Z, 0), 
+		86,46, 100, 100, false, 1, 1.0, 1.0);
+	Ogre::Entity* entity = scnM->createEntity("plano" + materialName, materialName);
 
-	//pOgreSceneNode->setPosition(pos);
-	
+	entity->setMaterialName(materialName);
+	pOgreSceneNode->attachObject(entity);
+
+	pOgreSceneNode->setPosition(pos);
+	//pOgreSceneNode->setScale({ scale, scale, scale });
 
 }
 CSkyPlaneRender::~CSkyPlaneRender(){}

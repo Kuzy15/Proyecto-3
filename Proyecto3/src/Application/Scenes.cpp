@@ -923,27 +923,31 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 
 	Ogre::Viewport* vp = nullptr;
 	Entity *cam = new Entity("camSelectGod", this);
-	cam->addComponent(new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(-50, 0, 0), Ogre::Vector3(1, 0, 0), 10));
+	CCamera * cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 15, 50), Ogre::Vector3(0, 0, 0), 10);
+	vp = cCam->getVP();
+	cam->addComponent(cCam);
 
 	/*Entity * background = new Entity("backgroundMainMenu", this);
 	background->addComponent(new CSkyPlaneRender(background, scnMgr, 1, 0, "MainMenu", {0,0,0}));
 	_menuEntities.emplace(std::pair<int, Entity*>(0, background));*/
 
 	Entity *sky = new Entity("sky", this);
-	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 100.0f, 1.0f, "MainMenu", Ogre::Vector3{ 0, 0, 0 }));
+	sky->addComponent(new CSkyPlaneRender(sky, sky->getScene()->getSceneManager(), 1, "MainMenu", Ogre::Vector3{ 0, 0, -5 }, vp));
 	addEntity(sky);
 
-	int idCount = 0;
-	for (int i = 0; i < 2; i++){
-		std::string name = "AhPuchP" + std::to_string(i);
+	/*int idCount = 0;
+	for (int i = 0; i < 2; i++){*/
+		std::string name = "AhPuchP" + std::to_string(0);
 		Entity * aux = new Entity(name, this);
-		aux->addComponent(new CGodButton(overlay, aux, idCount, Ogre::Vector2(200 * i, 50), Ogre::Vector2(0, 0), _players[i].controllerId, EG_AHPUCH));
-		aux->addComponent(new CMeshRender({ -30, -5, 0 }, "AhPuch.mesh", aux, aux->getScene()->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, -90, 0 }));
+		aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(200 * 0, -150), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
 		_menuEntities.emplace(std::pair<int, Entity*>(0, aux));
 		addEntity(aux);
-		idCount++;
+		Entity* a = new Entity("sadsad", this);
+		a->addComponent(new CMeshRender({ 0, 10, 40 }, "AhPuch.mesh", aux, aux->getScene()->getSceneManager(), { 1.0f, 1.0f, 1.0f }, { 0, 0, 0 }));
+		addEntity(a);
+		//++;
 
-		name = "RaP" + std::to_string(i);
+		/*name = "RaP" + std::to_string(i);
 		Entity * aux2 = new Entity(name, this);
 		aux->addComponent(new CGodButton(overlay, aux2, idCount, Ogre::Vector2(200 * i, 80), Ogre::Vector2(0, 0), _players[i].controllerId, EG_RA));
 		_menuEntities.emplace(std::pair<int, Entity*>(0, aux2));
@@ -962,9 +966,9 @@ SelectGodScene::SelectGodScene(std::string id, Game * game, std::vector<Player> 
 		aux->addComponent(new CGodButton(overlay, aux4, idCount, Ogre::Vector2(200 * i, 180), Ogre::Vector2(0, 0), _players[i].controllerId, EG_HACHIMAN));
 		_menuEntities.emplace(std::pair<int, Entity*>(0, aux4));
 		addEntity(aux4);
-		idCount++;
+		idCount++;*/
 
-	}
+	//}
 	
 
 	overlay->show();
