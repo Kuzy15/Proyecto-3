@@ -8,6 +8,7 @@
 #include <OgreWindowEventUtilities.h>
 #include "irrKlang.h"
 #include <OgreOverlaySystem.h>
+#include <stack>
 
 using namespace irrklang;
 
@@ -36,6 +37,9 @@ public:
 	void Game::changeScene(GameScene* s);
 	void setOverlaySystem(Ogre::OverlaySystem *);
 
+	void newScene(GameScene* nS);
+
+
 	void exitGame();
 
 
@@ -57,6 +61,8 @@ private:
 	//Sound engine pointer
 	ISoundEngine* _soundEngine;
 
+	//Stack of Scenes
+	std::stack<GameScene*> scenes;
 	//Box2D parameters
 	b2World* world;		//Pointer to the world
 	const b2Vec2 GRAVITY = b2Vec2(0.0,-40.0f);

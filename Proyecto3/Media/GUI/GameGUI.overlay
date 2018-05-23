@@ -153,7 +153,7 @@ GUI
           top 0.0925
           width 0.27
           height 0.08
-         material GUI/Player1/LifeFrame
+          material GUI/Player1/LifeFrame
         }
 
         container Panel (Player1/Round1) : GUI/Round
@@ -173,13 +173,13 @@ GUI
           height 0.15
           material GUI/Base_Player
 
-          container Panel (Player1/ActiveConainer/ActiveIcon)
+          container Panel (Player1/ActiveConainer/PassiveIcon)
           {
             top 0.046
             left 0.013
             width 0.039
             height 0.0694
-            material GUI/RoundEmpty
+            material GUI/PassiveUp
           }
           container Panel (Player1/ActiveContainer/ActiveBar)
           {
@@ -217,7 +217,6 @@ GUI
           horz_align right
           left -0.093
           material GUI/RoundEmpty
-
         }
         container TextArea (Player2/Name) : GUI/PlayerName
         {
@@ -226,7 +225,7 @@ GUI
           alignment right
           left -0.104
 
-        }
+        }        
         container Panel (Player2/LifeBar)
         {
           horz_align right
@@ -235,16 +234,7 @@ GUI
           width 0.27
           height 0.08
           material GUI/Player2/LifeBar
-        }
-        container Panel (Player2/ALifeBorder)
-        {
-          horz_align right
-          left -0.374
-          top 0.0925
-          width 0.27
-          height 0.08
-          material GUI/Player2/LifeFrame
-        }
+        }    
         container Panel (Player2/Round1) : GUI/Round
         {
           horz_align right
@@ -265,14 +255,14 @@ GUI
           height 0.15
           material GUI/Base_Player2
 
-          container Panel (Player2/ActiveConainer/ActiveIcon)
+          container Panel (Player2/ActiveConainer/PassiveIcon)
           {
             horz_align right
             top 0.046
             left -0.052
             height 0.0694
             width 0.039
-            material GUI/RoundEmpty
+            material GUI/PassiveUp
           }
           container Panel (Player2/ActiveContainer/ActiveBar)
           {
