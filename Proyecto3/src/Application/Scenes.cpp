@@ -425,14 +425,17 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 		_players[i].currentPassive = CMP_PASSIVE_DEFAULT;
 		addEntity(_players[i].entity);
 		_players[i].entity->setActive(false);
+		
+
 
 	}
-
+	std::srand(rng);
 	//Not paused at start
 	_paused = false;
 
 
 	Ogre::OverlayManager& overlayManager = Ogre::OverlayManager::getSingleton();
+
 
 	// Create an overlay
 	try {
@@ -465,17 +468,10 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//Add end GUI entities
 	Entity* endButton0 = new Entity("EndButton_0", this);
-	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(0, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Battle"));
+	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(-100, 50.0f), Ogre::Vector2(), exitCallBack, "Exit"));
 	endButton0->setActive(false);
 	addEntity(endButton0);
 	_endGUIEntities.push_back(endButton0);
-
-
-	Entity* endButton1 = new Entity("EndButton_1", this);
-	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(0,-100.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Main Menu"));
-	endButton1->setActive(false);
-	addEntity(endButton1);
-	_endGUIEntities.push_back(endButton1);
 
 
 	changePhase(GS_SETUP);
@@ -637,7 +633,7 @@ void GamePlayScene::battlePhase(){
 
 			//If the rounds elapsed are 3, we finish the game. Else, continue.
 			if ((SDL_GetTicks() - _postGameCounter)  > _postGameLimitTime){
-				if (_battleState.roundsCompleted == MAX_ROUNDS || _players[0].roundsWon == 2 || _players[1].roundsWon == 2){
+				if (_battleState.roundsCompleted == MAX_ROUNDS || _players[0].roundsWon >= 2 || _players[1].roundsWon >= 2){
 					changePhase(GS_END);
 					InputManager::getInstance().stopReceiving(true);
 				}
@@ -786,13 +782,10 @@ void GamePlayScene::resetPlayers(){
 
 	}
 
+
 	getMessage(new MLifeState(_players[0].entity->getID(), 100));
 	getMessage(new MLifeState(_players[1].entity->getID(), 100));
-	getMessage(new MResetGui(_id));
-
-
-
-
+	//getMessage(new MResetGui(_id));
 
 }
 
@@ -826,6 +819,7 @@ void GamePlayScene::reloadAbilities(){
 
 
 	}
+	std::srand(rng);
 
 
 }
@@ -833,7 +827,7 @@ void GamePlayScene::reloadAbilities(){
 void GamePlayScene::loadAbilities(){
 
 	Entity* aux;
-	Ogre::Vector2 auxPos(0.05f,0.08f);
+	Ogre::Vector2 auxPos(0.05f,0.06f);
 	int idCounter = 0;
 	for (Player p : _players){
 		//There, we should choose 3 random abilities to show
@@ -987,17 +981,7 @@ void GamePlayScene::processMsgEnd(Message* m){
 		if (mInput->getId() == 0){
 			if (mInput->getCInputState().Button_A == BTT_RELEASED){
 				getMessage(new MButtonClick(_id, player1Index));
-			}
-			else if (mInput->getCInputState().DPad_Down == BTT_RELEASED){
-				player1Index++;
-				if (player1Index > 1) player1Index = 0;
-				getMessage(new MButtonAct(_id, player1Index));
-			}
-			else if (mInput->getCInputState().DPad_Up == BTT_RELEASED){
-				player1Index--;
-				if (player1Index < 0) player1Index = 1;
-				getMessage(new MButtonAct(_id, player1Index));
-			}
+			}			
 		}
 		break;
 	default:
@@ -1025,7 +1009,9 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 	// Create an overlay
 	try {
+		
 		overlay = overlayManager.getByName("MENU");
+
 	}
 	catch (Ogre::Exception e) {
 		cout << e.what() << std::endl;
@@ -1165,8 +1151,6 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 	light->setCastShadows(true);
 
 	std::srand(time(NULL));
-
-
 
 	std::vector<Player>* players = new std::vector<Player>(2);
 	players->at(0).controllerId = 0;
@@ -1753,7 +1737,7 @@ initScene::initScene() :GameScene("InitScene", Game::getInstance())
 	
 }
 initScene::~initScene() {
-
+	//Ogre::OverlayManager::getSingleton().destroyAllOverlayElements(); 
 }
 void initScene::processScnMsgs()
 {

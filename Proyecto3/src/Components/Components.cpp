@@ -1129,10 +1129,12 @@ void CLife::getMessage(Message* m){
 
 	switch (m->getType()){
 	case MSG_DAMAGE:
-		_currentLife -= static_cast<MDamage*>(m)->getDamage();
-		pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
-		if (_currentLife <= 0.0f){
-			pEnt->getMessage(new MDie(pEnt->getID()));
+		if (_currentLife > 0.0f){
+			_currentLife -= static_cast<MDamage*>(m)->getDamage();
+			pEnt->getMessage(new MLifeState(pEnt->getID(), _currentLife));
+			if (_currentLife <= 0.0f){
+				pEnt->getMessage(new MDie(pEnt->getID()));
+			}
 		}
 		break;
 	default:
@@ -2116,17 +2118,19 @@ CNormalButton::CNormalButton(Ogre::Overlay * overlay, Entity * father, size_t sc
 	overlay->add2D(pContainer);
 
 	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
 		a->setCaption(_txt);
 
 	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	catch (Ogre::Exception e) { };
 
 }
 CNormalButton::~CNormalButton()
 {
-	if (Ogre::OverlayManager::getSingleton().hasOverlayElement(pContainer->getName()))
-		pOver->remove2D(pContainer);
+	if (Ogre::OverlayManager::getSingleton().hasOverlayElement(pContainer->getName())){
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(pContainer);
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(a);
+	}
 }
 
 
@@ -2180,7 +2184,7 @@ _playerId(playerId), _compType(compType){
 		a->setCaption(_txt);
 
 	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	catch (Ogre::Exception e) {  };
 	pContainer->setMetricsMode(Ogre::GuiMetricsMode::GMM_RELATIVE);
 	pContainer->setHorizontalAlignment(Ogre::GuiHorizontalAlignment::GHA_LEFT);
 	pContainer->setVerticalAlignment(Ogre::GuiVerticalAlignment::GVA_TOP);
@@ -2262,7 +2266,7 @@ _playerId(playerId), _god(god){
 		a->setCaption(_txt);
 
 	}
-	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	catch (Ogre::Exception e) { };
 	
 	pContainer->setMetricsMode(Ogre::GuiMetricsMode::GMM_RELATIVE);
 	pContainer->setHorizontalAlignment(Ogre::GuiHorizontalAlignment::GHA_LEFT);

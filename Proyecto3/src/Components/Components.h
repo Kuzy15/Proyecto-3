@@ -922,6 +922,7 @@ public:
 private:	
 	ButtonCallback * _callback;
 	Ogre::String _txt;
+	Ogre::TextAreaOverlayElement * a;
 
 
 };
