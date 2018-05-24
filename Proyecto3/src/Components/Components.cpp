@@ -1747,7 +1747,7 @@ void CPSkillSyn::getMessage(Message* m){
 GameComponent* createAbilityShuHeaddress(Entity* father, int id){ return new CShuHeaddress(father,id); }
 CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRESS, father, 100, 100, MASK_HEAD_0,0), _playerId(id){
 	_timeCounter = _lastTimeDash = 0;
-	_coolDown = 500.0f; //5 seconds
+	_coolDown = 2000.0f; //5 seconds
 	_dashImpulse = 1000.0f;
 	_lastTimeDash = SDL_GetTicks();
 }
@@ -2174,8 +2174,18 @@ _playerId(playerId), _compType(compType){
 
 
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
+	std::string _txt = "";
+	try {
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
+
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	pContainer->setMetricsMode(Ogre::GuiMetricsMode::GMM_RELATIVE);
+	pContainer->setHorizontalAlignment(Ogre::GuiHorizontalAlignment::GHA_LEFT);
+	pContainer->setVerticalAlignment(Ogre::GuiVerticalAlignment::GVA_TOP);
 	pContainer->setPosition(screenpos.x, screenpos.y);
-	pContainer->setDimensions(0.156, 0.234);
+	pContainer->setDimensions(0.156, 0.42);
 	pContainer->setMaterialName(materials[0]);
 	overlay->add2D(pContainer);
 
@@ -2244,7 +2254,21 @@ _playerId(playerId), _god(god){
 
 
 	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", pEnt->getID()));
+	
+	
+	std::string _txt = "";
+	try {
+		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a->setCaption(_txt);
+
+	}
+	catch (Ogre::Exception e) { std::cout << e.what() << std::endl; };
+	
+	pContainer->setMetricsMode(Ogre::GuiMetricsMode::GMM_RELATIVE);
+	pContainer->setHorizontalAlignment(Ogre::GuiHorizontalAlignment::GHA_LEFT);
+	pContainer->setVerticalAlignment(Ogre::GuiVerticalAlignment::GVA_TOP);
 	pContainer->setPosition(screenpos.x, screenpos.y);
+	pContainer->setDimensions(0.1041, 0.1851);
 	overlay->add2D(pContainer);
 	pContainer->setMaterialName(materials[0]);
 

@@ -465,14 +465,14 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 	//Add end GUI entities
 	Entity* endButton0 = new Entity("EndButton_0", this);
-	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(0, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Batalla"));
+	endButton0->addComponent(new CNormalButton(bgEnd, endButton0, 0, Ogre::Vector2(0, 50.0f), Ogre::Vector2(), returnMulitplayerMenu, "Battle"));
 	endButton0->setActive(false);
 	addEntity(endButton0);
 	_endGUIEntities.push_back(endButton0);
 
 
 	Entity* endButton1 = new Entity("EndButton_1", this);
-	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(0,-100.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Menu Principal"));
+	endButton1->addComponent(new CNormalButton(bgEnd, endButton1, 1, Ogre::Vector2(0,-100.0f), Ogre::Vector2(0.0f,0.0f), returnMainMenu, "Main Menu"));
 	endButton1->setActive(false);
 	addEntity(endButton1);
 	_endGUIEntities.push_back(endButton1);
@@ -833,19 +833,20 @@ void GamePlayScene::reloadAbilities(){
 void GamePlayScene::loadAbilities(){
 
 	Entity* aux;
-	Ogre::Vector2 auxPos(-400.0f,-100.0f);
+	Ogre::Vector2 auxPos(0.05f,0.08f);
 	int idCounter = 0;
 	for (Player p : _players){
 		//There, we should choose 3 random abilities to show
 		for (ComponentType c : p.abilities){
 			aux = new Entity((to_string(p.controllerId) + to_string(c) + to_string(_battleState.roundsCompleted)), this);
 			aux->addComponent(new CAbilityButton(bgCards, aux, idCounter, auxPos, Ogre::Vector2(0, 0), p.controllerId, c));
-			auxPos.x += 100.0f;
+			auxPos.x += 0.18f;
 			_cardGUIEntities.emplace_back(aux);
 			addEntity(aux);
 			idCounter++;
 		}
-		auxPos.y += 100.0f;
+		auxPos.y += 0.43f;
+		auxPos.x -= 0.18f;
 	}
 
 
@@ -1047,15 +1048,13 @@ MainMenuScene::MainMenuScene(std::string id, Game * game) : GameScene(id, game) 
 
 
 	Entity * fightButton = new Entity("fightButton", this);
-
-	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(-450, 50), Ogre::Vector2(0, 0), selectGodCallBack, "Combate"));
+	fightButton->addComponent(new CNormalButton(overlay, fightButton, 0, Ogre::Vector2(-450, 50), Ogre::Vector2(0, 0), selectGodCallBack, "Battle"));
 
 	_menuEntities.emplace(std::pair<int, Entity*>(0, fightButton));
 	addEntity(fightButton);
 
 	Entity * exitButton = new Entity("exitButton", this);
-
-	exitButton->addComponent(new CNormalButton(overlay, exitButton, 1, Ogre::Vector2(-450, 200), Ogre::Vector2(0, 0), exitCallBack, "Salir"));
+	exitButton->addComponent(new CNormalButton(overlay, exitButton, 1, Ogre::Vector2(-450, 200), Ogre::Vector2(0, 0), exitCallBack, "Exit"));
 
 	_menuEntities.emplace(std::pair<int, Entity*>(1, exitButton));
 	addEntity(exitButton);
@@ -1236,23 +1235,23 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 
 
 	Entity * aux = new Entity("AhPuchP0", this);
-	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(0.5f - (0.1041f * 2.0f), 0.75f), Ogre::Vector2(0, 0), _players[0].controllerId, EG_AHPUCH));
 	_godsButtons.push_back(aux);
 
 
 
 	Entity * aux2 = new Entity("RaP0", this);
-	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(0.5f - 0.1041f, 0.75f), Ogre::Vector2(0, 0), _players[0].controllerId, EG_RA));
 	_godsButtons.push_back(aux2);
 
 
 	Entity * aux3 = new Entity("ZeusP0", this);
-	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0.5f, 0.75f), Ogre::Vector2(0, 0), _players[0].controllerId, EG_ZEUS));
 	_godsButtons.push_back(aux3);
 
 
 	Entity * aux4 = new Entity("HachimanP0", this);
-	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(200, 200), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0.5f  + 0.1041f, 0.75f), Ogre::Vector2(0, 0), _players[0].controllerId, EG_HACHIMAN));
 	_godsButtons.push_back(aux4);
 
 
@@ -1436,25 +1435,26 @@ void SelectGodScene::createButtons(){
 
 #pragma region Player2 Gods
 
-	Entity* aux = new Entity("AhPuchP1", this);
-	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(-400, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_AHPUCH));
+	Entity * aux = new Entity("AhPuchP1", this);
+	aux->addComponent(new CGodButton(overlay, aux, 0, Ogre::Vector2(0.5f - (0.1041f * 2.0f), 0.75f), Ogre::Vector2(0, 0), _players[1].controllerId, EG_AHPUCH));
 	_godsButtons.push_back(aux);
 
 
 
-	Entity* aux2 = new Entity("RaP1", this);
-	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(-200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_RA));
+	Entity * aux2 = new Entity("RaP1", this);
+	aux->addComponent(new CGodButton(overlay, aux2, 1, Ogre::Vector2(0.5f - 0.1041f, 0.75f), Ogre::Vector2(0, 0), _players[1].controllerId, EG_RA));
 	_godsButtons.push_back(aux2);
 
 
-	Entity* aux3 = new Entity("ZeusP1", this);
-	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_ZEUS));
+	Entity * aux3 = new Entity("ZeusP1", this);
+	aux->addComponent(new CGodButton(overlay, aux3, 2, Ogre::Vector2(0.5f, 0.75f), Ogre::Vector2(0, 0), _players[1].controllerId, EG_ZEUS));
 	_godsButtons.push_back(aux3);
 
 
-	Entity* aux4 = new Entity("HachimanP1", this);
-	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(200, 200), Ogre::Vector2(0, 0), _players[1].controllerId, EG_HACHIMAN));
+	Entity * aux4 = new Entity("HachimanP1", this);
+	aux->addComponent(new CGodButton(overlay, aux4, 3, Ogre::Vector2(0.5f + 0.1041f, 0.75f), Ogre::Vector2(0, 0), _players[1].controllerId, EG_HACHIMAN));
 	_godsButtons.push_back(aux4);
+
 
 
 #pragma endregion
