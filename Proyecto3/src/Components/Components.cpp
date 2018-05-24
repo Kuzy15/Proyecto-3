@@ -2177,10 +2177,10 @@ _playerId(playerId), _compType(compType){
 	materials[2] = cmpName + "-CLICK";
 
 
-	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID()));
+	pContainer = static_cast<Ogre::OverlayContainer *>(Ogre::OverlayManager::getSingleton().createOverlayElementFromTemplate("GUI/BaseButton", "Panel", father->getID() + std::to_string(SDL_GetTicks())));
 	std::string _txt = "";
 	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
 		a->setCaption(_txt);
 
 	}
@@ -2196,7 +2196,10 @@ _playerId(playerId), _compType(compType){
 }
 CAbilityButton::~CAbilityButton()
 {
-	pOver->remove2D(pContainer);
+	if (Ogre::OverlayManager::getSingleton().hasOverlayElement(pContainer->getName())){
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(pContainer);
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(a);
+	}
 
 }
 
@@ -2262,7 +2265,7 @@ _playerId(playerId), _god(god){
 	
 	std::string _txt = "";
 	try {
-		Ogre::TextAreaOverlayElement * a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
+		a = static_cast<Ogre::TextAreaOverlayElement *>(pContainer->getChild(pContainer->getName() + "/GUI/BaseButton/Text"));
 		a->setCaption(_txt);
 
 	}
@@ -2281,7 +2284,10 @@ _playerId(playerId), _god(god){
 CGodButton::~CGodButton()
 {
 
-	pOver->remove2D(pContainer);
+	if (Ogre::OverlayManager::getSingleton().hasOverlayElement(pContainer->getName())){
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(pContainer);
+		Ogre::OverlayManager::getSingleton().destroyOverlayElement(a);
+	}
 }
 
 

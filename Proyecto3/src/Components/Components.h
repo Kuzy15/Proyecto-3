@@ -941,6 +941,7 @@ private:
 	int _playerId;
 	ComponentType _compType;
 	int _type;
+	Ogre::TextAreaOverlayElement * a;
 	
 	
 };
@@ -956,6 +957,7 @@ public:
 
 private:
 	int _playerId;
+	Ogre::TextAreaOverlayElement * a;
 	E_GOD _god;
 
 };

@@ -21,7 +21,7 @@
 #include <thread>
 #include <stdlib.h>
 #include <time.h>
-
+#include <random>
 
 //Later removable
 #include <OgreCamera.h>
@@ -403,6 +403,11 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 #pragma endregion
 
 
+	std::srand(time(NULL));
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<>dis(0, 5);
+	std::uniform_int_distribution<>dis2(0, 4);
 
 	int rng = 0;
 	int rng2 = 0;
@@ -410,15 +415,15 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 		_players[i].entity = EntityFactory::getInstance().createGod(_players[i].god, this, playerPos[i], _players[i].controllerId);
 
-		rng = std::rand() % 6;
+		rng = dis(gen);
 		_players[i].abilities.push_back(_totalPassives[rng]);
 
-		rng2 = std::rand() % 6;
+		rng2 = dis(gen);
 		if (rng2 == rng)
 			rng2 = (rng2 + 1) % 6;
 		_players[i].abilities.push_back(_totalPassives[rng2]);
 
-		rng = std::rand() % 5;
+		rng = dis2(gen);
 		_players[i].abilities.push_back(_totalActives[rng]);
 
 		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
@@ -429,7 +434,14 @@ GamePlayScene::GamePlayScene(std::string id, Game * game, std::vector<Player> pl
 
 
 	}
-	std::srand(rng);
+	dis.reset();
+	dis2.reset();
+
+
+
+
+	std::srand(time(NULL));
+	
 	//Not paused at start
 	_paused = false;
 
@@ -697,6 +709,7 @@ void GamePlayScene::changePhase(GameplayState newState){
 		player1Index = 0;
 		player2Index = 3;
 		_nPlayers = MAX_PLAYERS;
+		
 		loadAbilities();
 		bgCards->show();
 		getMessage(new MButtonAct(_id, player1Index));
@@ -755,6 +768,12 @@ void GamePlayScene::playerDied(std::string e){
 	InputManager::getInstance().stopReceiving(false);
 	_postGameCounter = SDL_GetTicks();
 
+	for (int i = 0; i < _cardGUIEntities.size(); i++){
+		deleteEntity(_cardGUIEntities[i]->getID());	
+	}
+	_cardGUIEntities.clear();
+
+
 
 
 }
@@ -786,7 +805,7 @@ void GamePlayScene::resetPlayers(){
 	getMessage(new MLifeState(_players[0].entity->getID(), 100));
 	getMessage(new MLifeState(_players[1].entity->getID(), 100));
 	//getMessage(new MResetGui(_id));
-
+	reloadAbilities();
 }
 
 
@@ -798,20 +817,27 @@ void start_c(){
 }
 void GamePlayScene::reloadAbilities(){
 
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_int_distribution<>dis(0, 5);
+	std::uniform_int_distribution<>dis2(0, 4);
+
+	_players[0].abilities.clear();
+	_players[1].abilities.clear();
 
 	int rng = 0;
 	int rng2 = 0;
 	for (int i = 0; i < _players.size(); i++){
 
-		rng = std::rand() % 6;
+		rng = dis(gen);
 		_players[i].abilities.push_back(_totalPassives[rng]);
 
-		rng2 = std::rand() % 6;
+		rng2 = dis(gen);
 		if (rng2 == rng)
 			rng2 = (rng2 + 1) % 6;
 		_players[i].abilities.push_back(_totalPassives[rng2]);
 
-		rng = std::rand() % 5;
+		rng = dis2(gen);
 		_players[i].abilities.push_back(_totalActives[rng]);
 
 		_players[i].currentActive = CMP_ACTIVE_DEFAULT;
@@ -820,6 +846,8 @@ void GamePlayScene::reloadAbilities(){
 
 	}
 	std::srand(rng);
+	dis.reset();
+	dis2.reset();
 
 
 }
@@ -1150,8 +1178,7 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 	light->setPosition(0, 30, 50);
 	light->setCastShadows(true);
 
-	std::srand(time(NULL));
-
+	
 	std::vector<Player>* players = new std::vector<Player>(2);
 	players->at(0).controllerId = 0;
 	players->at(1).controllerId = 1;
