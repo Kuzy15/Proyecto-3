@@ -469,6 +469,7 @@ public:
 	inline const int getId(){ return _id; };
 private:
 	int _id;
+	bool keyboard; // Variable for enabling keyboard and mouse. Only enabled if id == 1 (second player).
 	const float TRIGGER_DEADZONE = 100.0f;
 	const float AXIS_DEADZONE = 100.0f;
 };

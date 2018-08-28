@@ -24,6 +24,28 @@ struct ControllerInputState{
 
 	int nEvents = 0;
 
+
+	
+	// Variables for keyboard and mouse
+
+	bool eventKeyboard = false;
+
+	ButtonState Key_Up = BTT_NONE;
+	ButtonState Key_Down = BTT_NONE; 
+	ButtonState Key_Left = BTT_NONE;
+	ButtonState Key_Right = BTT_NONE;
+	ButtonState Key_Enter = BTT_NONE;
+	ButtonState Key_A = BTT_NONE;
+	ButtonState Key_D = BTT_NONE;
+	ButtonState Key_Space = BTT_NONE;
+	ButtonState Key_W = BTT_NONE;
+	ButtonState Mouse_Left = BTT_NONE;
+
+	float Mouse_X = 0.0f; // Used for mouse shooting
+	float Mouse_Y = 0.0f;
+
+	// Variables for controller
+
 	ButtonState Button_A = BTT_NONE;
 	ButtonState Button_B = BTT_NONE;
 	ButtonState Button_X = BTT_NONE;
@@ -160,6 +182,7 @@ public:
 private:
 	ControllerInputState _cState;
 	int _controllerId;
+
 };
 
 

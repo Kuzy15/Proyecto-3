@@ -1006,8 +1006,8 @@ void GamePlayScene::processMsgEnd(Message* m){
 	switch (m->getType()){
 	case MSG_INPUT_STATE:
 		mInput = static_cast<MInputState*>(m);
-		if (mInput->getId() == 0){
-			if (mInput->getCInputState().Button_A == BTT_RELEASED){
+		if (mInput->getId() == 0 || mInput->getCInputState().eventKeyboard == true){//-----------------------------------------------¿?
+			if (mInput->getCInputState().Button_A == BTT_RELEASED || mInput->getCInputState().Key_Enter == BTT_RELEASED){
 				getMessage(new MButtonClick(_id, player1Index));
 			}			
 		}
@@ -1131,23 +1131,24 @@ void MainMenuScene::processScnMsgs()
 		case MSG_INPUT_STATE:
 			input = static_cast<MInputState*>(*it);
 			c = input->getCInputState();
-			if (input->getId() == 0){
-				if (c.DPad_Down == BTT_RELEASED){
+			if (input->getId() == 0 || c.eventKeyboard == true){//-------------------------------------------------------¿?
+				if (c.DPad_Down == BTT_RELEASED || c.Key_Down == BTT_RELEASED){
 					selectedButton++;
 					if (selectedButton >= totalButtons)
 						selectedButton = 0;
 					getMessage(new MButtonAct(_id, selectedButton));
 				}
-				else if (c.DPad_Up == BTT_RELEASED){
+				else if (c.DPad_Up == BTT_RELEASED || c.Key_Up == BTT_RELEASED){
 					selectedButton--;
 					if (selectedButton < 0)
 						selectedButton = (totalButtons - 1);
 					getMessage(new MButtonAct(_id, selectedButton));
 				}
 
-				else if (c.Button_A == BTT_RELEASED){
+				else if (c.Button_A == BTT_RELEASED || c.Key_Enter == BTT_RELEASED){
 					getMessage(new MButtonClick(_id, selectedButton));
 				}
+
 			}
 			break;
 		default:
@@ -1349,13 +1350,13 @@ void SelectGodScene::processScnMsgs()
 					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 				}
 			}
-			else if (mInput->getId() == 1 && _pReady[0]){
+			else if (mInput->getId() == 1 && _pReady[0]){//-------------------------------------------------------¿?
 
-				if (mInput->getCInputState().Button_A == BTT_RELEASED){
+				if (mInput->getCInputState().Button_A == BTT_RELEASED || mInput->getCInputState().Key_Enter == BTT_RELEASED){
 					getMessage(new MButtonClick(_id, player2Index));
 
 				}
-				else if (mInput->getCInputState().DPad_Right == BTT_RELEASED){
+				else if (mInput->getCInputState().DPad_Right == BTT_RELEASED || mInput->getCInputState().Key_Right == BTT_RELEASED){
 					_entities.at(std::to_string(player2Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
 					player2Index++;
 					if (player2Index > 3) player2Index = 0;
@@ -1363,7 +1364,7 @@ void SelectGodScene::processScnMsgs()
 					_entities.at(std::to_string(player2Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
 
 				}
-				else if (mInput->getCInputState().DPad_Left == BTT_RELEASED){
+				else if (mInput->getCInputState().DPad_Left == BTT_RELEASED || mInput->getCInputState().Key_Left == BTT_RELEASED){
 					_entities.at(std::to_string(player2Index))->getMessage(new MDesSeleGodRender(_entities.at(std::to_string(player2Index))->getID()));
 					player2Index--;
 					if (player2Index < 0) player2Index = 3;
@@ -1577,24 +1578,24 @@ void FightMenuScene::processScnMsgs()
 
 };
 
-void FightMenuScene::processInput(ControllerInputState c){
+void FightMenuScene::processInput(ControllerInputState c){  // ------------------------------¿?
 
 	int totalButtons = _menuEntities.size();
 
-	if (c.DPad_Down == BTT_PRESSED){
+	if (c.DPad_Down == BTT_PRESSED || c.Key_Down == BTT_PRESSED){
 		selectedButton++;
 		if (selectedButton >= totalButtons)
 			selectedButton = 0;
 		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
 	}
-	else if (c.DPad_Up == BTT_PRESSED){
+	else if (c.DPad_Up == BTT_PRESSED || c.Key_Up == BTT_PRESSED){
 		selectedButton--;
 		if (selectedButton < 0)
 			selectedButton = (totalButtons - 1);
 		_menuEntities.at(selectedButton)->getMessage(new MButtonAct(_id, selectedButton));
 	}
 
-	if (c.Button_A == BTT_PRESSED){
+	if (c.Button_A == BTT_PRESSED || c.Key_Enter == BTT_PRESSED){
 		_menuEntities.at(selectedButton)->getMessage(new MButtonClick(_id, selectedButton));
 	}
 }

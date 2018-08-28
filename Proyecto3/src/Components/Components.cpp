@@ -1058,7 +1058,10 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 //Player Controller Component
 #pragma region PlayerControllerComponent
 CPlayerController::CPlayerController(Entity* f, int i): GameComponent(CMP_PLAYER_CONTROLLER, f), _id(i){
-
+	
+	// If its second player keyboard and mouse can be used
+	if (_id == 1)
+		keyboard = true;
 }
 
 CPlayerController::~CPlayerController(){}
@@ -1070,7 +1073,7 @@ void CPlayerController::getMessage(Message* m){
 	//If the msg type is CInputState, read the input and process it
 	if (m->getType() == MSG_INPUT_STATE){
 		MInputState* inputM = static_cast<MInputState*>(m);
-		if (inputM->getId() == _id){
+		if (inputM->getId() == _id){ // o tengo habilitado el teclado
 
 			ControllerInputState cState = inputM->getCInputState();
 

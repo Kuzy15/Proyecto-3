@@ -84,7 +84,7 @@ void InputManager::handleInput(){
 
 		//Create main Input message who contains the events and variables to store the values
 		for (int i = 0; i < MAX_PLAYERS; i++){
-			if (_playerController[i] != nullptr)
+			if (_playerController[i] != nullptr || i == 1) // PROBLEMA: si no está conectado el 2o mando no se crearan mensajes de input ni el struct ControllerInputState aunque esté el teclado. (|| i == 1)
 				_inputMsg[i] = new MInputState(i, _emitter);
 
 		}
@@ -92,9 +92,11 @@ void InputManager::handleInput(){
 		/* Start main game loop here */
 		while (SDL_PollEvent(&event))
 		{
+			std::cout << "ahh";
 			switch (event.type)
 			{
 			case SDL_KEYDOWN:
+				std::cout << "ahh";
 				break;
 			case SDL_QUIT:
 				break;
@@ -124,7 +126,7 @@ void InputManager::handleInput(){
 
 		//Loop that takes the input mssages from the controllers if there's any and push them to the local queue.
 		for (int i = 0; i < MAX_PLAYERS; i++){
-			if (_inputMsg[i] != nullptr && _playerController[i] != nullptr) {
+			if (_inputMsg[i] != nullptr && (_playerController[i] != nullptr || i == 1)) { // PROBLEMA TAMBIEN
 				updateControllersState(_inputMsg[i]->getCInputState(), i);
 				_myQueue.push_back(_inputMsg[i]);
 			}
@@ -172,6 +174,97 @@ void InputManager::deleteJoystick(int wich){
 
 
 void InputManager::updateControllersState(ControllerInputState &cState, int id){
+
+	//evento de teclado false y si evento de teclado producio = true
+	cState.eventKeyboard = false;
+
+	SDL_Event event;
+
+	while(SDL_PollEvent(&event) && id == 1){ // Only if its player 2 keyboard and mouse can be used.
+		switch (event.type){
+		case SDL_KEYDOWN:
+			if (event.key.keysym.sym == SDLK_UP){
+				cState.Key_Up = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_DOWN){
+				cState.Key_Down = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_LEFT){
+				cState.Key_Left = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_RIGHT){
+				cState.Key_Right = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_RETURN){
+				cState.Key_Enter = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_a){
+				cState.Key_A = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_d){
+				cState.Key_D = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_SPACE){
+				cState.Key_Space = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_w){
+				cState.Key_W = BTT_PRESSED;
+				cState.eventKeyboard = true;
+			}
+
+		case SDL_KEYUP:
+			if (event.key.keysym.sym == SDLK_UP){
+				cState.Key_Up = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_DOWN){
+				cState.Key_Down = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_LEFT){
+				cState.Key_Left = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_RIGHT){
+				cState.Key_Right = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_RETURN){
+				cState.Key_Enter = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_a){
+				cState.Key_A = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_d){
+				cState.Key_D = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_SPACE){
+				cState.Key_Space = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+			if (event.key.keysym.sym == SDLK_w){
+				cState.Key_W = BTT_RELEASED;
+				cState.eventKeyboard = true;
+			}
+
+		case SDL_MOUSEBUTTONUP:
+			if (event.button.button == SDL_BUTTON_LEFT){
+				cState.Mouse_X = event.button.x;
+				cState.Mouse_Y = event.button.y;
+			}
+		}
+	}
 
 	//Axis
 	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX) / PARSE_VALUE;
