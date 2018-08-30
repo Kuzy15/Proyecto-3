@@ -64,7 +64,7 @@ InputManager& InputManager::getInstance(){
 
 void InputManager::resetInstance(){
 	delete InputManager::_instance;
-	_instance == nullptr;
+	_instance = nullptr;
 }
 
 //Send the local queue messages to the scene queue if there's any message
@@ -80,7 +80,7 @@ void InputManager::handleInput(){
 	if (receiving){
 
 		SDL_Event event;
-		/* Other initializtion code goes here */
+		/* Other initialization code goes here */
 
 		//Create main Input message who contains the events and variables to store the values
 		for (int i = 0; i < MAX_PLAYERS; i++){
@@ -93,10 +93,13 @@ void InputManager::handleInput(){
 		while (SDL_PollEvent(&event))
 		{
 			std::cout << "ahh";
-			switch (event.type)
+			switch (event.type)// No se detectan los eventos de teclado¿?
 			{
+				
 			case SDL_KEYDOWN:
-				std::cout << "ahh";
+				if (event.key.keysym.sym == SDLK_UP){ // Prueba para ver si detecta pulsaciones.
+					std::cout << "ARRIBA";
+				}
 				break;
 			case SDL_QUIT:
 				break;
@@ -180,91 +183,137 @@ void InputManager::updateControllersState(ControllerInputState &cState, int id){
 
 	SDL_Event event;
 
-	while(SDL_PollEvent(&event) && id == 1){ // Only if its player 2 keyboard and mouse can be used.
+	if (SDL_PollEvent(&event) && id == 1){ // Only if its player 2 keyboard and mouse can be used.
 		switch (event.type){
 		case SDL_KEYDOWN:
-			if (event.key.keysym.sym == SDLK_UP){
+
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_UP:
 				cState.Key_Up = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_DOWN){
+				break;
+			case SDLK_DOWN:
 				cState.Key_Down = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_LEFT){
+				break;
+			case SDLK_LEFT:
 				cState.Key_Left = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_RIGHT){
+				break;
+			case SDLK_RIGHT:
 				cState.Key_Right = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_RETURN){
+				break;
+			case SDLK_RETURN:
 				cState.Key_Enter = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_a){
+				break;
+			case SDLK_a:
 				cState.Key_A = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_d){
+				break;
+			case SDLK_d:
 				cState.Key_D = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_SPACE){
+				break;
+			case SDLK_SPACE:
 				cState.Key_Space = BTT_PRESSED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_w){
+				break;
+			case SDLK_w:
 				cState.Key_W = BTT_PRESSED;
 				cState.eventKeyboard = true;
+				break;
+
+
+			default:
+				break;
 			}
+			
 
 		case SDL_KEYUP:
-			if (event.key.keysym.sym == SDLK_UP){
+
+			switch (event.key.keysym.sym)
+			{
+			case SDLK_UP:
 				cState.Key_Up = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_DOWN){
+				break;
+			case SDLK_DOWN:
 				cState.Key_Down = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_LEFT){
+				break;
+			case SDLK_LEFT:
 				cState.Key_Left = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_RIGHT){
+				break;
+			case SDLK_RIGHT:
 				cState.Key_Right = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_RETURN){
+				break;
+			case SDLK_RETURN:
 				cState.Key_Enter = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_a){
+				break;
+			case SDLK_a:
 				cState.Key_A = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_d){
+				break;
+			case SDLK_d:
 				cState.Key_D = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_SPACE){
+				break;
+			case SDLK_SPACE:
 				cState.Key_Space = BTT_RELEASED;
 				cState.eventKeyboard = true;
-			}
-			if (event.key.keysym.sym == SDLK_w){
+				break;
+			case SDLK_w:
 				cState.Key_W = BTT_RELEASED;
 				cState.eventKeyboard = true;
+				break;
+
+
+			default:
+				break;
 			}
 
-		case SDL_MOUSEBUTTONUP:
+		case SDL_MOUSEBUTTONDOWN:
 			if (event.button.button == SDL_BUTTON_LEFT){
+				cState.Mouse_Left = BTT_PRESSED;
 				cState.Mouse_X = event.button.x;
 				cState.Mouse_Y = event.button.y;
 			}
+		case SDL_MOUSEBUTTONUP:
+			if (event.button.button == SDL_BUTTON_LEFT){
+				cState.Mouse_Left = BTT_RELEASED;
+				
+			}
 		}
 	}
+
+	if (lastState[id].Key_A == BTT_RELEASED)
+		lastState[id].Key_A == BTT_NONE;
+	if (lastState[id].Key_D == BTT_RELEASED)
+		lastState[id].Key_D == BTT_NONE;
+	if (lastState[id].Key_W == BTT_RELEASED)
+		lastState[id].Key_W == BTT_NONE;
+	if (lastState[id].Key_Up == BTT_RELEASED)
+		lastState[id].Key_Up== BTT_NONE;
+	if (lastState[id].Key_Down == BTT_RELEASED)
+		lastState[id].Key_Down == BTT_NONE;
+	if (lastState[id].Key_Left == BTT_RELEASED)
+		lastState[id].Key_Left == BTT_NONE;
+	if (lastState[id].Key_Right == BTT_RELEASED)
+		lastState[id].Key_Right == BTT_NONE;
+	if (lastState[id].Key_Enter == BTT_RELEASED)
+		lastState[id].Key_Enter == BTT_NONE;
+	if (lastState[id].Key_Space == BTT_RELEASED)
+		lastState[id].Key_Space == BTT_NONE;
+	if (lastState[id].Mouse_Left == BTT_RELEASED)
+		lastState[id].Mouse_Left == BTT_NONE;
+	
+
 
 	//Axis
 	cState.Axis_LeftX = SDL_GameControllerGetAxis(_playerController[id], SDL_CONTROLLER_AXIS_LEFTX) / PARSE_VALUE;

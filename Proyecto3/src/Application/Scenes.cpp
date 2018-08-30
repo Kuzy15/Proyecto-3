@@ -1131,6 +1131,8 @@ void MainMenuScene::processScnMsgs()
 		case MSG_INPUT_STATE:
 			input = static_cast<MInputState*>(*it);
 			c = input->getCInputState();
+			// En el menu inicial solo puede moverse por él el mando 1 (id == 0) y el teclado, es decir, es el struct ControllerInputState que corresponde al 2 jugador pues se ha producido evento de teclado.
+			// *Solo el 2 jugador puede usar el teclado*
 			if (input->getId() == 0 || c.eventKeyboard == true){//-------------------------------------------------------¿?
 				if (c.DPad_Down == BTT_RELEASED || c.Key_Down == BTT_RELEASED){
 					selectedButton++;
@@ -1350,6 +1352,7 @@ void SelectGodScene::processScnMsgs()
 					_entities.at(std::to_string(player1Index))->getMessage(new MActSeleGodRender(_entities.at(std::to_string(player1Index))->getID()));
 				}
 			}
+			// Si es el 2º mando y el anterior esta preparado entonces están disponibles los botones del mando y del teclado
 			else if (mInput->getId() == 1 && _pReady[0]){//-------------------------------------------------------¿?
 
 				if (mInput->getCInputState().Button_A == BTT_RELEASED || mInput->getCInputState().Key_Enter == BTT_RELEASED){

@@ -1060,8 +1060,11 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 CPlayerController::CPlayerController(Entity* f, int i): GameComponent(CMP_PLAYER_CONTROLLER, f), _id(i){
 	
 	// If its second player keyboard and mouse can be used
-	if (_id == 1)
+	/*if (_id == 1)
 		keyboard = true;
+	else
+		keyboard = false;
+	*/
 }
 
 CPlayerController::~CPlayerController(){}
@@ -1069,15 +1072,17 @@ CPlayerController::~CPlayerController(){}
 void CPlayerController::tick(float delta){
 }
 
-void CPlayerController::getMessage(Message* m){
+void CPlayerController::getMessage(Message* m){ //----------------------------------¿?
+
+	const float VEL = 8.0f;
 	//If the msg type is CInputState, read the input and process it
 	if (m->getType() == MSG_INPUT_STATE){
 		MInputState* inputM = static_cast<MInputState*>(m);
-		if (inputM->getId() == _id){ // o tengo habilitado el teclado
+		if (inputM->getId() == _id){ 
 
 			ControllerInputState cState = inputM->getCInputState();
 
-			if (cState.Right_Shoulder == BTT_PRESSED){
+			if (cState.Right_Shoulder == BTT_PRESSED || cState.Key_Space == BTT_PRESSED){
 				MJump* m = new MJump( pEnt->getID());
 				pEnt->getMessage(m);
 				//Game::getInstance()->getSoundEngine()->play2D("../Media/sounds/Pruebo.ogg");
@@ -1091,6 +1096,13 @@ void CPlayerController::getMessage(Message* m){
 				MPlayerShot* m = new MPlayerShot(xValue, yValue, pEnt->getID());
 				pEnt->getMessage(m);
 			}
+
+			// Mouse shooting
+			else if (cState.Mouse_Left == BTT_PRESSED){
+				MPlayerShot* m = new MPlayerShot(cState.Mouse_X, cState.Mouse_Y, pEnt->getID());
+				pEnt->getMessage(m);
+			}
+
 			if (cState.Axis_LeftX > AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(cState.Axis_LeftX, _id, pEnt->getID());
 				pEnt->getMessage(m);
@@ -1101,6 +1113,15 @@ void CPlayerController::getMessage(Message* m){
 			}
 			else if (cState.Axis_LeftX <= AXIS_DEADZONE && cState.Axis_LeftX >= -AXIS_DEADZONE){
 				MPlayerMoveX* m = new MPlayerMoveX(0, _id, pEnt->getID());
+				pEnt->getMessage(m);
+			}
+			// Keyboard movement
+			else if (cState.Key_Left == BTT_PRESSED){
+				MPlayerMoveX* m = new MPlayerMoveX(-VEL, _id, pEnt->getID());
+				pEnt->getMessage(m);
+			}
+			else if (cState.Key_Right == BTT_PRESSED){
+				MPlayerMoveX* m = new MPlayerMoveX(VEL, _id, pEnt->getID());
 				pEnt->getMessage(m);
 			}
 		}
