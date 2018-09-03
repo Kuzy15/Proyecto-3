@@ -36,61 +36,50 @@ CollisionManager collisionManager;
 using namespace irrklang;
 
 #pragma region Constructor and destructor
-Game::Game(){
+Game::Game(){ 
+
+
 	_instance = this;
 
-	// start the sound engine with default parameters
-	_soundEngine = createIrrKlangDevice();
+	
+	if (initSound()){
 
-	if (!_soundEngine){
-#ifdef _DEBUG
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-#endif
-		exit(1);
+		//Init Box2D physics environment
+		world = new b2World(GRAVITY);
+		//world->SetAllowSleeping(false);
+		world->SetContactListener(&collisionManager);
+
+		if (initSDL()){
+			currentTime = newTime = frameTime = accumulator = inputTime = 0;
+
+			if (initOgre()){
+				_nextPlayers = std::vector<Player>();
+				_nextStage = ES_TEMPLE;
+
+				_exit = false;
+				_changeScene = false;
+
+				GameScene* actScene = new initScene();
+				scenes.push(actScene);
+			}
+			else
+				exitGame();
+		}
+		else
+			exitGame();
 	}
-
-	//Init Box2D physics environment
-	world = new b2World(GRAVITY);
-	//world->SetAllowSleeping(false);
-	world->SetContactListener(&collisionManager);
-
-
-
-
-
-
-	//Inicialization of SDL. Only starts JOYSTICK functionality.
-	if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
-#ifdef _DEBUG
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-#endif
-		exit(1);
-	}
-
-	 currentTime = newTime = frameTime = accumulator = inputTime = 0;
-
-	 initOgre();
-
-
-	 _nextPlayers = std::vector<Player>();
-	 _nextStage = ES_TEMPLE;
-
-	 _exit = false;
-	 _changeScene = false;
-
-	 GameScene* actScene = new initScene();
-	 scenes.push(actScene);
-
-
-
+	else
+		exitGame();
+	
 }
  Game::~Game(){
 
-
+	 
 	 while (!scenes.empty()){
 		 GameScene* s = scenes.top();
 		 scenes.pop();
 		 delete s;
+		//s = nullptr;
 
 	 }
 	 //Remove the game from the window listeners
@@ -102,9 +91,16 @@ Game::Game(){
 
 	 InputManager::resetInstance();
 
+	 OGRE_DELETE pOverSyst; // Delete overlay system object (created with OGRE_NEW -> delete with OGRE_DELETE)
+	
 	 EntityFactory::getInstance().resetInstance();
-	 /*if (root != nullptr)
-		delete root;*/
+
+	/* if (root != nullptr){
+		 delete root;
+		root = nullptr;
+	 }*/
+	 
+	
 
  }
 #pragma endregion
@@ -174,6 +170,45 @@ Game::Game(){
  }
 #pragma endregion
 
+ bool Game::initSound(){
+
+
+	 // start the sound engine with default parameters
+	 _soundEngine = createIrrKlangDevice();
+
+	 if (!_soundEngine){
+#ifdef _DEBUG
+		 fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+#endif
+		 //exit(1); // cambiar ----------------------
+
+		 //exitGame();
+
+		 return false;
+	 }
+
+	 return true;
+
+ }
+
+ bool Game::initSDL(){
+ 
+	 //Inicialization of SDL. Only starts JOYSTICK functionality.
+	 if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
+#ifdef _DEBUG
+		 fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+#endif
+		 //exit(1); // cambiar ---------------------------
+
+		 //exitGame();
+
+		 return false;
+	 }
+
+	 return true;
+
+ }
+
 #pragma region Ogre Game functions
 bool Game::initOgre(){
 
@@ -226,10 +261,14 @@ bool Game::initOgre(){
 	//bool & aux = const_cast<bool &>(ldComplete);
 	//------------------------------------------------------------------------------------------------------
 	//Setting UP Resources
-	Ogre::ConfigFile cf;
+	//Ogre::ConfigFile cf;
 	//Parsing the config file into the system.
-	cf.load(resCfgLoc);
-
+	try{
+		cf.load(resCfgLoc);
+	}
+	catch (Ogre::Exception e){
+		std::cout << "\n" << e.getFile();
+	}
 
 	//name: Path to resources in disk,
 	//loctype: defines what kind of location the element is (e.g. Filesystem, zip..)
@@ -251,8 +290,14 @@ bool Game::initOgre(){
 
 			//We now know the type of the element and its path.
 			//We add it as a location to the Resource Group Manager
-			Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);
+			try {
+				Ogre::ResourceGroupManager::getSingleton().addResourceLocation(name, locType);			
+				std::cout << name << locType << std::endl;
+			}
+			catch (Ogre::Exception e)
+			{
 
+			}
 
 		}
 	}
@@ -277,7 +322,7 @@ bool Game::initOgre(){
 	//Taking only 1/3 more of space, we can have several sizes of the texture to choose from.
 
 
-
+	return true;
 
  }
 #pragma endregion

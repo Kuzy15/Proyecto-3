@@ -66,6 +66,8 @@ private:
 	//Sound engine pointer
 	ISoundEngine* _soundEngine;
 
+
+	
 	//Stack of Scenes
 	std::stack<GameScene*> scenes;
 	SCENES_ENUM _nextScene;
@@ -93,6 +95,8 @@ private:
 	E_STAGE _nextStage;
 	//internal private methods
 	bool initOgre();
+	bool initSound();
+	bool initSDL();
 	void render();
 	void handleInput();
 

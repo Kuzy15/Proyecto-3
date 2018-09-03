@@ -64,7 +64,7 @@ InputManager& InputManager::getInstance(){
 
 void InputManager::resetInstance(){
 	delete InputManager::_instance;
-	_instance == nullptr;
+	_instance = nullptr;
 }
 
 //Send the local queue messages to the scene queue if there's any message

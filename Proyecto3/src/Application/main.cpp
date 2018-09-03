@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "DebugNew.h"
 
+
 #ifdef _DEBUG || !_WIN32
 #define new DEBUG_NEW
 

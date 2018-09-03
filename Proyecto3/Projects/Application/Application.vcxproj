@@ -112,6 +112,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\irrKlang\include;$(SolutionDir)Dependencies\SDL2\Build\include;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)src\Components</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
+      <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

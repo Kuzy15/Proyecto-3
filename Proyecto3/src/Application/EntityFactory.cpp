@@ -57,7 +57,7 @@ EntityFactory::~EntityFactory()
 
 void EntityFactory::resetInstance(){
 	delete EntityFactory::_instance;
-	_instance == nullptr;
+	_instance = nullptr;
 }
 
 
