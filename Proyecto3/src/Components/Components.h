@@ -10,7 +10,7 @@
 #include <Box2D.h>
 #include <OgreTextAreaOverlayElement.h>
 #include <irrKlang.h>
-
+#include "Messages.h"
 
 class Entity;
 class Message;
@@ -365,7 +365,7 @@ public:
 	virtual void tick(float delta);
 private:
 	Ogre::Vector3 _nPos;
-
+	MCameraFollow * _camFollow;
 };
 
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
@@ -673,7 +673,8 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-
+private:
+	MModInvisibility * _modInvi;
 };
 
 
@@ -772,6 +773,8 @@ private:
 	float _timeCounter;
 	float _lastTimeDash;
 	float _dashImpulse;
+
+	
 	
 
 };

@@ -2,7 +2,7 @@
 #include "Entity.h"
 #include <OgreEntity.h>
 #include <OgreSceneNode.h>
-#include "Messages.h"
+//#include "Messages.h"
 #include "Game.h"
 #include "EntityFactory.h"
 #include "DebugNew.h"
@@ -1633,9 +1633,18 @@ void CASkillEmpty::getMessage(Message* m){
 ///invisibility
 GameComponent* createAbilityVidar(Entity* father, int id){ return new CPSkillVidar(father); }
 CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0,1){
-	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
+	_modInvi = new MModInvisibility(pEnt->getID());
+	pEnt->getMessage(_modInvi);
+
+	
 }
-CPSkillVidar::~CPSkillVidar(){}
+CPSkillVidar::~CPSkillVidar(){
+
+	/*if (_modInvi != nullptr){
+		delete _modInvi;
+		_modInvi = nullptr;
+	}*/
+}
 
 void CPSkillVidar::tick(float delta){}
 void CPSkillVidar::getMessage(Message* m){
@@ -1753,12 +1762,16 @@ CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRES
 	_dashImpulse = 1000.0f;
 	_lastTimeDash = SDL_GetTicks();
 }
-CShuHeaddress::~CShuHeaddress(){}
+CShuHeaddress::~CShuHeaddress(){
+
+	
+}
 
 void CShuHeaddress::tick(float delta){
 	float val = (SDL_GetTicks() - _lastTimeDash) * 100 / _coolDown;
 	if (val > 100)val = 100;
-	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+	 
+	 pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 
 }
@@ -2503,12 +2516,22 @@ void CGUITimer::getMessage(Message * m)
 
 
 #pragma region Camera Follow
-CCameraFollow::CCameraFollow(Entity * father):GameComponent(CMP_CAMERA_FOLLOW,father){}
-CCameraFollow::~CCameraFollow(){}
+CCameraFollow::CCameraFollow(Entity * father):GameComponent(CMP_CAMERA_FOLLOW,father){
+
+	_camFollow = nullptr;
+}
+CCameraFollow::~CCameraFollow(){
+
+	if (_camFollow != nullptr){
+		delete _camFollow;
+		_camFollow = nullptr;
+	}
+}
 
 void CCameraFollow::tick(float delta){
 
-	pEnt->getMessage(new MCameraFollow(_nPos, pEnt->getID()));
+	_camFollow = new MCameraFollow(_nPos, pEnt->getID());
+	pEnt->getMessage(_camFollow);
 
 }
 void CCameraFollow::getMessage(Message* m){

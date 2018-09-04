@@ -3,6 +3,8 @@
 #include <OgreTextAreaOverlayElement.h>
 #include <thread>
 #include <atomic>
+
+
 class Entity;
 class Message;
 class Game;
@@ -289,6 +291,11 @@ private:
 
 	int player1Index;
 	int player2Index;
+
+	Ogre::Light* light;
+	Entity *cam;
+	
+	
 
 
 };

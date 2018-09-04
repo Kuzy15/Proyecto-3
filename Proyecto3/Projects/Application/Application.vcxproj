@@ -110,7 +110,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\irrKlang\include;$(SolutionDir)Dependencies\SDL2\Build\include;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)src\Components</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\VLD\include;$(SolutionDir)Dependencies\irrKlang\include;$(SolutionDir)Dependencies\SDL2\Build\include;$(SolutionDir)Dependencies\Box2D\Box2DMain\include;$(SolutionDir)Dependencies\Ogre\OgreMain\include;$(SolutionDir)Dependencies\Ogre\Build\include;$(SolutionDir)src\Components</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
     </ClCompile>
@@ -118,7 +118,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>OgreMain_d.lib;Box2D.lib;Components_d.lib;SDL2.lib;SDL2main.lib;OgreOverlay_d.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\SDL2\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Ogre\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Box2D\Build\lib\$(Configuration);$(SolutionDir)Dependencies\libs\;$(SolutionDir)Dependencies\irrKlang\Build\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\VLD\lib\Win32;$(SolutionDir)Dependencies\SDL2\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Ogre\Build\lib\$(Configuration);$(SolutionDir)Dependencies\Box2D\Build\lib\$(Configuration);$(SolutionDir)Dependencies\libs\;$(SolutionDir)Dependencies\irrKlang\Build\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

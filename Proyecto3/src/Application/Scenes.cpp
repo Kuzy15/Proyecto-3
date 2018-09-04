@@ -39,6 +39,7 @@
 #include "Scenes.h"
 #include "DebugDraw.h"
 #include "Components.h"
+
 //Debug
 #ifdef _DEBUG
 #include <iostream>
@@ -1174,7 +1175,7 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 
 	scnMgr->setAmbientLight(Ogre::ColourValue(.5, .5, .5));
 
-	Ogre::Light* light = getSceneManager()->createLight("SelectGodLight");
+	light = getSceneManager()->createLight("SelectGodLight");
 	light->setPosition(0, 30, 50);
 	light->setCastShadows(true);
 
@@ -1203,8 +1204,8 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 	//Ogre::FontManager::getSingleton().getByName("TimeText")->load();
 
 	Ogre::Viewport* vp = nullptr;
-	Entity *cam = new Entity("camSelectGod", this);
-	CCamera * cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 0, 60), Ogre::Vector3(0, 0, 0), 10);
+	cam = new Entity("camSelectGod", this);
+	CCamera* cCam = new CCamera(cam, scnMgr, vp, cam->getID(), Ogre::Vector3(0, 0, 60), Ogre::Vector3(0, 0, 0), 10);
 	vp = cCam->getVP();
 	cam->addComponent(cCam);
 
@@ -1285,6 +1286,17 @@ SelectGodScene::SelectGodScene(std::string id, Game * game) : GameScene(id, game
 
 SelectGodScene::~SelectGodScene(){
 
+	delete light;
+	light = nullptr;
+
+	delete cam;
+	cam = nullptr;
+
+	//delete cCam;
+	//cCam = nullptr;
+
+	//delete sky;
+	//sky = nullptr;
 }
 
 

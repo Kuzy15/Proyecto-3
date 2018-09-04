@@ -2,9 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\Application\main.cpp" />
-    <ClCompile Include="..\..\src\Application\CollisionManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Application\EntityFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -16,6 +13,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Application\Scenes.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Application\CollisionManager.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

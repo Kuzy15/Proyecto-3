@@ -98,8 +98,8 @@ Game::Game(){
 	/* if (root != nullptr){
 		 delete root;
 		root = nullptr;
-	 }*/
-	 
+	 }
+	 */
 	
 
  }
@@ -254,6 +254,7 @@ bool Game::initOgre(){
 #ifdef _DEBUG
 
 		std::cout << e.what() << std::endl;
+		return false;
 #endif // _DEBUG
 
 	}

@@ -96,6 +96,8 @@ void Entity::getMessage(Message * m){
 		if (!_active){
 			if (m->getDestination() == ENTITY)
 				delete m;		
+			
+		
 		}
 		else {			
 			msgs.push(m);		
