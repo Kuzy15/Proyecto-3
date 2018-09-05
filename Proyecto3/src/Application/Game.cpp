@@ -95,7 +95,7 @@ Game::Game(){
 	
 	 EntityFactory::getInstance().resetInstance();
 
-	/* if (root != nullptr){
+	 /*if (root != nullptr){
 		 delete root;
 		root = nullptr;
 	 }

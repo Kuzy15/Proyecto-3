@@ -130,11 +130,19 @@ void Entity::dispatch(){
 		}
 		//if the message was received/sent from outside (SCENE)
 		else {
+			Message * aux = msgs.front();
 			//If the message was sent by this entity, we forward it to the Scene
-			if (msgs.front()->getEmmiter() == getID()) 
-				sendMessage(msgs.front());
+			if (aux->getEmmiter() == getID()){
+
+				sendMessage(aux);
+			}
+				msgs.pop();
 			//Then we remove it from the entity's queue
-			msgs.pop();
+			//else{
+				//msgs.pop();
+				//delete aux;
+
+			//}
 		}
 	}
 }

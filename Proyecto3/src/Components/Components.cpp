@@ -942,6 +942,10 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 CRigidBody::~CRigidBody() {
 	pEnt->getScene()->addBodyToDelete(_body);
 
+	if (_updateTransform != nullptr){
+		delete _updateTransform;
+		_updateTransform = nullptr;
+	}
 }
 void CRigidBody::tick(float delta) {
 
@@ -951,13 +955,13 @@ void CRigidBody::tick(float delta) {
 	//Transformation from physics world to ogre world.
 
 	if (_body->IsFixedRotation()){
-		MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), -1,_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
-		pEnt->getMessage(m);
+		_updateTransform = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x )* PPM , _body->GetPosition().y * PPM, 0), -1,_rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
+		pEnt->getMessage(_updateTransform);
 	}
 	else{
 
-		MUpdateTransform * m = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x)* PPM, _body->GetPosition().y * PPM, 0), _body->GetAngle(), _rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
-		pEnt->getMessage(m);
+		_updateTransform = new MUpdateTransform(Ogre::Vector3((_body->GetPosition().x)* PPM, _body->GetPosition().y * PPM, 0), _body->GetAngle(), _rbHeight * PPM, _rbWeight * PPM, pEnt->getID());
+		pEnt->getMessage(_updateTransform);
 
 	}
 
@@ -1632,18 +1636,14 @@ void CASkillEmpty::getMessage(Message* m){
 
 ///invisibility
 GameComponent* createAbilityVidar(Entity* father, int id){ return new CPSkillVidar(father); }
-CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0,1){
-	_modInvi = new MModInvisibility(pEnt->getID());
-	pEnt->getMessage(_modInvi);
+CPSkillVidar::CPSkillVidar(Entity * father) :CAbility(CMP_PASSIVE_VIDAR, father, 25, 25,MASK_LEGS_0,1){ 
+	pEnt->getMessage(new MModInvisibility(pEnt->getID()));
 
 	
 }
 CPSkillVidar::~CPSkillVidar(){
 
-	/*if (_modInvi != nullptr){
-		delete _modInvi;
-		_modInvi = nullptr;
-	}*/
+	
 }
 
 void CPSkillVidar::tick(float delta){}
@@ -1761,17 +1761,21 @@ CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRES
 	_coolDown = 2000.0f; //5 seconds
 	_dashImpulse = 1000.0f;
 	_lastTimeDash = SDL_GetTicks();
+	_updateTimer = nullptr;
 }
 CShuHeaddress::~CShuHeaddress(){
 
-	
+	/*if (_updateTimer != nullptr){
+		delete _updateTimer,
+		_updateTimer = nullptr;
+	}*/
 }
 
 void CShuHeaddress::tick(float delta){
 	float val = (SDL_GetTicks() - _lastTimeDash) * 100 / _coolDown;
 	if (val > 100)val = 100;
-	 
-	 pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
+	_updateTimer = new MUpdateActiveTimer(pEnt->getID(), val);
+	 pEnt->getMessage(_updateTimer);
 
 
 }

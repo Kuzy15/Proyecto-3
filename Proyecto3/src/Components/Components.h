@@ -415,6 +415,7 @@ private:
 	b2FixtureDef _fixtureDef;
 	b2Fixture* _fixture;
 
+	MUpdateTransform * _updateTransform;
 	
 };
 /*
@@ -452,6 +453,7 @@ private:
 
 	uint16_t _myMask;
 
+	
 	
 };
 
@@ -673,8 +675,6 @@ public:
 	virtual void tick(float delta);
 	virtual void getMessage(Message * m);
 
-private:
-	MModInvisibility * _modInvi;
 };
 
 
@@ -774,6 +774,7 @@ private:
 	float _lastTimeDash;
 	float _dashImpulse;
 
+	MUpdateActiveTimer * _updateTimer;
 	
 	
 
@@ -822,6 +823,7 @@ private:
 	float _fireRatePercentage;
 	bool _isActive;
 	bool isAvailable;
+	MUpdateActiveTimer * _updateTimer;
 
 };
 
