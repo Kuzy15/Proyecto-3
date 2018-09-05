@@ -135,6 +135,7 @@ void CMessageSend::getMessage(Message * m) {
 
 
 /*-------------------------OGRE COMPONENTS------------------------------------*/
+/*
 #pragma region RenderComponent
 //Render Component class. Father to every
 //other render component.
@@ -207,7 +208,7 @@ void CRender::getMessage(Message *m) {
 					}
 				}*/
 
-
+/*
 				//Move the parent to the collider location of rotation.
 				pOgreSceneNode->setPosition(parentPos);
 				//Move the child to the real pos of the collider.
@@ -225,6 +226,8 @@ void CRender::getMessage(Message *m) {
 }
 
 #pragma endregion
+*/
+/*
 #pragma region meshRenderComponent
 //Mesh Render component.
 //Takes a string with the name of the mesh to render
@@ -309,7 +312,9 @@ Ogre::Vector3 CMeshRender::getSize(){
 
 
 #pragma endregion
+*/
 
+/*
 #pragma region Animation Component
 CAnimation::CAnimation(Entity * father, Ogre::SceneManager * scnM, Ogre::SceneNode* child) : GameComponent(CMP_ANIMATION, father){
 	pOgreEnt = scnM->getEntity(father->getID());
@@ -369,7 +374,7 @@ void CAnimation::tick(float delta){
 		nextBot = nullptr;
 	}
 	*/
-
+/*
 	if (currentTop->getLength() == currentTop->getTimePosition()){
 		currentTop->setEnabled(false);
 		if (nextTop != nullptr){
@@ -533,8 +538,8 @@ void CAnimation::changeAnim(Ogre::AnimationState* nextB, Ogre::AnimationState* n
 }
 #pragma endregion
 
-
-
+*/
+/*
 #pragma region Skyplane Render Component
 CSkyPlaneRender::CSkyPlaneRender(Entity * father, Ogre::SceneManager * scnM, float scale, std::string materialName, Ogre::Vector3 pos, Ogre::Viewport* vp) :CRender(CMP_SKYPLANE_RENDER, father, scnM){
 
@@ -563,7 +568,9 @@ void CSkyPlaneRender::getMessage(Message * m){}
 
 
 #pragma endregion
+*/
 /*------------------------- RENDER COMPONENTS------------------------------------*/
+/*
 #pragma region particleRenderComponent
 
 //PARTICLES
@@ -598,8 +605,8 @@ void CParticleRender::getMessage(Message * m) {
 
 }
 #pragma endregion
-
-
+*/
+/*
 #pragma region ribbonTrailRenderComponent
 
 // RIBBON TRAIL
@@ -627,8 +634,9 @@ void CRibbonTrailRender::getMessage(Message * m) {
 }
 #pragma endregion
 
-
+*/
 /*------------------------- CAMERA COMPONENTS------------------------------------*/
+/*
 #pragma region Camera Component
 CCamera::CCamera(Entity * father, Ogre::SceneManager * scnMgr, Ogre::Viewport * vp, std::string camName, Ogre::Vector3 pos, Ogre::Vector3 lookAt, int clipDistance)
 	: GameComponent(CMP_CAMERA, father), _scnMgr(scnMgr), _camName(camName), _vp(vp), _pos(pos), _lookAt(lookAt), pCam(0)
@@ -755,10 +763,10 @@ void CActionCamera::tick(float delta) {
 	CCamera::tick(delta);
 
 }
-
+*/
 #pragma endregion
 /*-------------------------BOX2D COMPONENTS------------------------------------*/
-
+/*
 #pragma region RigidBodyComponent
 //Rigid Body component.
 //Gives an entity a rigid body to simulate physics
@@ -791,7 +799,7 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	/*_bodyDef.linearDamping = 5.0f;
 	_bodyDef.angularDamping = 0.0f;*/
 
-	switch (rbType)
+/*	switch (rbType)
 	{
 		case RB_DYNAMIC:
 			_bodyDef.type = b2_dynamicBody;
@@ -1021,7 +1029,8 @@ void CRigidBody::getMessage(Message * m) {
 	}
 }
 #pragma endregion
-
+*/
+/*
 #pragma region CollisionHandler
 CPlayerCollisionHandler::CPlayerCollisionHandler(Entity* father) :GameComponent(CMP_PLAYER_CH, father) {
 }
@@ -1058,7 +1067,9 @@ void CPlayerCollisionHandler::getMessage(Message * m){
 	}
 }
 #pragma endregion
+*/
 
+/*
 //Player Controller Component
 #pragma region PlayerControllerComponent
 CPlayerController::CPlayerController(Entity* f, int i): GameComponent(CMP_PLAYER_CONTROLLER, f), _id(i){
@@ -1110,7 +1121,9 @@ void CPlayerController::getMessage(Message* m){
 }
 
 #pragma endregion
+*/
 
+/*
 //Life Component
 #pragma region Life Component
 CLife::CLife(Entity* father, float iniLife) :GameComponent(CMP_LIFE, father), _maxLife(iniLife), _currentLife(iniLife) {
@@ -1147,7 +1160,8 @@ void CLife::getMessage(Message* m){
 	}
 }
 #pragma endregion
-
+*/
+/*
 //Move Component
 #pragma region Player Move Component
 CPlayerMove::CPlayerMove(Entity* father, float vel) :GameComponent(CMP_MOVEMENT_SPEED, father), _maxSpeed(MAX_SPEED), _moveVel(vel), _auxVelReset(vel){}
@@ -1355,7 +1369,7 @@ void CPlayerBasicAttack::getMessage(Message* m){
 void CPlayerBasicAttack::calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos){
 
 	//Calculate point
-	/*5 - 327*/
+	//5 - 327
 	//Normalize
 	if (vX == 0){
 		iniPos.x = 0;
@@ -1519,7 +1533,7 @@ void CBullet::getMessage(Message* m){
 
 }
 #pragma endregion
-
+*/
 
 
 #pragma region Ability Component
@@ -1761,21 +1775,18 @@ CShuHeaddress::CShuHeaddress(Entity * father, int id) :CAbility(CMP_SHU_HEADDRES
 	_coolDown = 2000.0f; //5 seconds
 	_dashImpulse = 1000.0f;
 	_lastTimeDash = SDL_GetTicks();
-	_updateTimer = nullptr;
+	
 }
 CShuHeaddress::~CShuHeaddress(){
 
-	/*if (_updateTimer != nullptr){
-		delete _updateTimer,
-		_updateTimer = nullptr;
-	}*/
+	
 }
 
 void CShuHeaddress::tick(float delta){
 	float val = (SDL_GetTicks() - _lastTimeDash) * 100 / _coolDown;
 	if (val > 100)val = 100;
-	_updateTimer = new MUpdateActiveTimer(pEnt->getID(), val);
-	 pEnt->getMessage(_updateTimer);
+	
+	pEnt->getMessage(new MUpdateActiveTimer(pEnt->getID(), val));
 
 
 }
@@ -1800,6 +1811,7 @@ void CShuHeaddress::getMessage(Message* m)
 	CAbility::getMessage(m);
 }
 
+const float SPAWN_PARSE = 1.0f / 328.0f;
 b2Vec2* CShuHeaddress::calculateDash(float xValue, float yValue){
 
 	float normalX = xValue * SPAWN_PARSE;
@@ -2518,7 +2530,7 @@ void CGUITimer::getMessage(Message * m)
 
 
 
-
+/*
 #pragma region Camera Follow
 CCameraFollow::CCameraFollow(Entity * father):GameComponent(CMP_CAMERA_FOLLOW,father){
 
@@ -2546,3 +2558,4 @@ void CCameraFollow::getMessage(Message* m){
 
 }
 #pragma endregion
+*/

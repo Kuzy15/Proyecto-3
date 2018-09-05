@@ -95,7 +95,7 @@ Game::Game(){
 	
 	 EntityFactory::getInstance().resetInstance();
 
-	 /*if (root != nullptr){
+	/*if (root != nullptr){
 		 delete root;
 		root = nullptr;
 	 }
@@ -180,9 +180,6 @@ Game::Game(){
 #ifdef _DEBUG
 		 fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 #endif
-		 //exit(1); // cambiar ----------------------
-
-		 //exitGame();
 
 		 return false;
 	 }
@@ -197,10 +194,7 @@ Game::Game(){
 	 if (SDL_Init(SDL_INIT_GAMECONTROLLER) < 0){
 #ifdef _DEBUG
 		 fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-#endif
-		 //exit(1); // cambiar ---------------------------
-
-		 //exitGame();
+#endif		
 
 		 return false;
 	 }

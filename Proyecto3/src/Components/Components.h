@@ -154,9 +154,9 @@ private:
 };
 
 
-
 /*-------------------------RENDER COMPONENTS------------------------------------*/
 //--------- RENDER COMPONENT ---------
+/*
 class CRender : public GameComponent
 {
 public:
@@ -254,8 +254,9 @@ private:
 	
 	
 };
+*/
 
-
+/*
 //--------- ANIMATION COMPONENT ---------
 class CAnimation : public GameComponent
 {
@@ -299,7 +300,8 @@ private:
 	Ogre::AnimationState* nextBot;
 
 };
-
+*/
+/*
 //---------   CAMERA COMPONENT   ---------
 class CCamera: public GameComponent
 {
@@ -353,8 +355,9 @@ public:
 private:
 
 };
-
+*/
 /*---------------------------------- CAMERA FOLLOW -----------------------------------*/
+/*
 class CCameraFollow : public GameComponent
 {
 public:
@@ -367,7 +370,7 @@ private:
 	Ogre::Vector3 _nPos;
 	MCameraFollow * _camFollow;
 };
-
+*/
 /*-------------------------PHYSICS COMPONENTS------------------------------------*/
 
 typedef enum FilterMask {
@@ -388,7 +391,7 @@ typedef enum FilterMask {
 
 };
 
-
+/*
 
 //--------- RIGID BODY COMPONENT ---------
 class CRigidBody : public GameComponent
@@ -417,7 +420,7 @@ private:
 
 	MUpdateTransform * _updateTransform;
 	
-};
+};*/
 /*
 //--------- COLLISION HANDLER COMPONENT ---------
 //Interface for collision handler component
@@ -436,6 +439,8 @@ private:
 
 
 */
+
+/*
 //--------- PLAYER C.H. COMPONENT ---------
 class CPlayerCollisionHandler : public GameComponent
 {
@@ -456,8 +461,9 @@ private:
 	
 	
 };
-
+*/
 /*-----------------------------	PLAYER CONTROLLER COMPONENT	--------------------*/
+/*
 //This component take the input events to send new messages to control the player (attack, move, etc.)
 class CPlayerController : public GameComponent
 {
@@ -475,8 +481,9 @@ private:
 	const float AXIS_DEADZONE = 100.0f;
 };
 
-
+*/
 /*-----------------------------	LIFE COMPONENT	--------------------*/
+/*
 //Provides life to an entity
 class CLife : public GameComponent
 {
@@ -495,8 +502,9 @@ private:
 	float _currentLife;		//The current life of the entity
 };
 
-
+*/
 /*-----------------------------	PLAYER MOVE COMPONENT	--------------------*/
+/*
 //Set the move velocity for the entity
 class CPlayerMove : public GameComponent
 {
@@ -517,8 +525,9 @@ private:
 	float _moveVel;				//The  current movemente speed the entity has
 	float _auxVelReset;
 };
-
+*/
 /*-----------------------------	PLAYER JUMP COMPONENT	--------------------*/
+/*
 //Provides an entity the capacity to jump
 class CPlayerJump : public GameComponent
 {
@@ -548,10 +557,10 @@ private:
 	int _maxJumps;				//Max jumps
 
 };
-
+*/
 /*-----------------------------	PLAYER BASIC ATTACK COMPONENT	--------------------*/
 //Provides an entity the capacity shot bullet as basic attack. 
-
+/*
 const float SPAWN_PARSE = 1.0f / 328.0f;
 
 class CPlayerBasicAttack : public GameComponent
@@ -584,9 +593,10 @@ private:
 
 	void calculateSpawnPoint(float vX, float vY, float &angle, Ogre::Vector3 &iniPos);
 };
-
+*/
 
 /*-----------------------------	BULLET COMPONENT	--------------------*/
+/*
 //Provides an entity the behavior of a bullet
 class CBullet : public GameComponent
 {
@@ -610,7 +620,7 @@ private:
 	irrklang::ISound* s;
 
 };
-
+*/
 
 
 /*-----------------------------	PASSIVE SKILL COMPONENTS	--------------------*/
@@ -774,7 +784,7 @@ private:
 	float _lastTimeDash;
 	float _dashImpulse;
 
-	MUpdateActiveTimer * _updateTimer;
+	
 	
 	
 

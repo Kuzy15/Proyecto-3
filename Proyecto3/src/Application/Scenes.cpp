@@ -18,7 +18,7 @@
 #include <OgreFontManager.h>
 #include <OgreOverlaySystem.h>
 
-#include <thread>
+
 #include <stdlib.h>
 #include <time.h>
 #include <random>
@@ -39,6 +39,8 @@
 #include "Scenes.h"
 #include "DebugDraw.h"
 #include "Components.h"
+#include "RenderComponents.h"
+#include "Camera.h"
 
 //Debug
 #ifdef _DEBUG
@@ -61,9 +63,9 @@ GameScene::~GameScene()
 
 	Ogre::OverlayManager::getSingleton().destroy(overlay->getName());
 
+
+
 	deleteAllMessages();
-
-
 
 	scnMgr->clearScene();
 	scnMgr->destroyAllManualObjects();
@@ -585,7 +587,9 @@ void GamePlayScene::processScnMsgs(){
 		}
 
 		it++;
+		
 		_sceneMessages.pop_front();
+
 	}
 
 }

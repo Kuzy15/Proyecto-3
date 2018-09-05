@@ -5,6 +5,10 @@
 #include "Game.h"
 #include "DebugNew.h"
 #include "EntityFactory.h"
+#include "RenderComponents.h"
+#include "Animation.h"
+#include "Camera.h"
+#include "PlayerComponents.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
