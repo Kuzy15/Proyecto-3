@@ -5,7 +5,7 @@
 
 #include "AbilityComponent.h"
 
-class Entity;
+//class Entity;
 
 GameComponent* createActiveAbilityEmpty(Entity* father, int id);
 class CASkillEmpty : public CAbility
@@ -88,7 +88,7 @@ private:
 	float _fireRatePercentage;
 	bool _isActive;
 	bool isAvailable;
-	MUpdateActiveTimer * _updateTimer;
+	
 
 };
 

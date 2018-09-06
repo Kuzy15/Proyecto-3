@@ -2,9 +2,10 @@
 #define PLAYERCOMPONENTS_H
 
 #include "Components.h"
+#include <Box2D.h>
 
-class Entity;
-class Message;
+//class Entity;
+//class Message;
 
 typedef enum FilterMask;
 

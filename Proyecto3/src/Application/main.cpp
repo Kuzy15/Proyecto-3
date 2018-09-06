@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "Game.h"
 #include "DebugNew.h"
-#include <vld.h>
+//#include <vld.h>
 
 #ifdef _DEBUG || !_WIN32
 #define new DEBUG_NEW

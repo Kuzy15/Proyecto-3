@@ -35,14 +35,13 @@ _componentArmor(componentArmor), _limitLife(componentLife), _type(t)
 		case MASK_HEAD_0:
 			_myMask = MASK_HEAD_1;
 			break;
-		//case MASK_CHEST_0:
-			//_myMask = MASK_CHEST_1;
+		case MASK_CHEST_0:
+			_myMask = MASK_CHEST_1;
 			break;
 		default:
 			break;
 		}
-				//case MASK_CHEST_0:
-				//_myMask = MASK_CHEST_1;
+				
 	}
 
 }

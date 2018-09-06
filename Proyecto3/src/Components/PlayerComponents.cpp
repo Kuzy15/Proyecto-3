@@ -525,6 +525,8 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 	_bodyDef.position.Set(_pos.x, _pos.y);
 
 
+	_updateTransform = nullptr;
+
 
 	if (myCategory == MASK_PLAYER)
 		_bodyDef.fixedRotation = true;
@@ -688,10 +690,10 @@ CRigidBody::CRigidBody(Entity * father, b2World * world, Ogre::Vector3 posInPixe
 CRigidBody::~CRigidBody() {
 	pEnt->getScene()->addBodyToDelete(_body);
 
-	if (_updateTransform != nullptr){
+	/*if (_updateTransform != nullptr){
 		delete _updateTransform;
 		_updateTransform = nullptr;
-	}
+	}*/
 }
 void CRigidBody::tick(float delta) {
 

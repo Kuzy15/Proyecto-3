@@ -3,7 +3,7 @@
 
 #include "Components.h"
 
-class Entity;
+//class Entity;
 
 class CAbility : public GameComponent
 {

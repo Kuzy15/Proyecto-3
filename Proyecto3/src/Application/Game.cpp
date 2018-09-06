@@ -25,10 +25,9 @@
 
 
 
-//Debug
-#ifdef _DEBUG
+
 #include <iostream>
-#endif
+
 
 Game * Game::_instance = nullptr;
 CollisionManager collisionManager;

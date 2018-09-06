@@ -3,7 +3,7 @@
 
 #include "AbilityComponent.h"
 
-class Entity;
+//class Entity;
 
 
 GameComponent* createPassiveAbilityEmpty(Entity* father, int id);
