@@ -151,7 +151,7 @@ Entity* createGodZeus(std::string id, GameScene* s, Ogre::Vector3 iniPos, int co
 	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus5", "LZeus5", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 	Zeus->addComponent(new CParticleRender({ 0, 0, 0 }, id + "LZeus6", "LZeus6", Zeus, s->getSceneManager(), { Ogre::Real(1.0f), Ogre::Real(1.0f), Ogre::Real(1.0f) }, { 0, 0, 0 }));
 
-	Zeus->addComponent(new CPSkillVidar(Zeus));
+	//Zeus->addComponent(new CPSkillVidar(Zeus));
 
 
 	return Zeus;

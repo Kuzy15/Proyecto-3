@@ -148,23 +148,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Components\AbilityComponent.h" />
+    <ClInclude Include="..\..\src\Components\ActivesComponents.h" />
     <ClInclude Include="..\..\src\Components\Animation.h" />
     <ClInclude Include="..\..\src\Components\Camera.h" />
     <ClInclude Include="..\..\src\Components\Components.h" />
     <ClInclude Include="..\..\src\Components\DebugNew.h" />
     <ClInclude Include="..\..\src\Components\EF_Entities.h" />
     <ClInclude Include="..\..\src\Components\Entity.h" />
+    <ClInclude Include="..\..\src\Components\GUIComponents.h" />
     <ClInclude Include="..\..\src\Components\Messages.h" />
+    <ClInclude Include="..\..\src\Components\PassivesComponents.h" />
     <ClInclude Include="..\..\src\Components\PlayerComponents.h" />
     <ClInclude Include="..\..\src\Components\RenderComponents.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Components\AbilityComponent.cpp" />
+    <ClCompile Include="..\..\src\Components\ActivesComponents.cpp" />
     <ClCompile Include="..\..\src\Components\Animation.cpp" />
     <ClCompile Include="..\..\src\Components\Camera.cpp" />
     <ClCompile Include="..\..\src\Components\Components.cpp" />
     <ClCompile Include="..\..\src\Components\EF_Entities.cpp" />
     <ClCompile Include="..\..\src\Components\Entity.cpp" />
+    <ClCompile Include="..\..\src\Components\GUIComponents.cpp" />
     <ClCompile Include="..\..\src\Components\Messages.cpp" />
+    <ClCompile Include="..\..\src\Components\PassivesComponents.cpp" />
     <ClCompile Include="..\..\src\Components\PlayerComponents.cpp" />
     <ClCompile Include="..\..\src\Components\RenderComponents.cpp" />
   </ItemGroup>

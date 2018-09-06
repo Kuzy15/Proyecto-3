@@ -41,6 +41,8 @@
 #include "Components.h"
 #include "RenderComponents.h"
 #include "Camera.h"
+#include "GUIComponents.h"
+#include "AbilityComponent.h"
 
 //Debug
 #ifdef _DEBUG

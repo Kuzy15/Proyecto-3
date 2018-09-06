@@ -1,6 +1,8 @@
 #include "EntityFactory.h"
 #include "DebugNew.h"
 #include <iostream>
+#include "PassivesComponents.h"
+#include "ActivesComponents.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
